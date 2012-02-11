@@ -113,6 +113,8 @@ AppBase::AppBase(int argc, char* argv[])
       printf("Please start Maestro.");
       exit(EXIT_FAILURE);
     }
+#else
+  __state = Hidden;
 #endif
 }
 
