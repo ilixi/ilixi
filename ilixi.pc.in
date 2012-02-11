@@ -1,0 +1,17 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+datarootdir=@datarootdir@
+includedir=@includedir@
+
+docdir=${datarootdir}/doc/@PACKAGE@-@VERSION@
+doxytagfile=${docdir}/reference/@PACKAGE@-@VERSION@.tag
+htmlrefdir=${docdir}/reference/html
+
+Name: @PACKAGE@
+Description: Lightweight C++ user interface toolkit for embedded Linux systems.
+Version: @VERSION@
+URL: @PACKAGE_URL@
+Requires.private: fusion directfb sawman sigc++-2.0 libxml-2.0
+Libs: -L${libdir} -l@PACKAGE@-@VERSION@
+Cflags: -I${includedir}/@PACKAGE@-@VERSION@ -I${libdir}/@PACKAGE@-@VERSION@/include

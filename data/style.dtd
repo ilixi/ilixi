@@ -1,0 +1,50 @@
+<!ELEMENT style (fonts, hints, images)>
+
+<!ELEMENT fonts (buttonFont, defaultFont, inputFont, titleFont) >
+<!ATTLIST fonts path CDATA #REQUIRED>
+	<!ELEMENT buttonFont (file, size, fontStyle*)>
+	<!ELEMENT defaultFont (file, size, fontStyle*)>
+	<!ELEMENT inputFont (file, size, fontStyle*)>
+	<!ELEMENT titleFont (file, size, fontStyle*)>
+		<!ELEMENT file (#PCDATA)>
+		<!ELEMENT size (#PCDATA)>
+		<!ELEMENT fontStyle (#PCDATA)>
+
+<!ELEMENT hints (button, checkbox, combobox, frame, icon, progressbar, radiobutton, slider, scrollbar, tabpanel, tabbutton, textinput, toolbar)>
+	<!ELEMENT button (width, height, radius, offset, indicator)>
+	<!ELEMENT checkbox (width, height, radius, offset)>
+	<!ELEMENT combobox (width, radius)>
+	<!ELEMENT frame (radius)>
+	<!ELEMENT icon (width, height)>
+	<!ELEMENT progressbar (width, height, radius)>
+	<!ELEMENT radiobutton (width, height, offset)>
+	<!ELEMENT slider (width, height, radius)>
+	<!ELEMENT scrollbar (width, height, radius)>
+	<!ELEMENT tabpanel (width, height, offset)>
+	<!ELEMENT tabbutton (width, height)>
+	<!ELEMENT textinput (radius)>
+	<!ELEMENT toolbar (height)>
+		<!ELEMENT width (#PCDATA)>
+		<!ELEMENT height (#PCDATA)>
+		<!ELEMENT radius (#PCDATA)>
+		<!ELEMENT offset (#PCDATA)>
+		<!ELEMENT indicator (#PCDATA)>
+
+<!ELEMENT images (plus, minus, grid, critical, information, question, warning, up, down, left, right, empty, partial, full)>
+<!ATTLIST images path CDATA #REQUIRED>
+	<!ELEMENT plus (#PCDATA)>
+	<!ELEMENT minus (#PCDATA)>
+	<!ELEMENT grid (#PCDATA)>
+	<!ELEMENT critical (#PCDATA)>
+	<!ELEMENT information (#PCDATA)>
+	<!ELEMENT question (#PCDATA)>
+	<!ELEMENT warning (#PCDATA)>
+	<!ELEMENT up (#PCDATA)>
+	<!ELEMENT down (#PCDATA)>
+	<!ELEMENT left (#PCDATA)>
+	<!ELEMENT right (#PCDATA)>
+	<!ELEMENT empty (#PCDATA)>
+	<!ELEMENT partial (#PCDATA)>
+	<!ELEMENT full (#PCDATA)>
+
+

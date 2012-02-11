@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE style SYSTEM "style.dtd">
+<style>
+	<fonts path="fonts/">
+		<buttonFont>
+			<file>decker.ttf</file>
+			<size>16</size>			
+		</buttonFont>
+
+		<defaultFont>
+			<file>decker.ttf</file>
+			<size>14</size>
+		</defaultFont>
+
+		<inputFont>
+			<file>decker.ttf</file>
+			<size>14</size>			
+		</inputFont>
+
+		<titleFont>
+			<file>JuraBook.ttf</file>
+			<size>18</size>
+			<fontStyle>italic</fontStyle>
+		</titleFont>
+	</fonts>
+
+	<hints>
+		<button>
+			<width>100</width>
+			<height>20</height>
+			<radius>6</radius>
+			<offset>5</offset>
+			<indicator>10</indicator>
+		</button>
+
+		<checkbox>
+			<width>20</width>
+			<height>20</height>
+			<radius>4</radius>
+			<offset>5</offset>
+		</checkbox>
+
+		<combobox>
+			<width>20</width>
+			<radius>4</radius>
+		</combobox>
+
+		<frame>
+			<radius>6</radius>
+		</frame>
+
+		<icon>
+			<width>48</width>
+			<height>48</height>
+		</icon>
+
+		<progressbar>
+			<width>100</width>
+			<height>16</height>
+			<radius>4</radius>
+		</progressbar>
+
+		<radiobutton>
+			<width>20</width>
+			<height>20</height>
+			<offset>5</offset>
+		</radiobutton>
+
+		<slider>
+			<width>100</width>
+			<height>20</height>
+			<radius>2</radius>
+		</slider>
+
+		<scrollbar>
+			<width>100</width>
+			<height>20</height>
+			<radius>2</radius>
+		</scrollbar>
+
+		<tabpanel>
+			<width>100</width>
+			<height>40</height>
+			<offset>4</offset>
+		</tabpanel>
+
+		<tabbutton>
+			<width>100</width>
+			<height>20</height>
+		</tabbutton>
+
+		<textinput>
+			<radius>6</radius>
+		</textinput>
+
+		<toolbar>
+			<height>40</height>
+		</toolbar>
+	</hints>
+
+	<images path="images/">
+		<plus>plus.png</plus>
+		<minus>minus.png</minus>
+		<grid>grid.png</grid>
+
+		<critical>critical.png</critical>
+		<information>info.png</information>
+		<question>question.png</question>
+		<warning>warning.png</warning>
+
+		<up>arrowUp.png</up>
+		<down>arrowDown.png</down>
+		<left>arrowLeft.png</left>
+		<right>arrowRight.png</right>
+
+		<empty>checkEmpty.png</empty>
+		<partial>checkPartial.png</partial>
+		<full>checkFull.png</full>
+	</images>
+</style>

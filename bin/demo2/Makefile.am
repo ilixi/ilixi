@@ -1,0 +1,5 @@
+## Makefile.am for bin/demo2
+bin_PROGRAMS 		= 	ilixi_demo2
+ilixi_demo2_LDADD	=	$(top_srcdir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la  $(AM_LDFLAGS) @DEPS_LIBS@
+ilixi_demo2_CPPFLAGS 	= 	-I$(top_srcdir)/$(PACKAGE) @DEPS_CFLAGS@
+ilixi_demo2_SOURCES	= 	Demo2.h Demo2.cpp ScrollItem.h ScrollItem.cpp

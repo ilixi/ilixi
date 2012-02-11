@@ -1,0 +1,12 @@
+o Font methods, e.g. attributes, size, weight...
+o TextBase methods, e.g. modify font properties and layout.
+o StyleHints need revision.
+o Icon class to help with images on widgets.
+o Buttons
+o Horizontal and Vertical layouts
+
+o Should utilise Fusion Call instead of Reactor ?
+	- Could help with overloading MaestroCB in StatusBar and OSK.
+	- What about broadcasting a global Quit message?
+
+o SaWManize maestro, Application and Window properly.
