@@ -292,7 +292,7 @@ Stylist::drawCheckBox(Painter* painter, CheckBox* checkbox)
 {
   const WidgetState state = checkbox->state();
 
-  Rectangle r(_style._radiobuttonOffset, 0, _style._checkboxSize.width(),
+  Rectangle r(_style._checkboxOffset, 0, _style._checkboxSize.width(),
       _style._checkboxSize.height());
 
   // Draw frame
