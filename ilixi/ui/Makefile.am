@@ -13,6 +13,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 				Label.cpp \
 				LayoutBase.cpp \
 				PushButton.cpp \
+				RadioButton.cpp \
 				ScrollArea.cpp \
 				Spacer.cpp \
 				Dialog.cpp \
@@ -33,6 +34,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 				Label.h \
 				LayoutBase.h \
 				PushButton.h \
+				RadioButton.h \
 				ScrollArea.h \
 				Spacer.h \
 				Dialog.h \

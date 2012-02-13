@@ -45,6 +45,7 @@ namespace ilixi
   class Icon;
   class CheckBox;
   class PushButton;
+  class RadioButton;
   class ToolButton;
 
   //! Draws standard widgets.
@@ -159,6 +160,12 @@ namespace ilixi
      */
     virtual void
     drawPushButton(Painter* painter, PushButton* button);
+
+    /*!
+     * Draws a radiobutton.
+     */
+    virtual void
+    drawRadioButton(Painter* painter, RadioButton* button);
 
     /*!
      * Draws a toolbutton.

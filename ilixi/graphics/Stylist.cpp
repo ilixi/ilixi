@@ -292,7 +292,7 @@ Stylist::drawCheckBox(Painter* painter, CheckBox* checkbox)
 {
   const WidgetState state = checkbox->state();
 
-  Rectangle r(0, 0, _style._checkboxSize.width(),
+  Rectangle r(_style._radiobuttonOffset, 0, _style._checkboxSize.width(),
       _style._checkboxSize.height());
 
   // Draw frame
@@ -301,6 +301,13 @@ Stylist::drawCheckBox(Painter* painter, CheckBox* checkbox)
   else
     painter->setBrush(_palette.getGroup(state).bgBottom);
   painter->fillRectangle(r);
+
+  // Draw frame border
+  if (state & FocusedState)
+    painter->setPen(_palette.focusBottom);
+  else
+    painter->setPen(_palette.getGroup(state).borderBottom);
+  painter->drawRectangle(r);
 
   // draw checkbox state
   if (checkbox->checked())
@@ -341,6 +348,46 @@ Stylist::drawPushButton(Painter* painter, PushButton* button)
   painter->drawRectangle(0, 0, button->width(), button->height());
 
   // Draw button text
+  if (!button->text().empty())
+    {
+      painter->setBrush(_palette.getGroup(state).text);
+      painter->drawLayout(button->layout());
+    }
+}
+
+void
+Stylist::drawRadioButton(Painter* painter, RadioButton* button)
+{
+  const WidgetState state = button->state();
+
+  Rectangle r(_style._radiobuttonOffset, 0, _style._radiobuttonSize.width(),
+      _style._radiobuttonSize.height());
+
+  // frame
+  if (button->checkable() && button->checked())
+    painter->setBrush(_palette._pressed.bgBottom);
+  else
+    painter->setBrush(_palette.getGroup(state).bgBottom);
+  painter->fillRectangle(r);
+
+  // frame border
+  if (state & FocusedState)
+    painter->setPen(_palette.focusBottom);
+  else
+    painter->setPen(_palette.getGroup(state).borderBottom);
+  painter->drawRectangle(r);
+
+  // selection indicator
+  painter->setPen(_palette.getGroup(state).borderBottom);
+  if (button->checked())
+    painter->setBrush(_palette.focusTop);
+  else
+    painter->setBrush(_palette.getGroup(state).borderMid);
+  painter->fillRectangle(_style._radiobuttonOffset + 4, 4,
+      _style._radiobuttonSize.width() - 8,
+      _style._radiobuttonSize.height() - 8);
+
+  // layout
   if (!button->text().empty())
     {
       painter->setBrush(_palette.getGroup(state).text);
@@ -425,15 +472,15 @@ Stylist::initAnimations()
   _focus.in->setDuration(500);
   _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, _focus.valueIn, 0, 1);
   _focus.in->sigExec.connect(
-      sigc::bind<Stylist::StyledAnimation>(
-          sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
+      sigc::bind < Stylist::StyledAnimation
+          > (sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
 
   _focus.out = new TweenAnimation();
   _focus.out->setDuration(250);
   _focus.out->addTween(Tween::SINE, Tween::EASE_IN, _focus.valueOut, 1, 0);
   _focus.out->sigExec.connect(
-      sigc::bind<Stylist::StyledAnimation>(
-          sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));
+      sigc::bind < Stylist::StyledAnimation
+          > (sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));
 }
 
 void

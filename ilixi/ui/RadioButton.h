@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010, 2011 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,16 +21,35 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_GUI_H_
-#define ILIXI_GUI_H_
+#ifndef ILIXI_RADIOBUTTON_H_
+#define ILIXI_RADIOBUTTON_H_
 
-#include "ui/Application.h"
-#include "ui/Dialog.h"
-#include "ui/Label.h"
-#include "ui/Icon.h"
-#include "ui/CheckBox.h"
-#include "ui/PushButton.h"
-#include "ui/RadioButton.h"
-#include "ui/ToolButton.h"
+#include "ui/Button.h"
 
-#endif /* ILIXI_GUI_H_ */
+namespace ilixi
+{
+
+  class RadioButton : public Button
+  {
+  public:
+    RadioButton(const std::string& text, Widget* parent = 0);
+
+    virtual
+    ~RadioButton();
+
+    int
+    heightForWidth(int width) const;
+
+    Size
+    preferredSize() const;
+
+  private:
+    void
+    compose();
+
+    virtual void
+    updateTextLayoutGeometry();
+  };
+
+} /* namespace ilixi */
+#endif /* ILIXI_RADIOBUTTON_H_ */
