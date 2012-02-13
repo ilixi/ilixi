@@ -44,6 +44,7 @@ namespace ilixi
     friend class Surface;
     friend class Font;
     friend class Callback;
+    friend class Widget;
 
   public:
 

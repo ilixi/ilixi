@@ -33,7 +33,7 @@
 namespace ilixi
 {
   //! Base class for windowed widgets.
-  class WindowWidget : public Window, public Frame
+  class WindowWidget : public virtual Window, public Frame
   {
   public:
     /*!

@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 WindowWidget::WindowWidget(Widget* parent) :
-  Window(), Frame(parent)
+    Window(), Frame(parent)
 {
   setNeighbours(this, this, this, this);
   pthread_mutex_init(&_updates._listLock, NULL);
@@ -35,8 +35,8 @@ WindowWidget::WindowWidget(Widget* parent) :
   sem_init(&_updates._paintReady, 0, 1);
 
   _surfaceDesc = WindowDescription;
-  setRootWindow(this);
   setMargins(5, 5, 5, 5);
+  setRootWindow(this);
 }
 
 WindowWidget::~WindowWidget()
@@ -245,10 +245,9 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
       if (_eventManager->focusedWidget())
         {
           if (_eventManager->focusedWidget() != target)
-            _rootWindow->windowEventManager()->setGrabbedWidget(
-                _eventManager->focusedWidget());
+            _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
           else
-            _rootWindow->windowEventManager()->setGrabbedWidget(NULL);
+            _eventManager->setGrabbedWidget(NULL);
           return true;
         }
       break;
@@ -267,11 +266,13 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     else if (_eventManager->grabbedWidget())
       return _eventManager->grabbedWidget()->consumeKeyEvent(
-          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers, event.locks));
+          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
+              event.locks));
 
     else if (_eventManager->focusedWidget())
       return _eventManager->focusedWidget()->consumeKeyEvent(
-          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers, event.locks));
+          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
+              event.locks));
     else
       return false;
 

@@ -939,7 +939,7 @@ namespace ilixi
     //! This property stores the widget's surface.
     Surface* _surface;
     //! This property stores the window of widget.
-    WindowWidget* _rootWindow;
+    Window* _rootWindow;
 
     //! This property stores the previously selected child, if any, inside this widget.
     Widget* _preSelectedWidget;
@@ -986,7 +986,7 @@ namespace ilixi
      * @param rootWindow that this widget belongs to.
      */
     void
-    setRootWindow(WindowWidget* rootWindow);
+    setRootWindow(Window* rootWindow);
 
     /*!
      * Deletes surface and unsets InitialiseSurface flag.

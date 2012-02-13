@@ -33,10 +33,10 @@ using namespace ilixi;
 Stylist* Widget::_stylist = NULL;
 
 Widget::Widget(Widget* parent) :
-  _state(DefaultState), _surfaceDesc(DefaultDescription),
-      _inputMethod(NoInput), _parent(parent), _surface(NULL),
-      _rootWindow(NULL), _preSelectedWidget(NULL),
-      _xResizeConstraint(NoConstraint), _yResizeConstraint(NoConstraint)
+    _state(DefaultState), _surfaceDesc(DefaultDescription), _inputMethod(
+        NoInput), _parent(parent), _surface(NULL), _rootWindow(NULL), _preSelectedWidget(
+        NULL), _xResizeConstraint(NoConstraint), _yResizeConstraint(
+        NoConstraint)
 {
   _neighbours[0] = NULL;
   _neighbours[1] = NULL;
@@ -49,12 +49,11 @@ Widget::Widget(Widget* parent) :
 // TODO widget copy needs more work...
 // e.g. children and surface are ignored.
 Widget::Widget(const Widget& widget) :
-  _state(widget._state), _surfaceDesc(widget._surfaceDesc),
-      _inputMethod(widget._inputMethod), _parent(widget._parent),
-      _surface(NULL), _rootWindow(widget._rootWindow),
-      _preSelectedWidget(widget._preSelectedWidget),
-      _xResizeConstraint(widget._xResizeConstraint),
-      _yResizeConstraint(widget._yResizeConstraint)
+    _state(widget._state), _surfaceDesc(widget._surfaceDesc), _inputMethod(
+        widget._inputMethod), _parent(widget._parent), _surface(NULL), _rootWindow(
+        widget._rootWindow), _preSelectedWidget(widget._preSelectedWidget), _xResizeConstraint(
+        widget._xResizeConstraint), _yResizeConstraint(
+        widget._yResizeConstraint)
 {
   _neighbours[0] = widget._neighbours[0];
   _neighbours[1] = widget._neighbours[1];
@@ -67,7 +66,7 @@ Widget::Widget(const Widget& widget) :
 Widget::~Widget()
 {
   if (_rootWindow)
-    _rootWindow->windowEventManager()->removeWidget(this);
+    _rootWindow->_eventManager->removeWidget(this);
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     delete *it;
   delete _surface;
@@ -422,14 +421,14 @@ void
 Widget::setFocus()
 {
   if (!(_state & FocusedState) && _rootWindow)
-    _rootWindow->windowEventManager()->setFocusedWidget(this);
+    _rootWindow->_eventManager->setFocusedWidget(this);
 }
 
 void
 Widget::clearFocus()
 {
   if ((_state & FocusedState) && _rootWindow)
-    _rootWindow->windowEventManager()->setFocusedWidget(NULL);
+    _rootWindow->_eventManager->setFocusedWidget(NULL);
 }
 
 void
@@ -455,10 +454,10 @@ Widget::setParent(Widget* parent)
       // remove me from old parent's children list...
       if (_parent)
         {
-          WidgetListIterator it = std::find(_parent-> _children.begin(),
-              _parent-> _children.end(), this);
+          WidgetListIterator it = std::find(_parent->_children.begin(),
+              _parent->_children.end(), this);
           if (this == *it)
-            _parent-> _children.erase(it);
+            _parent->_children.erase(it);
         }
 
       _parent = parent;
@@ -591,8 +590,8 @@ Widget::mapToSurface(const Point& point) const
 Rectangle
 Widget::mapFromSurface(const Rectangle& rect) const
 {
-  return Rectangle(_frameGeometry.x() + rect.x(),
-      _frameGeometry.y() + rect.y(), rect.width(), rect.height());
+  return Rectangle(_frameGeometry.x() + rect.x(), _frameGeometry.y() + rect.y(),
+      rect.width(), rect.height());
 }
 
 Rectangle
@@ -611,29 +610,29 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-  if (_rootWindow->windowEventManager()->grabbedWidget() == this
+  if (_rootWindow->_eventManager->grabbedWidget() == this
       || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
     {
-      if (_inputMethod & PointerTracking && pointerEvent.buttonMask
-          & ButtonMaskLeft && pointerEvent.eventType == PointerMotion)
+      if (_inputMethod & PointerTracking
+          && pointerEvent.buttonMask & ButtonMaskLeft
+          && pointerEvent.eventType == PointerMotion)
         {
           if (!pressed())
             {
               _state = (WidgetState) (_state | PressedState);
-              _rootWindow->windowEventManager()->setGrabbedWidget(this,
-                  pointerEvent);
+              _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             }
         }
-      else if (_inputMethod & PointerTracking && pointerEvent.eventType
-          == PointerWheel)
+      else if (_inputMethod & PointerTracking
+          && pointerEvent.eventType == PointerWheel)
         {
           pointerWheelEvent(pointerEvent);
           return true;
         }
       else if (_children.size())
         {
-          for (WidgetListReverseIterator it = _children.rbegin(); it
-              != _children.rend(); ++it)
+          for (WidgetListReverseIterator it = _children.rbegin();
+              it != _children.rend(); ++it)
             if (((Widget*) *it)->acceptsPointerInput()
                 && ((Widget*) *it)->consumePointerEvent(pointerEvent))
               return true;
@@ -642,7 +641,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
       if (pointerEvent.eventType == PointerButtonDown)
         {
           _state = (WidgetState) (_state | PressedState);
-          _rootWindow->windowEventManager()->setFocusedWidget(this);
+          _rootWindow->_eventManager->setFocusedWidget(this);
           pointerButtonDownEvent(pointerEvent);
         }
       else if (pointerEvent.eventType == PointerButtonUp)
@@ -652,7 +651,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         }
       else if (pointerEvent.eventType == PointerWheel)
         {
-          _rootWindow->windowEventManager()->setFocusedWidget(this);
+          _rootWindow->_eventManager->setFocusedWidget(this);
           pointerWheelEvent(pointerEvent);
         }
       else if (pointerEvent.eventType == PointerMotion)
@@ -660,12 +659,11 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
           if (_inputMethod & PointerTracking)
             {
               if (_state & PressedState)
-                _rootWindow->windowEventManager()->setGrabbedWidget(this,
+                _rootWindow->_eventManager->setGrabbedWidget(this,
                     pointerEvent);
               pointerMotionEvent(pointerEvent);
             }
-          _rootWindow->windowEventManager()->setExposedWidget(this,
-              pointerEvent);
+          _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
         }
       return true;
     }
@@ -707,7 +705,7 @@ Widget::surface() const
 EventManager*
 Widget::eventManager() const
 {
-  return _rootWindow->windowEventManager();
+  return _rootWindow->_eventManager;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -742,8 +740,8 @@ Widget::addChild(Widget* child)
   _children.push_back(child);
 
   // Fixme this might be unnecessary since layout should do it.
-  child->setNeighbours(getNeighbour(Up), getNeighbour(Down),
-      getNeighbour(Left), getNeighbour(Right));
+  child->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left),
+      getNeighbour(Right));
 
   return true;
 }
@@ -957,15 +955,15 @@ Widget::setSurfaceGeometryModified()
 // Private methods...
 ////////////////////////////////////////////////////////////////////////////////////
 void
-Widget::setRootWindow(WindowWidget* root)
+Widget::setRootWindow(Window* root)
 {
   if (_rootWindow != root)
     {
       if (_rootWindow)
-        _rootWindow->windowEventManager()->removeWidget(this);
+        _rootWindow->_eventManager->removeWidget(this);
       _surfaceDesc = (SurfaceDescription) (_surfaceDesc | InitialiseSurface);
       _rootWindow = root;
-      _rootWindow->windowEventManager()->addWidget(this);
+      _rootWindow->_eventManager->addWidget(this);
     }
 
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)

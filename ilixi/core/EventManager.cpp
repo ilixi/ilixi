@@ -32,7 +32,7 @@ using namespace ilixi;
 using namespace IMaestro;
 
 EventManager::EventManager(Window* root) :
-  _focusedWidget(0), _exposedWidget(0), _grabbedWidget(0), _oskWidget(0)
+    _focusedWidget(0), _exposedWidget(0), _grabbedWidget(0), _oskWidget(0)
 {
 }
 
@@ -85,7 +85,7 @@ EventManager::addWidget(Widget* widget)
 void
 EventManager::removeWidget(Widget* widget)
 {
-  if (!widget)
+  if (!widget || widgets.size() <= 0)
     return;
 
   widgetListIterator it = std::find(widgets.begin(), widgets.end(), widget);
@@ -178,8 +178,8 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setOSKWidget(Widget* widget)
 {
-  if (widget == _oskWidget || widget == NULL || !(widget->inputMethod()
-      & OSKInput))
+  if (widget == _oskWidget || widget == NULL
+      || !(widget->inputMethod() & OSKInput))
     return false;
   //  TextLayout* tw = dynamic_cast<TextLayout*> (_focusedWidget);
   //  if (tw)
@@ -213,7 +213,8 @@ EventManager::selectNext(bool found, bool iter)
 bool
 EventManager::selectPrevious(bool found, bool iter)
 {
-  for (widgetListReverseIterator it = widgets.rbegin(); it != widgets.rend(); ++it)
+  for (widgetListReverseIterator it = widgets.rbegin(); it != widgets.rend();
+      ++it)
     {
       if (found && setFocusedWidget(*it))
         return true;
@@ -235,7 +236,7 @@ EventManager::selectNeighbour(Direction direction)
     return false;
 
   Widget* target = _focusedWidget->getNeighbour(direction);
-  WindowWidget* root = _focusedWidget->_rootWindow;
+  Window* root = _focusedWidget->_rootWindow;
   bool found = false;
   int step = 0;
   while (!found)
@@ -244,12 +245,13 @@ EventManager::selectNeighbour(Direction direction)
       if (step)
         return false;
 
-      if (target != root) // Target is not a window.
-        {
-          // See if direct neighbour can get focus...
-          if (setFocusedWidget(target))
-            return true;
-        }
+      // TODO key navi. does not work atm.
+//      if (target != root) // Target is not a window.
+//        {
+//          // See if direct neighbour can get focus...
+//          if (setFocusedWidget(target))
+//            return true;
+//        }
 
       // See if there is a preselected child widget...
       if (target->_preSelectedWidget)
