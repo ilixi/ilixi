@@ -116,6 +116,9 @@ namespace ilixi
     pointerMotionEvent(const PointerEvent& mouseEvent);
 
     virtual void
+    keyDownEvent(const KeyEvent& keyEvent);
+
+    virtual void
     keyUpEvent(const KeyEvent& keyEvent);
 
     virtual void
@@ -129,9 +132,6 @@ namespace ilixi
 
     virtual void
     leaveEvent(const ilixi::PointerEvent& event);
-
-    void
-    textChanged(const std::string& text);
 
     void
     drawCursor();

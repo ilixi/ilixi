@@ -27,7 +27,12 @@
 #include "ui/Label.h"
 #include "ui/Spacer.h"
 #include "ui/CheckBox.h"
+#include "ui/RadioButton.h"
+#include "ui/ComboBox.h"
 #include "graphics/Painter.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace ilixi;
 
@@ -42,6 +47,7 @@ Demo3::Demo3(int argc, char* argv[]) :
   addWidget(lipLabel);
 
   LineInput *lip = new LineInput("Line input has some text...");
+  lip->setMaxLength(15);
   addWidget(lip);
 
   CheckBox* cb1 = new CheckBox("Check 1");
@@ -50,6 +56,25 @@ Demo3::Demo3(int argc, char* argv[]) :
   CheckBox* cb2 = new CheckBox("Check 2");
   cb2->setTriState(true);
   addWidget(cb2);
+
+  RadioButton* rb1 = new RadioButton("Radio 1");
+  addWidget(rb1);
+
+  RadioButton* rb2 = new RadioButton("Radio 1");
+  addWidget(rb2);
+
+  ComboBox::StringList list;
+
+  char str[5];
+  for (int i = 2012; i > 1990; --i)
+    {
+      sprintf(str, "%d", i);
+      list.push_back(str);
+    }
+
+  ComboBox* co1 = new ComboBox("Select your flavor:");
+  co1->addItems(list);
+  addWidget(co1);
 
   addWidget(new Spacer(Vertical));
 }

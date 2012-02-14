@@ -6,7 +6,5 @@ ilixi_demo3_SOURCES		= 	Demo3.h \
                               Demo3.cpp \
                               LineInput.h \
                               LineInput.cpp \
-                              ComboBox.h \
-						ComboBox.cpp \
 						WebView.h \
 						WebView.cpp

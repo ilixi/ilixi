@@ -7,6 +7,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 				BorderBase.cpp \
 				Button.cpp \
 				CheckBox.cpp \
+				ComboBox.cpp \
 				ContainerBase.cpp \
 				HBoxLayout.cpp \
 				Icon.cpp \
@@ -28,6 +29,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 				BorderBase.h \
 				Button.h \
 				CheckBox.h \
+				ComboBox.h \
 				ContainerBase.h \
 				HBoxLayout.h \
 				Icon.h \

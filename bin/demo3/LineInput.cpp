@@ -106,6 +106,7 @@ LineInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
 
   if (index != _cursorIndex)
     {
+      _cursorTimer.stop();
       sigCursorMoved(_cursorIndex, index);
       _cursorIndex = index;
 
@@ -114,6 +115,8 @@ LineInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
       _selectedIndex = _cursorIndex;
       _selection.moveTo(_cursor.x(), _cursor.y());
       _selection.setSize(0, 0);
+      _cursorOn = false;
+      _cursorTimer.start(500);
       update();
     }
 }
@@ -145,8 +148,9 @@ LineInput::pointerMotionEvent(const PointerEvent& mouseEvent)
 }
 
 void
-LineInput::keyUpEvent(const KeyEvent& keyEvent)
+LineInput::keyDownEvent(const KeyEvent& keyEvent)
 {
+  _cursorTimer.stop();
   switch (keyEvent.keySymbol)
     {
   case DIKS_CURSOR_LEFT:
@@ -236,6 +240,13 @@ LineInput::keyUpEvent(const KeyEvent& keyEvent)
     break;
     }
   updateCursorPosition();
+}
+
+void
+LineInput::keyUpEvent(const KeyEvent& keyEvent)
+{
+  _cursorOn = true;
+  _cursorTimer.start(500);
   update();
 }
 
@@ -250,6 +261,7 @@ void
 LineInput::focusOutEvent()
 {
   _cursorTimer.stop();
+  _cursorOn = false;
   update();
 }
 

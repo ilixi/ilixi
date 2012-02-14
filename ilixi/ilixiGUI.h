@@ -32,5 +32,6 @@
 #include "ui/PushButton.h"
 #include "ui/RadioButton.h"
 #include "ui/ToolButton.h"
+#include "ui/ComboBox.h"
 
 #endif /* ILIXI_GUI_H_ */

@@ -47,6 +47,7 @@ namespace ilixi
   class PushButton;
   class RadioButton;
   class ToolButton;
+  class ComboBox;
 
   //! Draws standard widgets.
   /*!
@@ -172,6 +173,12 @@ namespace ilixi
      */
     virtual void
     drawToolButton(Painter* painter, ToolButton* button);
+
+    /*!
+     * Draws a combobox.
+     */
+    virtual void
+    drawComboBox(Painter* painter, ComboBox* combo);
 
     void
     animate(StyledAnimation type, Widget* target);

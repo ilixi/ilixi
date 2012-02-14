@@ -448,6 +448,32 @@ Stylist::drawToolButton(Painter* painter, ToolButton* button)
 }
 
 void
+Stylist::drawComboBox(Painter* painter, ComboBox* combo)
+{
+  const WidgetState state = combo->state();
+
+  // draw frame
+  painter->setBrush(_palette.getGroup(state).base);
+  painter->fillRectangle(0, 0, combo->width(), combo->height());
+  if (state & FocusedState)
+    painter->setPen(_palette.focusBottom);
+  else
+    painter->setPen(_palette.getGroup(state).borderBottom);
+  painter->drawRectangle(0, 0, combo->width(), combo->height());
+
+  // draw button
+  int x = combo->width() - _style._comboboxButtonWidth - 1;
+  painter->setBrush(_palette.getGroup(state).bgBottom);
+  painter->fillRectangle(x, 1, _style._comboboxButtonWidth,
+      combo->height() - 2);
+  painter->drawImage(_style._arrowDown, x, 0, _style._comboboxButtonWidth,
+      combo->height());
+
+  painter->setBrush(_palette.getGroup(state).baseText);
+  painter->drawLayout(combo->layout());
+}
+
+void
 Stylist::animate(StyledAnimation type, Widget* target)
 {
   switch (type)
@@ -472,15 +498,15 @@ Stylist::initAnimations()
   _focus.in->setDuration(500);
   _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, _focus.valueIn, 0, 1);
   _focus.in->sigExec.connect(
-      sigc::bind < Stylist::StyledAnimation
-          > (sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
+      sigc::bind<Stylist::StyledAnimation>(
+          sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
 
   _focus.out = new TweenAnimation();
   _focus.out->setDuration(250);
   _focus.out->addTween(Tween::SINE, Tween::EASE_IN, _focus.valueOut, 1, 0);
   _focus.out->sigExec.connect(
-      sigc::bind < Stylist::StyledAnimation
-          > (sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));
+      sigc::bind<Stylist::StyledAnimation>(
+          sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));
 }
 
 void
