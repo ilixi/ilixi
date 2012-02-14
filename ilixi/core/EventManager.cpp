@@ -92,7 +92,7 @@ EventManager::removeWidget(Widget* widget)
   if (widget == *it)
     {
       if (widget == _focusedWidget)
-        setFocusedWidget(NULL);
+        _focusedWidget = NULL;
       widgets.erase(it);
     }
 }
@@ -126,7 +126,6 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setFocusedWidget(Widget* widget)
 {
-  // XXX removed widget == NULL check
   if (widget == _focusedWidget || !(widget->acceptsKeyInput()))
     return false;
 
