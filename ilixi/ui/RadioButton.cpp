@@ -32,6 +32,7 @@ RadioButton::RadioButton(const std::string& text, Widget* parent) :
   _layout.setSingleLine(true);
   setCheckable(true);
   setConstraints(NoConstraint, MinimumConstraint);
+  sigCheckChanged.connect(sigc::mem_fun(this, &RadioButton::informGroup));
 }
 
 RadioButton::~RadioButton()
@@ -76,6 +77,18 @@ RadioButton::preferredSize() const
       h = std::max(s.height(), h);
     }
   return Size(w, h);
+}
+
+void
+RadioButton::setGroup(RadioGroup* group)
+{
+  _group = group;
+}
+
+void
+RadioButton::informGroup(bool checked)
+{
+  _group->select(this);
 }
 
 void

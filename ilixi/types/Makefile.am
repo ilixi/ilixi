@@ -11,6 +11,7 @@ libilixi_types_la_SOURCES 	= BoxLayout.cpp \
 					Margin.cpp \
 					Pen.cpp \
 					Point.cpp \
+					RadioGroup.cpp \
 					Rectangle.cpp \
 					Size.cpp \
 					TextLayout.cpp \
@@ -26,6 +27,7 @@ nobase_ilixi_include_HEADERS 	= 	BoxLayout.h \
 					Margin.h \
 					Pen.h \
 					Point.h \
+					RadioGroup.h \
 					Rectangle.h \
 					Size.h \
 					TextLayout.h \

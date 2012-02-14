@@ -26,6 +26,7 @@
 
 #include "types/Margin.h"
 #include "ui/Widget.h"
+#include "types/RadioGroup.h"
 
 namespace ilixi
 {
@@ -128,6 +129,8 @@ namespace ilixi
     compose();
 
   private:
+    RadioGroup* _group;
+
     /*!
      * If pointer event occurs over widget handle it and return true.
      *

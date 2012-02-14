@@ -21,44 +21,43 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_RADIOBUTTON_H_
-#define ILIXI_RADIOBUTTON_H_
-
-#include "ui/Button.h"
 #include "types/RadioGroup.h"
+#include "ui/RadioButton.h"
 
-namespace ilixi
+using namespace ilixi;
+
+RadioGroup::RadioGroup() :
+    _selected(0)
 {
+}
 
-  class RadioButton : public Button
-  {
-  public:
-    RadioButton(const std::string& text, Widget* parent = 0);
+RadioGroup::~RadioGroup()
+{
+}
 
-    virtual
-    ~RadioButton();
+RadioButton*
+RadioGroup::selected() const
+{
+  return _selected;
+}
 
-    int
-    heightForWidth(int width) const;
+void
+RadioGroup::add(RadioButton* radio)
+{
+  if (!_selected)
+    {
+      _selected = radio;
+      _selected->setChecked(true);
+    }
+  radio->setGroup(this);
+}
 
-    Size
-    preferredSize() const;
-
-    void
-    setGroup(RadioGroup* group);
-
-  private:
-    RadioGroup* _group;
-
-    void
-    informGroup(bool checked);
-
-    void
-    compose();
-
-    virtual void
-    updateTextLayoutGeometry();
-  };
-
-} /* namespace ilixi */
-#endif /* ILIXI_RADIOBUTTON_H_ */
+void
+RadioGroup::select(RadioButton* radio)
+{
+  if (_selected && _selected != radio)
+    {
+      _selected->setChecked(false);
+      _selected = radio;
+    }
+}

@@ -98,6 +98,7 @@ Button::setChecked(bool checked)
     _buttonFlag = (ButtonFlags) (_buttonFlag | Checked);
   else
     _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checked);
+  update();
 }
 
 void

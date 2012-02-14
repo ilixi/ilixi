@@ -22,12 +22,14 @@
  */
 
 #include "ui/LayoutBase.h"
+#include "ui/RadioButton.h"
 
 using namespace ilixi;
 
 LayoutBase::LayoutBase(Widget* parent) :
-  Widget(parent), _modified(false), _spacing(5)
+    Widget(parent), _modified(false), _spacing(5)
 {
+  _group = new RadioGroup();
   setInputMethod(PointerInput);
   sigGeometryUpdated.connect(
       sigc::mem_fun(this, &LayoutBase::updateChildrenFrameGeometry));
@@ -48,7 +50,8 @@ LayoutBase::preferredSize() const
 {
   Rectangle r;
   Size s;
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       Rectangle rTemp;
       rTemp.setTopLeft(((Widget*) *it)->position());
@@ -90,6 +93,9 @@ LayoutBase::addWidget(Widget* widget)
   if (addChild(widget))
     {
       _modified = true;
+      RadioButton* radio = dynamic_cast<RadioButton*>(widget);
+      if (radio)
+        _group->add(radio);
       return true;
     }
   return false;
@@ -102,7 +108,8 @@ LayoutBase::tile()
   Widget* left = getNeighbour(Left);
   Widget* right = getNeighbour(Right);
 
-  for (WidgetListConstIterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetListConstIterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       current = (Widget*) *it;
       if (current->visible())
@@ -160,8 +167,8 @@ bool
 LayoutBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
   // priority is given to most recent child.
-  for (WidgetListReverseIterator it = _children.rbegin(); it
-      != _children.rend(); ++it)
+  for (WidgetListReverseIterator it = _children.rbegin();
+      it != _children.rend(); ++it)
     {
       if (((Widget*) *it)->acceptsPointerInput()
           && ((Widget*) *it)->consumePointerEvent(pointerEvent))
@@ -175,6 +182,7 @@ LayoutBase::updateChildrenFrameGeometry()
 {
   // XXX need tiling here?
   _modified = true;
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     ((Widget*) *it)->sigGeometryUpdated();
 }
