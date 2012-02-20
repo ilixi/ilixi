@@ -28,7 +28,7 @@
 using namespace ilixi;
 
 Surface::Surface() :
-  _dfbSurface(NULL), _parentSurface(NULL)
+    _dfbSurface(NULL), _parentSurface(NULL)
 {
   pthread_mutex_init(&_surfaceLock, NULL);
 }
@@ -44,7 +44,7 @@ Surface::createDFBSurface(int width, int height)
 {
   release();
   DFBSurfaceDescription desc;
-  desc .flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH | DSDESC_HEIGHT
+  desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH | DSDESC_HEIGHT
       | DSDESC_PIXELFORMAT | DSDESC_CAPS);
   desc.width = width;
   desc.height = height;
@@ -148,6 +148,7 @@ void
 Surface::clear(const Rectangle& rect)
 {
   _dfbSurface->SetDrawingFlags(_dfbSurface, DSDRAW_NOFX);
+  _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, 0);
   _dfbSurface->FillRectangle(_dfbSurface, rect.x(), rect.y(), rect.width(),
       rect.height());
 }
@@ -200,8 +201,8 @@ Surface::blit(Surface* source, int x, int y)
 {
   if (source)
     {
-      DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->DFBSurface(),
-          NULL, x, y);
+      DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->DFBSurface(), NULL,
+          x, y);
       if (ret)
         ILOG_ERROR("Blit error: %s", DirectFBErrorString(ret));
     }
