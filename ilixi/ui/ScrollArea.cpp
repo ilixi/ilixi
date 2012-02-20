@@ -36,8 +36,8 @@ const int rubber = 35;
 const float friction = 0.02;
 
 ScrollArea::ScrollArea(Widget* parent) :
-  Widget(parent), _options(0x009), _content(NULL), _aniVal(0), _cx(0), _cy(0),
-      _vx(0), _vy(0)
+    Widget(parent), _options(0x009), _content(NULL), _aniVal(0), _cx(0), _cy(0), _vx(
+        0), _vy(0)
 {
   setInputMethod(PointerInputTracking);
   setConstraints(NoConstraint, NoConstraint);
@@ -58,6 +58,8 @@ ScrollArea::~ScrollArea()
 Size
 ScrollArea::preferredSize() const
 {
+  if (_content)
+    return _content->preferredSize();
   return Size(100, 100);
 }
 
