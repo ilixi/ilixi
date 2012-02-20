@@ -230,7 +230,7 @@ Stylist::drawAppFrame(Painter* painter, Application* app)
     painter->tileImage(app->background(), 0, 0);
   else
     {
-      painter->setBrush(_palette.bgTop);
+      painter->setBrush(_palette.bgBottom);
       painter->fillRectangle(0, 0, app->width(), app->height());
     }
 }
@@ -241,8 +241,7 @@ Stylist::drawDialog(Painter* painter, Dialog* dialog)
   int titleHeight = dialog->titleSize().height();
 
   // draw frame
-  //  brush->setColor(_palette._default.borderMid);
-  painter->setBrush(Color(0, 0, 0, 127));
+  painter->setBrush(_palette.bgBottom);
   painter->fillRectangle(0, 0, dialog->width(), dialog->height());
 
   painter->setPen(_palette._default.borderBottom);
