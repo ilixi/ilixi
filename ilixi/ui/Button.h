@@ -97,7 +97,7 @@ namespace ilixi
      * Sets button as checked state only if button is checkable.
      */
     void
-    setChecked(bool checked);
+    setChecked(bool checked = true);
 
     /*!
      * Sets button icon.
