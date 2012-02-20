@@ -86,6 +86,17 @@ RadioButton::setGroup(RadioGroup* group)
 }
 
 void
+RadioButton::toggleChecked()
+{
+  if (!checked())
+    {
+      setChecked();
+      sigCheckChanged(true);
+    }
+  update();
+}
+
+void
 RadioButton::informGroup(bool checked)
 {
   _group->select(this);

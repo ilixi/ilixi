@@ -47,6 +47,9 @@ namespace ilixi
     void
     setGroup(RadioGroup* group);
 
+    virtual void
+    toggleChecked();
+
   private:
     RadioGroup* _group;
 
