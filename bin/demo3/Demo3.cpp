@@ -66,13 +66,13 @@ Demo3::Demo3(int argc, char* argv[]) :
   ComboBox::StringList list;
 
   char str[5];
-  for (int i = 2012; i > 1990; --i)
+  for (int i = 2005; i > 1900; --i)
     {
       sprintf(str, "%d", i);
       list.push_back(str);
     }
 
-  ComboBox* co1 = new ComboBox("Select your flavor:");
+  ComboBox* co1 = new ComboBox("Select your date of birth:");
   co1->addItems(list);
   addWidget(co1);
 
