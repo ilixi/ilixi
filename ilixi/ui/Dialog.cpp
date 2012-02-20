@@ -31,7 +31,7 @@
 using namespace ilixi;
 
 Dialog::Dialog(const std::string& title, ButtonOption option, Widget* parent) :
-  WindowWidget(), _buttonLayout(NULL), _result(-1)
+    WindowWidget(), _buttonLayout(NULL), _result(-1)
 {
   setTitle(title);
   setButtonLayoutOption(option);
@@ -48,23 +48,24 @@ Dialog::~Dialog()
 int
 Dialog::heightForWidth(int width) const
 {
-  int usedHorizontalSpace = (_canvasTopLeft.x() + _margin.hSum()) - 2
-      * borderOffset();
+  int usedHorizontalSpace = (_canvasTopLeft.x() + _margin.hSum())
+      - 2 * borderOffset();
   return _layout->heightForWidth(width - usedHorizontalSpace)
       + _canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth()
-      + _titleSize.height() + _buttonLayoutSize.height();
+      + _titleSize.height() + _buttonLayout->preferredSize().height();
 }
 
 Size
 Dialog::preferredSize() const
 {
   Size layoutSize = _layout->preferredSize();
+  Size buttonLayoutSize = _buttonLayout->preferredSize();
 
   int layoutWidth = layoutSize.width() + _canvasTopLeft.x() + _margin.hSum();
   int w = std::max(layoutWidth, _titleSize.width());
-  w = std::max(w, _buttonLayoutSize.width());
+  w = std::max(w, buttonLayoutSize.width());
 
-  int hButtonLayout = _buttonLayoutSize.height() + 2 * spacing();
+  int hButtonLayout = buttonLayoutSize.height() + 2 * spacing();
 
   return Size(
       w + 2 * borderOffset(),
@@ -112,12 +113,6 @@ std::string
 Dialog::title() const
 {
   return _title;
-}
-
-Size
-Dialog::buttonLayoutSize() const
-{
-  return _buttonLayoutSize;
 }
 
 Size
@@ -183,7 +178,6 @@ Dialog::setButtonLayoutOption(ButtonOption option)
   addChild(_buttonLayout);
   _buttonLayout->setNeighbour(Up, _layout);
   _layout->setNeighbour(Down, _buttonLayout);
-  _buttonLayoutSize = _buttonLayout->preferredSize();
 }
 
 void
@@ -197,7 +191,6 @@ Dialog::setButtonLayout(LayoutBase* buttonLayout)
 
   _buttonLayout = buttonLayout;
   addChild(_buttonLayout);
-  _buttonLayoutSize = _buttonLayout->preferredSize();
 }
 
 void
@@ -217,8 +210,10 @@ Dialog::canvasY() const
 int
 Dialog::canvasHeight() const
 {
-  return height() - (_canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth()
-      + _titleSize.height() + _buttonLayoutSize.height() + 2 * spacing());
+  return height()
+      - (_canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth()
+          + _titleSize.height() + _buttonLayout->preferredSize().height()
+          + 2 * spacing());
 }
 
 void
@@ -236,12 +231,14 @@ Dialog::updateButtonLayoutGeometry()
   if (_buttonLayout->count() == 0)
     return;
 
+  Size buttonLayoutSize = _buttonLayout->preferredSize();
+
   _layout->setNeighbour(Down, _buttonLayout);
   _buttonLayout->setNeighbour(Up, _layout);
 
   _buttonLayout->moveTo(borderOffset(),
-      height() - (_buttonLayoutSize.height() + spacing() + borderWidth()));
+      height() - (buttonLayoutSize.height() + spacing() + borderWidth()));
 
   _buttonLayout->setSize(width() - 2 * borderOffset(),
-      _buttonLayoutSize.height());
+      buttonLayoutSize.height());
 }

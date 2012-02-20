@@ -110,9 +110,6 @@ namespace ilixi
     std::string
     title() const;
 
-    Size
-    buttonLayoutSize() const;
-
     /*!
      * Returns height of the dialog's title bar.
      */
@@ -157,8 +154,6 @@ namespace ilixi
     std::string _title;
     //! This property stores the dimensions of the title bar text.
     Size _titleSize;
-    //! This property stores the dimensions of the button layout.
-    Size _buttonLayoutSize;
 
   private:
     /*!
