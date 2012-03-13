@@ -29,28 +29,28 @@
 using namespace ilixi;
 
 Image::Image() :
-  _dfbSurface(NULL), _imagePath("")
+    _dfbSurface(NULL), _imagePath("")
 {
 }
 
 Image::Image(const std::string& path) :
-  _dfbSurface(NULL), _imagePath(path)
+    _dfbSurface(NULL), _imagePath(path)
 {
 }
 
 Image::Image(const std::string& path, int width, int height) :
-  _dfbSurface(NULL), _imagePath(path), _size(width, height)
+    _dfbSurface(NULL), _imagePath(path), _size(width, height)
 {
 
 }
 
 Image::Image(const std::string& path, const Size& size) :
-  _dfbSurface(NULL), _imagePath(path), _size(size)
+    _dfbSurface(NULL), _imagePath(path), _size(size)
 {
 }
 
 Image::Image(const Image& img) :
-  _dfbSurface(NULL), _imagePath(img._imagePath), _size(img._size)
+    _dfbSurface(NULL), _imagePath(img._imagePath), _size(img._size)
 {
 }
 
@@ -143,19 +143,28 @@ Image::loadImage()
   invalidateSurface();
 
   DFBSurfaceDescription desc;
-  desc.flags = DSDESC_CAPS;
-  desc.caps =  DSCAPS_SYSTEMONLY;
+
+  IDirectFBImageProvider* provider;
+  if (Window::getDFB()->CreateImageProvider(Window::getDFB(),
+      _imagePath.c_str(), &provider) != DFB_OK)
+    {
+      invalidateSurface();
+      ILOG_ERROR("Cannot create image provider!");
+      return false;
+    }
+
+  if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
+    ILOG_ERROR("Cannot get surface description!");
+
+  desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
+      | DSDESC_HEIGHT);
+  desc.caps = DSCAPS_SYSTEMONLY;
 
   if (width())
-    {
-      desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_WIDTH);
-      desc.width = width();
-    }
+    desc.width = width();
+
   if (height())
-    {
-      desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_HEIGHT);
-      desc.height = height();
-    }
+    desc.height = height();
 
   DFBResult ret = Window::getDFB()->CreateSurface(Window::getDFB(), &desc,
       &_dfbSurface);
@@ -163,19 +172,12 @@ Image::loadImage()
   if (ret)
     {
       invalidateSurface();
-      ILOG_ERROR("Cannot create surface for %s - %s", _imagePath.c_str(), DirectFBErrorString(ret));
+      ILOG_ERROR(
+          "Cannot create surface for %s - %s", _imagePath.c_str(), DirectFBErrorString(ret));
       return false;
     }
   else
     {
-      IDirectFBImageProvider* provider;
-      if (Window::getDFB()->CreateImageProvider(Window::getDFB(),
-          _imagePath.c_str(), &provider) != DFB_OK)
-        {
-          invalidateSurface();
-          ILOG_ERROR("Cannot create image provider!");
-          return false;
-        }
       if (provider->RenderTo(provider, _dfbSurface, NULL) != DFB_OK)
         {
           invalidateSurface();

@@ -31,8 +31,8 @@ using namespace ilixi;
 using namespace IMaestro;
 
 Application::Application(int argc, char* argv[]) :
-  AppBase(argc, argv), WindowWidget(), _fullscreen(false),
-      _backgroundImage(NULL)
+    AppBase(argc, argv), WindowWidget(), _fullscreen(false), _backgroundImage(
+        NULL)
 {
   // TODO parse command line arguments here...
   // parse app-meta file...
@@ -61,7 +61,7 @@ Application::~Application()
     {
       usleep(1000);
       if (appState() & Quit)
-        break;
+      break;
     }
 #endif
 }
@@ -99,14 +99,14 @@ Application::exec()
         break;
 #if ILIXI_MULTI_ENABLED
       else if (state & Idle || state & Hidden)
-        usleep(10000);
+      usleep(10000);
 #endif
       else
         {
           // Run callbacks...
           pthread_mutex_lock(&__cbMutex);
-          for (CallbackList::iterator it = __callbacks.begin(); it
-              != __callbacks.end(); ++it)
+          for (CallbackList::iterator it = __callbacks.begin();
+              it != __callbacks.end(); ++it)
             ((Callback*) *it)->_func(((Callback*) *it)->_data);
           if (!__callbacks.empty())
             __buffer->WakeUp(__buffer);
@@ -119,8 +119,8 @@ Application::exec()
 
           // Paint pending window updates for all windows...
           pthread_mutex_lock(&__windowMutex);
-          for (WindowList::iterator it = __windowList.begin(); it
-              != __windowList.end(); ++it)
+          for (WindowList::iterator it = __windowList.begin();
+              it != __windowList.end(); ++it)
             ((Window*) *it)->updateWindow();
           pthread_mutex_unlock(&__windowMutex);
         }
@@ -138,7 +138,9 @@ Application::setBackgroundImage(std::string imagePath)
   if (_backgroundImage)
     delete _backgroundImage;
   _backgroundImage = new Image(imagePath);
+  _backgroundImage->setSize(getWindowSize());
   setBackgroundFilled(true);
+  ILOG_DEBUG("Setting background to [%s]", imagePath.c_str());
 }
 
 void
@@ -171,6 +173,7 @@ Application::hide()
 {
   if (appState() & Visible)
     {
+      setVisible(false);
       clearAppState(Visible);
       setAppState(Hidden);
 
@@ -204,65 +207,65 @@ Application::compose()
 #if ILIXI_MULTI_ENABLED
 ReactionResult
 Application::maestroCB(MaestroMessage *msg, void *ctx)
-{
-  if (msg->senderID != 1)
-    {
-      ILOG_ERROR("Sender (%d) is not authorised!", msg->senderID);
-      return RS_DROP;
-    }
-
-  switch (msg->type)
-    {
-  case SwitchMode:
-    {
-      switch (msg->state)
-        {
-      case Visible:
-        ILOG_DEBUG("Received SwitchMode::Visible from Maestro.");
-        show();
-        return RS_OK;
-
-      case Hidden:
-        ILOG_DEBUG("Received SwitchMode::Hidden from Maestro.");
-        hide();
-        return RS_OK;
-
-      case Quit:
-        ILOG_DEBUG("Received SwitchMode::Quit from Maestro.");
-        quit();
-        return RS_OK;
-
-      default:
-        ILOG_WARNING("SwitchMode state (%d) is not supported!", msg->state);
+  {
+    if (msg->senderID != 1)
+      {
+        ILOG_ERROR("Sender (%d) is not authorised!", msg->senderID);
         return RS_DROP;
-        }
-    } // end SwitchMode
+      }
 
-  case Notification:
-    {
-      if (msg->state == Alive)
-        {
-          setAppState(Alive);
-          return RS_OK;
-        }
-      else
-        ILOG_WARNING("Notification state (%d) is not supported!", msg->state);
-      return RS_DROP;
-    } // end Notification
+    switch (msg->type)
+      {
+        case SwitchMode:
+          {
+            switch (msg->state)
+              {
+                case Visible:
+                ILOG_DEBUG("Received SwitchMode::Visible from Maestro.");
+                show();
+                return RS_OK;
 
-  case OSKEvent:
-    {
-      if (__activeWindow && msg->state == Ready)
-        {
-          __activeWindow->_eventManager->setOSKWidgetText(getOSKText());
-          return RS_OK;
-        }
-      return RS_DROP;
-    } // end OSKEvent
+                case Hidden:
+                ILOG_DEBUG("Received SwitchMode::Hidden from Maestro.");
+                hide();
+                return RS_OK;
 
-  default:
-    ILOG_WARNING("Message type (%d) is not supported!", msg->type);
-    return RS_DROP;
-    }
-}
+                case Quit:
+                ILOG_DEBUG("Received SwitchMode::Quit from Maestro.");
+                quit();
+                return RS_OK;
+
+                default:
+                ILOG_WARNING("SwitchMode state (%d) is not supported!", msg->state);
+                return RS_DROP;
+              }
+          } // end SwitchMode
+
+        case Notification:
+          {
+            if (msg->state == Alive)
+              {
+                setAppState(Alive);
+                return RS_OK;
+              }
+            else
+            ILOG_WARNING("Notification state (%d) is not supported!", msg->state);
+            return RS_DROP;
+          } // end Notification
+
+        case OSKEvent:
+          {
+            if (__activeWindow && msg->state == Ready)
+              {
+                __activeWindow->_eventManager->setOSKWidgetText(getOSKText());
+                return RS_OK;
+              }
+            return RS_DROP;
+          } // end OSKEvent
+
+        default:
+        ILOG_WARNING("Message type (%d) is not supported!", msg->type);
+        return RS_DROP;
+      }
+  }
 #endif
