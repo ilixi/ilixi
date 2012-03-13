@@ -28,8 +28,8 @@
 using namespace ilixi;
 
 Painter::Painter(Widget* widget) :
-  _myWidget(widget), dfbSurface(_myWidget->surface()->DFBSurface()), _brush(),
-      _pen(), _font(), _state(None)
+    _myWidget(widget), dfbSurface(_myWidget->surface()->DFBSurface()), _brush(), _pen(), _font(), _state(
+        None)
 {
 }
 
@@ -153,8 +153,8 @@ Painter::drawLayout(const TextLayout& layout)
       const char* text = layout.text().c_str();
       int x = layout._bounds.x();
 
-      for (TextLayout::LineList::const_iterator it = layout._lines.begin(); it
-          != layout._lines.end(); ++it)
+      for (TextLayout::LineList::const_iterator it = layout._lines.begin();
+          it != layout._lines.end(); ++it)
         dfbSurface->DrawString(dfbSurface,
             text + ((TextLayout::LayoutLine) *it).offset,
             ((TextLayout::LayoutLine) *it).bytes, x,
@@ -172,8 +172,8 @@ Painter::drawLayout(const TextLayout& layout, int x, int y)
       applyFont();
       const char* text = layout.text().c_str();
 
-      for (TextLayout::LineList::const_iterator it = layout._lines.begin(); it
-          != layout._lines.end(); ++it)
+      for (TextLayout::LineList::const_iterator it = layout._lines.begin();
+          it != layout._lines.end(); ++it)
         dfbSurface->DrawString(dfbSurface,
             text + ((TextLayout::LayoutLine) *it).offset,
             ((TextLayout::LayoutLine) *it).bytes, x,
@@ -242,6 +242,15 @@ Painter::setClip(const Rectangle& rect)
       _myWidget->surface()->clip(rect);
       _state |= Clipped;
     }
+}
+
+void
+Painter::resetClip()
+{
+  if (_state & Clipped) {
+    _myWidget->surface()->resetClip();
+    _state &= ~Clipped;
+  }
 }
 
 void

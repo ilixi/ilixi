@@ -221,8 +221,8 @@ namespace ilixi
      * Draws image with top-left corner at given x and y.
      */
     void
-    drawImage(Image* image, int x, int y,
-        const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
+        DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
@@ -245,6 +245,12 @@ namespace ilixi
      */
     void
     setClip(const Rectangle& rect);
+
+    /*!
+     * Resets clip rectangle to NULL.
+     */
+    void
+    resetClip();
 
     /*!
      * Sets painter's brush.
