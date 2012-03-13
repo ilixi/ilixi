@@ -48,21 +48,25 @@ LayoutBase::heightForWidth(int width) const
 Size
 LayoutBase::preferredSize() const
 {
-  Rectangle r;
-  Size s;
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
-      ++it)
+  if (_children.size())
     {
-      Rectangle rTemp;
-      rTemp.setTopLeft(((Widget*) *it)->position());
-      if (((Widget*) *it)->size().isValid())
-        rTemp.setSize(((Widget*) *it)->size());
-      else
-        rTemp.setSize(((Widget*) *it)->preferredSize());
-      r.united(rTemp);
-    }
+      Rectangle r;
+      Size s;
+      for (WidgetList::const_iterator it = _children.begin();
+          it != _children.end(); ++it)
+        {
+          Rectangle rTemp;
+          rTemp.setTopLeft(((Widget*) *it)->position());
+          if (((Widget*) *it)->size().isValid())
+            rTemp.setSize(((Widget*) *it)->size());
+          else
+            rTemp.setSize(((Widget*) *it)->preferredSize());
+          r.united(rTemp);
+        }
 
-  return r.size();
+      return r.size();
+    }
+  return Size(50, 50); // FIXME default size for layout.
 }
 
 unsigned int
