@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 HBoxLayout::HBoxLayout(Widget* parent) :
-  LayoutBase(parent), _alignment(Alignment::Top)
+    LayoutBase(parent), _alignment(Alignment::Top)
 {
   //  setConstraints(MinimumConstraint, MinimumConstraint);
 }
@@ -56,7 +56,8 @@ HBoxLayout::heightForWidth(int width) const
   int hTemp = 0; // height for current widget
   int h4w = 0;
   Widget* widget;
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       widget = ((Widget*) *it);
       if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
@@ -98,10 +99,11 @@ HBoxLayout::preferredSize() const
   int ch = 0; // current widget's height.
   Size s;
 
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       widget = ((Widget*) *it);
-      if (widget ->visible() && widget ->xConstraint() != IgnoredConstraint)
+      if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
         {
           s = widget->preferredSize();
           cw = s.width();
@@ -134,8 +136,8 @@ HBoxLayout::tile()
 {
   ElementList list;
   LayoutElement e;
-  for (Widget::WidgetListConstIterator it = _children.begin(); it
-      != _children.end(); ++it)
+  for (Widget::WidgetListConstIterator it = _children.begin();
+      it != _children.end(); ++it)
     {
       e.widget = ((Widget*) *it);
       if (e.widget->visible() && e.widget->xConstraint() != IgnoredConstraint)
@@ -288,8 +290,8 @@ HBoxLayout::tile()
         ++expanding;
       else
         {
-          if (((LayoutElement) *it).widget->minWidth() > 0 && average
-              > ((LayoutElement) *it).widget->minWidth())
+          if (((LayoutElement) *it).widget->minWidth() > 0
+              && average > ((LayoutElement) *it).widget->minWidth())
             {
               expandSpace += average - ((LayoutElement) *it).widget->minWidth();
               ((LayoutElement) *it).size.setWidth(
@@ -315,7 +317,8 @@ HBoxLayout::tile()
   Widget* up = getNeighbour(Up);
   Widget* down = getNeighbour(Down);
   ElementList::iterator itNext;
-  for (ElementList::iterator it = list.begin(), end = list.end(); it != end; ++it)
+  for (ElementList::iterator it = list.begin(), end = list.end(); it != end;
+      ++it)
     {
       widget = ((LayoutElement) *it).widget;
 
@@ -332,8 +335,8 @@ HBoxLayout::tile()
               else
                 widget->setWidth(average + expandAverage);
             }
-          else if (widget->xConstraint() & ShrinkPolicy && average
-              < ((LayoutElement) *it).size.width())
+          else if (widget->xConstraint() & ShrinkPolicy
+              && average < ((LayoutElement) *it).size.width())
             widget->setWidth(average);
           else
             widget->setWidth(((LayoutElement) *it).size.width());
@@ -363,8 +366,10 @@ HBoxLayout::tile()
       // Set height
       if (widget->yConstraint() != FixedConstraint)
         {
+          // check if widget provides a height for width, if not use
+          // height for hbox instead.
           int h4w = widget->heightForWidth(widget->width());
-          if (h4w)
+          if (h4w > 0)
             {
               // check grow-shrink for height
               if (((LayoutElement) *it).size.height() < h4w
@@ -373,6 +378,15 @@ HBoxLayout::tile()
               else if (((LayoutElement) *it).size.height() >= h4w
                   && widget->yConstraint() & ShrinkPolicy)
                 widget->setHeight(h4w);
+            }
+          else
+            {
+              if (((LayoutElement) *it).size.height() < height()
+                  && widget->yConstraint() & GrowPolicy)
+                widget->setHeight(height());
+              else if (((LayoutElement) *it).size.height() >= height()
+                  && widget->yConstraint() & ShrinkPolicy)
+                widget->setHeight(height());
             }
         }
       else
