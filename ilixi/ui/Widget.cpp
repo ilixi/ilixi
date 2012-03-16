@@ -702,6 +702,12 @@ Widget::surface() const
   return _surface;
 }
 
+void
+Widget::setSurfaceFlags(SurfaceDescription desc)
+{
+  _surfaceDesc = desc;
+}
+
 EventManager*
 Widget::eventManager() const
 {
@@ -878,7 +884,7 @@ Widget::updateFrameGeometry()
 
   _frameGeometry.moveTo(x, y);
 
-  if (_surface)
+  if (_surface && !(_surfaceDesc & HasOwnSurface))
     _surface->setGeometry(surfaceGeometry());
 
   _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
@@ -965,6 +971,8 @@ Widget::setRootWindow(Window* root)
       _rootWindow = root;
       _rootWindow->_eventManager->addWidget(this);
     }
+
+  setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
 
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     (*it)->setRootWindow(root);

@@ -29,7 +29,7 @@ using namespace ilixi;
 WindowWidget::WindowWidget(Widget* parent) :
     Window(), Frame(parent)
 {
-  setNeighbours(this, this, this, this);
+  setVisible(false);
   pthread_mutex_init(&_updates._listLock, NULL);
   sem_init(&_updates._updateReady, 0, 0);
   sem_init(&_updates._paintReady, 0, 1);
@@ -37,6 +37,9 @@ WindowWidget::WindowWidget(Widget* parent) :
   _surfaceDesc = WindowDescription;
   setMargins(5, 5, 5, 5);
   setRootWindow(this);
+  _eventManager->setOwner(this);
+  setNeighbours(this, this, this, this);
+  ILOG_DEBUG("Owner : %p", this);
 }
 
 WindowWidget::~WindowWidget()
@@ -121,6 +124,7 @@ WindowWidget::initWindow()
     {
       setSize(getWindowSize());
       setRootWindow(this);
+      _eventManager->selectNext();
       paint(Rectangle(0, 0, width(), height()));
     }
 }
@@ -166,8 +170,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     return true;
 
   case DWET_BUTTONUP:
-    _eventManager->setGrabbedWidget(
-        NULL,
+    _eventManager->setGrabbedWidget(NULL,
         PointerEvent(PointerButtonUp, event.x, event.y, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
     return target->consumePointerEvent(
@@ -208,37 +211,37 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
       sigAbort();
       return true;
 
-//    case DIKS_CURSOR_LEFT:
-//      if (target == this)
-//        {
-//          _eventManager->selectNeighbour(Left);
-//          return true;
-//        }
-//      break;
-//
-//    case DIKS_CURSOR_RIGHT:
-//      if (target == this)
-//        {
-//          _eventManager->selectNeighbour(Right);
-//          return true;
-//        }
-//      break;
-//
-//    case DIKS_CURSOR_UP:
-//      if (target == this)
-//        {
-//          _eventManager->selectNeighbour(Up);
-//          return true;
-//        }
-//      break;
-//
-//    case DIKS_CURSOR_DOWN:
-//      if (target == this)
-//        {
-//          _eventManager->selectNeighbour(Down);
-//          return true;
-//        }
-//      break;
+    case DIKS_CURSOR_LEFT:
+      if (target == this)
+        {
+          _eventManager->selectNeighbour(Left);
+          return true;
+        }
+      break;
+
+    case DIKS_CURSOR_RIGHT:
+      if (target == this)
+        {
+          _eventManager->selectNeighbour(Right);
+          return true;
+        }
+      break;
+
+    case DIKS_CURSOR_UP:
+      if (target == this)
+        {
+          _eventManager->selectNeighbour(Up);
+          return true;
+        }
+      break;
+
+    case DIKS_CURSOR_DOWN:
+      if (target == this)
+        {
+          _eventManager->selectNeighbour(Down);
+          return true;
+        }
+      break;
 
     case DIKS_OK:
     case DIKS_RETURN:

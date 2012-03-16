@@ -147,7 +147,6 @@ EventManager::setFocusedWidget(Widget* widget)
 
   if (widget != NULL)
     {
-
       if (widget->_parent)
         widget->_parent->_preSelectedWidget = _focusedWidget;
 
@@ -240,17 +239,28 @@ EventManager::selectNeighbour(Direction direction)
   int step = 0;
   while (!found)
     {
+//      ILOG_DEBUG(
+//          "%s(%p, %d) - step: %d", __FUNCTION__, target, direction, step);
+//      ILOG_DEBUG(
+//          " %p %p %p %p", _focusedWidget->getNeighbour(Up), _focusedWidget->getNeighbour(Down), _focusedWidget->getNeighbour(Left), _focusedWidget->getNeighbour(Right));
+
+      if (target == _owner || target == NULL)
+        {
+          if (selectNeighbourFromChildren(_owner, direction))
+            return true;
+        }
+
       // Should terminate if we can not find anything.
       if (step)
         return false;
 
       // TODO key navi. does not work atm.
-//      if (target != root) // Target is not a window.
-//        {
-//          // See if direct neighbour can get focus...
-//          if (setFocusedWidget(target))
-//            return true;
-//        }
+      if (target != _owner) // Target is not a window.
+        {
+          // See if direct neighbour can get focus...
+          if (setFocusedWidget(target))
+            return true;
+        }
 
       // See if there is a preselected child widget...
       if (target->_preSelectedWidget)
@@ -268,6 +278,7 @@ EventManager::selectNeighbour(Direction direction)
       // there are no focusable children so check neighbour in current direction...
       else
         target = target->getNeighbour(direction);
+
       ++step;
     }
   return false;
@@ -276,6 +287,9 @@ EventManager::selectNeighbour(Direction direction)
 bool
 EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 {
+  if (target == NULL)
+    return false;
+
   Widget* targetChild;
   if (direction == Left || direction == Up)
     for (Widget::WidgetListReverseIterator it = target->_children.rbegin(),
@@ -304,6 +318,12 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
           return true;
       }
   return false;
+}
+
+void
+EventManager::setOwner(WindowWidget* window)
+{
+  _owner = window;
 }
 
 void

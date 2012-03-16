@@ -316,9 +316,9 @@ HBoxLayout::tile()
   Widget* right = getNeighbour(Right);
   Widget* up = getNeighbour(Up);
   Widget* down = getNeighbour(Down);
-  ElementList::iterator itNext;
-  for (ElementList::iterator it = list.begin(), end = list.end(); it != end;
-      ++it)
+  ElementList::iterator itNext, itLast;
+  for (ElementList::iterator it = list.begin(), end = list.end(), itLast =
+      (++list.rbegin()).base(); it != end; ++it)
     {
       widget = ((LayoutElement) *it).widget;
 
@@ -398,13 +398,13 @@ HBoxLayout::tile()
         y = (height() - widget->height());
       else if (_alignment == Alignment::Middle)
         y = (height() - widget->height()) / 2;
-      widget->moveTo(currentX, y);
 
+      widget->moveTo(currentX, y);
       currentX += widget->width() + spacing();
 
       // Set neighbours
-      if (it == list.end())
-        right = getNeighbour(Right);
+      if (it == itLast)
+          right = getNeighbour(Right);
       else
         {
           itNext = it;

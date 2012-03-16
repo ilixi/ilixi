@@ -35,6 +35,7 @@ namespace ilixi
   // forward declerations
   class Widget;
   class Window;
+  class WindowWidget;
 
   //! Keeps track of focused and exposed widgets.
   /*!
@@ -45,6 +46,7 @@ namespace ilixi
    */
   class EventManager
   {
+    friend class WindowWidget;
   public:
     /*!
      * Constructor.
@@ -108,8 +110,8 @@ namespace ilixi
      * @return true if successful.
      */
     bool
-    setExposedWidget(Widget* widget,
-        const PointerEvent& pointerEvent = PointerEvent());
+    setExposedWidget(Widget* widget, const PointerEvent& pointerEvent =
+        PointerEvent());
 
     /*!
      * Sets widgets focused flag and executes focusInEvent/focusOutEvent methods of widgets.
@@ -129,7 +131,8 @@ namespace ilixi
      * @return true if successful.
      */
     bool
-    setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent = PointerEvent());
+    setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent =
+        PointerEvent());
 
     /*!
      * Sets the target of OSK app.
@@ -174,6 +177,9 @@ namespace ilixi
     bool
     selectNeighbourFromChildren(Widget* target, Direction direction);
 
+    void
+    setOwner(WindowWidget* window);
+
     //! Points to currently focused widget.
     Widget* _focusedWidget;
     //! Points to currently exposed widget.
@@ -184,6 +190,8 @@ namespace ilixi
     Widget* _oskWidget;
     //! This vector holds widgets inside the layout.
     widgetList widgets;
+
+    WindowWidget* _owner;
   };
 }
 

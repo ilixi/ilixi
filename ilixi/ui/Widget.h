@@ -687,6 +687,14 @@ namespace ilixi
     surface() const;
 
     /*!
+     * Set the surface description for widget's surface.
+     *
+     * \warning Initialise flag must be set to true.
+     */
+    void
+    setSurfaceFlags(SurfaceDescription desc);
+
+    /*!
      * Returns event manager of widget.
      */
     EventManager*

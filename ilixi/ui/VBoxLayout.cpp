@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 VBoxLayout::VBoxLayout(Widget* parent) :
-  LayoutBase(parent), _alignment(Alignment::Left)
+    LayoutBase(parent), _alignment(Alignment::Left)
 {
   //  setConstraints(NoConstraint, MinimumConstraint);
 }
@@ -57,7 +57,8 @@ VBoxLayout::heightForWidth(int width) const
   int ch = 0; // current widget's height.
   Size s;
 
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       widget = ((Widget*) *it);
       if (widget->visible() && widget->yConstraint() != IgnoredConstraint)
@@ -119,18 +120,19 @@ VBoxLayout::preferredSize() const
   LayoutElement e;
 
   // Find max. width
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
     {
       e.widget = ((Widget*) *it);
-      if (e.widget ->visible() && e.widget ->yConstraint() != IgnoredConstraint)
+      if (e.widget->visible() && e.widget->yConstraint() != IgnoredConstraint)
         {
           e.size = e.widget->preferredSize();
 
           // satisfy min-max width
           if (e.widget->minWidth() > 0 && e.size.width() < e.widget->minWidth())
             e.size.setWidth(e.widget->minWidth());
-          else if (e.widget->maxWidth() > 0 && e.size.width()
-              > e.widget->maxWidth())
+          else if (e.widget->maxWidth() > 0
+              && e.size.width() > e.widget->maxWidth())
             e.size.setWidth(e.widget->maxWidth());
 
           if (e.size.width() > w)
@@ -184,8 +186,8 @@ VBoxLayout::tile()
   ElementList list;
   LayoutElement e;
   int cw = 0; // current widget's width.
-  for (Widget::WidgetListConstIterator it = _children.begin(); it
-      != _children.end(); ++it)
+  for (Widget::WidgetListConstIterator it = _children.begin();
+      it != _children.end(); ++it)
     {
       e.widget = ((Widget*) *it);
       if (e.widget->visible() && e.widget->yConstraint() != IgnoredConstraint)
@@ -362,8 +364,8 @@ VBoxLayout::tile()
         ++expanding;
       else
         {
-          if (((LayoutElement) *it).widget->minHeight() > 0 && average
-              > ((LayoutElement) *it).widget->minHeight())
+          if (((LayoutElement) *it).widget->minHeight() > 0
+              && average > ((LayoutElement) *it).widget->minHeight())
             {
               expandSpace += average
                   - ((LayoutElement) *it).widget->minHeight();
@@ -388,8 +390,9 @@ VBoxLayout::tile()
   Widget* right = getNeighbour(Right);
   Widget* up = getNeighbour(Up);
   Widget* down = getNeighbour(Down);
-  ElementList::iterator itNext;
-  for (ElementList::iterator it = list.begin(), end = list.end(); it != end; ++it)
+  ElementList::iterator itNext, itLast;
+  for (ElementList::iterator it = list.begin(), end = list.end(), itLast =
+      (++list.rbegin()).base(); it != end; ++it)
     {
       widget = ((LayoutElement) *it).widget;
 
@@ -406,8 +409,8 @@ VBoxLayout::tile()
               else
                 widget->setHeight(average + expandAverage);
             }
-          else if (widget->yConstraint() & ShrinkPolicy && average
-              < ((LayoutElement) *it).size.height())
+          else if (widget->yConstraint() & ShrinkPolicy
+              && average < ((LayoutElement) *it).size.height())
             widget->setHeight(average);
           else
             widget->setHeight(((LayoutElement) *it).size.height());
@@ -448,7 +451,7 @@ VBoxLayout::tile()
       currentY += widget->height() + spacing();
 
       // Set neighbours
-      if (it == list.end())
+      if (it == itLast)
         down = getNeighbour(Down);
       else
         {
