@@ -82,6 +82,30 @@ namespace ilixi
     bounds() const;
 
     /*!
+     * Returns x-coordinate of layout.
+     */
+    int
+    x() const;
+
+    /*!
+     * Returns y-coordinate of layout.
+     */
+    int
+    y() const;
+
+    /*!
+     * Returns width of layout.
+     */
+    int
+    width() const;
+
+    /*!
+     * Returns height of layout.
+     */
+    int
+    height() const;
+
+    /*!
      * Returns true if layout does not provide multiple lines.
      */
     bool
@@ -161,6 +185,30 @@ namespace ilixi
      */
     void
     setAlignment(Alignment alignment);
+
+    /*!
+     * Sets x-coordinate of bounding rectangle.
+     */
+    void
+    setX(int x);
+
+    /*!
+     * Sets y-coordinate of bounding rectangle.
+     */
+    void
+    setY(int y);
+
+    /*!
+     * Sets width of bounding rectangle.
+     */
+    void
+    setWidth(int width);
+
+    /*!
+     * Sets height of bounding rectangle.
+     */
+    void
+    setHeight(int height);
 
     /*!
      * Sets the bounding rectangle of layout.

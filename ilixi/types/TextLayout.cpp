@@ -58,6 +58,30 @@ TextLayout::bounds() const
   return _bounds;
 }
 
+int
+TextLayout::x() const
+{
+  return _bounds.x();
+}
+
+int
+TextLayout::y() const
+{
+  return _bounds.y();
+}
+
+int
+TextLayout::width() const
+{
+  return _bounds.width();
+}
+
+int
+TextLayout::height() const
+{
+  return _bounds.height();
+}
+
 bool
 TextLayout::singleLine() const
 {
@@ -74,13 +98,13 @@ Point
 TextLayout::cursorPositon(Font* font, int index)
 {
   // TODO Implement multi line layout version
+  int x = _bounds.x();
+  int y = _bounds.y();
+
   if (!font || !_text.length())
-    return Point(0, 0);
+    return Point(x, y);
 
   doLayout(font);
-
-  int x = 0;
-  int y = 0;
 
   if (index <= _text.length())
     {
@@ -109,9 +133,9 @@ TextLayout::xyToIndex(Font* font, int x, int y)
 
   if (_singleLine)
     {
-      int xPre = -1;
+      int xPre = _bounds.x();
       int xNext = font->glyphAdvance(_text.at(0));
-      if (x > xPre && x <= xNext)
+      if (x > xPre && x <= (xPre + xNext))
         return 0;
 
       for (int i = 1; i < _text.length(); ++i)
@@ -181,6 +205,34 @@ void
 TextLayout::setAlignment(Alignment alignment)
 {
   _alignment = alignment;
+}
+
+void
+TextLayout::setX(int x)
+{
+  _bounds.setX(x);
+  _modified = true;
+}
+
+void
+TextLayout::setY(int y)
+{
+  _bounds.setY(y);
+  _modified = true;
+}
+
+void
+TextLayout::setWidth(int width)
+{
+  _bounds.setWidth(width);
+  _modified = true;
+}
+
+void
+TextLayout::setHeight(int height)
+{
+  _bounds.setHeight(height);
+  _modified = true;
 }
 
 void
