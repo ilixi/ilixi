@@ -47,8 +47,8 @@ namespace ilixi
       VerticalAlways = 0x010, //!< Makes vertical thumb always visible automatically.
       VerticalScroll = 0x020, //!< Whether vertical thumb is visible or not.
       SmoothScrolling = 0x040, //!< Content has its own surface.
-      TargetedScroll = 0x080
-    //!< Alters scrolling mode, used for scrolling to desired coordinates.
+      TargetedScroll = 0x080,   //!< Alters scrolling mode, used for scrolling to desired coordinates.
+      DrawFrame = 0x100
     };
 
     /*!
@@ -61,6 +61,12 @@ namespace ilixi
      */
     virtual
     ~ScrollArea();
+
+    /*!
+     * Returns height for width for content.
+     */
+    virtual int
+    heightForWidth(int width) const;
 
     /*!
      * Returns default dimension.
@@ -95,10 +101,16 @@ namespace ilixi
     setSmoothScrolling(bool smoothScroll);
 
     /*!
-     * Scrolls to given coordinates.
+     * Scrolls to given local coordinates.
      */
     void
     scrollTo(int x, int y);
+
+    /*!
+     * Scrolls to widget, and centers the view.
+     */
+    void
+    scrollTo(Widget* widget);
 
     /*!
      * Paints scroll area.

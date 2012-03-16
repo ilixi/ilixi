@@ -24,6 +24,7 @@
 #include "ui/ScrollArea.h"
 #include "graphics/Painter.h"
 #include "lib/TweenAnimation.h"
+#include "ui/LayoutBase.h"
 #include <cmath>
 
 using namespace ilixi;
@@ -33,7 +34,7 @@ const int queueSize = 41;
 // this variable specifies how fast content bounces back when it is outside edges (greater = faster bounce).
 const int rubber = 35;
 // this variable specifies how much velocity is reduced in each update (greater = faster decrease).
-const float friction = 0.02;
+const float friction = 0.04;
 
 ScrollArea::ScrollArea(Widget* parent) :
     Widget(parent), _options(0x009), _content(NULL), _aniVal(0), _cx(0), _cy(0), _vx(
@@ -48,11 +49,21 @@ ScrollArea::ScrollArea(Widget* parent) :
   _ani->addTween(Tween::CUBIC, Tween::EASE_OUT, _aniVal, 1, 0);
   _ani->setDuration(1000);
   _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
+
+  _content = new LayoutBase();
 }
 
 ScrollArea::~ScrollArea()
 {
   delete _ani;
+}
+
+int
+ScrollArea::heightForWidth(int width) const
+{
+  if (_content)
+    return _content->heightForWidth(width);
+  return -1;
 }
 
 Size
@@ -113,13 +124,44 @@ ScrollArea::setSmoothScrolling(bool smoothScroll)
 void
 ScrollArea::scrollTo(int x, int y)
 {
-  // TODO finish scrollTo method.
-  _ani->stop();
-  int deltaX = -x == _cx ? 0 : -x < _cx ? _cx + x : -x;
-  int deltaY = y < -_cy ? y : 0;
-  _sCur = Point(deltaX, _cy - y);
-  _options |= TargetedScroll;
-  _ani->start();
+  _vx = x == _cx ? 0 : x + _cx;
+  _vy = y == _cy ? 0 : y + _cy;
+
+  if (_vx || _vy)
+    {
+      _sCur = Point(_cx, _cy);
+      _ani->stop();
+      _options |= TargetedScroll;
+      _ani->start();
+    }
+}
+
+void
+ScrollArea::scrollTo(Widget* widget)
+{
+  if (widget == NULL)
+    return;
+
+  // TODO widget must be a child check.
+
+  // center widget inside.
+  if (widget->x() != _cx)
+    _vx = widget->x() - (width() - widget->width()) / 2.0 + _cx;
+  else
+    _vx = 0;
+
+  if (widget->y() != _cy)
+    _vy = widget->y() - (height() - widget->height()) / 2.0 + _cy;
+  else
+    _vy = 0;
+
+  if (_vx || _vy)
+    {
+      _ani->stop();
+      _sCur = Point(_cx, _cy);
+      _options |= TargetedScroll;
+      _ani->start();
+    }
 }
 
 void
@@ -136,6 +178,7 @@ ScrollArea::paint(const Rectangle& rect)
               _content->moveTo(_cx, _cy);
               if (_content->surface())
                 _content->surface()->clear();
+
               _content->paint(
                   Rectangle(0, 0, _content->width(), _content->height()));
               _content->surface()->flip();
@@ -218,7 +261,10 @@ void
 ScrollArea::pointerWheelEvent(const PointerEvent& event)
 {
   _ani->stop();
-  _cy += height() / 10 * event.wheelStep;
+  if (_options & VerticalScroll)
+    _cy += height() / 10 * event.wheelStep;
+  else
+    _cx += width() / 10 * event.wheelStep;
   _ani->start();
 }
 
@@ -227,7 +273,8 @@ ScrollArea::compose()
 {
   Painter p(this);
   p.begin();
-  p.drawRectangle(0, 0, width(), height());
+  if (_options & DrawFrame)
+    p.drawRectangle(0, 0, width(), height());
   if (_aniVal)
     {
       p.setBrush(Color(0, 0, 0, _aniVal * 255));
@@ -317,9 +364,9 @@ ScrollArea::updateScrollArea(int step)
   else if (_options & TargetedScroll)
     {
       if (_options & HorizontalScroll)
-        _cx = (1 - _aniVal) * _sCur.x();
+        _cx = _sCur.x() - (1 - _aniVal) * _vx;
       if (_options & VerticalScroll)
-        _cy = (1 - _aniVal) * _sCur.y();
+        _cy = _sCur.y() - (1 - _aniVal) * _vy;
     }
   else
     {
@@ -350,15 +397,5 @@ ScrollArea::updateScrollArea(int step)
         }
     }
 
-  if (_options & SmoothScrolling)
-    {
-      _content->moveTo(_cx, _cy);
-      surface()->clear();
-      surface()->blit(_content->surface(),
-          Rectangle(-_cx, -_cy, width(), height()), 0, 0);
-      compose();
-      surface()->flip();
-    }
-  else
-    repaint();
+  update();
 }
