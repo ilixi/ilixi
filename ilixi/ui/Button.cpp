@@ -133,7 +133,7 @@ Button::setIconSize(const Size& size)
 void
 Button::keyUpEvent(const KeyEvent& event)
 {
-  if (event.keySymbol == DIKS_SPACE)
+  if (event.keySymbol == DIKS_SPACE || event.keySymbol == DIKS_OK)
     click(100);
 }
 
