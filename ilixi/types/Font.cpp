@@ -182,6 +182,14 @@ Font::setStyle(Style style)
   _modified = true;
 }
 
+void
+Font::setAttributes(DFBFontAttributes attr)
+{
+  _desc.flags = (DFBFontDescriptionFlags) (_desc.flags | DFDESC_ATTRIBUTES);
+  _desc.attributes = (DFBFontAttributes) attr;
+  _modified = true;
+}
+
 Font&
 Font::operator=(const Font& font)
 {

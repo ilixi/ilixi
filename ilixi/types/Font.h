@@ -173,10 +173,17 @@ namespace ilixi
     setSize(int size);
 
     /*!
-     * Sets style for font.
+     * Sets style for font, e.g. italic, bold.
      */
     void
     setStyle(Style style);
+
+    /*!
+     * Sets attributes for font, e.g. monochrome, vertical.
+     * \warning old attributes will be overwritten.
+     */
+    void
+    setAttributes(DFBFontAttributes attr);
 
     /*!
      * Assigns f to this font and returns a reference to it.
