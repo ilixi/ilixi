@@ -28,8 +28,9 @@
 using namespace ilixi;
 
 Animation::Animation() :
-    _state(Stopped), _duration(0), _currentTime(0), _lastTime(0), _loops(1), _currentLoop(
-        1), _cb(Callback::AnimationCB, this)
+    _state(Stopped), _delayDuration(0), _delayTime(0), _delayLast(0), _duration(
+        0), _currentTime(0), _lastTime(0), _loops(1), _currentLoop(1), _cb(
+        Callback::AnimationCB, this)
 {
 }
 
@@ -54,6 +55,12 @@ int
 Animation::currentTime() const
 {
   return _currentTime;
+}
+
+int
+Animation::delay() const
+{
+  return _delayDuration;
 }
 
 int
@@ -103,6 +110,12 @@ Animation::pause()
 }
 
 void
+Animation::setDelay(int ms)
+{
+  _delayDuration = ms;
+}
+
+void
 Animation::setDuration(int ms)
 {
   _duration = ms;
@@ -121,7 +134,9 @@ Animation::setCurrentTime(int ms)
     _currentTime = ms;
   else
     _currentTime = 0;
-  _lastTime = direct_clock_get_abs_millis();
+
+  _delayLast = direct_clock_get_abs_millis();
+  _lastTime = _delayLast + _delayDuration;
 }
 
 void
@@ -140,6 +155,12 @@ Animation::animate()
     }
   else if (_state == Running)
     {
+      if (_delayTime < _delayDuration)
+        {
+          _delayTime = direct_clock_get_abs_millis() - _delayLast;
+          return 1;
+        }
+
       if (_currentTime <= _duration)
         {
           long stepTime = direct_clock_get_abs_millis() - _lastTime;

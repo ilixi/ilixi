@@ -72,6 +72,12 @@ namespace ilixi
     currentTime() const;
 
     /*!
+     * Returns animation start delay in milliseconds.
+     */
+    int
+    delay() const;
+
+    /*!
      * Returns number of loops.
      */
     int
@@ -106,6 +112,12 @@ namespace ilixi
      */
     void
     pause();
+
+    /*!
+     * Sets animation start delay.
+     */
+    void
+    setDelay(int ms);
 
     /*!
      * Sets duration of animation.
@@ -163,6 +175,13 @@ namespace ilixi
   private:
     //! Current state of animation.
     AnimationState _state;
+
+    //! Delay before animation starts.
+    int _delayDuration;
+    //! Current delay timer.
+    int _delayTime;
+    //! Measured time for delay.
+    long _delayLast;
 
     //! Duration of animation in milliseconds.
     int _duration;
