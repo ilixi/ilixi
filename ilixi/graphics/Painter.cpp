@@ -193,7 +193,7 @@ void
 Painter::drawImage(Image* image, const Rectangle& rect,
     const DFBSurfaceBlittingFlags& flags)
 {
-  if (_state & Active)
+  if ((_state & Active) && image)
     {
       applyBrush();
       DFBRectangle r = rect.dfbRect();
@@ -206,7 +206,7 @@ void
 Painter::drawImage(Image* image, int x, int y,
     const DFBSurfaceBlittingFlags& flags)
 {
-  if (_state & Active)
+  if ((_state & Active) && image)
     {
       applyBrush();
       dfbSurface->SetBlittingFlags(dfbSurface, flags);
@@ -224,7 +224,7 @@ Painter::drawImage(Image* image, const Point& point,
 void
 Painter::tileImage(Image* image, int x, int y)
 {
-  if (_state & Active)
+  if ((_state & Active) && image)
     dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, x, y);
 }
 
