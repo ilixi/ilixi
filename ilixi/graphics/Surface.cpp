@@ -97,9 +97,15 @@ Surface::setGeometry(int x, int y, int width, int height)
 {
   DFBRectangle r =
     { x, y, width, height };
-  DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface, &r);
-  if (ret)
-    ILOG_ERROR("Cannot set geometry: %s", DirectFBErrorString(ret));
+  if (_parentSurface)
+    {
+      DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
+          &r);
+      if (ret)
+        ILOG_ERROR("Cannot set geometry: %s", DirectFBErrorString(ret));
+    }
+  else
+    ILOG_ERROR("No Parent Surface, need to create surface again!");
 }
 
 void
