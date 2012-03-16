@@ -64,36 +64,74 @@ LineInput::setMaxLength(int maxLen)
 void
 LineInput::updateCursorPosition()
 {
-  _cursor.moveTo(
-      _layout.cursorPositon(font(), _cursorIndex).x() + borderOffset(),
-      _layout.cursorPositon(font(), _cursorIndex).y() + borderWidth());
+  // FIXME should not move to 0 for left.
+  int x = _layout.cursorPositon(font(), _cursorIndex).x();
+
+  if (x < borderOffset())
+    {
+      int dif = x - _layout.x();
+      if (dif <= borderOffset() && _layout.text().length())
+        _layout.setX(dif);
+
+      printf("1 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif,
+          _layout.text().length());
+    }
+  else
+    {
+      int dif = x - _layout.bounds().right();
+      if (dif > 0)
+        _layout.setX(-dif);
+
+      printf("2 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif,
+          _layout.text().length());
+    }
+
+  _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex).x(),
+      _layout.cursorPositon(font(), _cursorIndex).y());
 }
 
 void
 LineInput::updateSelectionRect()
 {
-  if (_selectedIndex == _cursorIndex)
-    _selection.setSize(0, 0);
-  else
+  if (_selecting)
     {
-      if (_selectedIndex > _cursorIndex)
-        {
-          _selection.moveTo(_cursor.topLeft());
-          _selection.setRight(
-              _layout.cursorPositon(font(), _selectedIndex).x()
-                  + borderOffset());
-          _selection.setHeight(_cursor.height());
-        }
+      if (_selectedIndex == _cursorIndex)
+        _selection.setSize(0, 0);
       else
         {
-          _selection.setX(
-              _layout.cursorPositon(font(), _selectedIndex).x()
-                  + borderOffset());
-          _selection.setRight(_cursor.x());
-          _selection.setBottom(_cursor.bottom());
+          if (_selectedIndex > _cursorIndex)
+            {
+              _selection.moveTo(_cursor.topLeft());
+              _selection.setRight(
+                  _layout.cursorPositon(font(), _selectedIndex).x());
+              _selection.setHeight(_cursor.height());
+            }
+          else
+            {
+              _selection.setX(
+                  _layout.cursorPositon(font(), _selectedIndex).x());
+              _selection.setRight(_cursor.x());
+              _selection.setHeight(_cursor.height());
+            }
+          sigSelectionChanged();
         }
-      sigSelectionChanged();
     }
+}
+
+void
+LineInput::startSelection()
+{
+  _selecting = true;
+  _selectedIndex = _cursorIndex;
+  _selection.moveTo(_cursor.x(), _cursor.y());
+  _selection.setSize(0, 0);
+}
+
+void
+LineInput::stopSelection()
+{
+  _selecting = false;
+  _selection.setSize(0, 0);
 }
 
 void
@@ -101,8 +139,7 @@ LineInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
 {
   Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
 
-  int index = _layout.xyToIndex(font(), p.x() - borderOffset(),
-      p.y() - borderWidth());
+  int index = _layout.xyToIndex(font(), p.x() - _layout.x(), p.y());
 
   if (index != _cursorIndex)
     {
@@ -111,11 +148,8 @@ LineInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
       _cursorIndex = index;
 
       updateCursorPosition();
-      _selecting = true;
-      _selectedIndex = _cursorIndex;
-      _selection.moveTo(_cursor.x(), _cursor.y());
-      _selection.setSize(0, 0);
-      _cursorOn = false;
+      startSelection();
+      _cursorOn = true;
       _cursorTimer.start(500);
       update();
     }
@@ -130,11 +164,10 @@ LineInput::pointerButtonUpEvent(const PointerEvent& mouseEvent)
 void
 LineInput::pointerMotionEvent(const PointerEvent& mouseEvent)
 {
-  if (_selecting)
+  if (_selecting && (mouseEvent.buttonMask & ButtonMaskLeft))
     {
       Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
-      int index = _layout.xyToIndex(font(), p.x() - borderOffset(),
-          p.y() - borderWidth());
+      int index = _layout.xyToIndex(font(), p.x() - _layout.x(), p.y());
 
       if (index != _cursorIndex)
         {
@@ -155,29 +188,62 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
     {
   case DIKS_CURSOR_LEFT:
   case DIKS_CURSOR_UP:
+    if (keyEvent.modifierMask & DIMM_SHIFT)
+      {
+        if (!_selecting)
+          startSelection();
+      }
+    else
+      stopSelection();
+
     if (_cursorIndex)
       sigCursorMoved(_cursorIndex, --_cursorIndex);
     break;
 
   case DIKS_CURSOR_RIGHT:
   case DIKS_CURSOR_DOWN:
+    if (keyEvent.modifierMask & DIMM_SHIFT)
+      {
+        if (!_selecting)
+          startSelection();
+      }
+    else
+      stopSelection();
+
     if (_cursorIndex < text().length())
       sigCursorMoved(_cursorIndex, ++_cursorIndex);
     break;
 
   case DIKS_PAGE_UP:
   case DIKS_HOME:
+    if (keyEvent.modifierMask & DIMM_SHIFT)
+      {
+        if (!_selecting)
+          startSelection();
+      }
+    else
+      stopSelection();
+
     sigCursorMoved(_cursorIndex, 0);
     _cursorIndex = 0;
     break;
 
   case DIKS_PAGE_DOWN:
   case DIKS_END:
+    if (keyEvent.modifierMask & DIMM_SHIFT)
+      {
+        if (!_selecting)
+          startSelection();
+      }
+    else
+      stopSelection();
+
     sigCursorMoved(_cursorIndex, text().length());
     _cursorIndex = text().length() - 1;
     break;
 
   case DIKS_DELETE:
+    _selecting = false;
     if (_selection.isNull())
       {
         if (_cursorIndex > -1 && _cursorIndex < text().length())
@@ -196,6 +262,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
     break;
 
   case DIKS_BACKSPACE:
+    _selecting = false;
     if (_selection.isNull())
       {
         if (_cursorIndex)
@@ -219,6 +286,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
   default:
     if (keyEvent.keySymbol >= DIKS_SPACE && keyEvent.keySymbol <= DIKS_TILDE)
       {
+        _selecting = false;
         if (maxLength() > 0 && text().length() == maxLength())
           return;
 
@@ -226,6 +294,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
           {
             _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
+            printf("Append %c\n", (char) keyEvent.keySymbol);
           }
         else
           {
@@ -240,6 +309,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
     break;
     }
   updateCursorPosition();
+  updateSelectionRect();
 }
 
 void
@@ -302,17 +372,20 @@ LineInput::compose()
   p.fillRectangle(0, 0, width(), height());
   p.drawRectangle(0, 0, width(), height());
 
+  p.setBrush(Color(51, 204, 255, 50));
+  p.fillRectangle(_selection);
+
   p.setBrush(Color(0, 0, 0));
-  p.drawLayout(_layout, borderOffset(), borderWidth());
+  p.setClip(borderOffset(), borderWidth(), width() - 2 * borderOffset(),
+      height() - 2 * borderWidth());
+  p.drawLayout(_layout);
+  p.resetClip();
 
   if (_cursorOn)
     {
       p.setBrush(Color(0, 0, 255));
       p.fillRectangle(_cursor);
     }
-
-  p.setBrush(Color(0, 0, 200, 100));
-  p.fillRectangle(_selection);
 
   p.end();
 }

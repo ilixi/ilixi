@@ -106,6 +106,12 @@ namespace ilixi
     void
     updateSelectionRect();
 
+    void
+    startSelection();
+
+    void
+    stopSelection();
+
     virtual void
     pointerButtonDownEvent(const PointerEvent& mouseEvent);
 
