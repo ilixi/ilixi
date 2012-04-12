@@ -28,12 +28,13 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
+
 Style::Style() :
-  _buttonFont(NULL), _defaultFont(NULL), _inputFont(NULL), _titleFont(NULL),
-      _plusSign(NULL), _minusSign(NULL), _grid(NULL), _arrowUp(NULL),
-      _arrowDown(NULL), _arrowLeft(NULL), _arrowRight(NULL), _checkEmpty(NULL),
-      _checkPartial(NULL), _checkFull(NULL), _critical(NULL), _info(NULL),
-      _question(NULL), _warning(NULL)
+    _buttonFont(NULL), _defaultFont(NULL), _inputFont(NULL), _titleFont(NULL), _plusSign(
+        NULL), _minusSign(NULL), _grid(NULL), _arrowUp(NULL), _arrowDown(NULL), _arrowLeft(
+        NULL), _arrowRight(NULL), _checkEmpty(NULL), _checkPartial(NULL), _checkFull(
+        NULL), _critical(NULL), _info(NULL), _question(NULL), _warning(NULL)
 {
 }
 
@@ -80,21 +81,18 @@ Style::parseStyle(const char* style)
   ctxt = xmlNewParserCtxt();
   if (ctxt == NULL)
     {
-      ILOG_ERROR("Failed to allocate parser context");
+      ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
       return false;
     }
 
-  doc = xmlCtxtReadFile(
-      ctxt,
-      style,
-      NULL,
+  doc = xmlCtxtReadFile(ctxt, style, NULL,
       XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
           | XML_PARSE_NOBLANKS);
 
   if (doc == NULL)
     {
       xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR("Failed to parse style: %s", style);
+      ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
       return false;
     }
 
@@ -102,7 +100,7 @@ Style::parseStyle(const char* style)
     {
       xmlFreeDoc(doc);
       xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR("Failed to validate style: %s", style);
+      ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
       return false;
     }
 
@@ -124,8 +122,8 @@ Style::parseStyle(const char* style)
             {
               xmlChar* fileC = xmlNodeGetContent(element->children);
               xmlChar* sizeC = xmlNodeGetContent(element->children->next);
-              xmlChar* styleC =
-                  xmlNodeGetContent(element->children->next->next);
+              xmlChar* styleC = xmlNodeGetContent(
+                  element->children->next->next);
 
               Font::Style fontStyle = Font::Plain;
               if (styleC)
@@ -168,7 +166,6 @@ Style::parseStyle(const char* style)
               element = element->next;
             } // end while(element)
         } // end fonts
-
 
       else if (xmlStrcmp(group->name, (xmlChar*) "hints") == 0)
         {
@@ -373,7 +370,6 @@ Style::parseStyle(const char* style)
               xmlChar* img = xmlNodeGetContent(element);
               //              path.append(;
 
-
               if (xmlStrcmp(element->name, (xmlChar*) "plus") == 0)
                 _plusSign = new Image(path + (char*) img, _iconSize);
 
@@ -422,6 +418,6 @@ Style::parseStyle(const char* style)
 
   xmlFreeDoc(doc);
   xmlFreeParserCtxt(ctxt);
-  ILOG_INFO("Parsed style file: %s", style);
+  ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
   return true;
 }

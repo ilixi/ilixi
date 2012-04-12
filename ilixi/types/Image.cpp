@@ -28,6 +28,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
+
 Image::Image() :
     _dfbSurface(NULL), _imagePath("")
 {
@@ -130,13 +132,14 @@ Image::loadImage()
 {
   if (_imagePath == "")
     {
-      ILOG_ERROR("Image path is empty");
+      ILOG_ERROR(ILX_IMAGE, "Image path is empty");
       return false;
     }
 
   if (access(_imagePath.c_str(), F_OK) != 0)
     {
-      ILOG_ERROR("File (%s) is not accessible!", _imagePath.c_str());
+      ILOG_ERROR(
+          ILX_IMAGE, "File (%s) is not accessible!\n", _imagePath.c_str());
       return false;
     }
 
@@ -149,16 +152,17 @@ Image::loadImage()
       _imagePath.c_str(), &provider) != DFB_OK)
     {
       invalidateSurface();
-      ILOG_ERROR("Cannot create image provider!");
+      ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
       return false;
     }
 
   if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
-    ILOG_ERROR("Cannot get surface description!");
+    ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
 
   desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
-      | DSDESC_HEIGHT);
+      | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
   desc.caps = DSCAPS_SYSTEMONLY;
+  desc.pixelformat = DSPF_ARGB;
 
   if (width())
     desc.width = width();
@@ -173,7 +177,7 @@ Image::loadImage()
     {
       invalidateSurface();
       ILOG_ERROR(
-          "Cannot create surface for %s - %s", _imagePath.c_str(), DirectFBErrorString(ret));
+          ILX_IMAGE, "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
       return false;
     }
   else
@@ -181,7 +185,7 @@ Image::loadImage()
       if (provider->RenderTo(provider, _dfbSurface, NULL) != DFB_OK)
         {
           invalidateSurface();
-          ILOG_ERROR("Cannot render image to surface!");
+          ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface!\n");
           return false;
         }
       provider->Release(provider);

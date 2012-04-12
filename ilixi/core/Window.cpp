@@ -27,36 +27,42 @@
 #include "core/Logger.h"
 #include <algorithm>
 
+D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
+
 using namespace ilixi;
 
 Window::CallbackList Window::__callbacks;
+Window::SurfaceListenerList Window::__selList;
 IDirectFB* Window::__dfb = NULL;
 IDirectFBDisplayLayer* Window::__layer = NULL;
 IDirectFBEventBuffer* Window::__buffer = NULL;
 Window::WindowList Window::__windowList;
 Window* Window::__activeWindow = NULL;
 pthread_mutex_t Window::__windowMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t Window::__cbMutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t Window::__cbMutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t Window::__selMutex = PTHREAD_MUTEX_INITIALIZER;
 
-Window::Window() :
-  _window(NULL), _windowSurface(NULL), _eventManager(NULL), _parentWindow(NULL)//, _windowType(CustomWindow)
-{
-  _eventManager = new EventManager(this);
+    Window::Window() :
+    _window(NULL), _windowSurface ( NULL
+), _eventManager(NULL), _parentWindow(NULL)
+  {
+    _eventManager = new EventManager(this);
 
-  _dialogShow = new TweenAnimation();
-  _dialogShow->addTween(Tween::LINEAR, Tween::EASE_IN, _aniValue, 0, 255);
-  _dialogShow->addTween(Tween::ELASTIC, Tween::EASE_OUT, _aniValue2, 0, 1);
-  _dialogShow->setDuration(500);
-  _dialogShow->sigExec.connect(sigc::mem_fun(this, &Window::animateWindow));
+    _dialogShow = new TweenAnimation();
+    _dialogShow->addTween(Tween::LINEAR, Tween::EASE_IN, _aniValue, 0, 255);
+    _dialogShow->addTween(Tween::ELASTIC, Tween::EASE_OUT, _aniValue2, 0, 1);
+    _dialogShow->setDuration(500);
+    _dialogShow->sigExec.connect(sigc::mem_fun(this, &Window::animateWindow));
 
-  //  _dialogHide = new TweenAnimation();
-  //  _dialogHide->addTween(Tween::SINE, Tween::EASE_OUT, _aniValue, 1, 0);
-  //  _dialogHide->setDuration(500);
-  //  _dialogHide->sigExec.connect(sigc::mem_fun(this, &Window::animateWindow));
-}
+//  _dialogHide = new TweenAnimation();
+//  _dialogHide->addTween(Tween::SINE, Tween::EASE_OUT, _aniValue, 1, 0);
+//  _dialogHide->setDuration(500);
+//  _dialogHide->sigExec.connect(sigc::mem_fun(this, &Window::animateWindow));
+  }
 
 Window::~Window()
 {
+  ILOG_DEBUG(ILX_WINDOW, "~Window\n");
   delete _dialogShow;
   //  delete _dialogHide;
   delete _eventManager;
@@ -114,8 +120,8 @@ Window::showWindow()
           __buffer);
       // animation goes here for other window types...
       _window->GrabPointer(_window);
-      _dialogShow->start();
-//            _window->SetOpacity(_window, 255);
+//      _dialogShow->start();
+      _window->SetOpacity(_window, 255);
     }
   else
     _window->SetOpacity(_window, 255);
@@ -125,7 +131,7 @@ Window::showWindow()
   __buffer->Reset(__buffer);
 
   pthread_mutex_unlock(&__windowMutex);
-  ILOG_INFO("Window is visible.");
+  ILOG_INFO(ILX_WINDOW, "Window is visible.\n");
 }
 
 void
@@ -161,35 +167,45 @@ Window::hideWindow()
   _eventManager->setExposedWidget(NULL);
 
   pthread_mutex_unlock(&__windowMutex);
-  ILOG_INFO("Window is hidden.");
+  ILOG_INFO(ILX_WINDOW, "Window is hidden.\n");
 }
 
 bool
-Window::initDFB(int argc, char **argv)
+Window::initDFB(int argc, char **argv, AppOptions opts)
 {
   if (!__dfb)
     {
       if (DirectFBInit(&argc, &argv) != DFB_OK)
         {
-          ILOG_ERROR("Error while initialising DirectFB!");
+          ILOG_ERROR(ILX_WINDOW, "Error while initialising DirectFB!\n");
           return false;
         }
       if (DirectFBCreate(&__dfb) != DFB_OK)
         {
-          ILOG_ERROR("Error while creating DirectFB interface!");
+          ILOG_ERROR(ILX_WINDOW, "Error while creating DirectFB interface!\n");
           return false;
         }
       if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
         {
-          ILOG_ERROR("Error while creating event buffer!");
+          ILOG_ERROR(ILX_WINDOW, "Error while creating event buffer!\n");
           return false;
         }
       if (__dfb->GetDisplayLayer(__dfb, DLID_PRIMARY, &__layer) != DFB_OK)
         {
-          ILOG_ERROR("Error while getting primary layer!");
+          ILOG_ERROR(ILX_WINDOW, "Error while getting primary layer!\n");
           return false;
         }
-      ILOG_INFO("DirectFB interface is ready.");
+
+      if (opts & OptCompositor)
+        {
+          if (__layer->SetCooperativeLevel(__layer, DLSCL_ADMINISTRATIVE))
+            {
+              ILOG_ERROR(ILX_WINDOW, "Error while setting EXLUSIVE mode!");
+              return false;
+            }
+        }
+
+      ILOG_INFO(ILX_WINDOW, "DirectFB interface is ready.\n");
       return true;
     }
   return false;
@@ -200,31 +216,33 @@ Window::initDFBWindow(const Size& size)
 {
   if (!__dfb)
     {
-      ILOG_FATAL("DirectFB interface is not initialised!");
+      ILOG_FATAL(ILX_WINDOW, "DirectFB interface is not initialised!\n");
       exit(EXIT_FAILURE);
     }
-
+  DFBResult ret;
   DFBWindowDescription desc;
   desc.flags = (DFBWindowDescriptionFlags) (DWDESC_POSX | DWDESC_POSY
       | DWDESC_WIDTH | DWDESC_HEIGHT | DWDESC_CAPS | DWDESC_SURFACE_CAPS
       | DWDESC_PIXELFORMAT | DWDESC_OPTIONS | DWDESC_STACKING);
 
   desc.pixelformat = DSPF_ARGB;
-  desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER
-      | DWCAPS_ALPHACHANNEL); // DWCAPS_NODECORATION
+  desc.caps =
+      (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL); // DWCAPS_NODECORATION
   desc.surface_caps = DSCAPS_DOUBLE;
   desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL | DWOP_SCALE);
 
   DFBDisplayLayerConfig conf;
-  if (__layer->GetConfiguration(__layer, &conf) != DFB_OK)
+  ret = __layer->GetConfiguration(__layer, &conf);
+  if (ret != DFB_OK)
     {
-      ILOG_ERROR("Error while getting primary layer configuration!");
+      ILOG_ERROR( ILX_WINDOW,
+          "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
 
   if (!__activeWindow)
     {
-      ILOG_DEBUG("Main window is initialising...");
+      ILOG_DEBUG(ILX_WINDOW, "Main window is initialising...\n");
 #if ILIXI_MULTI_ENABLED
       // TODO Bounds of windows will be set by a WM when a window is added to stack, e.g. SaWMan.
       if (AppBase::__appInstance->__appRecord->fusionID > 2)
@@ -247,11 +265,11 @@ Window::initDFBWindow(const Size& size)
       desc.width = conf.width;
       desc.height = conf.height;
 #endif
-      desc.stacking = DWSC_LOWER;
+      desc.stacking = DWSC_MIDDLE;
     }
   else // other windows
     {
-      ILOG_DEBUG("Window is initialising...");
+      ILOG_DEBUG(ILX_WINDOW, "Window is initialising...\n");
       int w = size.width();
       int h = size.height();
       if (w > (conf.width - 20))
@@ -269,18 +287,22 @@ Window::initDFBWindow(const Size& size)
       desc.posy = y;
       desc.width = w;
       desc.height = h;
-      desc.stacking = DWSC_MIDDLE;
+      desc.stacking = DWSC_UPPER;
     }
 
-  if (__layer->CreateWindow(__layer, &desc, &_window) != DFB_OK)
+  ret = __layer->CreateWindow(__layer, &desc, &_window);
+  if (ret != DFB_OK)
     {
-      ILOG_ERROR("Error while creating DirectFB window!");
+      ILOG_ERROR(ILX_WINDOW,
+          "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
 
-  if (_window->GetSurface(_window, &_windowSurface) != DFB_OK)
+  ret = _window->GetSurface(_window, &_windowSurface);
+  if (ret != DFB_OK)
     {
-      ILOG_ERROR("Unable to acquire surface from application window.");
+      ILOG_ERROR( ILX_WINDOW,
+          "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
 #if ILIXI_MULTI_ENABLED
@@ -292,7 +314,7 @@ Window::initDFBWindow(const Size& size)
   __windowList.push_back(this);
   pthread_mutex_unlock(&__windowMutex);
 
-  ILOG_INFO("Window is initialised.");
+  ILOG_INFO(ILX_WINDOW, "Window is initialised.\n");
   return true;
 }
 
@@ -301,10 +323,10 @@ Window::releaseDFBWindow()
 {
   if (_window)
     {
-      ILOG_DEBUG("releaseWindow...");
+      ILOG_DEBUG(ILX_WINDOW, "releaseWindow...\n");
       if (_parentWindow)
         {
-          ILOG_DEBUG( "Releasing DirectFB window interface...");
+          ILOG_DEBUG(ILX_WINDOW, "Releasing DirectFB window interface...\n");
           pthread_mutex_lock(&__windowMutex);
 
           _windowSurface->Release(_windowSurface);
@@ -319,11 +341,12 @@ Window::releaseDFBWindow()
             __windowList.erase(it);
 
           pthread_mutex_unlock(&__windowMutex);
-          ILOG_DEBUG( "DirectFB window interface is released.");
+          ILOG_DEBUG(ILX_WINDOW, "DirectFB window interface is released.\n");
         }
       else
         {
-          ILOG_DEBUG( "Releasing DirectFB application window interface...");
+          ILOG_DEBUG( ILX_WINDOW,
+              "Releasing DirectFB application window interface...\n");
           pthread_mutex_lock(&__windowMutex);
 
           _windowSurface->Release(_windowSurface);
@@ -339,7 +362,7 @@ Window::releaseDFBWindow()
             __windowList.erase(it);
 
           pthread_mutex_unlock(&__windowMutex);
-          ILOG_DEBUG( "DirectFB application window is released.");
+          ILOG_DEBUG( ILX_WINDOW, "DirectFB application window is released.\n");
         }
     }
 }
@@ -360,7 +383,7 @@ Window::getDFB()
 void
 Window::releaseDFB()
 {
-  ILOG_DEBUG("Releasing DirectFB interfaces...");
+  ILOG_DEBUG(ILX_WINDOW, "Releasing DirectFB interfaces...\n");
   if (__dfb)
     {
       __buffer->Release(__buffer);
@@ -369,7 +392,7 @@ Window::releaseDFB()
       __dfb = NULL;
       __activeWindow = NULL;
       pthread_mutex_destroy(&__windowMutex);
-      ILOG_DEBUG("DirectFB interface is released.");
+      ILOG_DEBUG(ILX_WINDOW, "DirectFB interface is released.\n");
     }
 }
 
@@ -399,8 +422,8 @@ Window::removeCallback(Callback* cb)
   if (cb)
     {
       pthread_mutex_lock(&__cbMutex);
-      for (CallbackList::iterator it = __callbacks.begin(); it
-          != __callbacks.end(); ++it)
+      for (CallbackList::iterator it = __callbacks.begin();
+          it != __callbacks.end(); ++it)
         {
           if (cb == *it)
             {
@@ -413,5 +436,60 @@ Window::removeCallback(Callback* cb)
       pthread_mutex_unlock(&__cbMutex);
     }
   return false;
+}
+
+bool
+Window::addSurfaceEventListener(SurfaceEventListener* sel)
+{
+  if (sel)
+    {
+      pthread_mutex_lock(&__selMutex);
+      __selList.push_back(sel);
+      pthread_mutex_unlock(&__selMutex);
+    }
+}
+
+bool
+Window::removeSurfaceEventListener(SurfaceEventListener* sel)
+{
+  if (sel)
+    {
+      pthread_mutex_lock(&__selMutex);
+      for (SurfaceListenerList::iterator it = __selList.begin();
+          it != __selList.end(); ++it)
+        {
+          if (sel)
+            {
+              __selList.erase(it);
+              pthread_mutex_unlock(&__selMutex);
+              return true;
+            }
+        }
+
+      pthread_mutex_unlock(&__selMutex);
+    }
+  return false;
+}
+
+void
+Window::handleSurfaceEvent(const DFBSurfaceEvent& event)
+{
+  pthread_mutex_lock(&__selMutex);
+  for (SurfaceListenerList::iterator it = __selList.begin();
+      it != __selList.end(); ++it)
+    ((SurfaceEventListener*) *it)->consumeSurfaceEvent(event);
+  pthread_mutex_unlock(&__selMutex);
+}
+
+void
+Window::handleCallbacks()
+{
+  pthread_mutex_lock(&__cbMutex);
+  for (CallbackList::iterator it = __callbacks.begin(); it != __callbacks.end();
+      ++it)
+    ((Callback*) *it)->_func(((Callback*) *it)->_data);
+  if (!__callbacks.empty())
+    __buffer->WakeUp(__buffer);
+  pthread_mutex_unlock(&__cbMutex);
 }
 

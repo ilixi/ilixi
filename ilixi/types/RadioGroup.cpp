@@ -53,6 +53,14 @@ RadioGroup::add(RadioButton* radio)
 }
 
 void
+RadioGroup::remove(RadioButton* radio)
+{
+  if (_selected == radio)
+    _selected = NULL;
+  radio->setGroup(NULL);
+}
+
+void
 RadioGroup::select(RadioButton* radio)
 {
   if (_selected && _selected != radio)

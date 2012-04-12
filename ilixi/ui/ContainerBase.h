@@ -89,6 +89,14 @@ namespace ilixi
     addWidget(Widget* widget);
 
     /*!
+     * Removes a child widget from container.
+     *
+     * \sa addWidget()
+     */
+    bool
+    removeWidget(Widget* widget);
+
+    /*!
      * Returns container's layout.
      */
     LayoutBase*
@@ -127,6 +135,18 @@ namespace ilixi
 
     virtual void
     doLayout();
+
+    bool
+    widgetToFront(Widget* widget);
+
+    bool
+    widgetToBack(Widget* widget);
+
+    bool
+    lowerWidget(Widget* widget);
+
+    bool
+    raiseWidget(Widget* widget);
 
   protected:
     //! This is the container's current layout.

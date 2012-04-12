@@ -27,6 +27,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_FONT, "ilixi/types/Font", "Font");
+
 Font::Font() :
     _modified(true), _font(NULL), _fileName("")
 {
@@ -127,7 +129,7 @@ Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth,
       lineWidth, length, nextLine);
   if (ret)
     {
-      ILOG_ERROR("Error while getting string breaks!");
+      ILOG_ERROR(ILX_FONT, "Error while getting string breaks!\n");
       *lineWidth = 0;
       *length = 0;
       *nextLine = NULL;
@@ -223,6 +225,15 @@ Font::operator!=(const Font &font)
   return !(*this == font);
 }
 
+void
+Font::addRef()
+{
+  if (_font)
+    {
+      _font->AddRef(_font);
+    }
+}
+
 bool
 Font::applyFont(IDirectFBSurface* surface)
 {
@@ -232,7 +243,7 @@ Font::applyFont(IDirectFBSurface* surface)
   DFBResult ret = surface->SetFont(surface, _font);
   if (ret)
     {
-      ILOG_ERROR("Error while setting font!");
+      ILOG_ERROR(ILX_FONT, "Error while setting font!\n");
       return false;
     }
 
@@ -247,7 +258,7 @@ Font::loadFont()
       release();
       if (_fileName == "")
         {
-          ILOG_ERROR("Font filename is invalid.");
+          ILOG_ERROR(ILX_FONT, "Font filename is invalid.\n");
           return false;
         }
 
@@ -255,11 +266,13 @@ Font::loadFont()
           _fileName.c_str(), &_desc, &_font);
       if (ret)
         {
-          ILOG_ERROR("Error while creating font %s!", _fileName.c_str());
+          ILOG_ERROR(ILX_FONT,
+              "Error while creating font %s!\n", _fileName.c_str());
           return false;
         }
 
-      ILOG_DEBUG("Font [%s:%p] is created.", _fileName.c_str(), _font);
+      ILOG_DEBUG(ILX_FONT,
+          "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
       _modified = false;
     }
 
@@ -273,7 +286,7 @@ Font::release()
     {
       DirectResult ret = _font->Release(_font);
       if (ret)
-        ILOG_ERROR("Error while releasing font: %x", ret);
+        ILOG_ERROR(ILX_FONT, "Error while releasing font: %x\n", ret);
       _font = NULL;
     }
 }

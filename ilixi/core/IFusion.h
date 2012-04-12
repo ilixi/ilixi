@@ -27,7 +27,6 @@
 // DirectFB-Fusion
 extern "C"
 {
-#include <linux/fusion.h>
 #include <fusion/fusion.h>
 #include <fusion/shmalloc.h>
 #include <fusion/call.h>

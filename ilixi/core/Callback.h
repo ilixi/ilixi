@@ -28,7 +28,7 @@ namespace ilixi
 {
   class Callback
   {
-    friend class Application;
+    friend class Window;
 
   public:
 

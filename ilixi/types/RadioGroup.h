@@ -62,6 +62,12 @@ namespace ilixi
     add(RadioButton* radio);
 
     /*!
+     * Remove a radio button from this group.
+     */
+    void
+    remove(RadioButton* radio);
+
+    /*!
      * Unchecks selected button and selects given button.
      *
      * @param radio button to select.

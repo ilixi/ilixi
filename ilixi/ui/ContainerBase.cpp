@@ -29,7 +29,7 @@
 using namespace ilixi;
 
 ContainerBase::ContainerBase(Widget* parent) :
-  Widget(parent), _layout(NULL)
+    Widget(parent), _layout(NULL)
 {
   setLayout(new LayoutBase(this));
   setInputMethod(PointerInput);
@@ -56,6 +56,8 @@ ContainerBase::preferredSize() const
 Rectangle
 ContainerBase::childrenRect() const
 {
+  // TODO return childrenRect()
+  return Rectangle();
 }
 
 unsigned int
@@ -68,6 +70,12 @@ bool
 ContainerBase::addWidget(Widget* widget)
 {
   return _layout->addWidget(widget);
+}
+
+bool
+ContainerBase::removeWidget(Widget* widget)
+{
+  return _layout->removeWidget(widget);
 }
 
 LayoutBase*
@@ -115,6 +123,30 @@ ContainerBase::doLayout()
     parent()->doLayout();
 }
 
+bool
+ContainerBase::widgetToFront(Widget* widget)
+{
+  return _layout->raiseChildToFront(widget);
+}
+
+bool
+ContainerBase::widgetToBack(Widget* widget)
+{
+  return _layout->lowerChildToBottom(widget);
+}
+
+bool
+ContainerBase::lowerWidget(Widget* widget)
+{
+  return _layout->lowerChild(widget);
+}
+
+bool
+ContainerBase::raiseWidget(Widget* widget)
+{
+  return _layout->raiseChild(widget);
+}
+
 void
 ContainerBase::updateLayoutGeometry()
 {
@@ -129,8 +161,8 @@ ContainerBase::consumePointerEvent(const PointerEvent& pointerEvent)
       if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
         {
           // priority is given to most recent child.
-          for (WidgetListReverseIterator it = _children.rbegin(); it
-              != _children.rend(); ++it)
+          for (WidgetListReverseIterator it = _children.rbegin();
+              it != _children.rend(); ++it)
             {
               // event is consumed by child.
               if (((Widget*) *it)->acceptsPointerInput()

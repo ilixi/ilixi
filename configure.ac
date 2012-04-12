@@ -54,11 +54,11 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 ILIXI_LOGGER_ENABLED=0
 LOGGER_LEVEL="none"
 AC_SUBST(ILIXI_LOGGER_ENABLED)
-AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages to syslog @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 LOGGER_LEVEL="up to error"])
+AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 LOGGER_LEVEL="up to error"])
 
 ILIXI_LOG_DEBUG_ENABLED=0
 AC_SUBST(ILIXI_LOG_DEBUG_ENABLED)
-AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages to syslog @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 ILIXI_LOG_DEBUG_ENABLED=1 LOGGER_LEVEL="up to debug"])
+AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 ILIXI_LOG_DEBUG_ENABLED=1 LOGGER_LEVEL="up to debug" CPPFLAGS="$CPPFLAGS -DDIRECT_ENABLE_DEBUG"])
 
 ILIXI_MULTI_ENABLED=0
 ILIXI_MULTI="no"
@@ -91,12 +91,11 @@ AC_FUNC_ERROR_AT_LINE
 
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.4.9
-SAWMAN_REQ_VERSION=1.5.3
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 
 AC_MSG_NOTICE([checking if dependencies are installed...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -142,6 +141,10 @@ AC_CONFIG_FILES([ \
 		bin/gallery/images/Makefile \
 		bin/demo2/Makefile \
 		bin/demo3/Makefile \
+		bin/demo4/Makefile \
+		bin/stacking/Makefile \
+		bin/compositor/Makefile \
+		bin/compositor/images/Makefile \
 		ilixi-$VERSION.pc:ilixi.pc.in
 ])
 AC_OUTPUT
@@ -162,4 +165,3 @@ AC_MSG_RESULT([
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
 ]);
-

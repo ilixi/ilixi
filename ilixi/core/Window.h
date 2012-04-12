@@ -25,9 +25,10 @@
 #define ILIXI_WINDOW_H_
 
 #include "core/EventManager.h"
+#include "core/SurfaceEventListener.h"
+#include "core/Callback.h"
 #include "types/Size.h"
 #include "lib/TweenAnimation.h"
-#include "core/Callback.h"
 
 namespace ilixi
 {
@@ -45,6 +46,8 @@ namespace ilixi
     friend class Font;
     friend class Callback;
     friend class Widget;
+    friend class SurfaceView; // TODO Remove this line!
+    friend class SurfaceEventListener;
 
   public:
 
@@ -113,7 +116,7 @@ namespace ilixi
      * only once by main Application during its construction.
      */
     static bool
-    initDFB(int argc, char **argv);
+    initDFB(int argc, char **argv, AppOptions opts);
 
     /*!
      * Creates a DFBWindow and acquires an interface to its surface.
@@ -127,6 +130,12 @@ namespace ilixi
     void
     releaseDFBWindow();
 
+    /*!
+     * Returns DirectFB interface.
+     */
+    static IDirectFB*
+    getDFB();
+
   private:
     //! This property stores parent window, if any.
     Window* _parentWindow;
@@ -134,8 +143,14 @@ namespace ilixi
     typedef std::list<Callback*> CallbackList;
     //! List of callbacks
     static CallbackList __callbacks;
-    //! Serialises access to static variables.
+    //! Serialises access to __callbacks.
     static pthread_mutex_t __cbMutex;
+
+    typedef std::list<SurfaceEventListener*> SurfaceListenerList;
+    //! List of surface event listeners.
+    static SurfaceListenerList __selList;
+    //! Serialises access to _selList.
+    static pthread_mutex_t __selMutex;
 
     //! DirectFB interface is initialised by first window.
     static IDirectFB* __dfb;
@@ -157,12 +172,6 @@ namespace ilixi
     animateWindow();
 
     /*!
-     * Returns DirectFB interface.
-     */
-    static IDirectFB*
-    getDFB();
-
-    /*!
      * Releases DirectFB resources.
      */
     static void
@@ -179,6 +188,21 @@ namespace ilixi
 
     static bool
     removeCallback(Callback* cb);
+
+    static void
+    handleCallbacks();
+
+    static bool
+    addSurfaceEventListener(SurfaceEventListener* sel);
+
+    static bool
+    removeSurfaceEventListener(SurfaceEventListener* sel);
+
+    /*!
+     * Sends incoming surface event to a surface event listener object.
+     */
+    static void
+    handleSurfaceEvent(const DFBSurfaceEvent& event);
 
     /*!
      * Implemented in WindowWidget.

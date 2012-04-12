@@ -51,6 +51,7 @@ ScrollArea::ScrollArea(Widget* parent) :
   _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
 
   _content = new LayoutBase();
+  addChild(_content);
 }
 
 ScrollArea::~ScrollArea()
@@ -85,6 +86,8 @@ ScrollArea::setContent(Widget* content)
         _content->_surfaceDesc = BlitDescription;
       addChild(_content);
       raiseChildToFront(_content);
+      updateHThumb();
+      updateVThumb();
     }
 }
 
@@ -92,18 +95,23 @@ void
 ScrollArea::setScollerAlways(bool horizontal, bool vertical)
 {
   if (horizontal)
+    _options |= HorizontalAlways;
+  else
     _options &= ~HorizontalAuto;
+
   if (vertical)
-    _options &= ~VerticalAuto;
+    _options |= VerticalAlways;
+  else
+    _options &= ~HorizontalAuto;
 }
 
 void
 ScrollArea::setAutoScrolling(bool autoScroll)
 {
   if (autoScroll)
-    _options |= HorizontalAuto | VerticalAuto;
+    _options |= (HorizontalAuto | VerticalAuto);
   else
-    _options |= HorizontalAuto | VerticalAuto;
+    _options &= ~(HorizontalAuto | VerticalAuto);
 }
 
 void
@@ -196,6 +204,12 @@ ScrollArea::paint(const Rectangle& rect)
 }
 
 void
+ScrollArea::doLayout()
+{
+  updateScollAreaGeometry();
+}
+
+void
 ScrollArea::pointerGrabEvent(const PointerEvent& event)
 {
   _sCur = Point(event.x, event.y);
@@ -278,7 +292,7 @@ ScrollArea::compose()
   if (_aniVal)
     {
       p.setBrush(Color(0, 0, 0, _aniVal * 255));
-      if (_options & HorizontalScroll)
+      if (_options & DrawHorizontalThumb)
         {
           int y = _thumbs.y();
           int h = 10;
@@ -287,7 +301,7 @@ ScrollArea::compose()
           p.fillRectangle(x, y, w, h);
         }
 
-      if (_options & VerticalScroll)
+      if (_options & DrawVerticalThumb)
         {
           int x = _thumbs.x();
           int w = 10;
@@ -300,33 +314,52 @@ ScrollArea::compose()
 }
 
 void
+ScrollArea::updateHThumb()
+{
+  if (_options & HorizontalAlways)
+    _options |= (HorizontalScroll | DrawHorizontalThumb);
+  else if ((_options & HorizontalAuto) && _content->width() > width())
+    _options |= (HorizontalScroll | DrawHorizontalThumb);
+  else
+    _options &= ~(HorizontalScroll | DrawHorizontalThumb);
+}
+
+void
+ScrollArea::updateVThumb()
+{
+  if (_options & VerticalAlways)
+    _options |= (VerticalScroll | DrawVerticalThumb);
+  else if ((_options & VerticalAuto) && _content->height() > height())
+    _options |= (VerticalScroll | DrawVerticalThumb);
+  else
+    _options &= ~(VerticalScroll | DrawVerticalThumb);
+}
+
+void
 ScrollArea::updateScollAreaGeometry()
 {
-  _content->setSize(_content->preferredSize());
-  _sMax = Rectangle(width() - _content->width(), height() - _content->height(),
-      width() / 3, height() / 3);
-  _thumbs = Rectangle(width() - 11, height() - 11,
-      width() * width() / _content->width() - 4,
-      height() * height() / _content->height() - 4);
+  _content->moveTo(0,0);
+  Size contentSize = _content->preferredSize();
+  if (contentSize.isValid())
+    {
+      _content->setSize(contentSize);
 
-  if (_options & HorizontalAlways)
-    _options |= HorizontalScroll;
-  else if (_options & HorizontalAuto && _content->width() > width())
-    _options |= HorizontalScroll;
-  else
-    _options &= ~HorizontalScroll;
+      _sMax = Rectangle(width() - _content->width(),
+          height() - _content->height(), width() / 3, height() / 3);
 
-  if (_content->width() < width() && _content->xConstraint() & GrowPolicy)
+      _thumbs = Rectangle(width() - 11, height() - 11,
+          width() * width() / _content->width() - 4,
+          height() * height() / _content->height() - 4);
+    }
+
+  updateHThumb();
+
+  if (_content->width() < width() && (_content->xConstraint() & GrowPolicy))
     _content->setWidth(width());
 
-  if (_options & VerticalAlways)
-    _options |= VerticalScroll;
-  else if (_options & VerticalAuto && _content->height() > height())
-    _options |= VerticalScroll;
-  else
-    _options &= ~VerticalScroll;
+  updateVThumb();
 
-  if (_content->height() < height() && _content->yConstraint() & GrowPolicy)
+  if (_content->height() < height() && (_content->yConstraint() & GrowPolicy))
     _content->setHeight(height());
 }
 

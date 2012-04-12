@@ -73,6 +73,12 @@ namespace ilixi
     DFBSurface();
 
     /*!
+     * Returns the DirectFB surface ID, if there is no surface returns 0.
+     */
+    DFBSurfaceID
+    DFBSurfaceId() const;
+
+    /*!
      * This method is used for modifying the current geometry of DirectFB surface.
      *
      * @param geometry New surface geometry.

@@ -42,13 +42,15 @@ namespace ilixi
     {
       HorizontalAuto = 0x001, //!< Makes horizontal thumb visible automatically.
       HorizontalAlways = 0x002, //!< Makes horizontal thumb always visible.
-      HorizontalScroll = 0x004, //!< Whether horizontal thumb is visible or not.
+      HorizontalScroll = 0x004, //!< Whether horizontal scrolling is enabled.
       VerticalAuto = 0x008, //!< Makes vertical thumb visible automatically.
       VerticalAlways = 0x010, //!< Makes vertical thumb always visible automatically.
-      VerticalScroll = 0x020, //!< Whether vertical thumb is visible or not.
+      VerticalScroll = 0x020, //!< Whether vertical scrolling is enabled .
       SmoothScrolling = 0x040, //!< Content has its own surface.
-      TargetedScroll = 0x080,   //!< Alters scrolling mode, used for scrolling to desired coordinates.
-      DrawFrame = 0x100
+      TargetedScroll = 0x080, //!< Alters scrolling mode, used for scrolling to desired coordinates.
+      DrawFrame = 0x100, //!< Draws frame around scroll area
+      DrawHorizontalThumb = 0x200, //!< Flag controlling drawing of horizontal thumb
+      DrawVerticalThumb = 0x400 //!< Flag controlling drawing of vertical thumb
     };
 
     /*!
@@ -118,6 +120,9 @@ namespace ilixi
     virtual void
     paint(const Rectangle& rect);
 
+    virtual void
+    doLayout();
+
   protected:
     /*!
      * Gets ready for scrolling.
@@ -179,6 +184,12 @@ namespace ilixi
 
     //! This is used to calculate weighted average velocity.
     std::queue<PointerEvent> _events;
+
+    void
+    updateHThumb();
+
+    void
+    updateVThumb();
 
     //! Sets helper variables and dimension of content.
     void

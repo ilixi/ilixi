@@ -26,6 +26,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
+
 WindowWidget::WindowWidget(Widget* parent) :
     Window(), Frame(parent)
 {
@@ -39,7 +41,6 @@ WindowWidget::WindowWidget(Widget* parent) :
   setRootWindow(this);
   _eventManager->setOwner(this);
   setNeighbours(this, this, this, this);
-  ILOG_DEBUG("Owner : %p", this);
 }
 
 WindowWidget::~WindowWidget()
@@ -47,6 +48,7 @@ WindowWidget::~WindowWidget()
   pthread_mutex_destroy(&_updates._listLock);
   sem_destroy(&_updates._updateReady);
   sem_destroy(&_updates._paintReady);
+  ILOG_DEBUG(ILX_WINDOWWIDGET, "~ILX_WINDOWWIDGET\n");
 }
 
 EventManager* const
@@ -153,8 +155,9 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
   // handle all other events...
   Widget* target = this;
-  if (_eventManager->grabbedWidget())
-    target = _eventManager->grabbedWidget();
+  Widget* grabbed = _eventManager->grabbedWidget();
+  if (grabbed && grabbed->visible())
+    target = grabbed;
 
   switch (event.type)
     {

@@ -33,7 +33,7 @@ namespace ilixi
   /*!
    * This class implements basic animation functionality.
    */
-  class Animation : virtual public sigc::trackable
+  class Animation : public sigc::trackable
   {
   public:
 

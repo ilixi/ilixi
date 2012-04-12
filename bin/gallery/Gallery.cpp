@@ -31,6 +31,7 @@ Gallery::Gallery(int argc, char* argv[]) :
 {
   setTitle("Gallery");
   setBackgroundFilled(true);
+  setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
 
   char file[128];
   int i = 0;
@@ -39,9 +40,9 @@ Gallery::Gallery(int argc, char* argv[]) :
     {
       for (int y = 0; y < 3; ++y)
         {
-          sprintf(file, "%sgallery/%d.jpg", ILIXI_DATADIR, i % 5);
+          sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
           widget = new ImageWidget(file);
-          widget->setGeometry(x * 198, y * 130, 197, 129);
+          widget->setGeometry(x * 198, y * 160, 197, 159);
           widget->setImage(new Image(file, 400, 275));
           widget->sigPressed.connect(sigc::mem_fun(this, &Gallery::showImage));
           addWidget(widget);

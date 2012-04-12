@@ -28,6 +28,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_PALETTE, "ilixi/graphics/Palette", "Palette Parser");
+
 ColorGroup::ColorGroup() :
   base(1, 1, 1), baseText(0, 0, 0), baseAlt(0.9, 0.9, 0.9),
       baseAltText(0, 0, 0), bgBottom(0.28, 0.28, 0.28), bgMid(0, 0, 0),
@@ -97,7 +99,7 @@ Palette::parsePalette(const char* palette)
   ctxt = xmlNewParserCtxt();
   if (ctxt == NULL)
     {
-      ILOG_ERROR("Failed to allocate parser context");
+      ILOG_ERROR(ILX_PALETTE, "Failed to allocate parser context\n");
       return false;
     }
 
@@ -111,7 +113,7 @@ Palette::parsePalette(const char* palette)
   if (doc == NULL)
     {
       xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR("Failed to parse palette: %s", palette);
+      ILOG_ERROR(ILX_PALETTE, "Failed to parse palette: %s\n", palette);
       return false;
     }
 
@@ -119,7 +121,7 @@ Palette::parsePalette(const char* palette)
     {
       xmlFreeDoc(doc);
       xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR("Failed to validate palette: %s", palette);
+      ILOG_ERROR(ILX_PALETTE, "Failed to validate palette: %s\n", palette);
       return false;
     }
 
@@ -330,7 +332,7 @@ Palette::parsePalette(const char* palette)
 
   xmlFreeDoc(doc);
   xmlFreeParserCtxt(ctxt);
-  ILOG_INFO("Parsed palette file: %s", palette);
+  ILOG_INFO(ILX_PALETTE, "Parsed palette file: %s\n", palette);
   return true;
 }
 

@@ -30,6 +30,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
+
 Stylist* Widget::_stylist = NULL;
 
 Widget::Widget(Widget* parent) :
@@ -476,6 +478,7 @@ Widget::paint(const Rectangle& rect)
       Rectangle intersect = _frameGeometry.intersected(rect);
       if (intersect.isValid())
         {
+//          ILOG_DEBUG(ILX_WIDGET, "Paint( %p )\n", this);
           compose();
           paintChildren(intersect);
         }
@@ -508,10 +511,13 @@ Widget::repaint(const Rectangle& rect)
 void
 Widget::update()
 {
-  if (_surface && _parent && !(_state & InvisibleState))
-    _parent->update(_frameGeometry);
-  else if (_surface)
-    paint(_frameGeometry);
+  if (_surface)
+    {
+      if (_parent && !(_state & InvisibleState))
+        _parent->update(_frameGeometry);
+      else
+        paint(_frameGeometry);
+    }
 }
 
 void
@@ -610,7 +616,7 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-  if (_rootWindow->_eventManager->grabbedWidget() == this
+  if (visible() && _rootWindow->_eventManager->grabbedWidget() == this
       || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
     {
       if (_inputMethod & PointerTracking
@@ -738,7 +744,7 @@ Widget::addChild(Widget* child)
   WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
   if (child == *it)
     {
-      ILOG_WARNING("Widget %p is already a child.", child);
+      ILOG_WARNING(ILX_WIDGET, "Widget %p is already a child.", child);
       return false;
     }
 
@@ -778,9 +784,10 @@ Widget::raiseChildToFront(Widget* child)
     return false;
 
   WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
-  if (child == *it)
+  if (child == *it && it != _children.end())
     {
-      std::iter_swap(it, _children.begin());
+      _children.erase(it);
+      _children.push_back(child);
       return true;
     }
   return false;
@@ -796,9 +803,10 @@ Widget::lowerChildToBottom(Widget* child)
     return false;
 
   WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
-  if (child == *it)
+  if (child == *it && it != _children.begin())
     {
-      std::iter_swap(it, _children.end());
+      _children.erase(it);
+      _children.push_front(child);
       return true;
     }
   return false;
@@ -814,10 +822,16 @@ Widget::raiseChild(Widget* child)
     return false;
 
   WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
-  if (child == *it && it != _children.begin())
+  if (child == *it && it != _children.end())
     {
-      std::iter_swap(it, --it);
-      return true;
+      WidgetListIterator temp = it;
+      temp++;
+      if (temp != _children.end())
+        {
+          std::iter_swap(it, temp);
+          return true;
+        }
+      return false;
     }
   return false;
 }
@@ -832,10 +846,16 @@ Widget::lowerChild(Widget* child)
     return false;
 
   WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
-  if (child == *it && it != _children.end())
+  if (child == *it && it != _children.begin())
     {
-      std::iter_swap(it, ++it);
-      return true;
+      WidgetListIterator temp = it;
+      temp--;
+      if (temp != _children.begin())
+        {
+          std::iter_swap(it, temp);
+          return true;
+        }
+      return false;
     }
   return false;
 }
@@ -888,6 +908,11 @@ Widget::updateFrameGeometry()
     _surface->setGeometry(surfaceGeometry());
 
   _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
+
+  // update children frame geometry
+  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
+      ++it)
+    ((Widget*) *it)->sigGeometryUpdated();
 }
 
 void
@@ -972,7 +997,8 @@ Widget::setRootWindow(Window* root)
       _rootWindow->_eventManager->addWidget(this);
     }
 
-  setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
+  setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left],
+      _neighbours[Right]);
 
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     (*it)->setRootWindow(root);

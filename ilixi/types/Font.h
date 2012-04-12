@@ -203,6 +203,9 @@ namespace ilixi
     bool
     operator!=(const Font &f);
 
+    void
+    addRef();
+
   private:
     //! Flag is set to true if font is modified.
     bool _modified;

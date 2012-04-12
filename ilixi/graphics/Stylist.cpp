@@ -282,8 +282,15 @@ Stylist::drawLabel(Painter* painter, Label* label)
 void
 Stylist::drawIcon(Painter* painter, Icon* icon)
 {
-  painter->drawImage(icon->image(),
-      Rectangle(0, 0, icon->width(), icon->height()));
+  if (icon->parent() && (icon->parent()->state() & PressedState))
+    {
+      painter->setBrush(Color(128, 128, 128));
+      painter->drawImage(icon->image(), 0, 0,
+          (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
+    }
+  else
+    painter->drawImage(icon->image(),
+        Rectangle(0, 0, icon->width(), icon->height()));
 }
 
 void

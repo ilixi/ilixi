@@ -58,9 +58,9 @@ namespace ilixi
   enum SurfaceDescription
   {
     DefaultDescription = 0x05, //!< (InitialiseSurface )
-    BlitDescription = 0x09, //!< Used if widget blits itself onto another widget, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
+    BlitDescription = 0x09, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
     WindowDescription = 0x15
-  //!< Used if widget is derived from Window, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
+  //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
   };
 
   /*!
@@ -105,7 +105,7 @@ namespace ilixi
   enum WidgetResizePolicy
   {
     GrowPolicy = 0x01, //!< Widget is able to grow and function properly.
-    ShrinkPolicy = 0x02,//!< Widget is able to shrink and function properly.
+    ShrinkPolicy = 0x02, //!< Widget is able to shrink and function properly.
     ExpandPolicy = 0x04, //!< Widget should get as much space as possible.
     IgnorePolicy = 0x08,
   //!< Widget is ignored by layout manager.
@@ -253,7 +253,7 @@ namespace ilixi
   {
     TopLeft = 0x01, //!< Top left corner.
     TopRight = 0x02, //!< Top right corner.
-    BottomLeft = 0x04,//!< Bottom left corner.
+    BottomLeft = 0x04, //!< Bottom left corner.
     BottomRight = 0x08
   //!< Bottom right corner.
   };
@@ -267,7 +267,7 @@ namespace ilixi
     LeftCorners = 0x05, //!< Left corners (TopLeft | BottomLeft).
     RightCorners = 0x0A, //!< Right corners (TopRight | BottomRight).
     TopCorners = 0x03, //!< Top corners (TopLeft | TopRight).
-    BottomCorners = 0x0C,//!< Bottom corners (BottomLeft | BottomRight).
+    BottomCorners = 0x0C, //!< Bottom corners (BottomLeft | BottomRight).
     AllCorners = 0x0F, //!< All corners (TopLeft | TopRight | BottomLeft | BottomRight).
     AllExceptTopLeft = 0x0E, //!< (TopRight | BottomLeft | BottomRight).
     AllExceptTopRight = 0x0D, //!< (TopLeft | BottomLeft | BottomRight).
@@ -276,6 +276,10 @@ namespace ilixi
   //!< (TopLeft | TopRight | BottomLeft).
   };
 
+  enum AppOptions
+  {
+    OptNone = 0x001, OptCompositor = 0x002,
+  };
 }
 
 #endif /* ILIXI_ENUMS_H_ */
