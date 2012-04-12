@@ -26,21 +26,21 @@
 using namespace ilixi;
 
 TextBase::TextBase(Widget* parent) :
-  Widget(parent), _font(NULL)
+    Widget(parent), _font(NULL)
 {
   sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
 }
 
 TextBase::TextBase(const std::string& text, Widget* parent) :
-  Widget(parent), _font(NULL), _layout(text)
+    Widget(parent), _font(NULL), _layout(text)
 {
   sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
 }
 
 TextBase::TextBase(const TextBase& tb) :
-  Widget(tb), _font(tb._font), _layout(tb._layout)
+    Widget(tb), _font(tb._font), _layout(tb._layout)
 {
   sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
@@ -98,10 +98,14 @@ TextBase::setLayoutAlignment(TextLayout::Alignment alignment)
 void
 TextBase::setFont(Font* font)
 {
-  delete _font;
-  _font = font;
-  doLayout();
-  sigFontChanged();
+  if (font)
+    {
+      delete _font;
+      _font = font;
+      _font->addRef();
+      doLayout();
+      sigFontChanged();
+    }
 }
 
 void

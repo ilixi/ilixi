@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 ToolButton::ToolButton(std::string text, Widget* parent) :
-  Button(text, parent), _toolButtonStyle(IconBeforeText)
+    Button(text, parent), _toolButtonStyle(IconBeforeText)
 {
   setConstraints(FixedConstraint, FixedConstraint);
   _layout.setSingleLine(true);
@@ -54,15 +54,13 @@ ToolButton::preferredSize() const
 
   if (checkable())
     {
-      if ((_toolButtonStyle == IconBelowText) || (_toolButtonStyle
-          == IconAboveText))
-        h
-            += stylist()->defaultParameter(
-                StyleHint::ButtonIndicator)
-                + stylist()->defaultParameter(StyleHint::ButtonOffset);
+      if ((_toolButtonStyle == IconBelowText)
+          || (_toolButtonStyle == IconAboveText))
+        h += stylist()->defaultParameter(StyleHint::ButtonIndicator)
+            + stylist()->defaultParameter(StyleHint::ButtonOffset);
       else
-        w = hBorder + vBorder + stylist()->defaultParameter(
-            StyleHint::ButtonIndicator)
+        w = hBorder + vBorder
+            + stylist()->defaultParameter(StyleHint::ButtonIndicator)
             + stylist()->defaultParameter(StyleHint::ButtonOffset);
     }
 
@@ -105,8 +103,8 @@ ToolButton::preferredSize() const
             {
               // IconBelowText or IconAboveText
               w += std::max(imgW, s.width());
-              h += imgH + s.height() + stylist()->defaultParameter(
-                  StyleHint::ButtonOffset);
+              h += imgH + s.height()
+                  + stylist()->defaultParameter(StyleHint::ButtonOffset);
               return Size(w, h);
             }
         }
@@ -156,8 +154,7 @@ ToolButton::updateTextLayoutGeometry()
       if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly)
           || (_toolButtonStyle == IconBeforeText))
         {
-          x = vBorder + stylist()->defaultParameter(
-              StyleHint::ButtonIndicator)
+          x = vBorder + stylist()->defaultParameter(StyleHint::ButtonIndicator)
               + stylist()->defaultParameter(StyleHint::ButtonOffset);
           wUsed = x + hBorder;
         }
@@ -197,13 +194,14 @@ ToolButton::updateTextLayoutGeometry()
     }
   else if (_toolButtonStyle == IconBelowText)
     {
+      Size s = textExtents();
+      x = (width() - wUsed - s.width()) / 2;
       _layout.setBounds(x, vBorder, width() - wUsed, textHeight);
       if (iconW)
         {
-          _icon->moveTo(
-              (width() - iconW) / 2,
-              vBorder + textHeight + 1 + stylist()->defaultParameter(
-                  StyleHint::ButtonOffset));
+          _icon->moveTo((width() - iconW) / 2,
+              vBorder + textHeight + 1
+                  + stylist()->defaultParameter(StyleHint::ButtonOffset));
         }
     }
   else //  IconAboveText
@@ -214,7 +212,11 @@ ToolButton::updateTextLayoutGeometry()
           _icon->moveTo((width() - iconW) / 2, y + 1);
           y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset) + 1;
         }
-      _layout.setBounds(hBorder, y, width() - wUsed, textHeight);
+
+      Size s = textExtents();
+      x = (width() - s.width()) / 2;
+
+      _layout.setBounds(x, y, width() - x, textHeight);
     }
   _layout.doLayout(font());
 }

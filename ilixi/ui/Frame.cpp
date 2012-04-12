@@ -37,6 +37,7 @@ Frame::Frame(Widget* parent) :
 
 Frame::~Frame()
 {
+  ILOG_DEBUG(ILX_CORE, "~Frame\n");
 }
 
 int

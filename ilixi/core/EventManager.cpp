@@ -85,7 +85,7 @@ EventManager::addWidget(Widget* widget)
 void
 EventManager::removeWidget(Widget* widget)
 {
-  if (!widget || widgets.size() <= 0)
+  if (!widget || widgets.empty())
     return;
 
   widgetListIterator it = std::find(widgets.begin(), widgets.end(), widget);

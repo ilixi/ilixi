@@ -24,6 +24,7 @@
 #include "Demo2.h"
 #include "ScrollItem.h"
 #include "ui/ScrollArea.h"
+#include "ui/HBoxLayout.h"
 #include "ui/VBoxLayout.h"
 #include "ui/PushButton.h"
 #include <sigc++/bind.h>
@@ -35,22 +36,26 @@ Demo2::Demo2(int argc, char* argv[]) :
 {
   setTitle("Demo 2");
   setBackgroundFilled(true);
+  setLayout(new HBoxLayout());
 
   ScrollArea* area = new ScrollArea();
   addWidget(area);
-  area->setGeometry(0, 0, 350, 350);
+//  area->setGeometry(0, 0, 350, 350);
+  area->setMaximumSize(350, 900);
 
   _icon = new Icon();
-  _icon->setGeometry(355, 0, 400, 350);
+//  _icon->setGeometry(355, 0, 400, 350);
+  _icon->setMinimumSize(400, 350);
   addWidget(_icon);
 
   // Add scrollitems
   VBoxLayout* box = new VBoxLayout();
   box->setSpacing(0);
+  area->setContent(box);
 
   ScrollItem* item;
   char file[128];
-  for (int i = 0; i < 20; ++i)
+  for (int i = 0; i < 40; ++i)
     {
       sprintf(file, "%sgallery/%d.jpg", ILIXI_DATADIR, i % 5);
       item = new ScrollItem(file);
@@ -58,9 +63,6 @@ Demo2::Demo2(int argc, char* argv[]) :
       box->addWidget(item);
       item->sigPressed.connect(sigc::mem_fun(this, &Demo2::showImage));
     }
-
-  area->setContent(box);
-
 }
 
 Demo2::~Demo2()

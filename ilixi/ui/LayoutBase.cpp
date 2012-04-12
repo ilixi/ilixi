@@ -31,12 +31,11 @@ LayoutBase::LayoutBase(Widget* parent) :
 {
   _group = new RadioGroup();
   setInputMethod(PointerInput);
-  sigGeometryUpdated.connect(
-      sigc::mem_fun(this, &LayoutBase::updateChildrenFrameGeometry));
 }
 
 LayoutBase::~LayoutBase()
 {
+  delete _group;
 }
 
 int
@@ -87,7 +86,7 @@ LayoutBase::setSpacing(unsigned int spacing)
   if (_spacing != spacing)
     {
       _spacing = spacing;
-      _modified = true;
+      doLayout();
     }
 }
 
@@ -96,10 +95,24 @@ LayoutBase::addWidget(Widget* widget)
 {
   if (addChild(widget))
     {
-      _modified = true;
+      doLayout();
       RadioButton* radio = dynamic_cast<RadioButton*>(widget);
       if (radio)
         _group->add(radio);
+      return true;
+    }
+  return false;
+}
+
+bool
+LayoutBase::removeWidget(Widget* widget)
+{
+  RadioButton* radio = dynamic_cast<RadioButton*>(widget);
+  if (removeChild(widget))
+    {
+      doLayout();
+      if (radio)
+        _group->select(NULL);
       return true;
     }
   return false;
@@ -112,8 +125,8 @@ LayoutBase::tile()
   Widget* left = getNeighbour(Left);
   Widget* right = getNeighbour(Right);
 
-  for (WidgetListConstIterator it = _children.begin(); it != _children.end();
-      ++it)
+  for (WidgetListConstIterator it = _children.begin(), itLast =
+      (++_children.rbegin()).base(); it != _children.end(); ++it)
     {
       current = (Widget*) *it;
       if (current->visible())
@@ -122,7 +135,7 @@ LayoutBase::tile()
           if (!current->size().isValid())
             current->setSize(current->preferredSize());
 
-          if (it != _children.end())
+          if (it != itLast)
             {
               WidgetListConstIterator itNext = it;
               right = (Widget*) *(++itNext);
@@ -181,12 +194,3 @@ LayoutBase::consumePointerEvent(const PointerEvent& pointerEvent)
   return false;
 }
 
-void
-LayoutBase::updateChildrenFrameGeometry()
-{
-  // XXX need tiling here?
-  _modified = true;
-  for (WidgetList::const_iterator it = _children.begin(); it != _children.end();
-      ++it)
-    ((Widget*) *it)->sigGeometryUpdated();
-}

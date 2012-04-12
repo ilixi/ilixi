@@ -8,12 +8,12 @@
 #ifndef IMAGEWIDGET_H_
 #define IMAGEWIDGET_H_
 
-#include "ui/TextBase.h"
+#include "ui/Button.h"
 #include "lib/TweenAnimation.h"
 
 #define POINTER_MODE true
 
-class ImageWidget : public ilixi::TextBase
+class ImageWidget : public ilixi::Button
 {
 public:
   ImageWidget(const std::string& text, ilixi::Widget* parent = 0);

@@ -27,8 +27,12 @@
 
 using namespace ilixi;
 
+// TODO Utilise or remove WidgetLayout!
+
+D_DEBUG_DOMAIN( ILX_WIDGETLAYOUT, "ilixi/types/WidgetLayout", "WidgetLayout");
+
 WidgetLayout::WidgetLayout(Widget* parent) :
-  _parent(parent), _modified(true), _spacing(5)
+    _parent(parent), _modified(true), _spacing(5)
 {
 }
 
@@ -113,7 +117,7 @@ WidgetLayout::addWidget(Widget* widget)
       _widgets.end(), widget);
   if (widget == *it)
     {
-      ILOG_WARNING("Cannot add duplicate widget %p!", widget);
+      ILOG_WARNING(ILX_WIDGETLAYOUT, "Cannot add duplicate widget %p!", widget);
       return false;
     }
 
@@ -160,27 +164,28 @@ WidgetLayout::createCache(ElementList* cache)
 {
   cache->clear();
   CacheElement e;
-  for (Widget::WidgetListConstIterator it = _widgets.begin(); it
-      != _widgets.end(); ++it)
+  for (Widget::WidgetListConstIterator it = _widgets.begin();
+      it != _widgets.end(); ++it)
     {
       e.widget = ((Widget*) *it);
-      if (e.widget->visible() && (e.widget->xConstraint() != IgnoredConstraint
-          || e.widget->yConstraint() != IgnoredConstraint))
+      if (e.widget->visible()
+          && (e.widget->xConstraint() != IgnoredConstraint
+              || e.widget->yConstraint() != IgnoredConstraint))
         {
           e.size = e.widget->preferredSize();
 
           // handle min-max width (min has priority)
           if (e.size.width() < e.widget->minWidth())
             e.size.setWidth(e.widget->minWidth());
-          else if (e.widget->maxWidth() > 0 && e.size.width()
-              > e.widget->maxWidth())
+          else if (e.widget->maxWidth() > 0
+              && e.size.width() > e.widget->maxWidth())
             e.size.setWidth(e.widget->maxWidth());
 
           // handle min-max height (min has priority)
           if (e.size.height() < e.widget->minHeight())
             e.size.setHeight(e.widget->minHeight());
-          else if (e.widget->maxHeight() > 0 && e.size.height()
-              > e.widget->maxHeight())
+          else if (e.widget->maxHeight() > 0
+              && e.size.height() > e.widget->maxHeight())
             e.size.setHeight(e.widget->maxHeight());
 
           cache->push_back(e);

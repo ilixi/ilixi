@@ -12,7 +12,7 @@
 using namespace ilixi;
 
 ImageWidget::ImageWidget(const std::string& text, Widget* parent) :
-  TextBase(text, parent), _val1(0), _valBounce(0), _iconT(0)
+    Button(text, parent), _val1(0), _valBounce(0), _iconT(0)
 {
   _inAni = new TweenAnimation();
   _inAni->addTween(Tween::CIRCLE, Tween::EASE_OUT, _val1, 0, 1);
@@ -31,6 +31,7 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent) :
 
 ImageWidget::~ImageWidget()
 {
+  delete _image;
   delete _inAni;
   delete _outAni;
 }
@@ -44,7 +45,7 @@ ImageWidget::setImage(Image* image)
 void
 ImageWidget::tweenSlot()
 {
-  repaint();
+  update();
 }
 
 void
@@ -56,7 +57,8 @@ ImageWidget::compose()
   // draw image
   p.setBrush(Color(0, 0, 0, 125 + _val1 * 130));
   p.drawImage(_image, -20 * _val1, -20 * _val1, width() + 40 * _val1,
-      height() + 40 * _val1, DSBLIT_BLEND_COLORALPHA);
+      height() + 40 * _val1,
+      (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_COLORALPHA));
 
   // overlay rect
   int y = height() - _valBounce * 50;
@@ -87,6 +89,7 @@ ImageWidget::pointerButtonUpEvent(const PointerEvent& event)
 void
 ImageWidget::enterEvent(const PointerEvent& event)
 {
+//  sigFocused(this);
   _outAni->stop();
   _inAni->start();
 }

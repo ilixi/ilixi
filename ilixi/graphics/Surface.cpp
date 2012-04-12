@@ -27,6 +27,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_SURFACE, "ilixi/graphics/Surface", "Surface");
+
 Surface::Surface() :
     _dfbSurface(NULL), _parentSurface(NULL)
 {
@@ -55,7 +57,8 @@ Surface::createDFBSurface(int width, int height)
       &_dfbSurface);
   if (ret)
     {
-      ILOG_ERROR("Cannot create surface: %s", DirectFBErrorString(ret));
+      ILOG_ERROR(
+          ILX_SURFACE, "Cannot create surface: %s", DirectFBErrorString(ret));
       return false;
     }
   _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
@@ -73,7 +76,8 @@ Surface::createDFBSubSurface(const Rectangle& geometry,
       &_dfbSurface);
   if (ret)
     {
-      ILOG_ERROR("Cannot get sub-surface: %s", DirectFBErrorString(ret));
+      ILOG_ERROR(
+          ILX_SURFACE, "Cannot get sub-surface: %s", DirectFBErrorString(ret));
       return false;
     }
   _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
@@ -84,6 +88,17 @@ IDirectFBSurface*
 Surface::DFBSurface()
 {
   return _dfbSurface;
+}
+
+DFBSurfaceID
+Surface::DFBSurfaceId() const
+{
+  unsigned int id = 0;
+  if (_dfbSurface)
+    _dfbSurface->GetID(_dfbSurface, &id);
+  else
+    ILOG_ERROR(ILX_SURFACE, "Cannot get surface id!");
+  return id;
 }
 
 void
@@ -102,28 +117,28 @@ Surface::setGeometry(int x, int y, int width, int height)
       DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
           &r);
       if (ret)
-        ILOG_ERROR("Cannot set geometry: %s", DirectFBErrorString(ret));
+        ILOG_ERROR(
+            ILX_SURFACE, "Cannot set geometry: %s", DirectFBErrorString(ret));
     }
   else
-    ILOG_ERROR("No Parent Surface, need to create surface again!");
+    ILOG_ERROR(ILX_SURFACE, "No Parent Surface, need to create surface again!");
 }
 
 void
 Surface::flip()
 {
-  // FIXME use DSFLIP_FLUSH?
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_QUEUE);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_FLUSH);
   if (ret)
-    ILOG_ERROR("Flip error: %s", DirectFBErrorString(ret));
+    ILOG_ERROR(ILX_SURFACE, "Flip error: %s", DirectFBErrorString(ret));
 }
 
 void
 Surface::flip(const Rectangle& rect)
 {
   DFBRegion r = rect.dfbRegion();
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_QUEUE);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_FLUSH);
   if (ret)
-    ILOG_ERROR("Flip error: %s", DirectFBErrorString(ret));
+    ILOG_ERROR(ILX_SURFACE, "Flip error: %s", DirectFBErrorString(ret));
 }
 
 void
@@ -131,7 +146,7 @@ Surface::lock()
 {
   int rc = pthread_mutex_lock(&_surfaceLock);
   if (rc != 0)
-    ILOG_ERROR("Error while locking surface!");
+    ILOG_ERROR(ILX_SURFACE, "Error while locking surface!");
 }
 
 void
@@ -139,7 +154,7 @@ Surface::unlock()
 {
   int rc = pthread_mutex_unlock(&_surfaceLock);
   if (rc != 0)
-    ILOG_ERROR("Error while unlocking surface!");
+    ILOG_ERROR(ILX_SURFACE, "Error while unlocking surface!");
 }
 
 void
@@ -147,7 +162,7 @@ Surface::clear()
 {
   DFBResult ret = _dfbSurface->Clear(_dfbSurface, 0, 0, 0, 0);
   if (ret)
-    ILOG_ERROR("Clear error: %s", DirectFBErrorString(ret));
+    ILOG_ERROR(ILX_SURFACE, "Clear error: %s", DirectFBErrorString(ret));
 }
 
 void
@@ -180,7 +195,7 @@ Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
       DFBRectangle r = crop.dfbRect();
       DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, &r, x, y);
       if (ret)
-        ILOG_ERROR("Blit error: %s", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_SURFACE, "Blit error: %s", DirectFBErrorString(ret));
     }
 }
 
@@ -191,7 +206,7 @@ Surface::blit(IDirectFBSurface* source, int x, int y)
     {
       DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, NULL, x, y);
       if (ret)
-        ILOG_ERROR("Blit error: %s", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_SURFACE, "Blit error: %s", DirectFBErrorString(ret));
     }
 }
 
@@ -210,7 +225,7 @@ Surface::blit(Surface* source, int x, int y)
       DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->DFBSurface(), NULL,
           x, y);
       if (ret)
-        ILOG_ERROR("Blit error: %s", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_SURFACE, "Blit error: %s", DirectFBErrorString(ret));
     }
 }
 

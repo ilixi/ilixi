@@ -39,7 +39,7 @@ namespace ilixi
     /*!
      * Constructor.
      */
-    Application(int argc, char* argv[]);
+    Application(int argc, char* argv[], AppOptions opts = OptNone);
 
     /*!
      * Destructor.
@@ -111,11 +111,23 @@ namespace ilixi
     static void
     setStylist(Stylist* stylist);
 
+    void
+    postUserEvent(unsigned int type, void* data = NULL);
+
   private:
     //! This flag specifies if application window should occupy whole screen.
     bool _fullscreen;
     //! Background image of application.
     Image* _backgroundImage;
+
+    virtual void
+    handleUserEvent(const DFBUserEvent& event);
+
+    virtual bool
+    windowPreEventFilter(const DFBWindowEvent& event);
+
+    virtual bool
+    windowPostEventFilter(const DFBWindowEvent& event);
 
     /*!
      * This method is used if application has backgroundFilled set to true.

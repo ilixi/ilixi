@@ -1,12 +1,10 @@
-o Font methods, e.g. attributes, size, weight...
-o TextBase methods, e.g. modify font properties and layout.
+o Set Font attributes, e.g. for vertical text.    
 o StyleHints need revision.
-o Icon class to help with images on widgets.
-o Buttons
-o Horizontal and Vertical layouts
-
-o Should utilise Fusion Call instead of Reactor ?
-	- Could help with overloading MaestroCB in StatusBar and OSK.
-	- What about broadcasting a global Quit message?
-
-o SaWManize maestro, Application and Window properly.
+o Horizontal and Vertical layout H4W
+o LineInput text layout should move
+o TextArea
+o SurfaceView widget
+o ProgressBar and Slider
+o 9 segment stylist (uses images for drawing widget borders and filling)
+o Cairo and Pango support and painter/stylist methods
+o Multi Application Mode

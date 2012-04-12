@@ -29,7 +29,7 @@
 namespace ilixi
 {
 
-  class Spacer : public ilixi::Widget
+  class Spacer : public Widget
   {
   public:
     Spacer(Orientation orientation = Horizontal, Widget* parent = 0);

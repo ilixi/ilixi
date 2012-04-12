@@ -30,13 +30,15 @@
 using namespace ilixi;
 using namespace IMaestro;
 
-Application::Application(int argc, char* argv[]) :
+D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
+
+Application::Application(int argc, char* argv[], AppOptions opts) :
     AppBase(argc, argv), WindowWidget(), _fullscreen(false), _backgroundImage(
         NULL)
 {
   // TODO parse command line arguments here...
   // parse app-meta file...
-  initDFB(NULL, NULL);
+  initDFB(argc, argv, opts);
   setStylist(new Stylist());
   setBackgroundFilled(false);
   setMargins(5, 5, 5, 5);
@@ -48,7 +50,6 @@ Application::Application(int argc, char* argv[]) :
 #endif
   setTitle("Untitled");
   sigAbort.connect(sigc::mem_fun(this, &Application::quit));
-  ILOG_DEBUG("I am ready.");
   show();
 }
 
@@ -56,6 +57,7 @@ Application::~Application()
 {
   delete _backgroundImage;
   delete _stylist;
+  ILOG_DEBUG(ILX_APPLICATION, "~Application\n");
 #if ILIXI_MULTI_ENABLED
   while (true)
     {
@@ -82,15 +84,16 @@ Application::quit()
 void
 Application::exec()
 {
-  ILOG_INFO( "Starting...");
+  ILOG_INFO(ILX_APPLICATION, "Starting...\n");
 #if ILIXI_MULTI_ENABLED
   setAppState((AppState) (Idle | Hidden));
   callMaestro(ModeRequest, Visible);
 #else
   setAppState(Visible);
+  sigVisible();
 #endif
   // enter event loop
-  DFBWindowEvent event;
+  DFBEvent event;
   AppState state;
   while (true)
     {
@@ -104,18 +107,25 @@ Application::exec()
       else
         {
           // Run callbacks...
-          pthread_mutex_lock(&__cbMutex);
-          for (CallbackList::iterator it = __callbacks.begin();
-              it != __callbacks.end(); ++it)
-            ((Callback*) *it)->_func(((Callback*) *it)->_data);
-          if (!__callbacks.empty())
-            __buffer->WakeUp(__buffer);
-          pthread_mutex_unlock(&__cbMutex);
+          Window::handleCallbacks();
 
           // Handle events
           __buffer->WaitForEventWithTimeout(__buffer, 0, 100);
+
           while (__buffer->GetEvent(__buffer, DFB_EVENT(&event)) == DFB_OK)
-            __activeWindow->handleWindowEvent(event);
+            {
+              if (event.clazz == DFEC_USER)
+                handleUserEvent((const DFBUserEvent&) event);
+              else if (event.clazz == DFEC_WINDOW)
+                {
+                  if (!windowPreEventFilter((const DFBWindowEvent&) event))
+                    if (!__activeWindow->handleWindowEvent(
+                        (const DFBWindowEvent&) event))
+                      windowPostEventFilter((const DFBWindowEvent&) event);
+                }
+              else if (event.clazz == DFEC_SURFACE)
+                Window::handleSurfaceEvent((const DFBSurfaceEvent&) event);
+            }
 
           // Paint pending window updates for all windows...
           pthread_mutex_lock(&__windowMutex);
@@ -125,7 +135,7 @@ Application::exec()
           pthread_mutex_unlock(&__windowMutex);
         }
     }
-  ILOG_DEBUG( "Stopping...");
+  ILOG_DEBUG(ILX_APPLICATION, "Stopping...\n");
   sigQuit();
 #if ILIXI_MULTI_ENABLED
   callMaestro(Notification, Terminating);
@@ -140,7 +150,8 @@ Application::setBackgroundImage(std::string imagePath)
   _backgroundImage = new Image(imagePath);
   _backgroundImage->setSize(getWindowSize());
   setBackgroundFilled(true);
-  ILOG_DEBUG("Setting background to [%s]", imagePath.c_str());
+  ILOG_DEBUG(ILX_APPLICATION,
+      "Setting background to [%s]\n", imagePath.c_str());
 }
 
 void
@@ -194,6 +205,34 @@ Application::setStylist(Stylist* stylist)
   if (_stylist)
     return;
   _stylist = stylist;
+}
+
+void
+Application::postUserEvent(unsigned int type, void* data)
+{
+  DFBUserEvent event;
+  event.clazz = DFEC_USER;
+  event.type = type;
+  event.data = data;
+
+  __buffer->PostEvent(__buffer, DFB_EVENT(&event));
+}
+
+void
+Application::handleUserEvent(const DFBUserEvent& event)
+{
+}
+
+bool
+Application::windowPreEventFilter(const DFBWindowEvent& event)
+{
+  return false;
+}
+
+bool
+Application::windowPostEventFilter(const DFBWindowEvent& event)
+{
+  return false;
 }
 
 void

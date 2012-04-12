@@ -26,18 +26,20 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN( ILX_BRUSH, "ilixi/types/Brush", "Brush");
+
 Brush::Brush() :
-  _modified(true), _color(1, 1, 1)
+    _modified(true), _color(1, 1, 1)
 {
 }
 
 Brush::Brush(const Brush& brush) :
-  _modified(true), _color(brush._color)
+    _modified(true), _color(brush._color)
 {
 }
 
 Brush::Brush(const Color& color) :
-  _modified(true), _color(color)
+    _modified(true), _color(color)
 {
 }
 
@@ -78,7 +80,7 @@ Brush::applyBrush(IDirectFBSurface* surface)
           _color.blue(), _color.alpha());
       if (ret)
         {
-          ILOG_ERROR("Error while applying brush: %x", ret);
+          ILOG_ERROR(ILX_BRUSH, "Error while applying brush: %x", ret);
           return false;
         }
       _modified = false;

@@ -46,6 +46,7 @@ Painter::begin()
   applyBrush();
 
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
+//  dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
 }
 
 void
@@ -247,10 +248,11 @@ Painter::setClip(const Rectangle& rect)
 void
 Painter::resetClip()
 {
-  if (_state & Clipped) {
-    _myWidget->surface()->resetClip();
-    _state &= ~Clipped;
-  }
+  if (_state & Clipped)
+    {
+      _myWidget->surface()->resetClip();
+      _state &= ~Clipped;
+    }
 }
 
 void

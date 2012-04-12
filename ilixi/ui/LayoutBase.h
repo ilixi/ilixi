@@ -89,6 +89,14 @@ namespace ilixi
     addWidget(Widget* widget);
 
     /*!
+     * Removes and deletes a child widget.
+     *
+     * Returns true if successful.
+     */
+    virtual bool
+    removeWidget(Widget* widget);
+
+    /*!
      * Aligns widgets inside layout.
      *
      * You should reimplement this method in your layout classes.
@@ -139,9 +147,6 @@ namespace ilixi
      */
     bool
     consumePointerEvent(const PointerEvent& pointerEvent);
-
-    void
-    updateChildrenFrameGeometry();
   };
 
 }

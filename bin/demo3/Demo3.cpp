@@ -47,7 +47,8 @@ Demo3::Demo3(int argc, char* argv[]) :
   addWidget(lipLabel);
 
   LineInput *lip = new LineInput("Line input has some text...");
-  lip->setMaxLength(15);
+  lip->setMaximumSize(120, 100);
+//  lip->setMaxLength(15);
   addWidget(lip);
 
   CheckBox* cb1 = new CheckBox("Check 1");
