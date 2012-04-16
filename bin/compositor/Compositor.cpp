@@ -171,26 +171,24 @@ namespace ilixi
     _launcher->addApplication("Particle", "df_particle", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/particle.png");
 
-    // lite
-    _launcher->addApplication("List test", "lite_listtest", NULL,
-        ILIXI_DATADIR"compositor/listtest.png");
+    _launcher->addApplication("Texture", "df_texture", "--dfb:force-windowed",
+        ILIXI_DATADIR"compositor/texture.png");
 
-    _launcher->addApplication("ProgressBar", "lite_progressbar", NULL,
-        ILIXI_DATADIR"compositor/progressbar.png");
+    // lite
+    _launcher->addApplication("DFBTerm", "dfbterm", NULL,
+        ILIXI_DATADIR"compositor/dfbterm.png");
 
     // ilixi
     _launcher->addApplication("Gallery", "ilixi_demo1", NULL,
         ILIXI_DATADIR"compositor/gallery.png");
 
-    _launcher->addApplication("Demo 2", "ilixi_demo2", NULL,
-        ILIXI_DATADIR"compositor/demo2.png");
-
+    // others
     _launcher->addApplication("Video Player", "dfbtest_video",
-        ILIXI_DATADIR"compositor/louder.mp4 -f RGB32 -l --dfb:force-windowed",
+        ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",
         ILIXI_DATADIR"compositor/player.png");
 
-    _launcher->addApplication("ClanBomber 2", "clanbomber2", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/demo2.png");
+    _launcher->addApplication("ClanBomber 2", "clanbomber2",
+        "--dfb:force-windowed", ILIXI_DATADIR"compositor/clanbomber2.png");
   }
 
   IDirectFBWindow*
@@ -225,6 +223,7 @@ namespace ilixi
   Compositor::focusWindow(IDirectFBWindow* window)
   {
     static IDirectFBWindow* preWindow = NULL;
+    static IDirectFBWindow* currentWindow = NULL;
 
     if (preWindow && preWindow != window)
       {
@@ -234,11 +233,14 @@ namespace ilixi
         preWindow->SendEvent(preWindow, &event);
       }
 
-    DFBWindowEvent event;
-    event.flags = DWEF_NONE;
-    event.type = DWET_GOTFOCUS;
-    preWindow = window;
-    window->SendEvent(window, &event);
+    if (window != currentWindow)
+      {
+        DFBWindowEvent event;
+        event.flags = DWEF_NONE;
+        event.type = DWET_GOTFOCUS;
+        currentWindow = preWindow = window;
+        window->SendEvent(window, &event);
+      }
   }
 
   void
@@ -267,7 +269,6 @@ namespace ilixi
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
-//            _switchButton->hide();
             focusWindow(_window);
           }
         animSwitcher(true);
@@ -307,6 +308,7 @@ namespace ilixi
 
         if (_surfaces.size() > 1)
           _switchButton->show();
+        focusWindow(_currentSurface->_window);
       }
   }
 
@@ -321,8 +323,13 @@ namespace ilixi
         _currentSurface->hide();
         _currentSurface = lookUpSurfaceView(
             _switcher->getCurrentCW()->sourceID());
-        _launcherOn = false;
+        if (_launcherOn)
+          {
+            _launcherOn = false;
+            _launcher->setVisible(_launcherOn);
+          }
         _currentSurface->show();
+        _homeButton->show();
         focusWindow(_currentSurface->_window);
       }
   }
@@ -489,6 +496,12 @@ namespace ilixi
 
             if (_switcher->visible())
               animSwitcher(true);
+
+            if (_launcherOn)
+              {
+                _launcherOn = false;
+                _launcher->setVisible(_launcherOn);
+              }
 
             if (_switcher->getCurrentCW()->sourceID()
                 != _currentSurface->sourceID())

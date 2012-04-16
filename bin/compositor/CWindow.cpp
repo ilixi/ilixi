@@ -33,7 +33,7 @@ namespace ilixi
           0), _window(NULL)
   {
     setConstraints(FixedConstraint, FixedConstraint);
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(PointerInput);
 
     _opacityAni = new TweenAnimation();
     _opacityAni->setDuration(500);
@@ -126,6 +126,7 @@ namespace ilixi
   void
   WindowThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
+    sigFocused(this);
     sigSelected();
   }
 

@@ -70,7 +70,6 @@ namespace ilixi
   void
   HomeButton::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
-    ILOG_DEBUG(ILX, "PRESSED\n");
     if (_click)
       {
         sigPressed();

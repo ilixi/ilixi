@@ -33,6 +33,7 @@ namespace ilixi
 
   class WindowThumbnail : public SurfaceView, public TextBase
   {
+    friend class Switcher;
   public:
     WindowThumbnail(const std::string& name, Widget* parent = 0);
 
