@@ -191,12 +191,10 @@ namespace ilixi
         "--dfb:force-windowed", ILIXI_DATADIR"compositor/clanbomber2.png");
 
     // Check if installed
-    _launcher->addApplication("QML Viewer",
-        "/home/tarik/workspace/qtclean/bin/qmlviewer", "-qws -display directfb",
-        ILIXI_DATADIR"compositor/qt-qml.png");
+    _launcher->addApplication("QML Viewer", "qmlviewer",
+        "-qws -display directfb", ILIXI_DATADIR"compositor/qt-qml.png");
 
-    _launcher->addApplication("WebKitDFB",
-        "/home/tarik/workspace/WebKit/Programs/WebKitDFB", NULL,
+    _launcher->addApplication("WebKitDFB", "WebKitDFB", NULL,
         ILIXI_DATADIR"compositor/webkitdfb.png");
   }
 
