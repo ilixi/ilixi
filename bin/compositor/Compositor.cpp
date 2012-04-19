@@ -189,6 +189,7 @@ namespace ilixi
 
     _launcher->addApplication("ClanBomber 2", "clanbomber2",
         "--dfb:force-windowed", ILIXI_DATADIR"compositor/clanbomber2.png");
+
   }
 
   IDirectFBWindow*
@@ -223,7 +224,10 @@ namespace ilixi
   Compositor::focusWindow(IDirectFBWindow* window)
   {
     static IDirectFBWindow* preWindow = NULL;
+<<<<<<< HEAD
     static IDirectFBWindow* currentWindow = NULL;
+=======
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
 
     if (preWindow && preWindow != window)
       {
@@ -233,6 +237,7 @@ namespace ilixi
         preWindow->SendEvent(preWindow, &event);
       }
 
+<<<<<<< HEAD
     if (window != currentWindow)
       {
         DFBWindowEvent event;
@@ -241,6 +246,13 @@ namespace ilixi
         currentWindow = preWindow = window;
         window->SendEvent(window, &event);
       }
+=======
+    DFBWindowEvent event;
+    event.flags = DWEF_NONE;
+    event.type = DWET_GOTFOCUS;
+    preWindow = window;
+    window->SendEvent(window, &event);
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
   }
 
   void
@@ -269,6 +281,10 @@ namespace ilixi
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
+<<<<<<< HEAD
+=======
+//            _switchButton->hide();
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
             focusWindow(_window);
           }
         animSwitcher(true);
@@ -308,7 +324,10 @@ namespace ilixi
 
         if (_surfaces.size() > 1)
           _switchButton->show();
+<<<<<<< HEAD
         focusWindow(_currentSurface->_window);
+=======
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
       }
   }
 
@@ -323,6 +342,7 @@ namespace ilixi
         _currentSurface->hide();
         _currentSurface = lookUpSurfaceView(
             _switcher->getCurrentCW()->sourceID());
+<<<<<<< HEAD
         if (_launcherOn)
           {
             _launcherOn = false;
@@ -330,6 +350,10 @@ namespace ilixi
           }
         _currentSurface->show();
         _homeButton->show();
+=======
+        _launcherOn = false;
+        _currentSurface->show();
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
         focusWindow(_currentSurface->_window);
       }
   }
@@ -497,12 +521,15 @@ namespace ilixi
             if (_switcher->visible())
               animSwitcher(true);
 
+<<<<<<< HEAD
             if (_launcherOn)
               {
                 _launcherOn = false;
                 _launcher->setVisible(_launcherOn);
               }
 
+=======
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
             if (_switcher->getCurrentCW()->sourceID()
                 != _currentSurface->sourceID())
               {

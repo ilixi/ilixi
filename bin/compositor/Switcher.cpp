@@ -73,6 +73,8 @@ namespace ilixi
     _scrollArea->scrollTo(widget);
     _current = widget;
     _current->showOverlay();
+    _scrollArea->scrollTo(widget);
+    _current = widget;
     widget->setFocus();
     for (unsigned int i = 0; i < _windows.size(); ++i)
       if (_windows[i] == widget)
@@ -175,7 +177,11 @@ namespace ilixi
   void
   Switcher::tweenEndSlot()
   {
+<<<<<<< HEAD
     if (_aniVal < 1)
+=======
+    if (_aniVal == 0)
+>>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
       setVisible(false);
   }
 
