@@ -190,6 +190,14 @@ namespace ilixi
     _launcher->addApplication("ClanBomber 2", "clanbomber2",
         "--dfb:force-windowed", ILIXI_DATADIR"compositor/clanbomber2.png");
 
+    // Check if installed
+    _launcher->addApplication("QML Viewer",
+        "/home/tarik/workspace/qtclean/bin/qmlviewer", "-qws -display directfb",
+        ILIXI_DATADIR"compositor/qt-qml.png");
+
+    _launcher->addApplication("WebKitDFB",
+        "/home/tarik/workspace/WebKit/Programs/WebKitDFB", NULL,
+        ILIXI_DATADIR"compositor/webkitdfb.png");
   }
 
   IDirectFBWindow*
@@ -224,10 +232,7 @@ namespace ilixi
   Compositor::focusWindow(IDirectFBWindow* window)
   {
     static IDirectFBWindow* preWindow = NULL;
-<<<<<<< HEAD
     static IDirectFBWindow* currentWindow = NULL;
-=======
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
 
     if (preWindow && preWindow != window)
       {
@@ -237,7 +242,6 @@ namespace ilixi
         preWindow->SendEvent(preWindow, &event);
       }
 
-<<<<<<< HEAD
     if (window != currentWindow)
       {
         DFBWindowEvent event;
@@ -246,13 +250,7 @@ namespace ilixi
         currentWindow = preWindow = window;
         window->SendEvent(window, &event);
       }
-=======
-    DFBWindowEvent event;
-    event.flags = DWEF_NONE;
-    event.type = DWET_GOTFOCUS;
-    preWindow = window;
-    window->SendEvent(window, &event);
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
+
   }
 
   void
@@ -281,10 +279,6 @@ namespace ilixi
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
-<<<<<<< HEAD
-=======
-//            _switchButton->hide();
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
             focusWindow(_window);
           }
         animSwitcher(true);
@@ -323,11 +317,12 @@ namespace ilixi
         _homeButton->show();
 
         if (_surfaces.size() > 1)
-          _switchButton->show();
-<<<<<<< HEAD
+          {
+            _switchButton->show();
+            if (_switcher->visible())
+              _switcher->hide();
+          }
         focusWindow(_currentSurface->_window);
-=======
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
       }
   }
 
@@ -342,7 +337,7 @@ namespace ilixi
         _currentSurface->hide();
         _currentSurface = lookUpSurfaceView(
             _switcher->getCurrentCW()->sourceID());
-<<<<<<< HEAD
+
         if (_launcherOn)
           {
             _launcherOn = false;
@@ -350,10 +345,6 @@ namespace ilixi
           }
         _currentSurface->show();
         _homeButton->show();
-=======
-        _launcherOn = false;
-        _currentSurface->show();
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
         focusWindow(_currentSurface->_window);
       }
   }
@@ -521,20 +512,15 @@ namespace ilixi
             if (_switcher->visible())
               animSwitcher(true);
 
-<<<<<<< HEAD
             if (_launcherOn)
               {
                 _launcherOn = false;
                 _launcher->setVisible(_launcherOn);
               }
 
-=======
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
             if (_switcher->getCurrentCW()->sourceID()
                 != _currentSurface->sourceID())
               {
-//                _launcher->getCurrent()->getThumb()->setVisible(true);
-//                _launcher->doLayout();
                 _currentSurface->hide();
                 _currentSurface = lookUpSurfaceView(
                     _switcher->getCurrentCW()->sourceID());

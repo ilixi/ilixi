@@ -177,11 +177,7 @@ namespace ilixi
   void
   Switcher::tweenEndSlot()
   {
-<<<<<<< HEAD
     if (_aniVal < 1)
-=======
-    if (_aniVal == 0)
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
       setVisible(false);
   }
 

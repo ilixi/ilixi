@@ -126,10 +126,7 @@ namespace ilixi
   void
   WindowThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
-<<<<<<< HEAD
     sigFocused(this);
-=======
->>>>>>> dd9ff718f0b4b37b3774f8c02415c60ca511e02f
     sigSelected();
   }
 
