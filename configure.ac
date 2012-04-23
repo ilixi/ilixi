@@ -139,7 +139,6 @@ AC_CONFIG_FILES([ \
 		ilixi/types/Makefile \
 		ilixi/ui/Makefile \
 		bin/Makefile \
-		bin/maestro/Makefile \
 		bin/statusbar/Makefile \
 		bin/statusbar/images/Makefile \
 		bin/home/Makefile \
