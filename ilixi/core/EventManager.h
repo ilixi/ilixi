@@ -50,10 +50,8 @@ namespace ilixi
   public:
     /*!
      * Constructor.
-     *
-     * @param root
      */
-    EventManager(Window* root);
+    EventManager(WindowWidget* creator);
 
     /*!
      * Destructor.
@@ -89,18 +87,6 @@ namespace ilixi
      */
     void
     reset();
-
-    /*!
-     * Adds widget to internal list.
-     */
-    void
-    addWidget(Widget* widget);
-
-    /*!
-     * Removes widget from internal list.
-     */
-    void
-    removeWidget(Widget* widget);
 
     /*!
      * Sets widgets exposed flag and executes onEnter/onLeave methods of widgets.
@@ -143,28 +129,14 @@ namespace ilixi
     bool
     setOSKWidget(Widget* widget);
 
-    /*!
-     * Iterates internal list and selects next widget which is able to accept focus.
-     * <b> You should always use default arguments. </b>
-     *
-     * @param found
-     * @param iter
-     */
-    bool
-    selectNext(bool found = false, bool iter = false);
-
-    /*!
-     * Iterates internal list and selects previous widget which is able to accept focus.
-     * <b> You should always use default arguments. </b>
-     *
-     * @param found
-     * @param iter
-     */
-    bool
-    selectPrevious(bool found = false, bool iter = false);
-
     bool
     selectNeighbour(Direction direction);
+
+    bool
+    selectNext(Widget* target = NULL, Widget* startFrom = NULL);
+
+    bool
+    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL);
 
     void
     setOSKWidgetText(const std::string& text);
@@ -177,9 +149,6 @@ namespace ilixi
     bool
     selectNeighbourFromChildren(Widget* target, Direction direction);
 
-    void
-    setOwner(WindowWidget* window);
-
     //! Points to currently focused widget.
     Widget* _focusedWidget;
     //! Points to currently exposed widget.
@@ -188,10 +157,8 @@ namespace ilixi
     Widget* _grabbedWidget;
     //! Widget that requested osk input.
     Widget* _oskWidget;
-    //! This vector holds widgets inside the layout.
-    widgetList widgets;
-
-    WindowWidget* _owner;
+    //! WindowWidget that created this event manager.
+    WindowWidget* _creator;
   };
 }
 

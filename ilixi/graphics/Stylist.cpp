@@ -23,6 +23,7 @@
 
 #include "graphics/Stylist.h"
 #include "graphics/Painter.h"
+#include "lib/TweenAnimation.h"
 #include "ilixiGUI.h"
 #include <string.h>
 #include "sigc++/bind.h"
@@ -227,7 +228,7 @@ void
 Stylist::drawAppFrame(Painter* painter, Application* app)
 {
   if (app->background())
-    painter->tileImage(app->background(), 0, 0);
+    painter->drawImage(app->background(), 0, 0, app->width(), app->height());
   else
     {
       painter->setBrush(_palette.bgBottom);

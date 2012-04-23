@@ -277,7 +277,7 @@ namespace ilixi
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
-            focusWindow(_window);
+            focusWindow (activeDFBWindow());
           }
         animSwitcher(true);
       }
@@ -350,7 +350,7 @@ namespace ilixi
   void
   Compositor::onVisible()
   {
-    _window->GrabKey(_window, DIKS_TAB, DIMM_ALT);
+    activeDFBWindow()->GrabKey(activeDFBWindow(), DIKS_TAB, DIMM_ALT);
   }
 
   void

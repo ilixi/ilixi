@@ -39,6 +39,7 @@ ContainerBase::ContainerBase(Widget* parent) :
 
 ContainerBase::~ContainerBase()
 {
+  ILOG_DEBUG(ILX, "~ContainerBase %p\n", this);
 }
 
 int

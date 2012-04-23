@@ -31,13 +31,15 @@
 using namespace ilixi;
 using namespace IMaestro;
 
-EventManager::EventManager(Window* root) :
-    _focusedWidget(0), _exposedWidget(0), _grabbedWidget(0), _oskWidget(0)
+EventManager::EventManager(WindowWidget* creator) :
+    _focusedWidget(0), _exposedWidget(0), _grabbedWidget(0), _oskWidget(0), _creator(
+        creator)
 {
 }
 
 EventManager::~EventManager()
 {
+  ILOG_DEBUG(ILX, "~EventManager %p\n", this);
 }
 
 Widget*
@@ -67,34 +69,10 @@ EventManager::oskWidget() const
 void
 EventManager::reset()
 {
-  widgets.clear();
   _oskWidget = 0;
   _grabbedWidget = 0;
   _focusedWidget = 0;
   _exposedWidget = 0;
-}
-
-void
-EventManager::addWidget(Widget* widget)
-{
-  if (!widget)
-    return;
-  widgets.push_back(widget);
-}
-
-void
-EventManager::removeWidget(Widget* widget)
-{
-  if (!widget || widgets.empty())
-    return;
-
-  widgetListIterator it = std::find(widgets.begin(), widgets.end(), widget);
-  if (widget == *it)
-    {
-      if (widget == _focusedWidget)
-        _focusedWidget = NULL;
-      widgets.erase(it);
-    }
 }
 
 bool
@@ -191,50 +169,12 @@ EventManager::setOSKWidget(Widget* widget)
 }
 
 bool
-EventManager::selectNext(bool found, bool iter)
-{
-  for (widgetListIterator it = widgets.begin(); it != widgets.end(); ++it)
-    {
-      if (found && setFocusedWidget(*it))
-        return true;
-
-      else if (*it == _focusedWidget)
-        found = true;
-    }
-
-  if (iter)
-    return false;
-
-  selectNext(true, true);
-}
-
-bool
-EventManager::selectPrevious(bool found, bool iter)
-{
-  for (widgetListReverseIterator it = widgets.rbegin(); it != widgets.rend();
-      ++it)
-    {
-      if (found && setFocusedWidget(*it))
-        return true;
-
-      else if (*it == _focusedWidget)
-        found = true;
-    }
-
-  if (iter)
-    return false;
-
-  selectPrevious(true, true);
-}
-
-bool
 EventManager::selectNeighbour(Direction direction)
 {
   if (!_focusedWidget)
     return false;
 
   Widget* target = _focusedWidget->getNeighbour(direction);
-  Window* root = _focusedWidget->_rootWindow;
   bool found = false;
   int step = 0;
   while (!found)
@@ -244,9 +184,9 @@ EventManager::selectNeighbour(Direction direction)
 //      ILOG_DEBUG(
 //          " %p %p %p %p", _focusedWidget->getNeighbour(Up), _focusedWidget->getNeighbour(Down), _focusedWidget->getNeighbour(Left), _focusedWidget->getNeighbour(Right));
 
-      if (target == _owner || target == NULL)
+      if (target == _creator || target == NULL)
         {
-          if (selectNeighbourFromChildren(_owner, direction))
+          if (selectNeighbourFromChildren(_creator, direction))
             return true;
         }
 
@@ -254,8 +194,7 @@ EventManager::selectNeighbour(Direction direction)
       if (step)
         return false;
 
-      // TODO key navi. does not work atm.
-      if (target != _owner) // Target is not a window.
+      if (target != _creator) // Target is not a window.
         {
           // See if direct neighbour can get focus...
           if (setFocusedWidget(target))
@@ -320,10 +259,69 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
   return false;
 }
 
-void
-EventManager::setOwner(WindowWidget* window)
+bool
+EventManager::selectNext(Widget* target, Widget* startFrom)
 {
-  _owner = window;
+  if (!target)
+    {
+      if (!_focusedWidget)
+        target = _creator;
+      else
+        target = _focusedWidget;
+    }
+
+  ILOG_DEBUG(ILX, "Target %p\n", target);
+  if (target->_children.size())
+    {
+      Widget* targetChild;
+      int i = 1;
+      for (Widget::WidgetListIterator it = target->_children.begin(), end =
+          target->_children.end(); it != end; ++it, ++i)
+        {
+          targetChild = (Widget*) *it;
+
+          if (startFrom == targetChild)
+            {
+              startFrom = NULL;
+//              continue;
+            }
+
+          if (!startFrom)
+            {
+              ILOG_DEBUG(ILX, "TargetChild %p\n", targetChild);
+              // check children of child recursively...
+              if (targetChild->_children.size())
+                {
+                  if (selectNext(targetChild))
+                    return true;
+                }
+              else // get next child from parent.
+                {
+                  ILOG_DEBUG(ILX, " No more children\n");
+                }
+
+              // now see if child can receive focus.
+              if (setFocusedWidget(targetChild))
+                {
+                  ILOG_DEBUG(ILX, "Focused TargetChild %p\n", targetChild);
+                  return true;
+                }
+
+            }
+
+//          if (i == target->_children.size())
+//            selectNext(_creator);
+        }
+    }
+  else
+    selectNext(target->_parent, _focusedWidget);
+  return false;
+}
+
+bool
+EventManager::selectPrevious(Widget* target, Widget* start)
+{
+  return false;
 }
 
 void

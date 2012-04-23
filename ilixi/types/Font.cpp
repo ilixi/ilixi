@@ -22,7 +22,7 @@
  */
 
 #include "types/Font.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 
 using namespace ilixi;
@@ -262,17 +262,17 @@ Font::loadFont()
           return false;
         }
 
-      DFBResult ret = Window::getDFB()->CreateFont(Window::getDFB(),
+      DFBResult ret = AppBase::getDFB()->CreateFont(AppBase::getDFB(),
           _fileName.c_str(), &_desc, &_font);
       if (ret)
         {
-          ILOG_ERROR(ILX_FONT,
-              "Error while creating font %s!\n", _fileName.c_str());
+          ILOG_ERROR(
+              ILX_FONT, "Error while creating font %s!\n", _fileName.c_str());
           return false;
         }
 
-      ILOG_DEBUG(ILX_FONT,
-          "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
+      ILOG_DEBUG(
+          ILX_FONT, "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
       _modified = false;
     }
 

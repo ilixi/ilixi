@@ -24,11 +24,7 @@
 #ifndef ILIXI_WINDOW_H_
 #define ILIXI_WINDOW_H_
 
-#include "core/EventManager.h"
-#include "core/SurfaceEventListener.h"
-#include "core/Callback.h"
 #include "types/Size.h"
-#include "lib/TweenAnimation.h"
 
 namespace ilixi
 {
@@ -39,16 +35,8 @@ namespace ilixi
    */
   class Window
   {
-    friend class Application;
-    friend class Image;
-    friend class Video;
-    friend class Surface;
-    friend class Font;
-    friend class Callback;
-    friend class Widget;
-    friend class SurfaceView; // TODO Remove this line!
-    friend class SurfaceEventListener;
-
+    friend class AppBase;
+    friend class WindowWidget;
   public:
 
     /*!
@@ -66,19 +54,19 @@ namespace ilixi
      * Returns the unique DirectFB window ID.
      */
     DFBWindowID
-    getWindowID() const;
+    windowID() const;
 
     /*!
      * Returns DirectFB window interface.
      */
     IDirectFBSurface*
-    getDFBSurface() const;
+    dfbSurface() const;
 
     /*!
      * Returns the size of window.
      */
     Size
-    getWindowSize() const;
+    windowSize() const;
 
     /*!
      *  Makes the window visible and starts input event thread.
@@ -94,29 +82,9 @@ namespace ilixi
 
   protected:
     //! This property stores an interface to DirectFB window.
-    IDirectFBWindow* _window;
+    IDirectFBWindow* _dfbWindow;
     //! This property stores an interface to window's surface.
     IDirectFBSurface* _windowSurface;
-    //! This property stores the event manager for this window.
-    EventManager* _eventManager;
-
-    // Fixme move this stuff to window manager code.
-    //! This animation starts when a dialog is ready to show itself.
-    TweenAnimation* _dialogShow;
-    //! This animation starts when a dialog is ready to hide itself.
-    TweenAnimation* _dialogHide;
-    //! This property is eased during animations.
-    float _aniValue;
-    float _aniValue2;
-    //! Bounding rectangle of window.
-    Rectangle _bounds;
-
-    /*!
-     * Initialise DirectFB. This method is executed
-     * only once by main Application during its construction.
-     */
-    static bool
-    initDFB(int argc, char **argv, AppOptions opts);
 
     /*!
      * Creates a DFBWindow and acquires an interface to its surface.
@@ -129,93 +97,6 @@ namespace ilixi
      */
     void
     releaseDFBWindow();
-
-    /*!
-     * Returns DirectFB interface.
-     */
-    static IDirectFB*
-    getDFB();
-
-  private:
-    //! This property stores parent window, if any.
-    Window* _parentWindow;
-
-    typedef std::list<Callback*> CallbackList;
-    //! List of callbacks
-    static CallbackList __callbacks;
-    //! Serialises access to __callbacks.
-    static pthread_mutex_t __cbMutex;
-
-    typedef std::list<SurfaceEventListener*> SurfaceListenerList;
-    //! List of surface event listeners.
-    static SurfaceListenerList __selList;
-    //! Serialises access to _selList.
-    static pthread_mutex_t __selMutex;
-
-    //! DirectFB interface is initialised by first window.
-    static IDirectFB* __dfb;
-    //! Pointer to DFBLayer.
-    static IDirectFBDisplayLayer* __layer;
-    //! Event buffer for window.
-    static IDirectFBEventBuffer* __buffer;
-
-    typedef std::list<Window*> WindowList;
-    //! Application wide list of windows.
-    static WindowList __windowList;
-    //! Window with focus.
-    static Window* __activeWindow;
-    //! Serialises access to static variables.
-    static pthread_mutex_t __windowMutex;
-
-    //! Perform window animations.
-    void
-    animateWindow();
-
-    /*!
-     * Releases DirectFB resources.
-     */
-    static void
-    releaseDFB();
-
-    /*!
-     * Returns active window.
-     */
-    static Window*
-    activeWindow();
-
-    static void
-    addCallback(Callback* cb);
-
-    static bool
-    removeCallback(Callback* cb);
-
-    static void
-    handleCallbacks();
-
-    static bool
-    addSurfaceEventListener(SurfaceEventListener* sel);
-
-    static bool
-    removeSurfaceEventListener(SurfaceEventListener* sel);
-
-    /*!
-     * Sends incoming surface event to a surface event listener object.
-     */
-    static void
-    handleSurfaceEvent(const DFBSurfaceEvent& event);
-
-    /*!
-     * Implemented in WindowWidget.
-     */
-    virtual bool
-    handleWindowEvent(const DFBWindowEvent& event) =0;
-
-    /*!
-     * Implemented in WindowWidget.
-     */
-    virtual void
-    updateWindow() =0;
-
   };
 
 }

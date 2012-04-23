@@ -55,7 +55,6 @@ namespace ilixi
     pb1 = new PushButton("Button 1");
     addWidget(pb1);
     pb1->setGeometry(200, 100, 100, 100);
-
   }
 
   Stacker::~Stacker()

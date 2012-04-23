@@ -58,13 +58,19 @@ AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits 
 
 ILIXI_LOG_DEBUG_ENABLED=0
 AC_SUBST(ILIXI_LOG_DEBUG_ENABLED)
-AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 ILIXI_LOG_DEBUG_ENABLED=1 LOGGER_LEVEL="up to debug" CPPFLAGS="$CPPFLAGS -DDIRECT_ENABLE_DEBUG"])
+AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 ILIXI_LOG_DEBUG_ENABLED=1 LOGGER_LEVEL="up to debug" CPPFLAGS="-DDIRECT_ENABLE_DEBUG $CPPFLAGS"])
 
-ILIXI_MULTI_ENABLED=0
-ILIXI_MULTI="no"
-AC_SUBST(ILIXI_MULTI_ENABLED)
-AC_ARG_ENABLE([multi], AS_HELP_STRING([--enable-multi], [enables multi application management code @<:@default=no@:>@]), [ILIXI_MULTI_ENABLED=1 ILIXI_MULTI="yes"])
-AM_CONDITIONAL([MULTI], [test x$ILIXI_MULTI_ENABLED = xtrue])
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
+if test "$enable_debug" = "yes"; then
+    CPPFLAGS="-g3 -O0 -fno-inline -Wno-inline $CPPFLAGS"
+    ILIXI_BUILD_DEBUG=1
+else
+    ILIXI_BUILD_DEBUG=0
+fi
+AC_SUBST(ILIXI_BUILD_DEBUG)
+
+AM_CONDITIONAL(ENABLE_DEBUG, test "$enable_debug" = "yes")
+
 ######################################################################
 # Dependencies
 ######################################################################
@@ -159,8 +165,7 @@ AC_MSG_RESULT([
    CPPFLAGS                 : $CPPFLAGS
    CFLAGS                   : $CFLAGS
    LDFLAGS                  : $LDFLAGS
-   Log level                : $LOGGER_LEVEL
-   Multi                    : $ILIXI_MULTI     
+   Log level                : $LOGGER_LEVEL   
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.

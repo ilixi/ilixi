@@ -22,7 +22,7 @@
  */
 
 #include "core/Callback.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "lib/Animation.h"
 #include "lib/Timer.h"
 
@@ -71,12 +71,12 @@ namespace ilixi
   void
   Callback::start()
   {
-    Window::addCallback(this);
+    AppBase::addCallback(this);
   }
 
   void
   Callback::stop()
   {
-    Window::removeCallback(this);
+    AppBase::removeCallback(this);
   }
 }

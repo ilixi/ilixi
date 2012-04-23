@@ -32,7 +32,7 @@ namespace ilixi
   //! Listens to incoming events from a surface.
   class SurfaceEventListener
   {
-    friend class Window;
+    friend class AppBase;
 
   public:
     /*!

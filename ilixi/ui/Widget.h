@@ -52,7 +52,6 @@ namespace ilixi
     friend class WidgetLayout;
     friend class ScrollArea; // Blit
 
-
   public:
     /*!
      * Constructor.
@@ -947,7 +946,7 @@ namespace ilixi
     //! This property stores the widget's surface.
     Surface* _surface;
     //! This property stores the window of widget.
-    Window* _rootWindow;
+    WindowWidget* _rootWindow;
 
     //! This property stores the previously selected child, if any, inside this widget.
     Widget* _preSelectedWidget;
@@ -994,7 +993,7 @@ namespace ilixi
      * @param rootWindow that this widget belongs to.
      */
     void
-    setRootWindow(Window* rootWindow);
+    setRootWindow(WindowWidget* rootWindow);
 
     /*!
      * Deletes surface and unsets InitialiseSurface flag.

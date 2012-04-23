@@ -44,7 +44,6 @@ Demo4::Demo4(int argc, char* argv[]) :
 
   VKMenu* menu = new VKMenu();
   addWidget(menu);
-  eventManager()->selectNext();
 }
 
 Demo4::~Demo4()

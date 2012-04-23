@@ -22,7 +22,6 @@
  */
 
 #include "ui/Widget.h"
-#include "core/EventManager.h"
 #include "core/Window.h"
 #include "ui/WindowWidget.h"
 #include <algorithm>
@@ -67,11 +66,10 @@ Widget::Widget(const Widget& widget) :
 
 Widget::~Widget()
 {
-  if (_rootWindow)
-    _rootWindow->_eventManager->removeWidget(this);
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     delete *it;
   delete _surface;
+  ILOG_DEBUG(ILX_WIDGET, "~Widget %p\n", this);
 }
 
 int
@@ -879,7 +877,7 @@ Widget::updateSurface()
         ret = _surface->createDFBSurface(width(), height());
       else if (_surfaceDesc & RootSurface)
         ret = _surface->createDFBSubSurface(surfaceGeometry(),
-            _rootWindow->getDFBSurface());
+            _rootWindow->windowSurface());
       else if (_parent)
         ret = _surface->createDFBSubSurface(surfaceGeometry(),
             _parent->surface()->DFBSurface());
@@ -986,15 +984,12 @@ Widget::setSurfaceGeometryModified()
 // Private methods...
 ////////////////////////////////////////////////////////////////////////////////////
 void
-Widget::setRootWindow(Window* root)
+Widget::setRootWindow(WindowWidget* root)
 {
   if (_rootWindow != root)
     {
-      if (_rootWindow)
-        _rootWindow->_eventManager->removeWidget(this);
       _surfaceDesc = (SurfaceDescription) (_surfaceDesc | InitialiseSurface);
       _rootWindow = root;
-      _rootWindow->_eventManager->addWidget(this);
     }
 
   setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left],

@@ -76,8 +76,6 @@ ImageDialog::ImageDialog(const std::string& title, Widget* parent) :
   CheckBox* pb15 = new CheckBox("CheckBox 15");
   vb3->addWidget(pb15);
   addWidget(vb3);
-
-  eventManager()->selectNext();
 }
 
 ImageDialog::~ImageDialog()

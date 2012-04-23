@@ -22,7 +22,7 @@
  */
 
 #include "core/SurfaceEventListener.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 
 namespace ilixi
@@ -31,12 +31,12 @@ namespace ilixi
   SurfaceEventListener::SurfaceEventListener(DFBSurfaceID id) :
       _id(id), _source(NULL)
   {
-    Window::addSurfaceEventListener(this);
+    AppBase::addSurfaceEventListener(this);
   }
 
   SurfaceEventListener::~SurfaceEventListener()
   {
-    Window::removeSurfaceEventListener(this);
+    AppBase::removeSurfaceEventListener(this);
   }
 
   void
@@ -47,7 +47,7 @@ namespace ilixi
       {
         _source->MakeClient(_source);
 //        _source->AllowAccess(_source, "*");
-        _source->AttachEventBuffer(_source, Window::__buffer);
+        _source->AttachEventBuffer(_source, AppBase::__buffer);
       }
   }
 
@@ -55,7 +55,7 @@ namespace ilixi
   SurfaceEventListener::detachEB()
   {
     if (_source)
-      _source->DetachEventBuffer(_source, Window::__buffer);
+      _source->DetachEventBuffer(_source, AppBase::__buffer);
   }
 
   bool

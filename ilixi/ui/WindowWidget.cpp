@@ -22,6 +22,7 @@
  */
 
 #include "WindowWidget.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 
 using namespace ilixi;
@@ -29,7 +30,7 @@ using namespace ilixi;
 D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
 
 WindowWidget::WindowWidget(Widget* parent) :
-    Window(), Frame(parent)
+    Frame(parent), _window(NULL), _eventManager(NULL)
 {
   setVisible(false);
   pthread_mutex_init(&_updates._listLock, NULL);
@@ -38,9 +39,11 @@ WindowWidget::WindowWidget(Widget* parent) :
 
   _surfaceDesc = WindowDescription;
   setMargins(5, 5, 5, 5);
-  setRootWindow(this);
-  _eventManager->setOwner(this);
   setNeighbours(this, this, this, this);
+
+  _window = new Window();
+  _eventManager = new EventManager(this);
+  setRootWindow(this);
 }
 
 WindowWidget::~WindowWidget()
@@ -48,7 +51,11 @@ WindowWidget::~WindowWidget()
   pthread_mutex_destroy(&_updates._listLock);
   sem_destroy(&_updates._updateReady);
   sem_destroy(&_updates._paintReady);
-  ILOG_DEBUG(ILX_WINDOWWIDGET, "~ILX_WINDOWWIDGET\n");
+
+  AppBase::removeWindow(this);
+  delete _eventManager;
+  delete _window;
+  ILOG_DEBUG(ILX_WINDOWWIDGET, "~WindowWidget %p\n", this);
 }
 
 EventManager* const
@@ -119,25 +126,47 @@ WindowWidget::repaint(const Rectangle& rect)
 void
 WindowWidget::initWindow()
 {
-  if (_window)
+  if (_window->_dfbWindow)
     return;
 
-  if (initDFBWindow(preferredSize()))
+  if (_window->initDFBWindow(preferredSize()))
     {
-      setSize(getWindowSize());
+      AppBase::addWindow(this);
+      setSize(_window->windowSize());
       setRootWindow(this);
-      _eventManager->selectNext();
-      paint(Rectangle(0, 0, width(), height()));
     }
+}
+
+void
+WindowWidget::showWindow()
+{
+  initWindow();
+
+  setVisible(true);
+
+  if (!_eventManager->focusedWidget())
+    _eventManager->selectNeighbour(Right);
+
+  paint(Rectangle(0, 0, width(), height()));
+  _window->showWindow();
+
+  AppBase::setActiveWindow(this);
 }
 
 void
 WindowWidget::closeWindow()
 {
   setVisible(false);
-  hideWindow();
+
+  _window->hideWindow();
+
+  _eventManager->setGrabbedWidget(NULL);
+  _eventManager->setExposedWidget(NULL);
+
+  AppBase::removeWindow(this);
+
   invalidateSurface();
-  releaseDFBWindow();
+  _window->releaseDFBWindow();
 }
 
 bool
@@ -150,7 +179,7 @@ bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
   // ignore events outside this window...
-  if (getWindowID() != event.window_id)
+  if (_window->windowID() != event.window_id)
     return false;
 
   // handle all other events...
@@ -191,17 +220,20 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_WHEEL:
+    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
     return target->consumePointerEvent(
         PointerEvent(PointerWheel, event.x, event.y, event.step,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_KEYUP:
+    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_KEYUP: %c \n", event.key_code);
     if (_eventManager->focusedWidget())
       return _eventManager->focusedWidget()->consumeKeyEvent(
           KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers, event.locks));
     return false;
 
   case DWET_KEYDOWN:
+    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_KEYDOWN: %c \n", event.key_code);
     switch (event.key_symbol)
       {
 
@@ -290,7 +322,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 void
 WindowWidget::updateWindow()
 {
-  if (!_window)
+  if (!_window->_dfbWindow)
     return;
 
   pthread_mutex_lock(&_updates._listLock);
@@ -316,4 +348,12 @@ WindowWidget::updateWindow()
       paint(_updates._updateRegion);
     }
   pthread_mutex_unlock(&_updates._listLock);
+}
+
+IDirectFBSurface*
+WindowWidget::windowSurface()
+{
+  if (_window)
+    return _window->dfbSurface();
+  return NULL;
 }

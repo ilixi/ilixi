@@ -33,7 +33,7 @@ namespace ilixi
   /*!
    * This class is used to create a new UI application with its own window.
    */
-  class Application : public AppBase, public WindowWidget
+  class Application : public virtual AppBase, public WindowWidget
   {
   public:
     /*!
@@ -70,12 +70,6 @@ namespace ilixi
      */
     void
     setBackgroundImage(std::string imagePath);
-
-    /*!
-     * Sets whether application's window is fullscreen. (Not implemented!)
-     */
-    void
-    setFullScreen(bool fullscreen);
 
     /*!
      * This signal is emitted after application window is painted and visible.
@@ -115,19 +109,8 @@ namespace ilixi
     postUserEvent(unsigned int type, void* data = NULL);
 
   private:
-    //! This flag specifies if application window should occupy whole screen.
-    bool _fullscreen;
     //! Background image of application.
     Image* _backgroundImage;
-
-    virtual void
-    handleUserEvent(const DFBUserEvent& event);
-
-    virtual bool
-    windowPreEventFilter(const DFBWindowEvent& event);
-
-    virtual bool
-    windowPostEventFilter(const DFBWindowEvent& event);
 
     /*!
      * This method is used if application has backgroundFilled set to true.
@@ -138,17 +121,6 @@ namespace ilixi
      */
     virtual void
     compose();
-#if ILIXI_MULTI_ENABLED
-    /*!
-     * This callback is called when a new message arrives on application's reactor channels.
-     * <b> Do not reimplement this method unless you know what you are doing. </b>
-     *
-     * @param msg a maestro reactor message
-     * @param ctx context
-     */
-    virtual ReactionResult
-    maestroCB(IMaestro::MaestroMessage *msg, void *ctx);
-#endif
   };
 }
 #endif /* ILIXI_APPLICATION_H_ */

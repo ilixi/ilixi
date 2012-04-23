@@ -22,7 +22,7 @@
  */
 
 #include "graphics/Surface.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 
 using namespace ilixi;
@@ -53,7 +53,7 @@ Surface::createDFBSurface(int width, int height)
   desc.pixelformat = DSPF_ARGB;
   desc.caps = DSCAPS_DOUBLE;
   desc.hints = DSHF_FONT;
-  DFBResult ret = Window::getDFB()->CreateSurface(Window::getDFB(), &desc,
+  DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
       &_dfbSurface);
   if (ret)
     {

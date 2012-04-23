@@ -25,16 +25,18 @@
 #define ILIXI_WINDOWWIDGET_H_
 
 #include "core/Window.h"
+#include "core/EventManager.h"
 #include "ui/Frame.h"
-#include <vector>
-#include "types/Rectangle.h"
 #include <semaphore.h>
+#include <vector>
 
 namespace ilixi
 {
   //! Base class for windowed widgets.
-  class WindowWidget : public virtual Window, public Frame
+  class WindowWidget : public Frame
   {
+    friend class Widget;
+    friend class AppBase;
   public:
     /*!
      * Constructor.
@@ -82,6 +84,12 @@ namespace ilixi
     initWindow();
 
     /*!
+     * Makes this widget and its window visible.
+     */
+    void
+    showWindow();
+
+    /*!
      * Sets visibility to false and releases window and surface resources of all children.
      */
     void
@@ -114,6 +122,14 @@ namespace ilixi
     sigc::signal<void> sigAbort;
 
   private:
+    //! This property stores the managed window.
+    Window* _window;
+    //! This property stores the event manager for this window.
+    /*!
+     * The event manager is owned by AppBase once this window is attached to it.
+     */
+    EventManager* _eventManager;
+
     //! Stores window's dirty regions and a region for update.
     struct
     {
@@ -131,6 +147,8 @@ namespace ilixi
     virtual void
     updateWindow();
 
+    IDirectFBSurface*
+    windowSurface();
   };
 
 }

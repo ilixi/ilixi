@@ -22,7 +22,7 @@
  */
 
 #include "types/Image.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 #include "graphics/Stylist.h"
 
@@ -31,12 +31,12 @@ using namespace ilixi;
 D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
 
 Image::Image() :
-    _dfbSurface(NULL), _imagePath("")
+    _dfbSurface(NULL), _imagePath(""), _size()
 {
 }
 
 Image::Image(const std::string& path) :
-    _dfbSurface(NULL), _imagePath(path)
+    _dfbSurface(NULL), _imagePath(path), _size()
 {
 }
 
@@ -148,7 +148,7 @@ Image::loadImage()
   DFBSurfaceDescription desc;
 
   IDirectFBImageProvider* provider;
-  if (Window::getDFB()->CreateImageProvider(Window::getDFB(),
+  if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
       _imagePath.c_str(), &provider) != DFB_OK)
     {
       invalidateSurface();
@@ -164,13 +164,13 @@ Image::loadImage()
   desc.caps = DSCAPS_SYSTEMONLY;
   desc.pixelformat = DSPF_ARGB;
 
-  if (width())
+  if (width() > 0)
     desc.width = width();
 
-  if (height())
+  if (height() > 0)
     desc.height = height();
 
-  DFBResult ret = Window::getDFB()->CreateSurface(Window::getDFB(), &desc,
+  DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
       &_dfbSurface);
 
   if (ret)
@@ -189,6 +189,7 @@ Image::loadImage()
           return false;
         }
       provider->Release(provider);
+      ILOG_DEBUG(ILX_IMAGE, "Image [%s] is loaded.\n", _imagePath.c_str());
       return true;
     }
 }

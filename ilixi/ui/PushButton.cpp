@@ -23,6 +23,7 @@
 
 #include "ui/PushButton.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
 
@@ -35,6 +36,7 @@ PushButton::PushButton(const std::string& text, Widget* parent) :
 
 PushButton::~PushButton()
 {
+  ILOG_DEBUG(ILX, "~PushButton %p\n", this);
 }
 
 Size

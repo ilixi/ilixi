@@ -28,7 +28,7 @@
 using namespace ilixi;
 
 Frame::Frame(Widget* parent) :
-  BorderBase(parent), ContainerBase(parent), _backgroundFilled(true)
+    BorderBase(parent), ContainerBase(parent), _backgroundFilled(true)
 {
   setBorderWidth(1);
   setBorderStyle(StyledBorder);
@@ -37,16 +37,15 @@ Frame::Frame(Widget* parent) :
 
 Frame::~Frame()
 {
-  ILOG_DEBUG(ILX_CORE, "~Frame\n");
+  ILOG_DEBUG(ILX_CORE, "~Frame %p\n", this);
 }
 
 int
 Frame::heightForWidth(int width) const
 {
   return _layout->heightForWidth(
-      width - (_canvasTopLeft.x() + _margin.hSum() + 2
-          * borderOffset())) + _canvasTopLeft.y() + _margin.vSum()
-      + 2 * borderWidth();
+      width - (_canvasTopLeft.x() + _margin.hSum() + 2 * borderOffset()))
+      + _canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth();
 }
 
 Size
@@ -54,8 +53,7 @@ Frame::preferredSize() const
 {
   Size s = _layout->preferredSize();
   return Size(
-      s.width() + _canvasTopLeft.x() + _margin.hSum() + 2
-          * borderOffset(),
+      s.width() + _canvasTopLeft.x() + _margin.hSum() + 2 * borderOffset(),
       s.height() + _canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth());
 }
 
@@ -81,22 +79,21 @@ void
 Frame::setCanvasPosition(const Point& topLeft)
 {
   _canvasTopLeft = topLeft;
-  // TODO: Update surface using set Changed.
-  //  _layout->moveTo(canvasX(), canvasY());
+  doLayout();
 }
 
 void
 Frame::setMargins(int top, int bottom, int left, int right)
 {
   _margin.setMargins(top, bottom, left, right);
-  //  _layout->moveTo(canvasX(), canvasY());
+  doLayout();
 }
 
 void
 Frame::setMargin(const Margin& margin)
 {
   _margin = margin;
-  //  _layout->moveTo(canvasX(), canvasY());
+  doLayout();
 }
 
 void
@@ -135,6 +132,5 @@ Frame::canvasHeight() const
 int
 Frame::canvasWidth() const
 {
-  return width() - (_canvasTopLeft.x() + _margin.hSum()) - 2
-      * borderOffset();
+  return width() - (_canvasTopLeft.x() + _margin.hSum()) - 2 * borderOffset();
 }

@@ -22,7 +22,7 @@
  */
 
 #include "ui/SurfaceView.h"
-#include "core/Window.h"
+#include "core/AppBase.h"
 #include "core/Logger.h"
 
 namespace ilixi
@@ -69,7 +69,7 @@ namespace ilixi
       {
         detachEB();
 
-        DFBResult ret = Window::getDFB()->GetSurface(Window::getDFB(), id,
+        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), id,
             &_source);
         if (ret)
           {

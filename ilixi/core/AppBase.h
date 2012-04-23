@@ -25,26 +25,39 @@
 #define ILIXI_APPBASE_H_
 
 #include <string>
+#include "types/Enums.h"
 #include "core/IFusion.h"
+#include "core/EventManager.h"
+#include "core/SurfaceEventListener.h"
+#include "core/Callback.h"
+#include "core/Window.h"
+#include <list>
 
 namespace ilixi
 {
+  class WindowWidget;
   //! Base class for ilixi applications.
   /*!
-   * AppBase manages a connection to the ilixi dfb-fusion world using
-   * joinFusion() and leaveFusion() methods. If your intention is to create a simple
-   * ilixi background process without access to event buffer (e.g. input events) and
-   * any visual elements, you could derive from this class.
-   *
-   * AppBase initiates a connection attempt to ilixi dfb-fusion world during construction;
-   * the process is terminated if the attempt is unsuccessful; otherwise a new
-   * application record is created inside shared memory pool and initialised using joinFusionCB().
    */
   class AppBase
   {
-    friend class EventManager;
+    friend class WindowWidget;
     friend class Window;
+
+    friend class EventManager;
+    friend class Image;
+    friend class Video;
+    friend class Surface;
+    friend class Font;
+    friend class Callback;
+    friend class Widget;
+    friend class SurfaceEventListener;
+    friend class SurfaceView;
+    friend class Application;
+
   public:
+    AppBase();
+
     /*!
      * Constructor.
      */
@@ -70,6 +83,24 @@ namespace ilixi
 
   protected:
     /*!
+     * User events are handled before other event types.
+     */
+    virtual void
+    handleUserEvent(const DFBUserEvent& event);
+
+    /*!
+     * This method gets window events first.
+     */
+    virtual bool
+    windowPreEventFilter(const DFBWindowEvent& event);
+
+    /*!
+     * This method gets window events last.
+     */
+    virtual bool
+    windowPostEventFilter(const DFBWindowEvent& event);
+
+    /*!
      * Returns current state of application.
      */
     IMaestro::AppState
@@ -86,144 +117,159 @@ namespace ilixi
      */
     void
     clearAppState(IMaestro::AppState state);
-#if ILIXI_MULTI_ENABLED
-    /*!
-     * Returns application's own record in fusion.
-     */
-    IMaestro::AppRecord*
-    appRecord() const;
 
     /*!
-     * Returns text stored in OSK buffer.
+     * Returns DirectFB interface.
      */
-    std::string
-    getOSKText() const;
+    static IDirectFB*
+    getDFB();
 
     /*!
-     * Sets text stored in OSK area. Text can be truncated if it is
-     * longer than buffer length.
+     * Returns DisplayLayer interface.
      */
-    void
-    setOSKText(const std::string& text);
+    static IDirectFBDisplayLayer*
+    getLayer();
 
-    /*!
-     * Returns an AppRecord with given id number or NULL if there is no such id in ilixi-world.
-     */
-    IMaestro::AppRecord* const
-    getAppRecord(unsigned int fusionID) const;
+    IDirectFBWindow*
+    activeDFBWindow() const;
 
-    /*!
-     * Returns an AppRecord with given process name or NULL if there is no such process in ilixi-world.
-     */
-    IMaestro::AppRecord* const
-    getAppRecord(std::string process) const;
-
-    /*!
-     * This method is used to send a mode request or other notify messages from
-     * the application to Maestro.
-     */
-    void
-    callMaestro(IMaestro::ReactorMessageType type, IMaestro::AppState state,
-        unsigned int appIndex = 0);
-
-    void
-    callMaestro(const IMaestro::MaestroMessage& message);
-#endif
   private:
-#if ILIXI_MULTI_ENABLED
-    //! Pointer to ilixi dfb-fusion world
-    FusionWorld *__world;
-    //! Pointer to ilixi dfb-fusion arena
-    FusionArena *__arena;
-    //! Fusion call object
-//    FusionCall __call;
-    //! Fusion local reaction using channel: fusionID.
-    Reaction __lReaction;
-    //! Fusion global reaction using channel: 1.
-    Reaction __gReaction;
-    //! Pointer to MaestroObject instance inside shared memory pool
-    MaestroObject *__mObject;
-    //! Pointer to shared dfb-FusionVector instance inside shared memory pool
-    FusionVector *__appVector;
-    //! Pointer to AppRecord instance of application inside shared memory pool
-    IMaestro::AppRecord *__appRecord;
-    //! Used by callback wrappers for forwarding.
-    static AppBase* __appInstance;
+    //! Application title.
+    std::string __title;
+    //! Application state.
+    IMaestro::AppState __state;
 
-    //! This wrapper is for initialising arena (Does nothing atm).
-    static int
-    initArenaCBW(FusionArena *arena, void *ctx);
+    typedef std::list<Callback*> CallbackList;
+    //! List of callbacks
+    CallbackList __callbacks;
+    //! Serialises access to __callbacks.
+    pthread_mutex_t __cbMutex;
 
-    //! This wrapper is called when application enters arena.
-    static int
-    enterArenaCBW(FusionArena *arena, void *ctx);
+    typedef std::list<SurfaceEventListener*> SurfaceListenerList;
+    //! List of surface event listeners.
+    SurfaceListenerList __selList;
+    //! Serialises access to _selList.
+    pthread_mutex_t __selMutex;
 
-    //! This  wrapper is for shutting down arena (Does nothing atm).
-    static int
-    shutdownArenaCBW(FusionArena *arena, void *ctx, bool emergency);
+    typedef std::list<WindowWidget*> WindowList;
+    //! Application wide list of windows.
+    WindowList __windowList;
+    //! Window with focus.
+    WindowWidget* __activeWindow;
+    //! Serialises access to static variables.
+    pthread_mutex_t __windowMutex;
 
-    //! This wrapper is called when application leaves arena.
-    static int
-    leaveArenaCBW(FusionArena *arena, void *ctx, bool emergency);
-
-    //! This wrapper is called when a message arrives over reactor.
-    static ReactionResult
-    reactionCBW(const void *msgData, void *ctx);
-
-    //! This wrapper is called when sent message is received by Maestro.
-    static FusionCallHandlerResult
-    dispatchCBW(int caller, int call_arg, void *call_ptr, void *ctx,
-        unsigned int serial, int *ret_val);
+    //! DirectFB interface.
+    static IDirectFB* __dfb;
+    //! DFBLayer interface.
+    static IDirectFBDisplayLayer* __layer;
+    //! Event buffer for application.
+    static IDirectFBEventBuffer* __buffer;
+    //! AppBase instance.
+    static AppBase* __instance;
 
     /*!
-     * This method is called as application joins ilixiArena.
-     * Memory for storing an application record is allocated inside the shared pool
-     * and the record is initialised.
-     */
-    int
-    enterArenaCB(FusionArena* arena, void* ctx);
-
-    /*!
-     * This method is called as the application leaves ilixiArena.
-     * Previously allocated memory in shared pool is freed and the application
-     * record is removed.
-     */
-    int
-    cleanArenaCB(FusionArena* arena, void* ctx, bool emergency);
-
-    /*!
-     * This method is called if application receives a message either on
-     * global or local channel from Maestro.
-     */
-    virtual ReactionResult
-    maestroCB(IMaestro::MaestroMessage *msg, void *ctx);
-
-    /*!
-     * This method is used to connect to the fusion world as a slave.
-     * Upon successful connection an application record is formed inside
-     * the shared pool. Furthermore, RPC mechanism, which is used for
-     * controlling the application's state, is set up.
-     *
-     * \sa enterArenaCB
-     *
-     * @return true if successful, otherwise false.
+     * Initialise DirectFB. This method is executed
+     * only once by main Application during its construction.
      */
     bool
-    joinFusion();
+    initDFB(int argc, char **argv, AppOptions opts);
 
     /*!
-     * Leaves ilixi dfb-fusion world and arena.
-     *
-     * \sa cleanArenaCB
+     * Releases DirectFB resources.
      */
     void
-    leaveFusion();
-#else
-    std::string __title;
-    IMaestro::AppState __state;
-#endif
+    releaseDFB();
 
+    /*!
+     * Adds callback.
+     */
+    static bool
+    addCallback(Callback* cb);
 
+    /*!
+     * Removes callback.
+     */
+    static bool
+    removeCallback(Callback* cb);
+
+    /*!
+     * Executes each callback.
+     */
+    void
+    runCallbacks();
+
+    /*!
+     * Adds surface event listener.
+     */
+    static bool
+    addSurfaceEventListener(SurfaceEventListener* sel);
+
+    /*!
+     * Removes surface event listener.
+     */
+    static bool
+    removeSurfaceEventListener(SurfaceEventListener* sel);
+
+    /*!
+     * Forwards incoming surface event to corresponding surface event listener object.
+     */
+    void
+    consumeSurfaceEvent(const DFBSurfaceEvent& event);
+
+    /*!
+     * Returns active window.
+     */
+    static WindowWidget*
+    activeWindow();
+
+    /*!
+     * Sets active window.
+     */
+    static void
+    setActiveWindow(WindowWidget* window);
+
+    /*!
+     * Adds window to list of managed windows.
+     */
+    static bool
+    addWindow(WindowWidget* window);
+
+    /*!
+     * Removes window from list of managed windows.
+     */
+    static bool
+    removeWindow(WindowWidget* window);
+
+    /*!
+     * Forwards incoming window event to active window.
+     */
+    bool
+    consumeWindowEvent(const DFBWindowEvent& event);
+
+    /*!
+     * Paints windows with affected areas.
+     */
+    void
+    updateWindows();
+
+    /*!
+     * All events are handled using this function.
+     */
+    void
+    handleEvents();
+
+    /*!
+     * Attach window to event buffer.
+     */
+    static void
+    attachDFBWindow(Window* window);
+
+    /*!
+     * Detach window from event buffer.
+     */
+    static void
+    detachDFBWindow(Window* window);
   };
 }
 #endif /* ILIXI_APPBASE_H_ */
