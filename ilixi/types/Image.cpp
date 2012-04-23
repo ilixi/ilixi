@@ -59,6 +59,7 @@ Image::Image(const Image& img) :
 Image::~Image()
 {
   invalidateSurface();
+  ILOG_DEBUG(ILX_IMAGE, "~Image %p\n", this);
 }
 
 int

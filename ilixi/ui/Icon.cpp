@@ -27,6 +27,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN(ILX_ICON, "ilixi/ui/Icon", "Icon");
+
 Icon::Icon(Widget* parent) :
   Widget(parent), _default(new Image()), _disabled(NULL), _exposed(NULL),
       _focused(NULL)
@@ -57,6 +59,7 @@ Icon::~Icon()
   delete _disabled;
   delete _exposed;
   delete _focused;
+  ILOG_DEBUG(ILX_ICON, "~Icon %p\n", this);
 }
 
 Size

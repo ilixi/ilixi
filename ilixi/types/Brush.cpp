@@ -45,6 +45,7 @@ Brush::Brush(const Color& color) :
 
 Brush::~Brush()
 {
+  ILOG_DEBUG(ILX_BRUSH, "~Brush %p\n", this);
 }
 
 Color

@@ -27,7 +27,7 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_FONT, "ilixi/types/Font", "Font");
+D_DEBUG_DOMAIN(ILX_FONT, "ilixi/types/Font", "Font");
 
 Font::Font() :
     _modified(true), _font(NULL), _fileName("")
@@ -43,13 +43,17 @@ Font::Font(const std::string& file, int size) :
 }
 
 Font::Font(const Font& font) :
-    _modified(true), _fileName(font._fileName), _desc(font._desc), _font(NULL)
+    _modified(true), _fileName(font._fileName), _desc(font._desc), _font(
+        font._font)
 {
+  if (_font)
+    _font->AddRef(_font);
 }
 
 Font::~Font()
 {
   release();
+  ILOG_DEBUG(ILX_FONT, "~Font %p\n", this);
 }
 
 int
@@ -223,15 +227,6 @@ bool
 Font::operator!=(const Font &font)
 {
   return !(*this == font);
-}
-
-void
-Font::addRef()
-{
-  if (_font)
-    {
-      _font->AddRef(_font);
-    }
 }
 
 bool

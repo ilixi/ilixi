@@ -23,6 +23,7 @@
 
 #include "ui/ToolButton.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
 
@@ -35,6 +36,7 @@ ToolButton::ToolButton(std::string text, Widget* parent) :
 
 ToolButton::~ToolButton()
 {
+  ILOG_DEBUG(ILX, "~ToolButton %p\n", this);
 }
 
 Size

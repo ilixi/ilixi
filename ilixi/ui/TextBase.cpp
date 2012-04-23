@@ -22,8 +22,11 @@
  */
 
 #include "ui/TextBase.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
+
+D_DEBUG_DOMAIN(ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
 
 TextBase::TextBase(Widget* parent) :
     Widget(parent), _font(NULL)
@@ -48,7 +51,14 @@ TextBase::TextBase(const TextBase& tb) :
 
 TextBase::~TextBase()
 {
-  delete _font;
+  if (_font)
+    {
+      if (_font->_font && !_font->_font->refs)
+        delete _font;
+      else
+        _font->release();
+    }
+  ILOG_DEBUG(ILX_TEXTBASE, "~TextBase %p\n", this);
 }
 
 Font*
@@ -102,7 +112,8 @@ TextBase::setFont(Font* font)
     {
       delete _font;
       _font = font;
-      _font->addRef();
+      if (_font->_font)
+        _font->_font->AddRef(_font->_font);
       doLayout();
       sigFontChanged();
     }

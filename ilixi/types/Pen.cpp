@@ -45,6 +45,7 @@ Pen::Pen(const Color& color) :
 
 Pen::~Pen()
 {
+  ILOG_DEBUG(ILX_PEN, "~Pen %p\n", this);
 }
 
 Color

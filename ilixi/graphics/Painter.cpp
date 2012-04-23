@@ -27,6 +27,8 @@
 
 using namespace ilixi;
 
+D_DEBUG_DOMAIN(ILX_PAINTER, "ilixi/graphics/Painter", "Painter");
+
 Painter::Painter(Widget* widget) :
     _myWidget(widget), dfbSurface(_myWidget->surface()->DFBSurface()), _brush(), _pen(), _font(), _state(
         None)
@@ -36,6 +38,7 @@ Painter::Painter(Widget* widget) :
 Painter::~Painter()
 {
   end();
+  ILOG_DEBUG(ILX_PAINTER, "~Painter %p\n", this);
 }
 
 void
@@ -46,7 +49,7 @@ Painter::begin()
   applyBrush();
 
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
-//  dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
+  ILOG_DEBUG(ILX_PAINTER, "begin() %p\n", this);
 }
 
 void
@@ -58,6 +61,7 @@ Painter::end()
       if (_state & Clipped)
         _myWidget->surface()->resetClip();
       _myWidget->surface()->unlock();
+      ILOG_DEBUG(ILX_PAINTER, "end() %p\n", this);
     }
 }
 
@@ -260,6 +264,7 @@ Painter::setBrush(const Brush& brush)
 {
   _brush = brush;
   _brush.applyBrush(dfbSurface);
+  ILOG_DEBUG(ILX_PAINTER, "setBrush() %p\n", this);
 }
 
 void
@@ -267,6 +272,7 @@ Painter::setBrush(const Color& color)
 {
   _brush.setColor(color);
   _brush.applyBrush(dfbSurface);
+  ILOG_DEBUG(ILX_PAINTER, "setBrush() %p\n", this);
 }
 
 void
@@ -274,18 +280,21 @@ Painter::setFont(const Font& font)
 {
   _font = font;
   _state |= FontModified;
+  ILOG_DEBUG(ILX_PAINTER, "setFont() %p\n", this);
 }
 
 void
 Painter::setPen(const Pen& pen)
 {
   _pen = pen;
+  ILOG_DEBUG(ILX_PAINTER, "setPen() %p\n", this);
 }
 
 void
 Painter::setPen(const Color& color)
 {
   _pen.setColor(color);
+  ILOG_DEBUG(ILX_PAINTER, "setPen() %p\n", this);
 }
 
 void

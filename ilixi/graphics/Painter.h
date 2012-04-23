@@ -105,7 +105,7 @@ namespace ilixi
     pen();
 
     /*!
-     * Draws a line between two points defined by (x1, y1) and (x2, y2).
+     * Draws a line between two points defined by (x1, y1) and (x2, y2) using Pen.
      *
      * @param x1 X coordinate of start point.
      * @param y1 Y coordinate of start point.
@@ -116,7 +116,7 @@ namespace ilixi
     drawLine(double x1, double y1, double x2, double y2);
 
     /*!
-     * Draws a line between two given points p1 and p2.
+     * Draws a line between two given points p1 and p2 using Pen.
      *
      * @param p1 Start point.
      * @param p2 End point.
@@ -125,7 +125,7 @@ namespace ilixi
     drawLine(const Point& p1, const Point& p2);
 
     /*!
-     * Draws a line inside the bounding rectangle.
+     * Draws a line inside the bounding rectangle using Pen.
      *
      * @param rect Bounding rectangle.
      */
@@ -134,7 +134,7 @@ namespace ilixi
 
     /*!
      * Draws a rectangle inside the bounding rectangle defined by top left point (x, y)
-     * and (width, height).
+     * and (width, height) using Pen.
      *
      * @param x X coordinate of bounding rectangle.
      * @param y X coordinate of bounding rectangle.
@@ -145,7 +145,7 @@ namespace ilixi
     drawRectangle(double x, double y, double width, double height);
 
     /*!
-     * Draws a rectangle inside the bounding rectangle.
+     * Draws a rectangle inside the bounding rectangle using Pen.
      *
      * @param rect Bounding rectangle.
      */
@@ -153,7 +153,7 @@ namespace ilixi
     drawRectangle(const Rectangle& rect);
 
     /*!
-     * Fills inside the given rectangle.
+     * Fills inside the given rectangle using Brush.
      *
      * @param x
      * @param y
@@ -164,7 +164,7 @@ namespace ilixi
     fillRectangle(double x, double y, double width, double height);
 
     /*!
-     * Fills inside the given rectangle.
+     * Fills inside the given rectangle using Brush.
      *
      * @param rect
      */
@@ -172,7 +172,8 @@ namespace ilixi
     fillRectangle(const Rectangle& rect);
 
     /*!
-     * Draws the text with its topleft positioned at given point (x, y). By default all text will be rendered.
+     * Draws the text with its topleft positioned at given point (x, y) using Brush and Font.
+     * By default all text will be rendered.
      * If you only wish to limit the number of characters to display, set the
      * singleLine parameter to false and use a positive number for length.
      *
@@ -192,19 +193,20 @@ namespace ilixi
     drawText(const std::string& text, int x, int y);
 
     /*!
-     * Draws a layout using its bounding rectangle.
+     * Draws a layout using its bounding rectangle using Brush and Font.
      */
     void
     drawLayout(const TextLayout& layout);
 
     /*!
-     * Draws a layout on given x and y coordinates.
+     * Draws a layout on given x and y coordinates using Brush and Font.
      */
     void
     drawLayout(const TextLayout& layout, int x, int y);
 
     /*!
      * Streches image inside given rectangle.
+     * Brush color is used for colorizing.
      */
     void
     drawImage(Image* image, int x, int y, int w, int h,
@@ -212,6 +214,7 @@ namespace ilixi
 
     /*!
      * Streches image inside given rectangle.
+     * Brush color is used for colorizing.
      */
     void
     drawImage(Image* image, const Rectangle& rect,
@@ -219,6 +222,7 @@ namespace ilixi
 
     /*!
      * Draws image with top-left corner at given x and y.
+     * Brush color is used for colorizing.
      */
     void
     drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
@@ -226,6 +230,7 @@ namespace ilixi
 
     /*!
      * Draws image with top-left corner at given x and y.
+     * Brush color is used for colorizing.
      */
     void
     drawImage(Image* image, const Point& point,

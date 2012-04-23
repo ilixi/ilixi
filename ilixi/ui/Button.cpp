@@ -22,8 +22,11 @@
  */
 
 #include "ui/Button.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
+
+D_DEBUG_DOMAIN(ILX_BUTTON, "ilixi/ui/Button", "Button");
 
 Button::Button(const std::string& text, Widget* parent) :
     TextBase(text, parent), _buttonFlag(None), _icon(NULL)
@@ -33,7 +36,7 @@ Button::Button(const std::string& text, Widget* parent) :
 
 Button::~Button()
 {
-  delete _icon;
+  ILOG_DEBUG(ILX_BUTTON, "~Button %p\n", this);
 }
 
 bool

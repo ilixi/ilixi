@@ -38,6 +38,7 @@ namespace ilixi
   class Font
   {
     friend class Painter; // applyFont
+    friend class TextBase;
 
   public:
     //! Specifies style for font.
@@ -202,9 +203,6 @@ namespace ilixi
      */
     bool
     operator!=(const Font &f);
-
-    void
-    addRef();
 
   private:
     //! Flag is set to true if font is modified.
