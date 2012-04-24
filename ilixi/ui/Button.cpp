@@ -26,8 +26,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN(ILX_BUTTON, "ilixi/ui/Button", "Button");
-
 Button::Button(const std::string& text, Widget* parent) :
     TextBase(text, parent), _buttonFlag(None), _icon(NULL)
 {

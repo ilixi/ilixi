@@ -26,8 +26,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_BRUSH, "ilixi/types/Brush", "Brush");
-
 Brush::Brush() :
     _modified(true), _color(1, 1, 1)
 {

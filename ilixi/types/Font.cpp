@@ -27,8 +27,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN(ILX_FONT, "ilixi/types/Font", "Font");
-
 Font::Font() :
     _modified(true), _font(NULL), _fileName("")
 {

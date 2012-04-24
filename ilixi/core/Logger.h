@@ -37,6 +37,44 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_TYPES, "ilixi/types", "Types we like to use");
   D_DEBUG_DOMAIN( ILX_UI, "ilixi/ui", "Widgets");
 
+  D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
+  D_DEBUG_DOMAIN( ILX_EVENTMANAGER, "ilixi/core/EventManager", "EventManager");
+  D_DEBUG_DOMAIN( ILX_THREAD, "ilixi/core/Thread", "Thread");
+  D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
+
+  D_DEBUG_DOMAIN( ILX_PAINTER, "ilixi/graphics/Painter", "Painter");
+  D_DEBUG_DOMAIN( ILX_PALETTE, "ilixi/graphics/Palette", "Palette Parser");
+  D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
+  D_DEBUG_DOMAIN( ILX_SURFACE, "ilixi/graphics/Surface", "Surface");
+
+  D_DEBUG_DOMAIN( ILX_BRUSH, "ilixi/types/Brush", "Brush");
+  D_DEBUG_DOMAIN( ILX_FONT, "ilixi/types/Font", "Font");
+  D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
+  D_DEBUG_DOMAIN( ILX_PEN, "ilixi/types/Pen", "Pen");
+
+  D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
+  D_DEBUG_DOMAIN( ILX_BORDERBASE, "ilixi/ui/BorderBase", "BorderBase");
+  D_DEBUG_DOMAIN( ILX_BUTTON, "ilixi/ui/Button", "Button");
+  D_DEBUG_DOMAIN( ILX_CHECKBOX, "ilixi/ui/CheckBox", "CheckBox");
+  D_DEBUG_DOMAIN( ILX_COMBOBOX, "ilixi/ui/ComboBox", "ComboBox");
+  D_DEBUG_DOMAIN( ILX_CONTAINER, "ilixi/ui/ContainerBase", "ContainerBase");
+  D_DEBUG_DOMAIN( ILX_DIALOG, "ilixi/ui/Dialog", "Dialog");
+  D_DEBUG_DOMAIN( ILX_FRAME, "ilixi/ui/Frame", "Frame");
+  D_DEBUG_DOMAIN( ILX_HBOX, "ilixi/ui/HBox", "HBox");
+  D_DEBUG_DOMAIN( ILX_ICON, "ilixi/ui/Icon", "Icon");
+  D_DEBUG_DOMAIN( ILX_LABEL, "ilixi/ui/Label", "Label");
+  D_DEBUG_DOMAIN( ILX_LAYOUT, "ilixi/ui/Layout", "Layout");
+  D_DEBUG_DOMAIN( ILX_PUSHBUTTON, "ilixi/ui/PushButton", "PushButton");
+  D_DEBUG_DOMAIN( ILX_RADIOBUTTON, "ilixi/ui/RadioButton", "RadioButton");
+  D_DEBUG_DOMAIN( ILX_SCROLLAREA, "ilixi/ui/ScrollArea", "ScrollArea");
+  D_DEBUG_DOMAIN( ILX_SPACER, "ilixi/ui/Spacer", "Spacer");
+  D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
+  D_DEBUG_DOMAIN( ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
+  D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
+  D_DEBUG_DOMAIN( ILX_VBOX, "ilixi/ui/VBox", "VBox");
+  D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
+  D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
+
   /*!
    * Opens a connection to Syslog in preparation for submitting messages.
    */
@@ -56,7 +94,7 @@ namespace ilixi
   ilixi_log(int level, const char* message, ...);
 
 #if ILIXI_LOG_DEBUG_ENABLED
-#define ILOG_DEBUG( Domain, _fmt... )   D_LOG(Domain, VERBOSE, _fmt)
+#define ILOG_DEBUG( Domain, _fmt... )   D_DEBUG_AT(Domain, _fmt)
 #define ILOG_INFO( Domain, _fmt...)     D_LOG(Domain, INFO, _fmt)
 #define ILOG_NOTICE( Domain, _fmt...)   D_LOG(Domain, NOTICE, _fmt)
 #define ILOG_WARNING( Domain, _fmt...)  D_LOG(Domain, WARNING, _fmt)

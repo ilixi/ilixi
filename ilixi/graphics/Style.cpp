@@ -28,8 +28,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
-
 Style::Style() :
     _buttonFont(NULL), _defaultFont(NULL), _inputFont(NULL), _titleFont(NULL), _plusSign(
         NULL), _minusSign(NULL), _grid(NULL), _arrowUp(NULL), _arrowDown(NULL), _arrowLeft(

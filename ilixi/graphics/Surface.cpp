@@ -27,8 +27,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_SURFACE, "ilixi/graphics/Surface", "Surface");
-
 Surface::Surface() :
     _dfbSurface(NULL), _parentSurface(NULL)
 {
@@ -57,8 +55,8 @@ Surface::createDFBSurface(int width, int height)
       &_dfbSurface);
   if (ret)
     {
-      ILOG_ERROR(
-          ILX_SURFACE, "Cannot create surface: %s", DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_SURFACE,
+          "Cannot create surface: %s", DirectFBErrorString(ret));
       return false;
     }
   _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
@@ -76,8 +74,8 @@ Surface::createDFBSubSurface(const Rectangle& geometry,
       &_dfbSurface);
   if (ret)
     {
-      ILOG_ERROR(
-          ILX_SURFACE, "Cannot get sub-surface: %s", DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_SURFACE,
+          "Cannot get sub-surface: %s", DirectFBErrorString(ret));
       return false;
     }
   _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
@@ -117,8 +115,8 @@ Surface::setGeometry(int x, int y, int width, int height)
       DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
           &r);
       if (ret)
-        ILOG_ERROR(
-            ILX_SURFACE, "Cannot set geometry: %s", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_SURFACE,
+            "Cannot set geometry: %s", DirectFBErrorString(ret));
     }
   else
     ILOG_ERROR(ILX_SURFACE, "No Parent Surface, need to create surface again!");

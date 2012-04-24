@@ -27,27 +27,25 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN(ILX_ICON, "ilixi/ui/Icon", "Icon");
-
 Icon::Icon(Widget* parent) :
-  Widget(parent), _default(new Image()), _disabled(NULL), _exposed(NULL),
-      _focused(NULL)
+    Widget(parent), _default(new Image()), _disabled(NULL), _exposed(NULL), _focused(
+        NULL)
 {
   setConstraints(FixedConstraint, FixedConstraint);
   sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const std::string& path, Widget* parent) :
-  Widget(parent), _default(new Image(path)), _disabled(NULL), _exposed(NULL),
-      _focused(NULL)
+    Widget(parent), _default(new Image(path)), _disabled(NULL), _exposed(NULL), _focused(
+        NULL)
 {
   setConstraints(FixedConstraint, FixedConstraint);
   sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const Image& image, Widget* parent) :
-  Widget(parent), _default(new Image(image)), _disabled(NULL), _exposed(NULL),
-      _focused(NULL)
+    Widget(parent), _default(new Image(image)), _disabled(NULL), _exposed(NULL), _focused(
+        NULL)
 {
   setConstraints(FixedConstraint, FixedConstraint);
   sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));

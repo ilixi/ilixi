@@ -32,17 +32,12 @@
 
 namespace ilixi
 {
-  // forward declerations
   class Widget;
-  class Window;
   class WindowWidget;
 
-  //! Keeps track of focused and exposed widgets.
+  //! Keeps track of input widgets.
   /*!
-   * This class is mainly used by window based widgets in order to forward key inputs inside application's main loop.
-   * Each widget that is placed inside a container within the window is added to an internal list.
-   * This list is reconstructed every time window becomes visible. In addition, widget's use UIManager to create their
-   * surfaces, i.e. a sub-surface of root window.
+   * This class is used by window widgets in order to forward key inputs inside application's main loop.
    */
   class EventManager
   {
@@ -81,12 +76,6 @@ namespace ilixi
      */
     Widget*
     oskWidget() const;
-
-    /*!
-     * Clears internal list of widgets and sets focused and exposed widgets to NULL.
-     */
-    void
-    reset();
 
     /*!
      * Sets widgets exposed flag and executes onEnter/onLeave methods of widgets.
@@ -129,6 +118,11 @@ namespace ilixi
     bool
     setOSKWidget(Widget* widget);
 
+    /*!
+     *
+     * @param direction
+     * @return true if successful.
+     */
     bool
     selectNeighbour(Direction direction);
 
@@ -142,10 +136,6 @@ namespace ilixi
     setOSKWidgetText(const std::string& text);
 
   private:
-    typedef std::list<Widget*> widgetList;
-    typedef widgetList::iterator widgetListIterator;
-    typedef widgetList::reverse_iterator widgetListReverseIterator;
-
     bool
     selectNeighbourFromChildren(Widget* target, Direction direction);
 

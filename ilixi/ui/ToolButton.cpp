@@ -36,7 +36,7 @@ ToolButton::ToolButton(std::string text, Widget* parent) :
 
 ToolButton::~ToolButton()
 {
-  ILOG_DEBUG(ILX, "~ToolButton %p\n", this);
+  ILOG_DEBUG(ILX_TOOLBUTTON, "~ToolButton %p\n", this);
 }
 
 Size

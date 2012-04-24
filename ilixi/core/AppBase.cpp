@@ -35,8 +35,6 @@ IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
-D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
-
 AppBase::AppBase() :
     __title(""), __state(Hidden), __activeWindow(NULL)
 {
@@ -254,8 +252,8 @@ AppBase::runCallbacks()
     {
       if (!((Callback*) *it)->_func(((Callback*) *it)->_data))
         {
-          ILOG_DEBUG(
-              ILX_APPBASE, "Callback %p is removed.\n", ((Callback*) *it));
+          ILOG_DEBUG( ILX_APPBASE,
+              "Callback %p is removed.\n", ((Callback*) *it));
           it = __callbacks.erase(it);
         }
       ++it;
@@ -279,8 +277,8 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
       if (sel == *it)
         {
           pthread_mutex_unlock(&__instance->__selMutex);
-          ILOG_ERROR(
-              ILX_APPBASE, "SurfaceEventListener %p already added!\n", sel);
+          ILOG_ERROR( ILX_APPBASE,
+              "SurfaceEventListener %p already added!\n", sel);
           return false;
         }
       __instance->__selList.push_back(sel);
@@ -305,15 +303,15 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
             {
               __instance->__selList.erase(it);
               pthread_mutex_unlock(&__instance->__selMutex);
-              ILOG_DEBUG(
-                  ILX_APPBASE, "SurfaceEventListener %p is removed.\n", sel);
+              ILOG_DEBUG( ILX_APPBASE,
+                  "SurfaceEventListener %p is removed.\n", sel);
               return true;
             }
         }
 
       pthread_mutex_unlock(&__instance->__selMutex);
-      ILOG_ERROR(
-          ILX_APPBASE, "Cannot remove SurfaceEventListener, %p not found!\n", sel);
+      ILOG_ERROR( ILX_APPBASE,
+          "Cannot remove SurfaceEventListener, %p not found!\n", sel);
     }
   return false;
 }
@@ -410,8 +408,8 @@ AppBase::removeWindow(WindowWidget* window)
             }
         }
       pthread_mutex_unlock(&__instance->__windowMutex);
-      ILOG_ERROR(
-          ILX_APPBASE, "Cannot remove WindowWidget, %p not found!\n", window);
+      ILOG_ERROR( ILX_APPBASE,
+          "Cannot remove WindowWidget, %p not found!\n", window);
     }
   return false;
 }
@@ -464,23 +462,23 @@ AppBase::attachDFBWindow(Window* window)
 
       ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow, __buffer);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
       ret = window->_dfbWindow->RequestFocus(window->_dfbWindow);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "RequestFocus error: %s! \n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "RequestFocus error: %s! \n", DirectFBErrorString(ret));
 
       ret = window->_dfbWindow->GrabPointer(window->_dfbWindow);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "GrabPointer error: %s!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "GrabPointer error: %s!\n", DirectFBErrorString(ret));
 
       ret = __buffer->Reset(__buffer);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "Buffer reset error: %s!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "Buffer reset error: %s!\n", DirectFBErrorString(ret));
 
       ILOG_DEBUG(ILX_APPBASE, "Window %p is attached.\n", window);
     }
@@ -495,13 +493,13 @@ AppBase::detachDFBWindow(Window* window)
 
       ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow, __buffer);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
       ret = window->_dfbWindow->UngrabPointer(window->_dfbWindow);
       if (ret != DFB_OK)
-        ILOG_ERROR(
-            ILX_APPBASE, "UngrabPointer error: %s!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_APPBASE,
+            "UngrabPointer error: %s!\n", DirectFBErrorString(ret));
 
       ret = __buffer->Reset(__buffer);
       if (ret != DFB_OK)

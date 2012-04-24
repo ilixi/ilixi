@@ -27,8 +27,6 @@
 #include "core/Logger.h"
 #include <algorithm>
 
-D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
-
 using namespace ilixi;
 
 Window::Window() :

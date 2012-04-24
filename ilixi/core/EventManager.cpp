@@ -22,14 +22,11 @@
  */
 
 #include "core/EventManager.h"
-#include "core/AppBase.h"
 #include "ui/Widget.h"
 #include "ui/WindowWidget.h"
 #include "core/Logger.h"
-#include <algorithm>
 
 using namespace ilixi;
-using namespace IMaestro;
 
 EventManager::EventManager(WindowWidget* creator) :
     _focusedWidget(0), _exposedWidget(0), _grabbedWidget(0), _oskWidget(0), _creator(
@@ -64,15 +61,6 @@ Widget*
 EventManager::oskWidget() const
 {
   return _oskWidget;
-}
-
-void
-EventManager::reset()
-{
-  _oskWidget = 0;
-  _grabbedWidget = 0;
-  _focusedWidget = 0;
-  _exposedWidget = 0;
 }
 
 bool
@@ -327,13 +315,5 @@ EventManager::selectPrevious(Widget* target, Widget* start)
 void
 EventManager::setOSKWidgetText(const std::string& text)
 {
-  //  if (_oskWidget)
-  //    {
-  //      TextLayout* tw = dynamic_cast<TextLayout*> (_focusedWidget);
-  //      if (tw)
-  //        {
-  //          tw->setText(text);
-  //          _oskWidget = NULL;
-  //        }
-  //    }
+  // TODO implement OSK
 }

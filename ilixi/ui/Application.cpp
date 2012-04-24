@@ -30,8 +30,6 @@
 using namespace ilixi;
 using namespace IMaestro;
 
-D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
-
 Application::Application(int argc, char* argv[], AppOptions opts) :
     AppBase(argc, argv), WindowWidget(), _backgroundImage(NULL)
 {

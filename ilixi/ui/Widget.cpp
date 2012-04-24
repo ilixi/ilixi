@@ -29,8 +29,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
-
 Stylist* Widget::_stylist = NULL;
 
 Widget::Widget(Widget* parent) :

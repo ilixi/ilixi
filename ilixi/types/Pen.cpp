@@ -26,8 +26,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_PEN, "ilixi/types/Pen", "Pen");
-
 Pen::Pen() :
     _modified(true), _color(0, 0, 0)
 {

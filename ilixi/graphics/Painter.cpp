@@ -27,8 +27,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN(ILX_PAINTER, "ilixi/graphics/Painter", "Painter");
-
 Painter::Painter(Widget* widget) :
     _myWidget(widget), dfbSurface(_myWidget->surface()->DFBSurface()), _brush(), _pen(), _font(), _state(
         None)

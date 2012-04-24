@@ -36,7 +36,7 @@ PushButton::PushButton(const std::string& text, Widget* parent) :
 
 PushButton::~PushButton()
 {
-  ILOG_DEBUG(ILX, "~PushButton %p\n", this);
+  ILOG_DEBUG(ILX_PUSHBUTTON, "~PushButton %p\n", this);
 }
 
 Size

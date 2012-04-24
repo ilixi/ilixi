@@ -26,8 +26,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN(ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
-
 TextBase::TextBase(Widget* parent) :
     Widget(parent), _font(NULL)
 {

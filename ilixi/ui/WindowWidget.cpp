@@ -27,8 +27,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
-
 WindowWidget::WindowWidget(Widget* parent) :
     Frame(parent), _window(NULL), _eventManager(NULL)
 {

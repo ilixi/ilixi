@@ -69,19 +69,24 @@ namespace ilixi
   void
   CompositorSurfaceView::renderSource()
   {
-    if (_source)
+    if (_source && _aniVal > 0)
       {
         IDirectFBSurface* dfbSurface = surface()->DFBSurface();
-        dfbSurface->SetBlittingFlags(dfbSurface,
-            (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
-                | DSBLIT_BLEND_COLORALPHA));
-        dfbSurface->SetColor(dfbSurface, 0, 0, 0, _aniVal);
+        if (_aniVal == 255)
+          dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+        else
+
+          {
+            dfbSurface->SetBlittingFlags(dfbSurface,
+                (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
+                    | DSBLIT_BLEND_COLORALPHA));
+            dfbSurface->SetColor(dfbSurface, 0, 0, 0, _aniVal);
+          }
 
         DFBRectangle rect =
           { _scaleVal, _scaleVal, width() - 2 * _scaleVal, height()
               - 2 * _scaleVal };
         dfbSurface->StretchBlit(dfbSurface, _source, NULL, &rect);
-        dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
       }
   }
 

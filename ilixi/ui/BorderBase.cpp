@@ -27,19 +27,19 @@
 using namespace ilixi;
 
 BorderBase::BorderBase(Widget* parent) :
-  Widget(parent), _borderStyle(NoBorder), _borderWidth(0)
+    Widget(parent), _borderStyle(NoBorder), _borderWidth(0)
 {
 }
 
 BorderBase::BorderBase(const BorderBase& borderbase) :
-  Widget(borderbase), _borderStyle(borderbase._borderStyle),
-      _borderWidth(borderbase._borderWidth)
+    Widget(borderbase), _borderStyle(borderbase._borderStyle), _borderWidth(
+        borderbase._borderWidth)
 {
 }
 
 BorderBase::~BorderBase()
 {
-  ILOG_DEBUG(ILX, "~BorderBase %p\n", this);
+  ILOG_DEBUG(ILX_BORDERBASE, "~BorderBase %p\n", this);
 }
 
 WidgetBorderStyle

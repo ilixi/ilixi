@@ -28,8 +28,6 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
-
 Image::Image() :
     _dfbSurface(NULL), _imagePath(""), _size()
 {
@@ -139,8 +137,8 @@ Image::loadImage()
 
   if (access(_imagePath.c_str(), F_OK) != 0)
     {
-      ILOG_ERROR(
-          ILX_IMAGE, "File (%s) is not accessible!\n", _imagePath.c_str());
+      ILOG_ERROR( ILX_IMAGE,
+          "File (%s) is not accessible!\n", _imagePath.c_str());
       return false;
     }
 
@@ -177,8 +175,8 @@ Image::loadImage()
   if (ret)
     {
       invalidateSurface();
-      ILOG_ERROR(
-          ILX_IMAGE, "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_IMAGE,
+          "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
       return false;
     }
   else

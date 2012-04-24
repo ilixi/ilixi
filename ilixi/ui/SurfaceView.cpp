@@ -28,8 +28,6 @@
 namespace ilixi
 {
 
-  D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
-
   SurfaceView::SurfaceView(DFBSurfaceID id, Widget* parent) :
       SurfaceEventListener(id), Widget(parent)
   {
@@ -73,8 +71,8 @@ namespace ilixi
             &_source);
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_SURFACEVIEW, "Error! GetSurface: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW,
+                "Error! GetSurface: %s", DirectFBErrorString(ret));
             _source = NULL;
             _id = 0;
           }
@@ -111,8 +109,8 @@ namespace ilixi
 
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_SURFACEVIEW, "Error! GetSurface: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW,
+                "Error! GetSurface: %s", DirectFBErrorString(ret));
             _source = NULL;
           }
         else

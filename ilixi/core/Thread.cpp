@@ -29,7 +29,6 @@
 
 using namespace ilixi;
 // TODO Move thread to lib
-D_DEBUG_DOMAIN( ILX_THREAD, "ilixi/lib/Thread", "Thread");
 
 Thread::Thread() :
     _running(false), _code(0), _stackSize(0)

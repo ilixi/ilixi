@@ -28,30 +28,26 @@
 
 using namespace ilixi;
 
-D_DEBUG_DOMAIN( ILX_PALETTE, "ilixi/graphics/Palette", "Palette Parser");
-
 ColorGroup::ColorGroup() :
-  base(1, 1, 1), baseText(0, 0, 0), baseAlt(0.9, 0.9, 0.9),
-      baseAltText(0, 0, 0), bgBottom(0.28, 0.28, 0.28), bgMid(0, 0, 0),
-      bgTop(0.43, 0.43, 0.43), borderBottom(0, 0, 0), borderMid(0, 0, 0),
-      borderTop(0.3, 0.3, 0.3), fillBottom(0, 0, 0), fillMid(0, 0, 0),
-      fillTop(0, 0, 1), text(1, 1, 1)
+    base(1, 1, 1), baseText(0, 0, 0), baseAlt(0.9, 0.9, 0.9), baseAltText(0, 0,
+        0), bgBottom(0.28, 0.28, 0.28), bgMid(0, 0, 0), bgTop(0.43, 0.43, 0.43), borderBottom(
+        0, 0, 0), borderMid(0, 0, 0), borderTop(0.3, 0.3, 0.3), fillBottom(0, 0,
+        0), fillMid(0, 0, 0), fillTop(0, 0, 1), text(1, 1, 1)
 {
 }
 
 ColorGroup::ColorGroup(const ColorGroup& c) :
-  base(c.base), baseText(c.baseText), baseAlt(c.baseAlt),
-      baseAltText(c.baseAltText), bgBottom(c.bgBottom), bgMid(c.bgMid),
-      bgTop(c.bgTop), borderBottom(c.borderBottom), borderMid(c.borderMid),
-      borderTop(c.borderTop), fillBottom(c.fillBottom), fillMid(c.fillMid),
-      fillTop(c.fillTop), text(c.text)
+    base(c.base), baseText(c.baseText), baseAlt(c.baseAlt), baseAltText(
+        c.baseAltText), bgBottom(c.bgBottom), bgMid(c.bgMid), bgTop(c.bgTop), borderBottom(
+        c.borderBottom), borderMid(c.borderMid), borderTop(c.borderTop), fillBottom(
+        c.fillBottom), fillMid(c.fillMid), fillTop(c.fillTop), text(c.text)
 {
 }
 
 ColorGroup::ColorGroup(Color b, Color bAlt, Color bTop, Color bMid,
     Color bBottom, Color boTop, Color boMid, Color boBottom, Color t) :
-  base(b), baseAlt(bAlt), bgTop(bTop), bgMid(bMid), bgBottom(bBottom),
-      borderTop(boTop), borderMid(boMid), borderBottom(boBottom), text(t)
+    base(b), baseAlt(bAlt), bgTop(bTop), bgMid(bMid), bgBottom(bBottom), borderTop(
+        boTop), borderMid(boMid), borderBottom(boBottom), text(t)
 {
 }
 
@@ -71,9 +67,8 @@ ColorGroup::setColors(Color b, Color bAlt, Color bTop, Color bMid,
 }
 
 Palette::Palette() :
-  bgBottom(0, 0, 0), bgMid(0, 0, 0), bgTop(0, 0, 0), focusBottom(0, 0, 0),
-      focusMid(0, 0, 0), focusTop(1, 0, 0), text(1, 1, 1),
-      textDisabled(.9, .9, .9), _default(), _exposed(), _pressed(), _disabled()
+    bgBottom(0, 0, 0), bgMid(0, 0, 0), bgTop(0, 0, 0), focusBottom(0, 0, 0), focusMid(
+        0, 0, 0), focusTop(1, 0, 0), text(1, 1, 1), textDisabled(.9, .9, .9), _default(), _exposed(), _pressed(), _disabled()
 {
 }
 
@@ -103,10 +98,7 @@ Palette::parsePalette(const char* palette)
       return false;
     }
 
-  doc = xmlCtxtReadFile(
-      ctxt,
-      palette,
-      NULL,
+  doc = xmlCtxtReadFile(ctxt, palette, NULL,
       XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
           | XML_PARSE_NOBLANKS);
 
