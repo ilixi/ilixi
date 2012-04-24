@@ -1,92 +1,74 @@
-/*
- * Stacker.cpp
- *
- *  Created on: Apr 3, 2012
- *      Author: tarik
- */
-
-#include "Stacker.h"
+#include "Navigation.h"
+#include "ui/PushButton.h"
+#include "ui/HBoxLayout.h"
+#include "ui/VBoxLayout.h"
 #include "core/Logger.h"
 
 namespace ilixi
 {
 
-  Stacker::Stacker(int argc, char* argv[]) :
+  Navigation::Navigation(int argc, char* argv[]) :
       Application(argc, argv)
   {
-    setTitle("Stacking");
+    setTitle("Navigation");
 
-    PushButton* cont1 = new PushButton("Send to Back");
-    addWidget(cont1);
-    cont1->sigClicked.connect(sigc::mem_fun(this, &Stacker::sendBack));
-    cont1->moveTo(0, 0);
+    setLayout(new HBoxLayout());
 
-    PushButton* cont2 = new PushButton("Bring to front");
-    addWidget(cont2);
-    cont2->sigClicked.connect(sigc::mem_fun(this, &Stacker::bringForward));
-    cont2->moveTo(0, 50);
+    VBoxLayout* vb1 = new VBoxLayout();
+    addWidget(vb1);
 
-    PushButton* cont3 = new PushButton("Raise");
-    addWidget(cont3);
-    cont3->sigClicked.connect(sigc::mem_fun(this, &Stacker::raise));
-    cont3->moveTo(0, 100);
+    PushButton* pb1 = new PushButton("PushButton 1");
+    vb1->addWidget(pb1);
 
-    PushButton* cont4 = new PushButton("Lower");
-    addWidget(cont4);
-    cont4->sigClicked.connect(sigc::mem_fun(this, &Stacker::lower));
-    cont4->moveTo(0, 150);
+    PushButton* pb2 = new PushButton("PushButton 2");
+    vb1->addWidget(pb2);
 
-    PushButton* pb2 = new PushButton("Button 2");
-    addWidget(pb2);
-    pb2->setGeometry(160, 50, 100, 100);
+    PushButton* pb3 = new PushButton("PushButton 3");
+    vb1->addWidget(pb3);
 
-    PushButton* pb3 = new PushButton("Button 3");
-    addWidget(pb3);
-    pb3->setGeometry(240, 50, 100, 100);
+    PushButton* pb4 = new PushButton("PushButton 4");
+    vb1->addWidget(pb4);
 
-    PushButton* pb4 = new PushButton("Button 4");
-    addWidget(pb4);
-    pb4->setGeometry(160, 130, 100, 100);
+    PushButton* pb5 = new PushButton("PushButton 5");
+    vb1->addWidget(pb5);
 
-    PushButton* pb5 = new PushButton("Button 5");
-    addWidget(pb5);
-    pb5->setGeometry(240, 130, 100, 100);
+    VBoxLayout* vb2 = new VBoxLayout();
+    addWidget(vb2);
 
-    pb1 = new PushButton("Button 1");
-    addWidget(pb1);
-    pb1->setGeometry(200, 100, 100, 100);
+    PushButton* pb6 = new PushButton("PushButton 6");
+    vb2->addWidget(pb6);
+
+    PushButton* pb7 = new PushButton("PushButton 7");
+    vb2->addWidget(pb7);
+
+    PushButton* pb8 = new PushButton("PushButton 8");
+    vb2->addWidget(pb8);
+
+    PushButton* pb9 = new PushButton("PushButton 9");
+    vb2->addWidget(pb9);
+
+    PushButton* pb10 = new PushButton("PushButton 10");
+    vb2->addWidget(pb10);
+
+    VBoxLayout* vb3 = new VBoxLayout();
+    addWidget(vb3);
+
+    PushButton* pb11 = new PushButton("PushButton 11");
+    vb3->addWidget(pb11);
+
+    PushButton* pb12 = new PushButton("PushButton 12");
+    vb3->addWidget(pb12);
+
+    PushButton* pb13 = new PushButton("PushButton 13");
+    vb3->addWidget(pb13);
+
+    PushButton* pb14 = new PushButton("PushButton 14");
+    vb3->addWidget(pb14);
+
   }
 
-  Stacker::~Stacker()
+  Navigation::~Navigation()
   {
-  }
-
-  void
-  Stacker::sendBack()
-  {
-    ILOG_DEBUG(ILX, "back: %d\n", widgetToBack(pb1));
-    update();
-  }
-
-  void
-  Stacker::bringForward()
-  {
-    ILOG_DEBUG(ILX, "front: %d\n", widgetToFront(pb1));
-    update();
-  }
-
-  void
-  Stacker::raise()
-  {
-    ILOG_DEBUG(ILX, "raise: %d\n", raiseWidget(pb1));
-    update();
-  }
-
-  void
-  Stacker::lower()
-  {
-    ILOG_DEBUG(ILX, "lower: %d\n", lowerWidget(pb1));
-    update();
   }
 
 } /* namespace ilixi */
@@ -94,7 +76,7 @@ namespace ilixi
 int
 main(int argc, char* argv[])
 {
-  ilixi::Stacker app(argc, argv);
+  ilixi::Navigation app(argc, argv);
   app.exec();
   return 0;
 }

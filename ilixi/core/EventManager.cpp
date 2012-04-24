@@ -262,6 +262,7 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 bool
 EventManager::selectNext(Widget* target, Widget* startFrom)
 {
+  return false;
   if (!target)
     {
       if (!_focusedWidget)
@@ -286,7 +287,7 @@ EventManager::selectNext(Widget* target, Widget* startFrom)
 //              continue;
             }
 
-          if (!startFrom)
+          else if (!startFrom)
             {
               ILOG_DEBUG(ILX, "TargetChild %p\n", targetChild);
               // check children of child recursively...
@@ -308,13 +309,12 @@ EventManager::selectNext(Widget* target, Widget* startFrom)
                 }
 
             }
-
-//          if (i == target->_children.size())
-//            selectNext(_creator);
         }
+
+      selectNext(target->_parent, target);
     }
   else
-    selectNext(target->_parent, _focusedWidget);
+    selectNext(target->_parent, target);
   return false;
 }
 

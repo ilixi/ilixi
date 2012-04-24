@@ -148,6 +148,7 @@ AC_CONFIG_FILES([ \
 		bin/demo3/Makefile \
 		bin/demo4/Makefile \
 		bin/stacking/Makefile \
+		bin/navigation/Makefile \
 		bin/compositor/Makefile \
 		bin/compositor/images/Makefile \
 		ilixi-$VERSION.pc:ilixi.pc.in
