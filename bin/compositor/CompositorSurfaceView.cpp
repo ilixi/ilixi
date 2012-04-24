@@ -75,7 +75,6 @@ namespace ilixi
         if (_aniVal == 255)
           dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
         else
-
           {
             dfbSurface->SetBlittingFlags(dfbSurface,
                 (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL

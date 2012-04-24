@@ -163,6 +163,9 @@ namespace ilixi
     virtual bool
     windowPostEventFilter(const DFBWindowEvent& event);
 
+    virtual void
+    compose();
+
   };
 
 } /* namespace ilixi */

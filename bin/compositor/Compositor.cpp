@@ -23,6 +23,7 @@
 
 //#define DIRECT_ENABLE_DEBUG
 #include "Compositor.h"
+#include "graphics/Painter.h"
 #include "core/Logger.h"
 #include "sigc++/bind.h"
 
@@ -213,8 +214,8 @@ namespace ilixi
             &layer);
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_COMPOSITOR, "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR,
+                "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
             return NULL;
           }
 
@@ -222,8 +223,8 @@ namespace ilixi
         ret = layer->GetWindow(layer, id, &window);
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_COMPOSITOR, "Error! GetWindow: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR,
+                "Error! GetWindow: %s", DirectFBErrorString(ret));
             return NULL;
           }
         return window;
@@ -376,11 +377,11 @@ namespace ilixi
   {
     if (info->window_id > 1)
       {
-        ILOG_DEBUG(
-            ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->window_id);
+        ILOG_DEBUG( ILX_COMPOSITOR,
+            "%s( ID %u )\n", __FUNCTION__, info->window_id);
         ILOG_DEBUG(ILX_COMPOSITOR, "  -> caps         0x%08x\n", info->caps);
-        ILOG_DEBUG(
-            ILX_COMPOSITOR, "  -> res. id  0x%016llx\n", (unsigned long long) info->resource_id);
+        ILOG_DEBUG( ILX_COMPOSITOR,
+            "  -> res. id  0x%016llx\n", (unsigned long long) info->resource_id);
 
         IDirectFBWindow* dfbWindow = getWindow(info->window_id);
         dfbWindow->MoveTo(dfbWindow, width(), 0);
@@ -562,6 +563,18 @@ namespace ilixi
     if (!_launcherOn)
       return _currentSurface->consumeWindowEvent(event);
     return false;
+  }
+
+  void
+  Compositor::compose()
+  {
+    if (_launcherOn)
+      {
+        Painter painter(this);
+        painter.begin();
+        stylist()->drawAppFrame(&painter, this);
+        painter.end();
+      }
   }
 
 } /* namespace ilixi */
