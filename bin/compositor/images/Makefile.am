@@ -4,6 +4,7 @@ miscdata_DATA 	=	andi.png \
 			clanbomber2.png \
 			comp_home.png \
 			comp_switch.png \
+			comp_quit.png \
 			dfbterm.png \
 			gallery.png \
 			input.png \

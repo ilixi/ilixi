@@ -125,6 +125,11 @@ namespace ilixi
             false));
     addWidget(_switchButton);
 
+    _quitButton = new QuitButton();
+    _quitButton->sigPressed.connect(
+        sigc::mem_fun(this, &Compositor::handleQuit));
+    addWidget(_quitButton);
+
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
@@ -277,7 +282,7 @@ namespace ilixi
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
-            focusWindow (activeDFBWindow());
+            focusWindow(activeDFBWindow());
           }
         animSwitcher(true);
       }
@@ -348,9 +353,22 @@ namespace ilixi
   }
 
   void
+  Compositor::handleQuit()
+  {
+    if (_currentSurface)
+      {
+        _launcher->stopApplication(_launcher->getCurrent()->text());
+        animLauncher();
+        // remove from Switcher.
+        _switcher->removeCW(_launcher->getCurrent()->getThumb());
+      }
+  }
+
+  void
   Compositor::onVisible()
   {
     activeDFBWindow()->GrabKey(activeDFBWindow(), DIKS_TAB, DIMM_ALT);
+    _quitButton->show();
   }
 
   void
@@ -424,6 +442,7 @@ namespace ilixi
     _switcher->setGeometry(0, height() - HS_H, width(), HS_H);
     _homeButton->moveTo(0, 0);
     _switchButton->moveTo(0, height() - 80);
+    _quitButton->moveTo(width() - 80, 0);
   }
 
   void

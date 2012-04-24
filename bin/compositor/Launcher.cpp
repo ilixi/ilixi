@@ -24,6 +24,8 @@
 #include "Launcher.h"
 #include "graphics/Painter.h"
 #include <sys/wait.h>
+#include <signal.h>
+#include "core/Logger.h"
 
 namespace ilixi
 {
@@ -44,6 +46,7 @@ namespace ilixi
   Launcher::~Launcher()
   {
     delete _font;
+    ILOG_DEBUG(ILX, "~Launcher %p\n", this);
   }
 
   Size
@@ -155,7 +158,7 @@ namespace ilixi
 
       if (app->getArgs() != NULL)
         {
-          strcpy(str, app->getArgs());
+          strncpy(str, app->getArgs(), 255);
           p = strtok(str, " ");
           while (p != NULL)
             {
@@ -166,7 +169,7 @@ namespace ilixi
           const char *args[arC + 1];
           args[0] = app->getProgram();
 
-          strcpy(str, app->getArgs());
+          strncpy(str, app->getArgs(), 255);
           arC = 1;
           p = strtok(str, " ");
           while (p != NULL)
@@ -200,6 +203,14 @@ namespace ilixi
   }
 
   void
+  Launcher::stopApplication(const std::string& name)
+  {
+    AppButton* app = lookUpApplication(name, NULL);
+    kill(app->getPid(), SIGKILL);
+    app->setStarted(false);
+  }
+
+  void
   Launcher::compose()
   {
     Painter p(this);
@@ -226,7 +237,7 @@ namespace ilixi
   void
   Launcher::updateLauncherGeometry()
   {
-    int hOffset = (height() - 260) / 2;
+    int hOffset = (height() - 390) / 2;
     int wC = width() / 130.0;
     int xOffset = (width() - (wC * 130)) / 2;
     if (wC)

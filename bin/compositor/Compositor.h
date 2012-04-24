@@ -32,6 +32,7 @@
 #include "CompositorSurfaceView.h"
 #include "HomeButton.h"
 #include "SwitchButton.h"
+#include "QuitButton.h"
 
 namespace ilixi
 {
@@ -91,6 +92,9 @@ namespace ilixi
     void
     handleSwitchRequest();
 
+    void
+    handleQuit();
+
   private:
     typedef std::vector<CompositorSurfaceView*> Surfaces;
     Surfaces _surfaces;
@@ -106,6 +110,7 @@ namespace ilixi
     Launcher* _launcher;
     HomeButton* _homeButton;
     SwitchButton* _switchButton;
+    QuitButton* _quitButton;
 
     Font* _switcherFont;
     Font* _overlayFont;

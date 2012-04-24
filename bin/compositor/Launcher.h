@@ -57,6 +57,9 @@ namespace ilixi
     void
     startApplication(const std::string& name);
 
+    void
+    stopApplication(const std::string& name);
+
     AppButton*
     getCurrent() const;
 

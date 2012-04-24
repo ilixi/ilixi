@@ -23,6 +23,7 @@
 
 #include "AppButton.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 namespace ilixi
 {
@@ -40,6 +41,7 @@ namespace ilixi
 
   AppButton::~AppButton()
   {
+    ILOG_DEBUG(ILX, "~AppButton %p\n", this);
   }
 
   const char*
