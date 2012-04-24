@@ -179,8 +179,8 @@ namespace ilixi
             }
           args[arC++] = NULL;
 
-          while (i < arC)
-            D_INFO("ARG: %d - %s\n", i++, args[i]);
+          while (i++ < arC)
+            D_INFO("ARG: %d - %s\n", i-1, args[i-1]);
 
           execvp(app->getProgram(), (char**) args);
         }
