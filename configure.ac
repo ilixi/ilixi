@@ -49,6 +49,33 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 ######################################################################
+# Dependencies
+######################################################################
+# Checks for programs.
+LT_INIT
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_LIBTOOL
+AC_PROG_AWK
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+AC_CHECK_HEADERS([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
+AC_HEADER_STDBOOL
+AC_TYPE_PID_T
+AC_FUNC_ERROR_AT_LINE
+
+# Checks for libraries.
+DIRECTFB_REQ_VERSION=1.4.9
+SIGC_REQ_VERSION=2.2.4.2
+LIBXML_REQ_VERSION=2.7.7
+
+AC_MSG_NOTICE([checking if dependencies are installed...])
+PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+
+######################################################################
 # Conditional inclusions
 ######################################################################
 ILIXI_LOGGER_ENABLED=0
@@ -62,46 +89,13 @@ AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger 
 
 AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
 if test "$enable_debug" = "yes"; then
-    CPPFLAGS="-g3 -O0 -fno-inline -Wno-inline $CPPFLAGS"
-    ILIXI_BUILD_DEBUG=1
-else
-    ILIXI_BUILD_DEBUG=0
+    CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline"
 fi
-AC_SUBST(ILIXI_BUILD_DEBUG)
 
-AM_CONDITIONAL(ENABLE_DEBUG, test "$enable_debug" = "yes")
-
-######################################################################
-# Dependencies
-######################################################################
-# Checks for programs.
-LT_INIT
-AC_PROG_CXX
-AC_PROG_AWK
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_HEADER_SYS_WAIT
-
-# Checks for header files.
-AC_CHECK_HEADERS([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_TYPE_PID_T
-
-# Checks for library functions.
-AC_FUNC_ERROR_AT_LINE
-
-# Checks for libraries.
-DIRECTFB_REQ_VERSION=1.4.9
-SIGC_REQ_VERSION=2.2.4.2
-LIBXML_REQ_VERSION=2.7.7
-
-AC_MSG_NOTICE([checking if dependencies are installed...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+AC_ARG_ENABLE([profiling], AS_HELP_STRING([--enable-profiling], [enable profiling @<:@default=no@:>@]), [], [enable_profiling=no])
+if test "$enable_profiling" = "yes"; then
+    CFLAGS="$CFLAGS -pg"
+fi
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -121,6 +115,7 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 ######################################################################
 # Output
 ######################################################################
+CXXFLAGS="$CFLAGS"
 ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
 
