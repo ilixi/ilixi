@@ -378,5 +378,29 @@ namespace ilixi
   {
     return _size.height();
   }
+
+  inline int
+  Rectangle::left() const
+  {
+    return _topLeft.x();
+  }
+
+  inline int
+  Rectangle::bottom() const
+  {
+    return (_topLeft.y() + _size.height());
+  }
+
+  inline int
+  Rectangle::right() const
+  {
+    return (_topLeft.x() + _size.width());
+  }
+
+  inline int
+  Rectangle::top() const
+  {
+    return _topLeft.y();
+  }
 }
 #endif /* ILIXI_RECTANGLE_H_ */

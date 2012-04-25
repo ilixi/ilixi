@@ -65,12 +65,6 @@ Rectangle::size() const
   return _size;
 }
 
-int
-Rectangle::bottom() const
-{
-  return (y() + height());
-}
-
 Point
 Rectangle::center() const
 {
@@ -115,24 +109,6 @@ Rectangle::topRight() const
   p.setX(right());
   p.setY(top());
   return p;
-}
-
-int
-Rectangle::left() const
-{
-  return x();
-}
-
-int
-Rectangle::right() const
-{
-  return (x() + width());
-}
-
-int
-Rectangle::top() const
-{
-  return y();
 }
 
 bool
