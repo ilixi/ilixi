@@ -125,7 +125,7 @@ Surface::setGeometry(int x, int y, int width, int height)
 void
 Surface::flip()
 {
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_FLUSH);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s", DirectFBErrorString(ret));
 }
@@ -134,7 +134,7 @@ void
 Surface::flip(const Rectangle& rect)
 {
   DFBRegion r = rect.dfbRegion();
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_FLUSH);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_NONE);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s", DirectFBErrorString(ret));
 }
