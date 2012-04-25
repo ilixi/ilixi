@@ -440,7 +440,9 @@ AppBase::handleEvents()
 
   while (__buffer->GetEvent(__buffer, DFB_EVENT(&event)) == DFB_OK)
     {
-      if (event.clazz == DFEC_USER)
+      if (event.clazz == DFEC_SURFACE)
+        consumeSurfaceEvent((const DFBSurfaceEvent&) event);
+      else if (event.clazz == DFEC_USER)
         handleUserEvent((const DFBUserEvent&) event);
       else if (event.clazz == DFEC_WINDOW)
         {
@@ -448,8 +450,6 @@ AppBase::handleEvents()
             if (!consumeWindowEvent((const DFBWindowEvent&) event))
               windowPostEventFilter((const DFBWindowEvent&) event);
         }
-      else if (event.clazz == DFEC_SURFACE)
-        consumeSurfaceEvent((const DFBSurfaceEvent&) event);
     }
 }
 
@@ -469,11 +469,6 @@ AppBase::attachDFBWindow(Window* window)
       if (ret != DFB_OK)
         ILOG_ERROR( ILX_APPBASE,
             "RequestFocus error: %s! \n", DirectFBErrorString(ret));
-
-      ret = window->_dfbWindow->GrabPointer(window->_dfbWindow);
-      if (ret != DFB_OK)
-        ILOG_ERROR( ILX_APPBASE,
-            "GrabPointer error: %s!\n", DirectFBErrorString(ret));
 
       ret = __buffer->Reset(__buffer);
       if (ret != DFB_OK)
@@ -495,11 +490,6 @@ AppBase::detachDFBWindow(Window* window)
       if (ret != DFB_OK)
         ILOG_ERROR( ILX_APPBASE,
             "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
-
-      ret = window->_dfbWindow->UngrabPointer(window->_dfbWindow);
-      if (ret != DFB_OK)
-        ILOG_ERROR( ILX_APPBASE,
-            "UngrabPointer error: %s!\n", DirectFBErrorString(ret));
 
       ret = __buffer->Reset(__buffer);
       if (ret != DFB_OK)
