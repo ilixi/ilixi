@@ -266,6 +266,7 @@ namespace ilixi
         if (_currentSurface)
           {
             _launcherOn = false;
+            _backgroundFlags = BGFNone;
             _launcher->setVisible(_launcherOn);
             _currentSurface->show();
             _homeButton->show();
@@ -281,6 +282,7 @@ namespace ilixi
         if (_currentSurface)
           {
             _launcherOn = true;
+            _backgroundFlags = BGFFill;
             _launcher->setVisible(_launcherOn);
             _currentSurface->hide();
             _homeButton->hide();
@@ -317,6 +319,7 @@ namespace ilixi
           _currentSurface->hide();
         _currentSurface = csw;
         _launcherOn = false;
+        _backgroundFlags = BGFNone;
         _launcher->setVisible(_launcherOn);
         _currentSurface->show();
         _homeButton->show();
@@ -347,6 +350,7 @@ namespace ilixi
           {
             _launcherOn = false;
             _launcher->setVisible(_launcherOn);
+            _backgroundFlags = BGFNone;
           }
         _currentSurface->show();
         _homeButton->show();
@@ -394,38 +398,51 @@ namespace ilixi
   void
   Compositor::removeWindow(DFBWindowID id)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    // TODO remove window
-    //_switcher->removeCW(_cwindows[id]);
-    update();
+    if (id > 1)
+      {
+        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+        // TODO remove window
+        //_switcher->removeCW(_cwindows[id]);
+        //update();
+      }
   }
 
   void
   Compositor::configWindow(DFBWindowID id, const DFBWindowConfig *config,
       DFBWindowConfigFlags flags)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", flags);
+    if (id > 1)
+      {
+        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+        ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", flags);
+      }
   }
 
   void
   Compositor::stateWindow(DFBWindowID id, const DFBWindowState* state)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", state->flags);
+    if (id > 1)
+      {
+        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+        ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", state->flags);
+      }
   }
 
   void
   Compositor::restackWindow(DFBWindowID id, unsigned int index)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
+    if (id > 1)
+      {
+        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+        ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
+      }
   }
 
   void
   Compositor::focusWindow(DFBWindowID id)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+    if (id > 1)
+      ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
   }
 
   CompositorSurfaceView*
@@ -535,6 +552,7 @@ namespace ilixi
               {
                 _launcherOn = false;
                 _launcher->setVisible(_launcherOn);
+                _backgroundFlags = BGFNone;
               }
 
             if (_switcher->getCurrentCW()->sourceID()
@@ -544,6 +562,7 @@ namespace ilixi
                 _currentSurface = lookUpSurfaceView(
                     _switcher->getCurrentCW()->sourceID());
                 _launcherOn = false;
+                _backgroundFlags = BGFNone;
                 _currentSurface->show();
                 focusWindow(_currentSurface->_window);
               }

@@ -87,13 +87,15 @@ WindowWidget::paint(const Rectangle& rect)
 
           if (intersect.isValid())
             {
-              if (_backgroundFilled)
+              if (_backgroundFlags & BGFFill)
                 {
                   surface()->clear(intersect);
                   compose();
                 }
-              else
+              else if (_backgroundFlags & BGFClear)
                 surface()->clear(intersect);
+              else
+                ILOG_DEBUG(ILX_WINDOWWIDGET, "No fill or clear\n");
 
               paintChildren(intersect);
               surface()->flip(intersect);
@@ -320,8 +322,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 void
 WindowWidget::updateWindow()
 {
-  if (!_window->_dfbWindow)
-    return;
+//  if (!_window->_dfbWindow)
+//    return;
 
   pthread_mutex_lock(&_updates._listLock);
   int size = _updates._updateQueue.size();

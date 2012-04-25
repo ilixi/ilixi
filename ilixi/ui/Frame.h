@@ -110,8 +110,14 @@ namespace ilixi
     setMargin(const Margin& margin);
 
   protected:
+    enum BackgroundFlags {
+      BGFNone = 0x000,
+      BGFClear = 0x001,
+      BGFFill = 0x002,
+      BGFAll = 0x003
+    };
     //! This flag specifies whether frame fills its background.
-    bool _backgroundFilled;
+    char _backgroundFlags;
     //! This property holds the margin of container.
     Margin _margin;
     //! This property holds the top-left point of canvas.

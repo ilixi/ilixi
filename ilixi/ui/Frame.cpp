@@ -28,7 +28,7 @@
 using namespace ilixi;
 
 Frame::Frame(Widget* parent) :
-    BorderBase(parent), ContainerBase(parent), _backgroundFilled(true)
+    BorderBase(parent), ContainerBase(parent), _backgroundFlags(BGFAll)
 {
   setBorderWidth(1);
   setBorderStyle(StyledBorder);
@@ -60,7 +60,7 @@ Frame::preferredSize() const
 bool
 Frame::backgroundFilled() const
 {
-  return _backgroundFilled;
+  return _backgroundFlags & BGFFill;
 }
 
 Margin
@@ -72,7 +72,7 @@ Frame::margin() const
 void
 Frame::setBackgroundFilled(bool fill)
 {
-  _backgroundFilled = fill;
+  _backgroundFlags |= BGFAll;
 }
 
 void
