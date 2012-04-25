@@ -90,6 +90,18 @@ namespace ilixi
 
   protected:
     /*!
+     * Scale ratio in horizontal direction.
+     */
+    float
+    hScale() const;
+
+    /*!
+     * Scale ratio in vertical direction.
+     */
+    float
+    vScale() const;
+
+    /*!
      * Reimplement for decorations.
      */
     virtual void
@@ -102,8 +114,11 @@ namespace ilixi
     renderSource();
 
   private:
-    float _wScale;
+    //! This property stores the scale ratio in horizontal direction.
     float _hScale;
+    //! This property stores the scale ratio in vertical direction.
+    float _vScale;
+    //! This property stores the window interface of source surface, if any.
     IDirectFBWindow* _window;
 
     void

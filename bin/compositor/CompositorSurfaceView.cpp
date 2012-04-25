@@ -82,10 +82,15 @@ namespace ilixi
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, _aniVal);
           }
 
-        DFBRectangle rect =
-          { _scaleVal, _scaleVal, width() - 2 * _scaleVal, height()
-              - 2 * _scaleVal };
-        dfbSurface->StretchBlit(dfbSurface, _source, NULL, &rect);
+        if (_scaleVal == 1 && hScale() == 1 && vScale() == 1)
+          dfbSurface->Blit(dfbSurface, _source, NULL, 0, 0);
+        else
+          {
+            DFBRectangle rect =
+              { _scaleVal, _scaleVal, width() - 2 * _scaleVal, height()
+                  - 2 * _scaleVal };
+            dfbSurface->StretchBlit(dfbSurface, _source, NULL, &rect);
+          }
       }
   }
 

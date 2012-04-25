@@ -96,6 +96,7 @@ namespace ilixi
 
     _iWindows->RegisterWatcher(_iWindows, &_watcher, this);
 
+    // FIXME remove or use these fonts.
     _switcherFont = new Font(ILIXI_DATADIR"fonts/decker.ttf");
     _switcherFont->setSize(24);
 

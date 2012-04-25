@@ -29,7 +29,8 @@ namespace ilixi
 {
 
   SurfaceView::SurfaceView(DFBSurfaceID id, Widget* parent) :
-      SurfaceEventListener(id), Widget(parent)
+      SurfaceEventListener(id), Widget(parent), _hScale(1), _vScale(1), _window(
+          NULL)
   {
     setSourceFromSurfaceID(id);
     sigGeometryUpdated.connect(
@@ -143,12 +144,24 @@ namespace ilixi
   {
     if (_window && event.type != DWET_UPDATE)
       {
-        event.x *= _wScale;
-        event.y *= _hScale;
+        event.x *= _hScale;
+        event.y *= _vScale;
         _window->SendEvent(_window, &event);
         return true;
       }
     return false;
+  }
+
+  float
+  SurfaceView::hScale() const
+  {
+    return _hScale;
+  }
+
+  float
+  SurfaceView::vScale() const
+  {
+    return _vScale;
   }
 
   void
@@ -174,8 +187,8 @@ namespace ilixi
     // TODO scale region and use rectangle for update.
     Rectangle rect(Point(event.update.x1, event.update.y1),
         Point(event.update.x2, event.update.y2));
-    rect.setWidth(width() * _wScale);
-    rect.setHeight(height() * _hScale);
+    rect.setWidth(width() * _hScale);
+    rect.setHeight(height() * _vScale);
     _source->FrameAck(_source, event.flip_count);
     update();
   }
@@ -194,8 +207,8 @@ namespace ilixi
       {
         int w, h;
         _source->GetSize(_source, &w, &h);
-        _wScale = (float) (0.0 + w) / width();
-        _hScale = (float) (0.0 + h) / height();
+        _hScale = (float) (0.0 + w) / width();
+        _vScale = (float) (0.0 + h) / height();
       }
   }
 
