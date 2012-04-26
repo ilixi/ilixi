@@ -140,13 +140,13 @@ namespace ilixi
   }
 
   bool
-  SurfaceView::consumeWindowEvent(DFBWindowEvent event)
+  SurfaceView::consumeWindowEvent(DFBWindowEvent* event)
   {
-    if (_window && event.type != DWET_UPDATE)
+    if (_window && event->type != DWET_UPDATE)
       {
-        event.x *= _hScale;
-        event.y *= _vScale;
-        _window->SendEvent(_window, &event);
+        event->x *= _hScale;
+        event->y *= _vScale;
+        _window->SendEvent(_window, event);
         return true;
       }
     return false;
@@ -185,12 +185,11 @@ namespace ilixi
   SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
   {
     // TODO scale region and use rectangle for update.
-    Rectangle rect(Point(event.update.x1, event.update.y1),
+    Rectangle rect(Point(event.update.x1 * _hScale, event.update.y1 * _vScale),
         Point(event.update.x2, event.update.y2));
-    rect.setWidth(width() * _hScale);
-    rect.setHeight(height() * _vScale);
-    _source->FrameAck(_source, event.flip_count);
-    update();
+    rect.setWidth(rect.width() * _hScale);
+    rect.setHeight(rect.height() * _vScale);
+    update(mapFromSurface(rect));
   }
 
   void

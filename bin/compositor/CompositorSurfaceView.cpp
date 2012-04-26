@@ -73,6 +73,7 @@ namespace ilixi
     if (_source && _aniVal > 0)
       {
         IDirectFBSurface* dfbSurface = surface()->DFBSurface();
+
         if (_aniVal == 255)
           dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
         else
@@ -83,7 +84,7 @@ namespace ilixi
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, _aniVal);
           }
 
-        if (_scaleVal == 0 && hScale() == 1 && vScale() == 1)
+        if (_scaleVal == 0 && (hScale() == 1 && vScale() == 1))
           dfbSurface->Blit(dfbSurface, _source, NULL, 0, 0);
         else
           {

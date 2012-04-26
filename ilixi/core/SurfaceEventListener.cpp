@@ -42,20 +42,13 @@ namespace ilixi
   void
   SurfaceEventListener::attachEB()
   {
-    // FIXME lock window resources first!
-    if (_source)
-      {
-        _source->MakeClient(_source);
-//        _source->AllowAccess(_source, "*");
-        _source->AttachEventBuffer(_source, AppBase::__buffer);
-      }
+    AppBase::attachSourceSurface(_source);
   }
 
   void
   SurfaceEventListener::detachEB()
   {
-    if (_source)
-      _source->DetachEventBuffer(_source, AppBase::__buffer);
+    AppBase::detachSourceSurface(_source);
   }
 
   bool

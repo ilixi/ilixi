@@ -94,8 +94,6 @@ WindowWidget::paint(const Rectangle& rect)
                 }
               else if (_backgroundFlags & BGFClear)
                 surface()->clear(intersect);
-              else
-                ILOG_DEBUG(ILX_WINDOWWIDGET, "No fill or clear\n");
 
               paintChildren(intersect);
               surface()->flip(intersect);

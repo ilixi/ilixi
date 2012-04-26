@@ -92,8 +92,7 @@ namespace ilixi
       Terminating = 0x00000020, //!< Application is about to terminate shortly.
       Visible = 0x00000040, //!< Application has a visible window and has access to events.
       Hidden = 0x00000080, //!< Application has no window and has no access to events.
-      Quit = 0x00000100,
-    //!< Application should terminate.
+      Quit = 0x00000100,    //!< Application should terminate.
     };
 
     /*!

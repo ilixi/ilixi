@@ -57,10 +57,9 @@ namespace ilixi
    */
   enum SurfaceDescription
   {
-    DefaultDescription = 0x05, //!< (InitialiseSurface )
-    BlitDescription = 0x09, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
-    WindowDescription = 0x15
-  //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
+    DefaultDescription = 0x03, //!< (InitialiseSurface )
+    BlitDescription = 0x11, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
+    WindowDescription = 0x13  //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
   };
 
   /*!

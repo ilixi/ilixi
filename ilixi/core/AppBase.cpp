@@ -440,15 +440,29 @@ AppBase::handleEvents()
 
   while (__buffer->GetEvent(__buffer, DFB_EVENT(&event)) == DFB_OK)
     {
-      if (event.clazz == DFEC_SURFACE)
-        consumeSurfaceEvent((const DFBSurfaceEvent&) event);
-      else if (event.clazz == DFEC_USER)
-        handleUserEvent((const DFBUserEvent&) event);
-      else if (event.clazz == DFEC_WINDOW)
+      switch (event.clazz)
         {
-          if (!windowPreEventFilter((const DFBWindowEvent&) event))
-            if (!consumeWindowEvent((const DFBWindowEvent&) event))
-              windowPostEventFilter((const DFBWindowEvent&) event);
+      case DFEC_WINDOW:
+//        ILOG_INFO(ILX_APPBASE,
+//            "Window(%d) Type(%x)\n", event.window.window_id, event.window.type);
+
+        if (!windowPreEventFilter((const DFBWindowEvent&) event))
+          if (!activeWindow()->handleWindowEvent((const DFBWindowEvent&) event))
+            windowPostEventFilter((const DFBWindowEvent&) event);
+        break;
+      case DFEC_USER:
+        handleUserEvent((const DFBUserEvent&) event);
+        break;
+      case DFEC_SURFACE:
+        {
+          IDirectFBSurface* surface =
+              __ssMap.find(event.surface.surface_id)->second;
+          surface->FrameAck(surface, event.surface.flip_count);
+          consumeSurfaceEvent((const DFBSurfaceEvent&) event);
+        }
+        break;
+      default:
+        break;
         }
     }
 }
@@ -499,3 +513,35 @@ AppBase::detachDFBWindow(Window* window)
     }
 }
 
+void
+AppBase::attachSourceSurface(IDirectFBSurface* surface)
+{
+  if (surface)
+    {
+      DFBSurfaceID id;
+      surface->GetID(surface, &id);
+      if (__instance->__ssMap.find(id) == __instance->__ssMap.end())
+        {
+          __instance->__ssMap.insert(
+              pair<DFBSurfaceID, IDirectFBSurface*>(id, surface));
+          surface->MakeClient(surface);
+          surface->AttachEventBuffer(surface, __buffer);
+          ILOG_INFO(ILX_APPBASE, "SourceSurface %p is attached.\n", surface);
+        }
+    }
+}
+
+void
+AppBase::detachSourceSurface(IDirectFBSurface* surface)
+{
+  if (surface)
+    {
+      DFBSurfaceID id;
+      surface->GetID(surface, &id);
+      if (__instance->__ssMap.find(id) != __instance->__ssMap.end())
+        {
+          surface->DetachEventBuffer(surface, __buffer);
+          ILOG_INFO(ILX_APPBASE, "SourceSurface %p is detached.\n", surface);
+        }
+    }
+}

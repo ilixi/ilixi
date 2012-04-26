@@ -401,9 +401,8 @@ namespace ilixi
     if (id > 1)
       {
         ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-        // TODO remove window
-        //_switcher->removeCW(_cwindows[id]);
-        //update();
+        IDirectFBWindow* dfbWindow = getWindow(id);
+        postUserEvent(CET_Remove, dfbWindow);
       }
   }
 
@@ -415,6 +414,8 @@ namespace ilixi
       {
         ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
         ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", flags);
+        IDirectFBWindow* dfbWindow = getWindow(id);
+        postUserEvent(CET_Config, dfbWindow);
       }
   }
 
@@ -425,6 +426,8 @@ namespace ilixi
       {
         ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
         ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", state->flags);
+        IDirectFBWindow* dfbWindow = getWindow(id);
+        postUserEvent(CET_State, dfbWindow);
       }
   }
 
@@ -435,6 +438,8 @@ namespace ilixi
       {
         ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
         ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
+        IDirectFBWindow* dfbWindow = getWindow(id);
+        postUserEvent(CET_Restack, dfbWindow);
       }
   }
 
@@ -443,6 +448,8 @@ namespace ilixi
   {
     if (id > 1)
       ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+    IDirectFBWindow* dfbWindow = getWindow(id);
+    postUserEvent(CET_Focus, dfbWindow);
   }
 
   CompositorSurfaceView*
@@ -483,6 +490,8 @@ namespace ilixi
             widgetToBack(surface);
             _currentSurface = surface;
 
+            // Attach CompositorSurfaceView to buffer
+
             thumb->setSourceFromWindow(dfbWindow);
             surface->setSourceFromWindow(dfbWindow);
             surface->setGeometry(0, 0, width(), height());
@@ -498,6 +507,8 @@ namespace ilixi
           break;
 
         case CET_Remove:
+          // Detach CompositorSurfaceView from buffer
+
         case CET_Config:
         case CET_Focus:
         case CET_Restack:
@@ -581,7 +592,7 @@ namespace ilixi
   Compositor::windowPostEventFilter(const DFBWindowEvent& event)
   {
     if (!_launcherOn)
-      return _currentSurface->consumeWindowEvent(event);
+      return _currentSurface->consumeWindowEvent(const_cast<DFBWindowEvent*>(&event));
     return false;
   }
 

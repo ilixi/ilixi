@@ -48,6 +48,18 @@ namespace ilixi
     virtual
     ~SurfaceEventListener();
 
+    /*!
+     * Attaches source surface to event buffer.
+     */
+    void
+    attachEB();
+
+    /*!
+     * Detaches source surface from event buffer.
+     */
+    void
+    detachEB();
+
   protected:
     //! ID of source surface.
     DFBSurfaceID _id;
@@ -70,18 +82,6 @@ namespace ilixi
      */
     virtual void
     onSourceDestroyed(const DFBSurfaceEvent& event) = 0;
-
-    /*!
-     * Attaches source surface to event buffer.
-     */
-    void
-    attachEB();
-
-    /*!
-     * Detaches source surface from event buffer.
-     */
-    void
-    detachEB();
 
   private:
     //! Intercepts surface events of source surface.

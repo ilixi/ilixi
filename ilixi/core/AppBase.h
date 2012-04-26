@@ -32,6 +32,7 @@
 #include "core/Callback.h"
 #include "core/Window.h"
 #include <list>
+#include <map>
 
 namespace ilixi
 {
@@ -150,6 +151,9 @@ namespace ilixi
     SurfaceListenerList __selList;
     //! Serialises access to _selList.
     pthread_mutex_t __selMutex;
+
+    typedef std::map<DFBSurfaceID, IDirectFBSurface*> SourceSurfaceList;
+    SourceSurfaceList __ssMap;
 
     typedef std::list<WindowWidget*> WindowList;
     //! Application wide list of windows.
@@ -270,6 +274,12 @@ namespace ilixi
      */
     static void
     detachDFBWindow(Window* window);
+
+    static void
+    attachSourceSurface(IDirectFBSurface* surface);
+
+    static void
+    detachSourceSurface(IDirectFBSurface* surface);
   };
 }
 #endif /* ILIXI_APPBASE_H_ */

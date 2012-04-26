@@ -86,7 +86,7 @@ namespace ilixi
     paint(const Rectangle& targetArea);
 
     virtual bool
-    consumeWindowEvent(DFBWindowEvent event);
+    consumeWindowEvent(DFBWindowEvent* event);
 
   protected:
     /*!
