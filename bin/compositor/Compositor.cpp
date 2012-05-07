@@ -265,8 +265,7 @@ namespace ilixi
           _currentApp->view->show();
         _backgroundFlags = BGFNone;
         _launcher->setVisible(false);
-        _homeButton->hide();
-        _quitButton->hide();
+        _homeButton->show();
         showSwitcher(false);
       }
   }

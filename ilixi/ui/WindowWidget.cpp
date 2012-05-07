@@ -117,7 +117,7 @@ WindowWidget::paint(const Rectangle& rect)
 
               paintChildren(intersect);
 
-              if (AppBase::appOptions() & OptExclusive && _backgroundFlags & BGFFill)
+              if (AppBase::appOptions() & OptExclusive)
                 {
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
