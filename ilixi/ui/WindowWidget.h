@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -78,12 +78,6 @@ namespace ilixi
 
   protected:
     /*!
-     * Create and initialise DirectFB window using preferred size.
-     */
-    void
-    initWindow();
-
-    /*!
      * Makes this widget and its window visible.
      */
     void
@@ -139,6 +133,9 @@ namespace ilixi
       Rectangle _updateRegion;
       std::vector<Rectangle> _updateQueue;
     } _updates;
+
+    static IDirectFBSurface* _exclusiveSurface;
+    static IDirectFBSurface* _cursorImage;
 
     /*!
      * Creates a united rectangle from a list of dirty regions and

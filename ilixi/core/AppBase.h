@@ -57,12 +57,10 @@ namespace ilixi
     friend class Application;
 
   public:
-    AppBase();
-
     /*!
      * Constructor.
      */
-    AppBase(int argc, char* argv[]);
+    AppBase(int argc, char* argv[], AppOptions options);
 
     /*!
      * Destructor.
@@ -94,12 +92,6 @@ namespace ilixi
      */
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
-
-    /*!
-     * This method gets window events last.
-     */
-    virtual bool
-    windowPostEventFilter(const DFBWindowEvent& event);
 
     /*!
      * Returns current state of application.
@@ -134,11 +126,21 @@ namespace ilixi
     IDirectFBWindow*
     activeDFBWindow() const;
 
+    static AppOptions
+    appOptions();
+
+    static DFBPoint
+    cursorPosition();
+
   private:
+    //! This property stores various options for application behaviour.
+    AppOptions __options;
     //! Application title.
     std::string __title;
     //! Application state.
     IMaestro::AppState __state;
+
+    DFBPoint __cursorOld, __cursorNew;
 
     typedef std::list<Callback*> CallbackList;
     //! List of callbacks
@@ -177,7 +179,7 @@ namespace ilixi
      * only once by main Application during its construction.
      */
     bool
-    initDFB(int argc, char **argv, AppOptions opts);
+    initDFB(int argc, char **argv);
 
     /*!
      * Releases DirectFB resources.
@@ -246,12 +248,6 @@ namespace ilixi
     removeWindow(WindowWidget* window);
 
     /*!
-     * Forwards incoming window event to active window.
-     */
-    bool
-    consumeWindowEvent(const DFBWindowEvent& event);
-
-    /*!
      * Paints windows with affected areas.
      */
     void
@@ -280,6 +276,19 @@ namespace ilixi
 
     static void
     detachSourceSurface(IDirectFBSurface* surface);
+
+    void
+    handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type);
+
+    void
+    handleButtonInputEvent(const DFBInputEvent& event, DFBWindowEventType type);
+
+    void
+    handleButtonRelease(const DFBInputEvent& event);
+
+    void
+    handleAxisMotion(const DFBInputEvent& event);
+
   };
 }
 #endif /* ILIXI_APPBASE_H_ */

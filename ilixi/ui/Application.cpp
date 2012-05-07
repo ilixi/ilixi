@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -31,11 +31,11 @@ using namespace ilixi;
 using namespace IMaestro;
 
 Application::Application(int argc, char* argv[], AppOptions opts) :
-    AppBase(argc, argv), WindowWidget(), _backgroundImage(NULL)
+    AppBase(argc, argv, opts), WindowWidget(), _backgroundImage(NULL)
 {
   // TODO parse command line arguments here...
   // parse app-meta file...
-  initDFB(argc, argv, opts);
+  initDFB(argc, argv);
   setStylist(new Stylist());
   setBackgroundFilled(false);
   setMargins(5, 5, 5, 5);
@@ -70,6 +70,14 @@ void
 Application::exec()
 {
   ILOG_INFO(ILX_APPLICATION, "Starting...\n");
+
+  if (__options & OptExclusive)
+    {
+      if (__layer->SetCooperativeLevel(__layer, DLSCL_EXCLUSIVE))
+        ILOG_ERROR(ILX_APPLICATION, "Error while setting EXLUSIVE mode!\n");
+      else
+        ILOG_INFO(ILX_APPLICATION, "Now running in exclusive mode.\n");
+    }
 
   show();
 

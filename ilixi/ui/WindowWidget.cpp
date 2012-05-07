@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -27,6 +27,9 @@
 
 using namespace ilixi;
 
+IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
+IDirectFBSurface* WindowWidget::_cursorImage = NULL;
+
 WindowWidget::WindowWidget(Widget* parent) :
     Frame(parent), _window(NULL), _eventManager(NULL)
 {
@@ -39,7 +42,18 @@ WindowWidget::WindowWidget(Widget* parent) :
   setMargins(5, 5, 5, 5);
   setNeighbours(this, this, this, this);
 
-  _window = new Window();
+  if (AppBase::appOptions() & OptExclusive)
+    {
+      if (AppBase::activeWindow())
+        {
+          ILOG_ERROR(ILX_WINDOWWIDGET,
+              "Error cannot have multiple windows in exclusive mode!\n");
+          exit(1);
+        }
+    }
+  else
+    _window = new Window();
+
   _eventManager = new EventManager(this);
   setRootWindow(this);
 }
@@ -53,6 +67,11 @@ WindowWidget::~WindowWidget()
   AppBase::removeWindow(this);
   delete _eventManager;
   delete _window;
+  if (AppBase::appOptions() & OptExclusive)
+    {
+      _exclusiveSurface->Release(_exclusiveSurface);
+      _cursorImage->Release(_cursorImage);
+    }
   ILOG_DEBUG(ILX_WINDOWWIDGET, "~WindowWidget %p\n", this);
 }
 
@@ -96,6 +115,15 @@ WindowWidget::paint(const Rectangle& rect)
                 surface()->clear(intersect);
 
               paintChildren(intersect);
+
+              if (AppBase::appOptions() & OptExclusive)
+                {
+                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                      DSBLIT_BLEND_ALPHACHANNEL);
+                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                }
+
               surface()->flip(intersect);
             }
           sem_post(&_updates._paintReady);
@@ -122,23 +150,57 @@ WindowWidget::repaint(const Rectangle& rect)
 }
 
 void
-WindowWidget::initWindow()
-{
-  if (_window->_dfbWindow)
-    return;
-
-  if (_window->initDFBWindow(preferredSize()))
-    {
-      AppBase::addWindow(this);
-      setSize(_window->windowSize());
-      setRootWindow(this);
-    }
-}
-
-void
 WindowWidget::showWindow()
 {
-  initWindow();
+  if (AppBase::appOptions() & OptExclusive)
+    {
+      ILOG_INFO(ILX_WINDOWWIDGET, "Creating cursor...\n");
+      IDirectFBImageProvider* provider;
+      DFBSurfaceDescription desc;
+      AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
+          ILIXI_DATADIR"images/pointer.png", &provider);
+
+      provider->GetSurfaceDescription(provider, &desc);
+
+      desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
+          | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+      desc.caps = DSCAPS_PREMULTIPLIED;
+      desc.pixelformat = DSPF_ARGB;
+
+      AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc, &_cursorImage);
+
+      provider->RenderTo(provider, _cursorImage, NULL);
+      provider->Release(provider);
+
+      ILOG_INFO(ILX_WINDOWWIDGET, "Getting layer surface\n");
+      DFBDisplayLayerConfig dlc;
+      dlc.flags = (DFBDisplayLayerConfigFlags) (DLCONF_PIXELFORMAT
+          | DLCONF_BUFFERMODE);
+      dlc.pixelformat = DSPF_ARGB;
+      dlc.buffermode = DLBM_BACKVIDEO;
+      AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface);
+      _exclusiveSurface->Clear(_exclusiveSurface, 255, 255, 255, 255);
+      _exclusiveSurface->Flip(_exclusiveSurface, NULL, DSFLIP_NONE);
+
+      int w, h;
+      _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
+
+      AppBase::addWindow(this);
+      setSize(Size(w, h));
+      setRootWindow(this);
+    }
+  else
+    {
+      if (_window->_dfbWindow)
+        return;
+
+      if (_window->initDFBWindow(preferredSize()))
+        {
+          AppBase::addWindow(this);
+          setSize(_window->windowSize());
+          setRootWindow(this);
+        }
+    }
 
   setVisible(true);
 
@@ -146,7 +208,9 @@ WindowWidget::showWindow()
     _eventManager->selectNeighbour(Right);
 
   paint(Rectangle(0, 0, width(), height()));
-  _window->showWindow();
+
+  if (!(AppBase::appOptions() & OptExclusive))
+    _window->showWindow();
 
   AppBase::setActiveWindow(this);
 }
@@ -156,7 +220,8 @@ WindowWidget::closeWindow()
 {
   setVisible(false);
 
-  _window->hideWindow();
+  if (!(AppBase::appOptions() & OptExclusive))
+    _window->hideWindow();
 
   _eventManager->setGrabbedWidget(NULL);
   _eventManager->setExposedWidget(NULL);
@@ -164,7 +229,9 @@ WindowWidget::closeWindow()
   AppBase::removeWindow(this);
 
   invalidateSurface();
-  _window->releaseDFBWindow();
+
+  if (!(AppBase::appOptions() & OptExclusive))
+    _window->releaseDFBWindow();
 }
 
 bool
@@ -176,10 +243,6 @@ WindowWidget::keyListener(DFBInputDeviceKeySymbol key)
 bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
-  // ignore events outside this window...
-  if (_window->windowID() != event.window_id)
-    return false;
-
   // handle all other events...
   Widget* target = this;
   Widget* grabbed = _eventManager->grabbedWidget();
@@ -320,9 +383,6 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 void
 WindowWidget::updateWindow()
 {
-//  if (!_window->_dfbWindow)
-//    return;
-
   pthread_mutex_lock(&_updates._listLock);
   int size = _updates._updateQueue.size();
   if (size == 0)
@@ -351,7 +411,9 @@ WindowWidget::updateWindow()
 IDirectFBSurface*
 WindowWidget::windowSurface()
 {
-  if (_window)
+  if ((AppBase::appOptions() & OptExclusive))
+    return _exclusiveSurface;
+  else if (_window)
     return _window->dfbSurface();
   return NULL;
 }

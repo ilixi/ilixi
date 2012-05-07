@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -33,7 +33,7 @@ namespace ilixi
   /*!
    * This class is used to create a new UI application with its own window.
    */
-  class Application : public virtual AppBase, public WindowWidget
+  class Application : public AppBase, public WindowWidget
   {
   public:
     /*!

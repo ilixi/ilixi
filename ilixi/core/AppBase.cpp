@@ -35,19 +35,8 @@ IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
-AppBase::AppBase() :
-    __title(""), __state(Hidden), __activeWindow(NULL)
-{
-  if (__instance)
-    exit(1);
-  __instance = this;
-  pthread_mutex_init(&__cbMutex, NULL);
-  pthread_mutex_init(&__selMutex, NULL);
-  pthread_mutex_init(&__windowMutex, NULL);
-}
-
-AppBase::AppBase(int argc, char* argv[]) :
-    __title(""), __state(Hidden), __activeWindow(NULL)
+AppBase::AppBase(int argc, char* argv[], AppOptions options) :
+    __options(options), __title(""), __state(Hidden), __activeWindow(NULL)
 {
   if (__instance)
     exit(1);
@@ -86,12 +75,6 @@ AppBase::windowPreEventFilter(const DFBWindowEvent& event)
   return false;
 }
 
-bool
-AppBase::windowPostEventFilter(const DFBWindowEvent& event)
-{
-  return false;
-}
-
 AppState
 AppBase::appState() const
 {
@@ -117,7 +100,7 @@ AppBase::getDFB()
 }
 
 bool
-AppBase::initDFB(int argc, char **argv, AppOptions opts)
+AppBase::initDFB(int argc, char **argv)
 {
   if (!__dfb)
     {
@@ -135,27 +118,30 @@ AppBase::initDFB(int argc, char **argv, AppOptions opts)
           return false;
         }
 
-      if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
-        {
-          ILOG_ERROR(ILX_APPBASE, "Error while creating event buffer!\n");
-          return false;
-        }
-
       if (__dfb->GetDisplayLayer(__dfb, DLID_PRIMARY, &__layer) != DFB_OK)
         {
           ILOG_ERROR(ILX_APPBASE, "Error while getting primary layer!\n");
           return false;
         }
 
-      if (opts & OptCompositor)
+      if (__options & OptExclusive)
         {
-          if (__layer->SetCooperativeLevel(__layer, DLSCL_ADMINISTRATIVE))
+          if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE,
+              &__buffer) != DFB_OK)
             {
-              ILOG_ERROR(ILX_APPBASE, "Error while setting EXLUSIVE mode!\n");
+              ILOG_ERROR(ILX_APPBASE,
+                  "Error while creating input event buffer!\n");
               return false;
             }
         }
-
+      else
+        {
+          if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
+            {
+              ILOG_ERROR(ILX_APPBASE, "Error while creating event buffer!\n");
+              return false;
+            }
+        }
       ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
 
       return true;
@@ -170,7 +156,9 @@ AppBase::releaseDFB()
     {
       ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
       __buffer->Release(__buffer);
+      __buffer = NULL;
       __layer->Release(__layer);
+      __layer = NULL;
       __dfb->Release(__dfb);
       __dfb = NULL;
       __activeWindow = NULL;
@@ -191,6 +179,18 @@ IDirectFBWindow*
 AppBase::activeDFBWindow() const
 {
   return __activeWindow->_window->_dfbWindow;
+}
+
+AppOptions
+AppBase::appOptions()
+{
+  return __instance->__options;
+}
+
+DFBPoint
+AppBase::cursorPosition()
+{
+  return __instance->__cursorNew;
 }
 
 bool
@@ -414,12 +414,6 @@ AppBase::removeWindow(WindowWidget* window)
   return false;
 }
 
-bool
-AppBase::consumeWindowEvent(const DFBWindowEvent& event)
-{
-  return activeWindow()->handleWindowEvent((const DFBWindowEvent&) event);
-}
-
 void
 AppBase::updateWindows()
 {
@@ -436,31 +430,68 @@ void
 AppBase::handleEvents()
 {
   DFBEvent event;
-  __buffer->WaitForEventWithTimeout(__buffer, 0, 100);
+  if (__buffer)
+    __buffer->WaitForEventWithTimeout(__buffer, 0, 100);
+  else
+    return;
 
-  while (__buffer->GetEvent(__buffer, DFB_EVENT(&event)) == DFB_OK)
+  while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
     {
       switch (event.clazz)
         {
-      case DFEC_WINDOW:
-//        ILOG_INFO(ILX_APPBASE,
-//            "Window(%d) Type(%x)\n", event.window.window_id, event.window.type);
+      // If layer is exclusively used by application, we get DFEC_INPUT events.
+      case DFEC_INPUT:
+        switch (event.input.type)
+          {
+        case DIET_KEYPRESS:
+          handleKeyInputEvent((const DFBInputEvent&) event, DWET_KEYDOWN);
+          break;
 
-        if (!windowPreEventFilter((const DFBWindowEvent&) event))
-          if (!activeWindow()->handleWindowEvent((const DFBWindowEvent&) event))
-            windowPostEventFilter((const DFBWindowEvent&) event);
+        case DIET_KEYRELEASE:
+          handleKeyInputEvent((const DFBInputEvent&) event, DWET_KEYUP);
+          break;
+
+        case DIET_BUTTONPRESS:
+          handleButtonInputEvent((const DFBInputEvent&) event, DWET_BUTTONDOWN);
+          break;
+
+        case DIET_BUTTONRELEASE:
+          handleButtonInputEvent((const DFBInputEvent&) event, DWET_BUTTONUP);
+          break;
+
+        case DIET_AXISMOTION:
+          handleAxisMotion((const DFBInputEvent&) event);
+          break;
+
+        default:
+          ILOG_WARNING(ILX_APPBASE, "Unknown input event type\n");
+          break;
+          }
         break;
+
+      case DFEC_WINDOW:
+        if (event.window.type != DWET_UPDATE)
+          if (!windowPreEventFilter((const DFBWindowEvent&) event))
+            activeWindow()->handleWindowEvent((const DFBWindowEvent&) event);
+        break;
+
       case DFEC_USER:
         handleUserEvent((const DFBUserEvent&) event);
         break;
+
       case DFEC_SURFACE:
         {
-          IDirectFBSurface* surface =
-              __ssMap.find(event.surface.surface_id)->second;
-          surface->FrameAck(surface, event.surface.flip_count);
-          consumeSurfaceEvent((const DFBSurfaceEvent&) event);
+          SourceSurfaceList::iterator it = __ssMap.find(
+              event.surface.surface_id);
+          if (it != __ssMap.end())
+            {
+              IDirectFBSurface* surface = it->second;
+              surface->FrameAck(surface, event.surface.flip_count);
+              consumeSurfaceEvent((const DFBSurfaceEvent&) event);
+            }
         }
         break;
+
       default:
         break;
         }
@@ -538,10 +569,95 @@ AppBase::detachSourceSurface(IDirectFBSurface* surface)
     {
       DFBSurfaceID id;
       surface->GetID(surface, &id);
-      if (__instance->__ssMap.find(id) != __instance->__ssMap.end())
+      SourceSurfaceList::iterator it = __instance->__ssMap.find(id);
+      if (it != __instance->__ssMap.end())
         {
           surface->DetachEventBuffer(surface, __buffer);
+          __instance->__ssMap.erase(id);
           ILOG_INFO(ILX_APPBASE, "SourceSurface %p is detached.\n", surface);
         }
     }
 }
+
+void
+AppBase::handleKeyInputEvent(const DFBInputEvent& event,
+    DFBWindowEventType type)
+{
+  DFBEvent we;
+  we.clazz = DFEC_WINDOW;
+  we.window.type = type;
+
+  we.window.flags = (event.flags & DIEF_REPEAT) ? DWEF_REPEAT : DWEF_NONE;
+  we.window.key_code = event.key_code;
+  we.window.key_id = event.key_id;
+  we.window.key_symbol = event.key_symbol;
+
+  we.window.locks = event.locks;
+  we.window.modifiers = event.modifiers;
+  we.window.buttons = event.buttons;
+
+  __buffer->PostEvent(__buffer, &we);
+}
+
+void
+AppBase::handleButtonInputEvent(const DFBInputEvent& event,
+    DFBWindowEventType type)
+{
+  DFBEvent we;
+  we.clazz = DFEC_WINDOW;
+
+  we.window.type = type;
+  we.window.x = __cursorNew.x;
+  we.window.y = __cursorNew.y;
+  we.window.button = event.button;
+
+  __buffer->PostEvent(__buffer, &we);
+}
+
+void
+AppBase::handleAxisMotion(const DFBInputEvent& event)
+{
+  DFBEvent we;
+  we.clazz = DFEC_WINDOW;
+  we.window.type = DWET_MOTION;
+
+  we.window.step = 0;
+
+  __cursorOld = __cursorNew;
+
+  if (event.flags & DIEF_AXISREL)
+    {
+      if (event.axis == DIAI_X)
+        __cursorNew.x += event.axisrel;
+      else if (event.axis == DIAI_Y)
+        __cursorNew.y += event.axisrel;
+      else
+        {
+          we.window.type = DWET_WHEEL;
+          we.window.step = event.axisrel;
+        }
+    }
+  else if (event.flags & DIEF_AXISABS)
+    {
+      if (event.axis == DIAI_X)
+        __cursorNew.x = event.axisabs;
+      else if (event.axis == DIAI_Y)
+        __cursorNew.y = event.axisabs;
+    }
+
+  if (we.window.type == DWET_MOTION)
+    {
+      Rectangle cold(__instance->__cursorOld.x, __instance->__cursorOld.y, 32,
+          32);
+      Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
+          32);
+      activeWindow()->update(cnew.united(cold));
+    }
+
+  we.window.x = __cursorNew.x;
+  we.window.y = __cursorNew.y;
+  we.window.button = event.button;
+
+  __buffer->PostEvent(__buffer, &we);
+}
+

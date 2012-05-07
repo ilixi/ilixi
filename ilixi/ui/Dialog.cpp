@@ -105,7 +105,6 @@ void
 Dialog::execute()
 {
   setVisible(true);
-  initWindow();
   showWindow();
 }
 
