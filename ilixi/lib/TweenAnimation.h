@@ -49,7 +49,7 @@ namespace ilixi
      */
     void
     addTween(Tween::Transition transition, Tween::Equation equation,
-        float& variable, float initialValue = 0, float endValue = 1);
+        float initialValue = 0, float endValue = 1);
 
     /*!
      * Adds the tween.

@@ -28,9 +28,9 @@
 using namespace ilixi;
 
 TweenAnimation::TweenAnimation() :
-  Animation()
+    Animation()
 {
-  // Sets to end value of tween
+  // FIXME Sets to end value of tween
   sigFinished.connect(sigc::mem_fun(this, &TweenAnimation::finishTweens));
 }
 
@@ -41,11 +41,10 @@ TweenAnimation::~TweenAnimation()
 }
 
 void
-TweenAnimation::addTween(Tween::Transition transition,
-    Tween::Equation equation, float& variable, float initialValue,
-    float endValue)
+TweenAnimation::addTween(Tween::Transition transition, Tween::Equation equation,
+    float initialValue, float endValue)
 {
-  Tween* t = new Tween(transition, equation, variable, initialValue, endValue);
+  Tween* t = new Tween(transition, equation, initialValue, endValue);
   _tweens.push_back(t);
 }
 
@@ -68,6 +67,6 @@ void
 TweenAnimation::finishTweens()
 {
   for (TweenList::iterator it = _tweens.begin(); it != _tweens.end(); ++it)
-    *((Tween*) *it)->_variable = ((Tween*) *it)->getEndValue();
+    ((Tween*) *it)->_value = ((Tween*) *it)->endValue();
   sigExec();
 }

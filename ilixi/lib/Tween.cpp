@@ -27,16 +27,16 @@
 
 using namespace ilixi;
 
-Tween::Tween(Transition transition, Equation equation, float& variable,
-    float initialValue, float endValue) :
-  _transition(transition), _equation(equation), _variable(&variable),
-      _initialValue(initialValue), _change(endValue - initialValue)
+Tween::Tween(Transition transition, Equation equation, float initialValue,
+    float endValue) :
+    _transition(transition), _equation(equation), _initialValue(initialValue), _change(
+        endValue - initialValue), _value(initialValue)
 {
 }
 
 Tween::Tween(const Tween& t) :
-  _transition(t._transition), _equation(t._equation), _variable(t._variable),
-      _initialValue(t._initialValue), _change(t._change)
+    _transition(t._transition), _equation(t._equation), _initialValue(
+        t._initialValue), _change(t._change), _value(t._initialValue)
 {
 }
 
@@ -44,34 +44,34 @@ Tween::~Tween()
 {
 }
 
-float
-Tween::getEndValue() const
+Tween::Transition
+Tween::transition() const
 {
-  return _change + _initialValue;
+  return _transition;
 }
 
 Tween::Equation
-Tween::getEquation() const
+Tween::equation() const
 {
   return _equation;
 }
 
 float
-Tween::getInitialValue() const
+Tween::initialValue() const
 {
   return _initialValue;
 }
 
-Tween::Transition
-Tween::getTransition() const
+float
+Tween::endValue() const
 {
-  return _transition;
+  return _change + _initialValue;
 }
 
 void
-Tween::setEndValue(float endValue)
+Tween::setTransition(Transition transition)
 {
-  _change = endValue - _initialValue;
+  _transition = transition;
 }
 
 void
@@ -83,15 +83,15 @@ Tween::setEquation(Equation equation)
 void
 Tween::setInitialValue(float initialValue)
 {
-  float end = getEndValue();
+  float end = endValue();
   _initialValue = initialValue;
   _change = end - _initialValue;
 }
 
 void
-Tween::setTransition(Transition transition)
+Tween::setEndValue(float endValue)
 {
-  _transition = transition;
+  _change = endValue - _initialValue;
 }
 
 void
@@ -106,13 +106,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Back::easeIn(t, _initialValue, _change, d);
+      _value = Back::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Back::easeOut(t, _initialValue, _change, d);
+      _value = Back::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Back::easeInOut(t, _initialValue, _change, d);
+      _value = Back::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -120,13 +120,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Bounce::easeIn(t, _initialValue, _change, d);
+      _value = Bounce::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Bounce::easeOut(t, _initialValue, _change, d);
+      _value = Bounce::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Bounce::easeInOut(t, _initialValue, _change, d);
+      _value = Bounce::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -134,13 +134,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Circle::easeIn(t, _initialValue, _change, d);
+      _value = Circle::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Circle::easeOut(t, _initialValue, _change, d);
+      _value = Circle::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Circle::easeInOut(t, _initialValue, _change, d);
+      _value = Circle::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -148,13 +148,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Cubic::easeIn(t, _initialValue, _change, d);
+      _value = Cubic::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Cubic::easeOut(t, _initialValue, _change, d);
+      _value = Cubic::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Cubic::easeInOut(t, _initialValue, _change, d);
+      _value = Cubic::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -162,13 +162,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Elastic::easeIn(t, _initialValue, _change, d);
+      _value = Elastic::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Elastic::easeOut(t, _initialValue, _change, d);
+      _value = Elastic::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Elastic::easeInOut(t, _initialValue, _change, d);
+      _value = Elastic::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -176,13 +176,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Expo::easeIn(t, _initialValue, _change, d);
+      _value = Expo::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Expo::easeOut(t, _initialValue, _change, d);
+      _value = Expo::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Expo::easeInOut(t, _initialValue, _change, d);
+      _value = Expo::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -190,13 +190,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Quad::easeIn(t, _initialValue, _change, d);
+      _value = Quad::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Quad::easeOut(t, _initialValue, _change, d);
+      _value = Quad::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Quad::easeInOut(t, _initialValue, _change, d);
+      _value = Quad::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -204,13 +204,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Quart::easeIn(t, _initialValue, _change, d);
+      _value = Quart::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Quart::easeOut(t, _initialValue, _change, d);
+      _value = Quart::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Quart::easeInOut(t, _initialValue, _change, d);
+      _value = Quart::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -218,13 +218,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Quint::easeIn(t, _initialValue, _change, d);
+      _value = Quint::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Quint::easeOut(t, _initialValue, _change, d);
+      _value = Quint::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Quint::easeInOut(t, _initialValue, _change, d);
+      _value = Quint::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -232,13 +232,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Sine::easeIn(t, _initialValue, _change, d);
+      _value = Sine::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Sine::easeOut(t, _initialValue, _change, d);
+      _value = Sine::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Sine::easeInOut(t, _initialValue, _change, d);
+      _value = Sine::easeInOut(t, _initialValue, _change, d);
       return;
       }
 
@@ -246,13 +246,13 @@ Tween::runEase(float t, float d)
     switch (_equation)
       {
     case Tween::EASE_IN:
-      *_variable = Linear::easeIn(t, _initialValue, _change, d);
+      _value = Linear::easeIn(t, _initialValue, _change, d);
       return;
     case Tween::EASE_OUT:
-      *_variable = Linear::easeOut(t, _initialValue, _change, d);
+      _value = Linear::easeOut(t, _initialValue, _change, d);
       return;
     case Tween::EASE_IN_OUT:
-      *_variable = Linear::easeInOut(t, _initialValue, _change, d);
+      _value = Linear::easeInOut(t, _initialValue, _change, d);
       return;
       }
 

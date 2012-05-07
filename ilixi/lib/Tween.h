@@ -62,8 +62,8 @@ namespace ilixi
      * @param initialValue
      * @param endValue
      */
-    Tween(Transition transition, Equation equation, float& variable,
-        float initialValue = 0, float endValue = 1);
+    Tween(Transition transition, Equation equation, float initialValue = 0,
+        float endValue = 1);
 
     /*!
      * Copy constructor.
@@ -77,34 +77,40 @@ namespace ilixi
     ~Tween();
 
     /*!
-     * Returns end value.
+     * Returns the type of transition.
      */
-    float
-    getEndValue() const;
+    Transition
+    transition() const;
 
     /*!
      * Returns the type of equation.
      */
     Equation
-    getEquation() const;
+    equation() const;
 
     /*!
      * Returns initial value.
      */
     float
-    getInitialValue() const;
+    initialValue() const;
 
     /*!
-     * Returns the type of transition.
+     * Returns end value.
      */
-    Transition
-    getTransition() const;
+    float
+    endValue() const;
 
     /*!
-     * Sets end value of tweened variable.
+     * Returns current tween value.
+     */
+    float
+    value() const;
+
+    /*!
+     * Sets the type of transition.
      */
     void
-    setEndValue(float endValue);
+    setTransition(Transition transition);
 
     /*!
      * Sets the type of equation.
@@ -119,27 +125,33 @@ namespace ilixi
     setInitialValue(float initialValue);
 
     /*!
-     * Sets the type of transition.
+     * Sets end value of tweened variable.
      */
     void
-    setTransition(Transition transition);
+    setEndValue(float endValue);
 
   private:
     //! This property stores transition.
     Transition _transition;
     //! This property stores equation.
     Equation _equation;
-    //! This property stores tweened variable.
-    float* _variable;
     //! This is the initial values of tweened variable.
     float _initialValue;
     //! This is the required change in value.
     float _change;
+    //! This property stores tweened variable.
+    float _value;
 
     //! Updates using transition and equation.
     void
     runEase(float time, float duration);
   };
+
+  inline float
+  Tween::value() const
+  {
+    return _value;
+  }
 
 }
 #endif /* ILIXI_TWEEN_H_ */
