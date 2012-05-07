@@ -6,5 +6,6 @@ miscdata_DATA 	=	arrowDown.png \
      			checkPartial.png \
      			default.png \
      			ilixi_bg.jpg \
-     			noImage.png 
+     			noImage.png \
+			pointer.png
 EXTRA_DIST 	= 	$(miscdata_DATA)
