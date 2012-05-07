@@ -129,12 +129,15 @@ Surface::flip()
   DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+  ILOG_DEBUG(ILX_SURFACE, "Flip ()\n");
 }
 
 void
 Surface::flip(const Rectangle& rect)
 {
   DFBRegion r = rect.dfbRegion();
+  ILOG_DEBUG(ILX_SURFACE,
+      "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
   DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_NONE);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
@@ -228,6 +231,18 @@ Surface::blit(Surface* source, int x, int y)
           x, y);
       if (ret)
         ILOG_ERROR(ILX_SURFACE, "Blit error: %s\n", DirectFBErrorString(ret));
+    }
+}
+
+void
+Surface::setOpacity(u8 opacity)
+{
+  if (_dfbSurface && opacity != 255)
+    {
+      _dfbSurface->SetBlittingFlags(_dfbSurface,
+          (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
+              | DSBLIT_BLEND_COLORALPHA));
+      _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, opacity);
     }
 }
 

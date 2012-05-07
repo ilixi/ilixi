@@ -193,6 +193,12 @@ namespace ilixi
     void
     blit(Surface* source, int x = 0, int y = 0);
 
+    /*!
+     * Sets surface opacity using drawing and blitting flags.
+     */
+    void
+    setOpacity(u8 opacity);
+
   private:
     //! Interface to DFB surface.
     IDirectFBSurface* _dfbSurface;
