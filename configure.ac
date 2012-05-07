@@ -68,7 +68,7 @@ AC_TYPE_PID_T
 AC_FUNC_ERROR_AT_LINE
 
 # Checks for libraries.
-DIRECTFB_REQ_VERSION=1.4.9
+DIRECTFB_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 
@@ -89,7 +89,7 @@ AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger 
 
 AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
 if test "$enable_debug" = "yes"; then
-    CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline"
+    CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline -finstrument-functions"
 fi
 
 AC_ARG_ENABLE([profiling], AS_HELP_STRING([--enable-profiling], [enable profiling @<:@default=no@:>@]), [], [enable_profiling=no])
