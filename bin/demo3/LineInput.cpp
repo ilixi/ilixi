@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 LineInput::LineInput(const std::string& text, Widget* parent) :
-    TextBase(text, parent), BorderBase(parent), _cursorOn(false), _selecting(
+    Widget(parent), TextBase(text, this), BorderBase(this), _cursorOn(false), _selecting(
         false), _maxLength(-1), _cursorIndex(text.length()), _selectedIndex(0)
 {
   setConstraints(ExpandingConstraint, FixedConstraint);

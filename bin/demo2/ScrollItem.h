@@ -26,7 +26,7 @@
 
 #include "ui/TextBase.h"
 
-class ScrollItem : public ilixi::TextBase
+class ScrollItem : public ilixi::Widget, public ilixi::TextBase
 {
 public:
   ScrollItem(const std::string& text, ilixi::Widget* parent = 0);

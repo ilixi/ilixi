@@ -32,7 +32,7 @@ namespace ilixi
 {
 
   //! Single line text input
-  class LineInput : public TextBase, public BorderBase
+  class LineInput : public Widget, public TextBase, public BorderBase
   {
   public:
     /*!

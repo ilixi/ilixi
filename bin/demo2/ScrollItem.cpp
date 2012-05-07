@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 ScrollItem::ScrollItem(const std::string& text, Widget* parent) :
-  TextBase(text, parent), _val1(0)
+    Widget(parent), TextBase(text, this), _val1(0)
 {
   setConstraints(MinimumConstraint, FixedConstraint);
   setInputMethod(KeyAndPointerInput);
