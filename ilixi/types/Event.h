@@ -31,19 +31,19 @@ namespace ilixi
 {
   enum KeyEventType
   {
-    KeyUpEvent, KeyDownEvent
+    KeyDownEvent = 0x00000100, KeyUpEvent = 0x00000200
   };
 
   struct KeyEvent
   {
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol) :
-      eventType(type), keySymbol(symbol)
+        eventType(type), keySymbol(symbol)
     {
     }
 
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol,
         DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks) :
-      eventType(type), keySymbol(symbol), modifierMask(mask), lockState(locks)
+        eventType(type), keySymbol(symbol), modifierMask(mask), lockState(locks)
     {
     }
 
@@ -55,7 +55,10 @@ namespace ilixi
 
   enum PointerEventType
   {
-    PointerButtonDown, PointerButtonUp, PointerWheel, PointerMotion
+    PointerButtonDown = 0x00010000,
+    PointerButtonUp = 0x00020000,
+    PointerMotion = 0x00040000,
+    PointerWheel = 0x00200000
   };
 
   enum PointerButton
@@ -63,7 +66,8 @@ namespace ilixi
     ButtonLeft = 0x00000000,
     ButtonRight = 0x00000001,
     ButtonMiddle = 0x00000002,
-    ButtonNone = 0x00000020
+    ButtonFirst = ButtonLeft,
+    ButtonLast = 0x0000001F
   };
 
   enum PointerButtonMask
@@ -77,16 +81,16 @@ namespace ilixi
   struct PointerEvent
   {
     PointerEvent() :
-      eventType(PointerMotion), x(0), y(0), wheelStep(0), button(ButtonNone),
-          buttonMask(ButtonMaskNone), timestamp(direct_clock_get_millis())
+        eventType(PointerMotion), x(0), y(0), wheelStep(0), button(ButtonLast), buttonMask(
+            ButtonMaskNone), timestamp(direct_clock_get_millis())
     {
     }
 
     PointerEvent(PointerEventType type, int X, int Y, int step = 0,
-        PointerButton pbutton = ButtonNone,
-        PointerButtonMask mask = ButtonMaskNone) :
-      eventType(type), x(X), y(Y), wheelStep(step), button(pbutton),
-          buttonMask(mask), timestamp(direct_clock_get_millis())
+        PointerButton pbutton = ButtonLast, PointerButtonMask mask =
+            ButtonMaskNone) :
+        eventType(type), x(X), y(Y), wheelStep(step), button(pbutton), buttonMask(
+            mask), timestamp(direct_clock_get_millis())
     {
     }
 
