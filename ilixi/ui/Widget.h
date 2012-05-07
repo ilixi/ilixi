@@ -236,6 +236,12 @@ namespace ilixi
     visible() const;
 
     /*!
+     * Returns widget's opacity.
+     */
+    u8
+    opacity() const;
+
+    /*!
      * Returns true if widget has focus.
      *
      * A widget can receive incoming key events, If it is enabled, visible and has focus.
@@ -465,6 +471,12 @@ namespace ilixi
      */
     virtual void
     setVisible(bool visible = true);
+
+    /*!
+     * Sets widget's opacity.
+     */
+    void
+    setOpacity(u8 opacity);
 
     /*!
      * Assigns key input focus to widget if the widget accepts key inputs.
@@ -941,6 +953,8 @@ namespace ilixi
     setSurfaceGeometryModified();
 
   private:
+    //! This property stores the widget's opacity.
+    u8 _opacity;
     //! This property stores the widget's parent.
     Widget* _parent;
     //! This property stores the widget's surface.

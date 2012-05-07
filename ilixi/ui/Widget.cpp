@@ -33,8 +33,8 @@ Stylist* Widget::_stylist = NULL;
 
 Widget::Widget(Widget* parent) :
     _state(DefaultState), _surfaceDesc(DefaultDescription), _inputMethod(
-        NoInput), _parent(parent), _surface(NULL), _rootWindow(NULL), _preSelectedWidget(
-        NULL), _xResizeConstraint(NoConstraint), _yResizeConstraint(
+        NoInput), _opacity(255), _parent(parent), _surface(NULL), _rootWindow(
+        NULL), _preSelectedWidget(NULL), _xResizeConstraint(NoConstraint), _yResizeConstraint(
         NoConstraint)
 {
   _neighbours[0] = NULL;
@@ -49,8 +49,9 @@ Widget::Widget(Widget* parent) :
 // e.g. children and surface are ignored.
 Widget::Widget(const Widget& widget) :
     _state(widget._state), _surfaceDesc(widget._surfaceDesc), _inputMethod(
-        widget._inputMethod), _parent(widget._parent), _surface(NULL), _rootWindow(
-        widget._rootWindow), _preSelectedWidget(widget._preSelectedWidget), _xResizeConstraint(
+        widget._inputMethod), _opacity(widget._opacity), _parent(
+        widget._parent), _surface(NULL), _rootWindow(widget._rootWindow), _preSelectedWidget(
+        widget._preSelectedWidget), _xResizeConstraint(
         widget._xResizeConstraint), _yResizeConstraint(
         widget._yResizeConstraint)
 {
@@ -193,6 +194,14 @@ Widget::visible() const
   if (_parent)
     return !(_state & InvisibleState) && _parent->visible();
   return !(_state & InvisibleState);
+}
+
+u8
+Widget::opacity() const
+{
+  if (_parent)
+    return (_parent->opacity() / 255.0) * _opacity;
+  return _opacity;
 }
 
 bool
@@ -383,6 +392,7 @@ Widget::setConstraints(WidgetResizeConstraint x, WidgetResizeConstraint y)
 void
 Widget::setEnabled()
 {
+  // TODO affects all children
   if ((_state & DisabledState))
     {
       _state = (WidgetState) (_state & ~DisabledState);
@@ -393,6 +403,7 @@ Widget::setEnabled()
 void
 Widget::setDisabled()
 {
+  // TODO affects all children
   if (!(_state & DisabledState))
     {
       _state = (WidgetState) (_state | DisabledState);
@@ -403,7 +414,8 @@ Widget::setDisabled()
 void
 Widget::setVisible(bool visible)
 {
-  if (visible && _state & InvisibleState)
+  // TODO affects all children
+  if (visible && (_state & InvisibleState))
     {
       _state = (WidgetState) (_state & ~InvisibleState);
       doLayout();
@@ -413,6 +425,13 @@ Widget::setVisible(bool visible)
       _state = (WidgetState) (_state | InvisibleState);
       doLayout();
     }
+}
+
+void
+Widget::setOpacity(u8 opacity)
+{
+  if (opacity != _opacity)
+    _opacity = opacity;
 }
 
 void
@@ -510,7 +529,8 @@ Widget::update()
   if (_surface)
     {
       if (_parent && !(_state & InvisibleState))
-        _parent->update(_frameGeometry);
+//        _parent->update(_frameGeometry);
+        _rootWindow->update(_frameGeometry);
       else
         paint(_frameGeometry);
     }
@@ -612,12 +632,13 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-  if (visible() && _rootWindow->_eventManager->grabbedWidget() == this
-      || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
+  if (visible()
+      && (_rootWindow->_eventManager->grabbedWidget() == this
+          || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
-      if (_inputMethod & PointerTracking
-          && pointerEvent.buttonMask & ButtonMaskLeft
-          && pointerEvent.eventType == PointerMotion)
+      if ((_inputMethod & PointerTracking)
+          && (pointerEvent.buttonMask & ButtonMaskLeft)
+          && (pointerEvent.eventType == PointerMotion))
         {
           if (!pressed())
             {
@@ -625,8 +646,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
               _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             }
         }
-      else if (_inputMethod & PointerTracking
-          && pointerEvent.eventType == PointerWheel)
+      else if ((_inputMethod & PointerTracking)
+          && (pointerEvent.eventType == PointerWheel))
         {
           pointerWheelEvent(pointerEvent);
           return true;
@@ -879,6 +900,7 @@ Widget::updateSurface()
       else if (_parent)
         ret = _surface->createDFBSubSurface(surfaceGeometry(),
             _parent->surface()->DFBSurface());
+
       if (ret)
         _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
     }
