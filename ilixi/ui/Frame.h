@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -31,7 +31,7 @@
 namespace ilixi
 {
   //! Base class of widgets with frames and possible children.
-  class Frame : public BorderBase, public ContainerBase
+  class Frame : public ContainerBase, public BorderBase
   {
   public:
 
@@ -110,11 +110,9 @@ namespace ilixi
     setMargin(const Margin& margin);
 
   protected:
-    enum BackgroundFlags {
-      BGFNone = 0x000,
-      BGFClear = 0x001,
-      BGFFill = 0x002,
-      BGFAll = 0x003
+    enum BackgroundFlags
+    {
+      BGFNone = 0x000, BGFClear = 0x001, BGFFill = 0x002, BGFAll = 0x003
     };
     //! This flag specifies whether frame fills its background.
     char _backgroundFlags;

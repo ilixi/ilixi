@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -28,7 +28,7 @@
 using namespace ilixi;
 
 Label::Label(std::string text, Widget* parent) :
-  BorderBase(parent), TextBase(text, parent), _margin(0)
+  Widget(parent), BorderBase(this), TextBase(text, this), _margin(0)
 {
   setConstraints(NoConstraint, MinimumConstraint);
 }

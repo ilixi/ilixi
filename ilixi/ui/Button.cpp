@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -27,7 +27,7 @@
 using namespace ilixi;
 
 Button::Button(const std::string& text, Widget* parent) :
-    TextBase(text, parent), _buttonFlag(None), _icon(NULL)
+    Widget(parent), TextBase(text, this), _buttonFlag(None), _icon(NULL)
 {
   setInputMethod(KeyAndPointerInput);
 }

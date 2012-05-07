@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -32,7 +32,7 @@ namespace ilixi
   /*!
    * Containers are used to store widgets and align them using a Layout.
    */
-  class ContainerBase : virtual public Widget
+  class ContainerBase : public Widget
   {
     friend class Application;
     friend class Dialog;

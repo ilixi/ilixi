@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -35,7 +35,7 @@ namespace ilixi
   class ScrollArea;
   class VBoxLayout;
 
-  class ComboBox : public TextBase
+  class ComboBox : public Widget, public TextBase
   {
   public:
     typedef std::list<std::string> StringList;

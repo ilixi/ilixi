@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -34,7 +34,7 @@
 using namespace ilixi;
 
 ComboBox::ComboBox(const std::string& title, Widget* parent) :
-    TextBase(title, parent)
+    Widget(parent), TextBase(title, this)
 {
   setInputMethod(KeyAndPointerInput);
   setConstraints(MinimumConstraint, FixedConstraint);

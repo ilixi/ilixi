@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -31,7 +31,7 @@
 namespace ilixi
 {
   //! A simple text label with optional border
-  class Label : public BorderBase, public TextBase
+  class Label : public Widget, public BorderBase, public TextBase
   {
   public:
     /*!

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -28,7 +28,7 @@
 using namespace ilixi;
 
 Frame::Frame(Widget* parent) :
-    BorderBase(parent), ContainerBase(parent), _backgroundFlags(BGFAll)
+    ContainerBase(parent), BorderBase(this), _backgroundFlags(BGFAll)
 {
   setBorderWidth(1);
   setBorderStyle(StyledBorder);

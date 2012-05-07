@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-  class Button : public TextBase
+  class Button : public Widget, public TextBase
   {
   public:
     enum ButtonFlags
