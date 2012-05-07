@@ -106,6 +106,7 @@ WindowWidget::paint(const Rectangle& rect)
 
           if (intersect.isValid())
             {
+              surface()->clip(intersect);
               if (_backgroundFlags & BGFFill)
                 {
                   surface()->clear(intersect);
@@ -173,9 +174,6 @@ WindowWidget::showWindow()
       provider->Release(provider);
 
       ILOG_INFO(ILX_WINDOWWIDGET, "Getting layer surface\n");
-      DFBDisplayLayerConfig dlc;
-      dlc.flags = DLCONF_BUFFERMODE;
-      dlc.buffermode = DLBM_BACKVIDEO;
       AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface);
 
       int w, h;

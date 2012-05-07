@@ -44,6 +44,12 @@ AppBase::AppBase(int argc, char* argv[], AppOptions options) :
   pthread_mutex_init(&__cbMutex, NULL);
   pthread_mutex_init(&__selMutex, NULL);
   pthread_mutex_init(&__windowMutex, NULL);
+
+  __cursorNew.x = 0;
+  __cursorNew.y = 0;
+
+  __cursorOld.x = 0;
+  __cursorOld.y = 0;
 }
 
 AppBase::~AppBase()
@@ -651,6 +657,7 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
           32);
       Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
           32);
+      ILOG_INFO(ILX_APPBASE, "Blit pointer!\n");
       activeWindow()->update(cnew.united(cold));
     }
 
