@@ -21,53 +21,53 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_LAUNCHER_H_
-#define ILIXI_LAUNCHER_H_
+#ifndef ILIXI_APPCOMPOSITOR_H_
+#define ILIXI_APPCOMPOSITOR_H_
 
-#include "LauncherButton.h"
+#include "ui/SurfaceView.h"
 #include "ApplicationManager.h"
+#include <directfb_windows.h>
 #include <vector>
 
 namespace ilixi
 {
-
-  class Compositor;
-
-  class Launcher : public Widget
+  //! Arranges SurfaceView(s) which belong to an Application.
+  class AppCompositor : public Widget
   {
+    friend class Compositor;
   public:
-    Launcher(Compositor* parent);
+    AppCompositor(Widget* parent = 0, AppFlags flags = APP_NONE);
 
     virtual
-    ~Launcher();
+    ~AppCompositor();
 
-    virtual Size
-    preferredSize() const;
+    void
+    addWindow(IDirectFBWindow* window);
+
+    void
+    removeWindow(IDirectFBWindow* window);
+
+    float
+    zoomFactor() const;
+
+    void
+    setZoomFactor(float zoomFactor);
 
   protected:
-    void
-    initButtons();
-
-    void
-    addButton(const char* name, const char* icon);
-
-    void
+    virtual void
     compose();
 
   private:
-    Compositor* _compositor;
-
-    typedef std::vector<AppInfo*> AppList;
-    AppList _apps;
-
-    typedef std::vector<LauncherButton*> ButtonList;
-    ButtonList _buttons;
-
-    Font* _font;
+    AppFlags _appFlags;
+    float _zoomFactor;
 
     void
-    updateLauncherGeometry();
+    updateAppCompositorGeometry();
+
+    void
+    onWindowConfig(DFBWindowID windowID, const DFBWindowConfig* config,
+        DFBWindowConfigFlags flags);
   };
 
 } /* namespace ilixi */
-#endif /* ILIXI_LAUNCHER_H_ */
+#endif /* ILIXI_APPCOMPOSITOR_H_ */

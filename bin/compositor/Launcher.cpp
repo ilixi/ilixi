@@ -22,16 +22,17 @@
  */
 
 #include "Launcher.h"
+#include "Compositor.h"
 #include "graphics/Painter.h"
-#include <sys/wait.h>
-#include <signal.h>
+
+#include <sigc++/bind.h>
 #include "core/Logger.h"
 
 namespace ilixi
 {
 
-  Launcher::Launcher(Widget* parent) :
-      Widget(parent), _currentButton(-1)
+  Launcher::Launcher(Compositor* parent) :
+      Widget(parent), _compositor(parent)
   {
     setInputMethod(PointerInput);
 
@@ -41,10 +42,15 @@ namespace ilixi
 
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &Launcher::updateLauncherGeometry));
+
+    initButtons();
   }
 
   Launcher::~Launcher()
   {
+    for (AppList::iterator it = _apps.begin(); it != _apps.end(); ++it)
+      delete *it;
+
     delete _font;
     ILOG_DEBUG(ILX, "~Launcher %p\n", this);
   }
@@ -52,162 +58,31 @@ namespace ilixi
   Size
   Launcher::preferredSize() const
   {
-    return Size(_apps.size() * 96, _apps.size() * 96);
+    return Size(_buttons.size() * 96, _buttons.size() * 96);
   }
 
   void
-  Launcher::addApplication(const char *name, const char *program,
-      const char *args, const char* image)
+  Launcher::addButton(const char* name, const char* icon)
   {
-    AppButton* app = new AppButton(name, program, args, image);
-    app->setFont(_font);
-    addChild(app);
-    _apps.push_back(app);
+    LauncherButton* button = new LauncherButton(name, this);
+    button->setFont(_font);
+    button->setIcon(icon, Size(96, 96));
+    addChild(button);
+    _buttons.push_back(button);
 
-    app->sigStartRequest.connect(
-        sigc::mem_fun(this, &Launcher::startApplication));
-  }
-
-  AppButton*
-  Launcher::lookUpApplication(const std::string& name, unsigned int *id)
-  {
-    int i = 0;
-    for (AppList::iterator it = _apps.begin(); it != _apps.end(); ++it, ++i)
-      {
-        if (((AppButton*) (*it))->text() == name)
-          {
-            if (id)
-              *id = i;
-            return ((AppButton*) (*it));
-          }
-      }
-    return NULL;
-  }
-
-  AppButton*
-  Launcher::lookUpApplication(pid_t pid, unsigned int *id)
-  {
-    int i = 0;
-    for (AppList::iterator it = _apps.begin(); it != _apps.end(); ++it, ++i)
-      {
-        if (((AppButton*) (*it))->getPid() == pid)
-          {
-            if (id)
-              *id = i;
-            return ((AppButton*) (*it));
-          }
-      }
-    return NULL;
-  }
-
-  AppButton*
-  Launcher::lookUpApplication(DFBWindowID wid, unsigned int *id)
-  {
-    int i = 0;
-    for (AppList::iterator it = _apps.begin(); it != _apps.end(); ++it, ++i)
-      {
-        AppButton* app = (AppButton*) *it;
-        if (app->getThumb() && app->getThumb()->windowID() == wid)
-          {
-            if (id)
-              *id = i;
-            return app;
-          }
-
-      }
-    return NULL;
+    button->sigClicked.connect(
+        sigc::bind<const char*>(
+            sigc::mem_fun(ApplicationManager::instance(),
+                &ApplicationManager::startApplication), name));
   }
 
   void
-  Launcher::startApplication(const std::string& name)
+  Launcher::initButtons()
   {
-    pid_t pid;
-    unsigned int id;
-    AppButton* app = lookUpApplication(name, &id);
+    AppInfoList list = ApplicationManager::instance()->applicationList();
 
-    if (!app)
-      return;
-
-    if (app->isStarted() && !waitpid(app->getPid(), NULL, WNOHANG))
-      {
-        D_DEBUG("Already running '%s' (%d)!", name.c_str(), app->getPid());
-        sigViewRequest(app->getCompositedSurface());
-        return;
-      }
-
-    D_INFO("Starting %s\n", name.c_str());
-
-    app->setStarted(true);
-    app->setStartTime(direct_clock_get_millis());
-
-    setCurrent(id);
-
-    char str[256];
-    int arC = 1;
-    char *p;
-    int i = 0;
-    pid = vfork();
-    switch (pid)
-      {
-    case -1:
-      perror("vfork");
-      return;
-
-    case 0:
-      setsid();
-
-      if (app->getArgs() != NULL)
-        {
-          strncpy(str, app->getArgs(), 255);
-          p = strtok(str, " ");
-          while (p != NULL)
-            {
-              arC++;
-              p = strtok(NULL, " ");
-            }
-
-          const char *args[arC + 1];
-          args[0] = app->getProgram();
-
-          strncpy(str, app->getArgs(), 255);
-          arC = 1;
-          p = strtok(str, " ");
-          while (p != NULL)
-            {
-              args[arC++] = p;
-              p = strtok(NULL, " ");
-            }
-          args[arC++] = NULL;
-
-          while (i++ < arC)
-            D_INFO("ARG: %d - %s\n", i-1, args[i-1]);
-
-          execvp(app->getProgram(), (char**) args);
-        }
-      else
-        {
-          const char* args[2];
-          args[0] = app->getProgram();
-          args[1] = NULL;
-          execvp(app->getProgram(), (char**) args);
-        }
-
-      perror("execvp");
-      _exit(0);
-      break;
-
-    default:
-      app->setPid(pid);
-      break;
-      }
-  }
-
-  void
-  Launcher::stopApplication(const std::string& name)
-  {
-    AppButton* app = lookUpApplication(name, NULL);
-    kill(app->getPid(), SIGKILL);
-    app->setStarted(false);
+    for (AppInfoList::iterator it = list.begin(); it != list.end(); ++it)
+      addButton(((AppInfo*) *it)->name, ((AppInfo*) *it)->icon);
   }
 
   void
@@ -220,20 +95,6 @@ namespace ilixi
     p.end();
   }
 
-  AppButton*
-  Launcher::getCurrent() const
-  {
-    if (_currentButton >= 0)
-      return _apps[_currentButton];
-    return NULL;
-  }
-
-  void
-  Launcher::setCurrent(unsigned int id)
-  {
-    _currentButton = id;
-  }
-
   void
   Launcher::updateLauncherGeometry()
   {
@@ -243,12 +104,12 @@ namespace ilixi
     if (wC)
       {
         int y = -1;
-        for (unsigned int i = 0; i < _apps.size(); ++i)
+        for (unsigned int i = 0; i < _buttons.size(); ++i)
           {
             if (i % wC == 0)
               y++;
-            _apps[i]->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
-            _apps[i]->setSize(120, 120);
+            _buttons[i]->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
+            _buttons[i]->setSize(120, 120);
           }
       }
   }

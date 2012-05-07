@@ -36,7 +36,6 @@ namespace ilixi
 
   protected:
     bool _click;
-    float _aniVal;
     TweenAnimation _anim;
     Tween* _tween;
 

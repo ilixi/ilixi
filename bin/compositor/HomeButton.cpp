@@ -13,7 +13,7 @@ namespace ilixi
 {
 
   HomeButton::HomeButton(Widget* parent) :
-      Widget(parent), _click(false), _aniVal(1)
+      Widget(parent), _click(false)
   {
     setInputMethod(PointerInput);
     setConstraints(FixedConstraint, FixedConstraint);
@@ -22,7 +22,7 @@ namespace ilixi
         sigc::mem_fun(this, &HomeButton::updateHBGeometry));
     _image = new Image(ILIXI_DATADIR"compositor/comp_home.png", 80, 80);
     _anim.setDuration(500);
-    _tween = new Tween(Tween::SINE, Tween::EASE_OUT, _aniVal, 0, 1);
+    _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_tween);
 
     _anim.sigExec.connect(sigc::mem_fun(this, &HomeButton::tweenSlot));
@@ -83,7 +83,7 @@ namespace ilixi
     Painter p(this);
     p.begin();
     p.setBrush(Color(0, 0, 0, 255));
-    p.drawImage(_image, -80 * _aniVal, -80 * _aniVal);
+    p.drawImage(_image, -80 * _tween->value(), -80 * _tween->value());
     p.end();
   }
 
@@ -96,7 +96,7 @@ namespace ilixi
   void
   HomeButton::tweenEndSlot()
   {
-    if (_aniVal == 1)
+    if (_tween->value() == 1)
       setVisible(false);
   }
 

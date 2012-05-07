@@ -70,20 +70,14 @@ namespace ilixi
     void
     setStarted(bool started);
 
-    WindowThumbnail*
-    getThumb() const;
-
-    void
-    setThumb(WindowThumbnail* cw);
-
-    CompositorSurfaceView*
-    getCompositedSurface() const;
-
-    void
-    setCompositedSurface(CompositorSurfaceView* compositedSurface);
-
     void
     startApp();
+
+    unsigned long
+    getAppID() const;
+
+    void
+    setAppID(unsigned long appId);
 
     sigc::signal<void, const std::string&> sigStartRequest;
 
@@ -96,9 +90,10 @@ namespace ilixi
     const char* _program;
     const char* _args;
     long long _startTime;
-    pid_t _pid;bool _started;
-    WindowThumbnail* _thumbSurface;
-    CompositorSurfaceView* _compositedSurface;
+    pid_t _pid;
+    unsigned long _appID;
+
+    bool _started;
   };
 
 } /* namespace ilixi */

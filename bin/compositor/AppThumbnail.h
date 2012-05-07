@@ -21,53 +21,66 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_LAUNCHER_H_
-#define ILIXI_LAUNCHER_H_
+#ifndef ILIXI_APPTHUMBNAIL_H_
+#define ILIXI_APPTHUMBNAIL_H_
 
-#include "LauncherButton.h"
-#include "ApplicationManager.h"
-#include <vector>
+#include "AppCompositor.h"
+#include "ui/Label.h"
+#include "lib/TweenAnimation.h"
 
 namespace ilixi
 {
 
-  class Compositor;
-
-  class Launcher : public Widget
+  class AppThumbnail : public AppCompositor
   {
   public:
-    Launcher(Compositor* parent);
+    AppThumbnail(const std::string& text, AppFlags flags = APP_NONE,
+        Widget* parent = 0);
 
     virtual
-    ~Launcher();
+    ~AppThumbnail();
 
-    virtual Size
+    Size
     preferredSize() const;
 
+    void
+    showOverlay();
+
+    void
+    hideOverlay();
+
+    sigc::signal<void> sigSelected;
+    sigc::signal<void, AppThumbnail*> sigFocused;
+
   protected:
-    void
-    initButtons();
-
-    void
-    addButton(const char* name, const char* icon);
-
-    void
+    virtual void
     compose();
 
+    virtual void
+    pointerButtonUpEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    keyUpEvent(const KeyEvent& keyEvent);
+
+    virtual void
+    focusInEvent();
+
+    virtual void
+    focusOutEvent();
+
   private:
-    Compositor* _compositor;
+    TweenAnimation _ani;
+    Tween* _overlayTween;
+    Tween* _opacityTween;
 
-    typedef std::vector<AppInfo*> AppList;
-    AppList _apps;
-
-    typedef std::vector<LauncherButton*> ButtonList;
-    ButtonList _buttons;
-
-    Font* _font;
+    Label* _label;
 
     void
-    updateLauncherGeometry();
+    tweenSlot();
+
+    void
+    onAppThumbnailGeometryUpdated();
   };
 
 } /* namespace ilixi */
-#endif /* ILIXI_LAUNCHER_H_ */
+#endif /* ILIXI_APPTHUMBNAIL_H_ */

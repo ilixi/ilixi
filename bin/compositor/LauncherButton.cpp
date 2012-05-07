@@ -21,53 +21,35 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_LAUNCHER_H_
-#define ILIXI_LAUNCHER_H_
-
 #include "LauncherButton.h"
-#include "ApplicationManager.h"
-#include <vector>
+#include "graphics/Painter.h"
 
 namespace ilixi
 {
 
-  class Compositor;
-
-  class Launcher : public Widget
+  LauncherButton::LauncherButton(const std::string& name, Widget* parent) :
+      ToolButton(name, parent)
   {
-  public:
-    Launcher(Compositor* parent);
+    setInputMethod(PointerInput);
+    setToolButtonStyle(ToolButton::IconAboveText);
+  }
 
-    virtual
-    ~Launcher();
+  LauncherButton::~LauncherButton()
+  {
+  }
 
-    virtual Size
-    preferredSize() const;
-
-  protected:
-    void
-    initButtons();
-
-    void
-    addButton(const char* name, const char* icon);
-
-    void
-    compose();
-
-  private:
-    Compositor* _compositor;
-
-    typedef std::vector<AppInfo*> AppList;
-    AppList _apps;
-
-    typedef std::vector<LauncherButton*> ButtonList;
-    ButtonList _buttons;
-
-    Font* _font;
-
-    void
-    updateLauncherGeometry();
-  };
+  void
+  LauncherButton::compose()
+  {
+    Painter p(this);
+    p.begin();
+    if (state() & PressedState)
+      p.setBrush(Color(128, 128, 128));
+    else
+      p.setBrush(Color(255, 255, 255));
+    p.setFont(*font());
+    p.drawLayout(_layout);
+    p.end();
+  }
 
 } /* namespace ilixi */
-#endif /* ILIXI_LAUNCHER_H_ */

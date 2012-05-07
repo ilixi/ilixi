@@ -29,13 +29,24 @@
 #include "ui/Application.h"
 #include "Switcher.h"
 #include "Launcher.h"
-#include "CompositorSurfaceView.h"
 #include "HomeButton.h"
 #include "SwitchButton.h"
 #include "QuitButton.h"
+#include "AppView.h"
 
 namespace ilixi
 {
+  struct CompositedAppRecord
+  {
+    unsigned long appID; // Package manager ID
+    unsigned int instanceID;
+    pid_t processID;
+    AppView* view;
+    AppThumbnail* thumb;
+    // TODO should add lookUpAppRecord(DFBWindowID)
+    std::vector<DFBWindowID> _windows;
+    pthread_mutex_t mutex;
+  };
 
   class Compositor : public Application
   {
@@ -64,15 +75,20 @@ namespace ilixi
     virtual
     ~Compositor();
 
-    void
-    next();
+    CompositedAppRecord*
+    lookUpAppRecord(unsigned long appID);
+
+    CompositedAppRecord*
+    lookUpAppRecord(unsigned int instanceID);
+
+    CompositedAppRecord*
+    lookUpAppRecordUsingWindowID(DFBWindowID windowID);
 
     void
-    previous();
+    addAppRecord(CompositedAppRecord* appRecord);
 
-  protected:
     void
-    addApps();
+    removeAppRecord(unsigned long appID);
 
     IDirectFBWindow*
     getWindow(DFBWindowID id);
@@ -81,13 +97,13 @@ namespace ilixi
     focusWindow(IDirectFBWindow* window);
 
     void
-    animLauncher(bool hide = false);
+    showLauncher(bool show);
 
     void
-    animSwitcher(bool hide = false);
+    showSwitcher(bool show);
 
     void
-    handleViewRequest(CompositorSurfaceView* csw);
+    handleViewRequest(unsigned long appID);
 
     void
     handleSwitchRequest();
@@ -96,12 +112,10 @@ namespace ilixi
     handleQuit();
 
   private:
-    typedef std::vector<CompositorSurfaceView*> Surfaces;
-    Surfaces _surfaces;
-    CompositorSurfaceView* _currentSurface;
-    CompositorSurfaceView* _preSurface;
+    CompositedAppRecord* _currentApp;
 
-    bool _launcherOn;
+    typedef std::vector<CompositedAppRecord*> AppVector;
+    AppVector _appVector;
 
     IDirectFBWindows* _iWindows;
     DFBWindowsWatcher _watcher;
@@ -112,18 +126,33 @@ namespace ilixi
     SwitchButton* _switchButton;
     QuitButton* _quitButton;
 
-    Font* _switcherFont;
-    Font* _overlayFont;
-
     enum CompositorEventType
     {
-      CET_Add, CET_Remove, CET_Config, CET_Focus, CET_Restack, CET_State
+      CET_Add, //!< Window added
+      CET_Remove, //!< Window removed
+      CET_Config, //!< Window configured
+      CET_Focus, //!< Window focused
+      CET_Restack, //!< Window restack
+      CET_State //!< Window state
     };
 
     struct CompositorEvent
     {
       DFBEventClass clazz;
       CompositorEventType type;
+    };
+
+    struct CompositorEventData
+    {
+      CompositorEventData() :
+          windowID(0), appRecord(0), config(0), flags(DWCONF_NONE)
+      {
+      }
+
+      DFBWindowID windowID;
+      CompositedAppRecord* appRecord;
+      const DFBWindowConfig* config;
+      DFBWindowConfigFlags flags;
     };
 
     void
@@ -148,9 +177,6 @@ namespace ilixi
     void
     focusWindow(DFBWindowID id);
 
-    CompositorSurfaceView*
-    lookUpSurfaceView(DFBSurfaceID id);
-
     void
     updateCompositorGeometry();
 
@@ -160,12 +186,8 @@ namespace ilixi
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
 
-    virtual bool
-    windowPostEventFilter(const DFBWindowEvent& event);
-
     virtual void
     compose();
-
   };
 
 } /* namespace ilixi */

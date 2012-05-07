@@ -22,6 +22,7 @@
  */
 
 #include "AppButton.h"
+#include "Launcher.h"
 #include "graphics/Painter.h"
 #include "core/Logger.h"
 
@@ -30,8 +31,8 @@ namespace ilixi
 
   AppButton::AppButton(const std::string& name, const char *p, const char *a,
       const char* i, Widget* parent) :
-      ToolButton(name, parent), _program(p), _args(a), _pid(0), _started(false), _thumbSurface(
-          NULL)
+      ToolButton(name, parent), _program(p), _args(a), _pid(0), _appID(0), _started(
+          false)
   {
     setInputMethod(PointerInput);
     setIcon(i, Size(96, 96));
@@ -104,22 +105,22 @@ namespace ilixi
     _started = started;
   }
 
-  WindowThumbnail*
-  AppButton::getThumb() const
-  {
-    return _thumbSurface;
-  }
-
-  void
-  AppButton::setThumb(WindowThumbnail* cw)
-  {
-    _thumbSurface = cw;
-  }
-
   void
   AppButton::startApp()
   {
     sigStartRequest(text());
+  }
+
+  unsigned long
+  AppButton::getAppID() const
+  {
+    return _appID;
+  }
+
+  void
+  AppButton::setAppID(unsigned long appId)
+  {
+    _appID = appId;
   }
 
   void
@@ -134,18 +135,6 @@ namespace ilixi
     p.setFont(*font());
     p.drawLayout(_layout);
     p.end();
-  }
-
-  CompositorSurfaceView*
-  AppButton::getCompositedSurface() const
-  {
-    return _compositedSurface;
-  }
-
-  void
-  AppButton::setCompositedSurface(CompositorSurfaceView* compositedSurface)
-  {
-    _compositedSurface = compositedSurface;
   }
 
 } /* namespace ilixi */

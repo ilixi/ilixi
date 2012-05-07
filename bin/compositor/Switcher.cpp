@@ -49,7 +49,7 @@ namespace ilixi
     _anim.setDuration(500);
     _anim.sigExec.connect(sigc::mem_fun(this, &Switcher::tweenSlot));
     _anim.sigFinished.connect(sigc::mem_fun(this, &Switcher::tweenEndSlot));
-    _tween = new Tween(Tween::SINE, Tween::EASE_OUT, _aniVal, 0, 1);
+    _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_tween);
 
     setVisible(false);
@@ -66,70 +66,83 @@ namespace ilixi
   }
 
   void
-  Switcher::scrollTo(WindowThumbnail* widget)
+  Switcher::scrollTo(AppThumbnail* thumb)
   {
     if (_current)
       _current->hideOverlay();
-    _scrollArea->scrollTo(widget);
-    _current = widget;
+    _scrollArea->scrollTo(thumb);
+    _current = thumb;
     _current->showOverlay();
-    _scrollArea->scrollTo(widget);
-    _current = widget;
-    widget->setFocus();
-    for (unsigned int i = 0; i < _windows.size(); ++i)
-      if (_windows[i] == widget)
+    _scrollArea->scrollTo(thumb);
+    _current = thumb;
+    thumb->setFocus();
+    for (unsigned int i = 0; i < _thumbs.size(); ++i)
+      if (_thumbs[i] == thumb)
         _currentID = i;
   }
 
-  WindowThumbnail*
-  Switcher::getCurrentCW()
+  void
+  Switcher::scrollToNext()
+  {
+    scrollTo(nextThumb());
+  }
+
+  void
+  Switcher::scrollToPrevious()
+  {
+    scrollTo(previousThumb());
+  }
+
+  AppThumbnail*
+  Switcher::currentThumb()
   {
     return _current;
   }
 
-  WindowThumbnail*
-  Switcher::getNextCW()
+  AppThumbnail*
+  Switcher::nextThumb()
   {
     if (_currentID >= 0)
       {
-        if (++_currentID == _windows.size())
+        if (++_currentID == _thumbs.size())
           _currentID = 0;
 
-        return _windows[_currentID];
+        return _thumbs[_currentID];
       }
     return NULL;
   }
 
-  WindowThumbnail*
-  Switcher::getPreviousCW()
+  AppThumbnail*
+  Switcher::previousThumb()
   {
     if (_currentID >= 0)
       {
         if (--_currentID == -1)
-          _currentID = _windows.size() - 1;
+          _currentID = _thumbs.size() - 1;
 
-        return _windows[_currentID];
+        return _thumbs[_currentID];
       }
     return NULL;
   }
 
   void
-  Switcher::addCW(WindowThumbnail* cw)
+  Switcher::addThumb(AppThumbnail* thumb)
   {
-    if (_box->addWidget(cw))
+    if (_box->addWidget(thumb))
       {
-        _windows.push_back(cw);
-        cw->sigFocused.connect(sigc::mem_fun(this, &Switcher::scrollTo));
-        cw->sigSelected.connect(sigc::mem_fun(this, &Switcher::viewRequest));
+        thumb->setVisible(true);
+        _thumbs.push_back(thumb);
+        thumb->sigFocused.connect(sigc::mem_fun(this, &Switcher::scrollTo));
+        thumb->sigSelected.connect(sigc::mem_fun(this, &Switcher::viewRequest));
         _box->setSize(_box->preferredSize());
         update();
       }
   }
 
   void
-  Switcher::removeCW(WindowThumbnail* cw)
+  Switcher::removeThumb(AppThumbnail* thumb)
   {
-    _box->removeWidget(cw);
+    _box->removeWidget(thumb);
   }
 
   void
@@ -157,7 +170,8 @@ namespace ilixi
     Painter p(this);
     p.begin();
     p.setBrush(Color(0, 0, 0, 80));
-    p.fillRectangle(0, height() - (height() * _aniVal), width(), height());
+    p.fillRectangle(0, height() - (height() * _tween->value()), width(),
+        height());
     p.end();
   }
 
@@ -170,14 +184,14 @@ namespace ilixi
   void
   Switcher::tweenSlot()
   {
-    _scrollArea->setY(height() - (height() * _aniVal));
+    _scrollArea->setY(height() - (height() * _tween->value()));
     update();
   }
 
   void
   Switcher::tweenEndSlot()
   {
-    if (_aniVal < 1)
+    if (_tween->value() < 1)
       setVisible(false);
   }
 

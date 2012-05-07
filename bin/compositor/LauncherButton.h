@@ -21,53 +21,26 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_LAUNCHER_H_
-#define ILIXI_LAUNCHER_H_
+#ifndef LAUNCHERBUTTON_H_
+#define LAUNCHERBUTTON_H_
 
-#include "LauncherButton.h"
-#include "ApplicationManager.h"
-#include <vector>
+#include "ui/ToolButton.h"
 
 namespace ilixi
 {
 
-  class Compositor;
-
-  class Launcher : public Widget
+  class LauncherButton : public ToolButton
   {
   public:
-    Launcher(Compositor* parent);
+    LauncherButton(const std::string& name, Widget* parent = 0);
 
     virtual
-    ~Launcher();
-
-    virtual Size
-    preferredSize() const;
+    ~LauncherButton();
 
   protected:
     void
-    initButtons();
-
-    void
-    addButton(const char* name, const char* icon);
-
-    void
     compose();
-
-  private:
-    Compositor* _compositor;
-
-    typedef std::vector<AppInfo*> AppList;
-    AppList _apps;
-
-    typedef std::vector<LauncherButton*> ButtonList;
-    ButtonList _buttons;
-
-    Font* _font;
-
-    void
-    updateLauncherGeometry();
   };
 
 } /* namespace ilixi */
-#endif /* ILIXI_LAUNCHER_H_ */
+#endif /* LAUNCHERBUTTON_H_ */

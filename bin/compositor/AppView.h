@@ -21,50 +21,23 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SWITCHER_H_
-#define SWITCHER_H_
+#ifndef ILIXI_APPVIEW_H_
+#define ILIXI_APPVIEW_H_
 
-#include "ui/ScrollArea.h"
-#include "ui/HBoxLayout.h"
-#include "AppThumbnail.h"
+#include "AppCompositor.h"
+#include "lib/TweenAnimation.h"
 
 namespace ilixi
 {
-
-  class Switcher : public Widget
+  //! Helper class for animating an AppCompositor.
+  class AppView : public AppCompositor
   {
+    friend class Compositor;
   public:
-    Switcher(Widget* parent = 0);
+    AppView(Widget* parent = 0, AppFlags flags = APP_NONE);
 
     virtual
-    ~Switcher();
-
-    virtual Size
-    preferredSize() const;
-
-    void
-    addThumb(AppThumbnail* thumb);
-
-    void
-    removeThumb(AppThumbnail* thumb);
-
-    void
-    scrollTo(AppThumbnail* thumb);
-
-    void
-    scrollToNext();
-
-    void
-    scrollToPrevious();
-
-    AppThumbnail*
-    currentThumb();
-
-    AppThumbnail*
-    nextThumb();
-
-    AppThumbnail*
-    previousThumb();
+    ~AppView();
 
     void
     show();
@@ -72,38 +45,21 @@ namespace ilixi
     void
     hide();
 
-    sigc::signal<void> sigSwitchRequest;
-
   protected:
-    AppThumbnail* _current;
-
-    unsigned int _currentID;
-
-    typedef std::vector<AppThumbnail*> Thumbnails;
-    Thumbnails _thumbs;
-
-    ScrollArea* _scrollArea;
-    HBoxLayout* _box;
-
     virtual void
     compose();
 
-    void
-    updateSwitcherGeometry();
-
   private:
-    TweenAnimation _anim;
-    Tween* _tween;
+    TweenAnimation _ani;
+    Tween* _opacityTween;
+    Tween* _zoomTween;
 
     void
     tweenSlot();
 
     void
     tweenEndSlot();
-
-    void
-    viewRequest();
   };
 
 } /* namespace ilixi */
-#endif /* SWITCHER_H_ */
+#endif /* ILIXI_APPVIEW_H_ */

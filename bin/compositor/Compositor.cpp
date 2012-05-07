@@ -76,8 +76,7 @@ namespace ilixi
   //*************************************************************************
 
   Compositor::Compositor(int argc, char* argv[]) :
-      Application(argc, argv, OptCompositor), _currentSurface(NULL), _preSurface(
-          NULL), _launcherOn(true)
+      Application(argc, argv, OptExclusive), _currentApp(NULL)
   {
     setTitle("Compositor");
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
@@ -96,35 +95,23 @@ namespace ilixi
 
     _iWindows->RegisterWatcher(_iWindows, &_watcher, this);
 
-    // FIXME remove or use these fonts.
-    _switcherFont = new Font(ILIXI_DATADIR"fonts/decker.ttf");
-    _switcherFont->setSize(24);
-
-    _overlayFont = new Font(ILIXI_DATADIR"fonts/decker.ttf");
-    _overlayFont->setSize(72);
-
-    _launcher = new Launcher();
+    _launcher = new Launcher(this);
     addWidget(_launcher);
-    _launcher->sigViewRequest.connect(
-        sigc::mem_fun(this, &Compositor::handleViewRequest));
 
     _switcher = new Switcher();
     _switcher->sigSwitchRequest.connect(
         sigc::mem_fun(this, &Compositor::handleSwitchRequest));
     addWidget(_switcher);
-    addApps();
 
     _homeButton = new HomeButton();
     _homeButton->sigPressed.connect(
-        sigc::bind<bool>(sigc::mem_fun(this, &Compositor::animLauncher),
-            false));
+        sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showLauncher), true));
     addWidget(_homeButton);
 
     _switchButton = new SwitchButton();
     _switchButton->setVisible(false);
     _switchButton->sigPressed.connect(
-        sigc::bind<bool>(sigc::mem_fun(this, &Compositor::animSwitcher),
-            false));
+        sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showSwitcher), true));
     addWidget(_switchButton);
 
     _quitButton = new QuitButton();
@@ -135,74 +122,74 @@ namespace ilixi
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
+
+    ApplicationManager::instance()->sigViewRequest.connect(
+        sigc::mem_fun(this, &Compositor::handleViewRequest));
   }
 
   Compositor::~Compositor()
   {
-    delete _switcherFont;
-    delete _overlayFont;
+    ApplicationManager::instance()->stopAll();
     _iWindows->Release(_iWindows);
+    _iWindows = NULL;
+    ILOG_INFO(ILX_COMPOSITOR, "~Compositor\n");
+  }
+
+  CompositedAppRecord*
+  Compositor::lookUpAppRecord(unsigned long appID)
+  {
+    for (AppVector::iterator it = _appVector.begin(); it != _appVector.end();
+        ++it)
+      if (((CompositedAppRecord*) *it)->appID == appID)
+        return *it;
+    return NULL;
+  }
+
+  CompositedAppRecord*
+  Compositor::lookUpAppRecord(unsigned int instanceID)
+  {
+    for (AppVector::iterator it = _appVector.begin(); it != _appVector.end();
+        ++it)
+      if (((CompositedAppRecord*) *it)->instanceID == instanceID)
+        return *it;
+    return NULL;
+  }
+
+  CompositedAppRecord*
+  Compositor::lookUpAppRecordUsingWindowID(DFBWindowID windowID)
+  {
+    for (AppVector::iterator it = _appVector.begin(); it != _appVector.end();
+        ++it)
+      {
+        for (std::vector<DFBWindowID>::iterator wit =
+            ((CompositedAppRecord*) *it)->_windows.begin();
+            wit != ((CompositedAppRecord*) *it)->_windows.end(); ++wit)
+          {
+            if (*wit == windowID)
+              return *it;
+          }
+      }
+    return NULL;
   }
 
   void
-  Compositor::next()
+  Compositor::addAppRecord(CompositedAppRecord* appRecord)
   {
-    _switcher->scrollTo(_switcher->getNextCW());
+    _appVector.push_back(appRecord);
   }
 
   void
-  Compositor::previous()
+  Compositor::removeAppRecord(unsigned long appID)
   {
-    _switcher->scrollTo(_switcher->getPreviousCW());
-  }
-
-  void
-  Compositor::addApps()
-  {
-    // dfb-examples
-    _launcher->addApplication("Penguins", "df_andi", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png");
-
-    _launcher->addApplication("Neo", "df_neo", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/neo.png");
-
-    _launcher->addApplication("Inputs", "df_input", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/input.png");
-
-    _launcher->addApplication("Matrix", "df_matrix", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/matrix.png");
-
-    _launcher->addApplication("Knuckles", "df_knuckles", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/knuckles.png");
-
-    _launcher->addApplication("Particle", "df_particle", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/particle.png");
-
-    _launcher->addApplication("Texture", "df_texture", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/texture.png");
-
-    // lite
-    _launcher->addApplication("DFBTerm", "dfbterm", NULL,
-        ILIXI_DATADIR"compositor/dfbterm.png");
-
-    // ilixi
-    _launcher->addApplication("Gallery", "ilixi_demo1", NULL,
-        ILIXI_DATADIR"compositor/gallery.png");
-
-    // others
-    _launcher->addApplication("Video Player", "dfbtest_video",
-        ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",
-        ILIXI_DATADIR"compositor/player.png");
-
-    _launcher->addApplication("ClanBomber 2", "clanbomber2",
-        "--dfb:force-windowed", ILIXI_DATADIR"compositor/clanbomber2.png");
-
-    // Check if installed
-    _launcher->addApplication("QML Viewer", "qmlviewer",
-        "-qws -display directfb", ILIXI_DATADIR"compositor/qt-qml.png");
-
-    _launcher->addApplication("WebKitDFB", "WebKitDFB", NULL,
-        ILIXI_DATADIR"compositor/webkitdfb.png");
+    for (AppVector::iterator it = _appVector.begin(); it != _appVector.end();
+        ++it)
+      if (((CompositedAppRecord*) *it)->appID == appID)
+        {
+          _appVector.erase(it);
+          pthread_mutex_destroy(&((CompositedAppRecord*) *it)->mutex);
+          delete *it;
+          break;
+        }
   }
 
   IDirectFBWindow*
@@ -224,10 +211,12 @@ namespace ilixi
         ret = layer->GetWindow(layer, id, &window);
         if (ret)
           {
+            layer->Release(layer);
             ILOG_ERROR( ILX_COMPOSITOR,
                 "Error! GetWindow: %s", DirectFBErrorString(ret));
             return NULL;
           }
+        layer->Release(layer);
         return window;
       }
     return NULL;
@@ -259,150 +248,163 @@ namespace ilixi
   }
 
   void
-  Compositor::animLauncher(bool hide)
+  Compositor::showLauncher(bool show)
   {
-    if (hide)
+    if (show && !_launcher->visible())
       {
-        if (_currentSurface)
-          {
-            _launcherOn = false;
-            _backgroundFlags = BGFNone;
-            _launcher->setVisible(_launcherOn);
-            _currentSurface->show();
-            _homeButton->show();
-
-            if (_surfaces.size() > 1)
-              _switchButton->show();
-
-            focusWindow(_currentSurface->_window);
-          }
+        if (_currentApp)
+          _currentApp->view->hide();
+        _launcher->setVisible(true);
+        _homeButton->hide();
+        showSwitcher(false);
       }
     else
       {
-        if (_currentSurface)
-          {
-            _launcherOn = true;
-            _backgroundFlags = BGFFill;
-            _launcher->setVisible(_launcherOn);
-            _currentSurface->hide();
-            _homeButton->hide();
-            focusWindow(activeDFBWindow());
-          }
-        animSwitcher(true);
+        if (_currentApp)
+          _currentApp->view->show();
+        _launcher->setVisible(false);
+        _homeButton->show();
+        showSwitcher(false);
       }
   }
 
   void
-  Compositor::animSwitcher(bool hide)
+  Compositor::showSwitcher(bool show)
   {
-    if (_surfaces.size() < 2)
+    if (_appVector.size() < 2)
       return;
 
-    if (hide)
-      {
-        _switcher->hide();
-        _switchButton->show();
-      }
-    else
+    if (show)
       {
         _switcher->show();
         _switchButton->hide();
       }
+    else
+      {
+        _switcher->hide();
+        _switchButton->show();
+      }
   }
 
   void
-  Compositor::handleViewRequest(CompositorSurfaceView* csw)
+  Compositor::handleViewRequest(unsigned long appID)
   {
-    if (csw)
-      {
-        if (_currentSurface)
-          _currentSurface->hide();
-        _currentSurface = csw;
-        _launcherOn = false;
-        _backgroundFlags = BGFNone;
-        _launcher->setVisible(_launcherOn);
-        _currentSurface->show();
-        _homeButton->show();
-
-        if (_surfaces.size() > 1)
-          {
-            _switchButton->show();
-            if (_switcher->visible())
-              _switcher->hide();
-          }
-        focusWindow(_currentSurface->_window);
-      }
+    CompositedAppRecord* appRecord = lookUpAppRecord(appID);
+    _currentApp = appRecord;
+    showLauncher(false);
   }
 
   void
   Compositor::handleSwitchRequest()
   {
+    CompositedAppRecord* record;
+    for (AppVector::iterator it = _appVector.begin(); it != _appVector.end();
+        ++it)
+      if (((CompositedAppRecord*) *it)->thumb == _switcher->currentThumb())
+        record = ((CompositedAppRecord*) *it);
+
+    if (record)
+      _currentApp = record;
+
+    showLauncher(false);
+
     if (_switcher->visible())
-      animSwitcher(true);
-
-    if (_switcher->getCurrentCW()->sourceID() != _currentSurface->sourceID())
-      {
-        _currentSurface->hide();
-        _currentSurface = lookUpSurfaceView(
-            _switcher->getCurrentCW()->sourceID());
-
-        if (_launcherOn)
-          {
-            _launcherOn = false;
-            _launcher->setVisible(_launcherOn);
-            _backgroundFlags = BGFNone;
-          }
-        _currentSurface->show();
-        _homeButton->show();
-        focusWindow(_currentSurface->_window);
-      }
+      showSwitcher(false);
   }
 
   void
   Compositor::handleQuit()
   {
-    if (_currentSurface)
+    if (_launcher->visible())
+      quit();
+    else if (_currentApp)
       {
-        _launcher->stopApplication(_launcher->getCurrent()->text());
-        animLauncher();
-        // remove from Switcher.
-        _switcher->removeCW(_launcher->getCurrent()->getThumb());
+        removeWidget(_currentApp->view);
+        _switcher->removeThumb(_currentApp->thumb);
+        removeAppRecord(_currentApp->appID);
+        ApplicationManager::instance()->stopApplication(_currentApp->appID);
+        _currentApp = NULL;
+        showLauncher(true);
       }
   }
 
   void
   Compositor::onVisible()
   {
-    activeDFBWindow()->GrabKey(activeDFBWindow(), DIKS_TAB, DIMM_ALT);
     _quitButton->show();
   }
 
   void
   Compositor::addWindow(const DFBWindowInfo* info)
   {
-    if (info->window_id > 1)
+    ILOG_DEBUG( ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->window_id);
+
+    ILOG_DEBUG(ILX_COMPOSITOR, "  -> caps         0x%08x\n", info->caps);
+    ILOG_DEBUG( ILX_COMPOSITOR,
+        "  -> res. id  0x%016llx\n", (unsigned long long) info->resource_id);
+    ILOG_DEBUG( ILX_COMPOSITOR,
+        "  -> Instance: %u PID: %d\n", info->instance_id, info->process_id);
+
+    CompositedAppRecord* appRecord = lookUpAppRecord(info->instance_id);
+
+    if (!appRecord)
       {
-        ILOG_DEBUG( ILX_COMPOSITOR,
-            "%s( ID %u )\n", __FUNCTION__, info->window_id);
-        ILOG_DEBUG(ILX_COMPOSITOR, "  -> caps         0x%08x\n", info->caps);
-        ILOG_DEBUG( ILX_COMPOSITOR,
-            "  -> res. id  0x%016llx\n", (unsigned long long) info->resource_id);
+        appRecord = new CompositedAppRecord;
+        appRecord->instanceID = info->instance_id;
+        appRecord->processID = info->process_id;
+        pthread_mutex_init(&appRecord->mutex, NULL);
+        _appVector.push_back(appRecord);
 
-        IDirectFBWindow* dfbWindow = getWindow(info->window_id);
-        dfbWindow->MoveTo(dfbWindow, width(), 0);
+        AppInstanceRecord* appInstanceRecord =
+            ApplicationManager::instance()->lookUpAppInstanceRecord(
+                (int) info->process_id);
 
-        postUserEvent(CET_Add, dfbWindow);
+        if (appInstanceRecord)
+          appRecord->appID = appInstanceRecord->appID;
+
+        AppInfo* info = ApplicationManager::instance()->lookUpAppRecord(
+            appRecord->appID);
+
+        if (info)
+          {
+            appRecord->thumb = new AppThumbnail(info->name, info->appFlags);
+            appRecord->view = new AppView(this, info->appFlags);
+          }
+        else
+          {
+            appRecord->thumb = new AppThumbnail("N/A");
+            appRecord->view = new AppView(this);
+          }
+
+        _switcher->addThumb(appRecord->thumb);
+        appRecord->view->setGeometry(0, 0, width(), height());
+        addWidget(appRecord->view);
+        widgetToBack(appRecord->view);
+        ILOG_DEBUG( ILX_COMPOSITOR, "Created new AppRecord\n");
       }
+
+    CompositorEventData* data = new CompositorEventData;
+    data->appRecord = appRecord;
+    data->windowID = info->window_id;
+    appRecord->_windows.push_back(info->window_id);
+
+    ILOG_DEBUG( ILX_COMPOSITOR, "postUserEvent( CET_Add )\n");
+    postUserEvent(CET_Add, data);
   }
 
   void
   Compositor::removeWindow(DFBWindowID id)
   {
-    if (id > 1)
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+
+    CompositedAppRecord* record = lookUpAppRecordUsingWindowID(id);
+    if (record)
       {
-        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-        IDirectFBWindow* dfbWindow = getWindow(id);
-        postUserEvent(CET_Remove, dfbWindow);
+        CompositorEventData* data = new CompositorEventData;
+        data->appRecord = record;
+        data->windowID = id;
+
+        postUserEvent(CET_Remove, data);
       }
   }
 
@@ -410,55 +412,70 @@ namespace ilixi
   Compositor::configWindow(DFBWindowID id, const DFBWindowConfig *config,
       DFBWindowConfigFlags flags)
   {
-    if (id > 1)
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+    ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", flags);
+
+    CompositedAppRecord* record = lookUpAppRecordUsingWindowID(id);
+    if (record)
       {
-        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-        ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", flags);
-        IDirectFBWindow* dfbWindow = getWindow(id);
-        postUserEvent(CET_Config, dfbWindow);
+        CompositorEventData* data = new CompositorEventData;
+        data->appRecord = record;
+        data->windowID = id;
+        data->config = config;
+        data->flags = flags;
+
+        postUserEvent(CET_Config, data);
       }
   }
 
   void
   Compositor::stateWindow(DFBWindowID id, const DFBWindowState* state)
   {
-    if (id > 1)
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+    ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", state->flags);
+
+    CompositedAppRecord* record = lookUpAppRecordUsingWindowID(id);
+    if (record)
       {
-        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-        ILOG_DEBUG(ILX_COMPOSITOR, "  -> flags        0x%08x\n", state->flags);
-        IDirectFBWindow* dfbWindow = getWindow(id);
-        postUserEvent(CET_State, dfbWindow);
+        CompositorEventData* data = new CompositorEventData;
+        data->appRecord = record;
+        data->windowID = id;
+
+        postUserEvent(CET_State, data);
       }
   }
 
   void
   Compositor::restackWindow(DFBWindowID id, unsigned int index)
   {
-    if (id > 1)
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
+    ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
+
+    CompositedAppRecord* record = lookUpAppRecordUsingWindowID(id);
+    if (record)
       {
-        ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-        ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
-        IDirectFBWindow* dfbWindow = getWindow(id);
-        postUserEvent(CET_Restack, dfbWindow);
+        CompositorEventData* data = new CompositorEventData;
+        data->appRecord = record;
+        data->windowID = id;
+
+        postUserEvent(CET_Restack, data);
       }
   }
 
   void
   Compositor::focusWindow(DFBWindowID id)
   {
-    if (id > 1)
-      ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    IDirectFBWindow* dfbWindow = getWindow(id);
-    postUserEvent(CET_Focus, dfbWindow);
-  }
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
 
-  CompositorSurfaceView*
-  Compositor::lookUpSurfaceView(DFBSurfaceID id)
-  {
-    for (unsigned int i = 0; i < _surfaces.size(); ++i)
-      if (_surfaces[i]->sourceID() == id)
-        return _surfaces[i];
-    return NULL;
+    CompositedAppRecord* record = lookUpAppRecordUsingWindowID(id);
+    if (record)
+      {
+        CompositorEventData* data = new CompositorEventData;
+        data->appRecord = record;
+        data->windowID = id;
+
+        postUserEvent(CET_Focus, data);
+      }
   }
 
   void
@@ -474,50 +491,63 @@ namespace ilixi
   void
   Compositor::handleUserEvent(const DFBUserEvent& event)
   {
-    if (event.clazz == DFEC_USER)
+    if (_iWindows && event.clazz == DFEC_USER)
       {
-        IDirectFBWindow* dfbWindow = (IDirectFBWindow*) event.data;
+        CompositorEventData* data = (CompositorEventData*) event.data;
+        IDirectFBWindow* dfbWindow = getWindow(data->windowID);
+
         switch (event.type)
           {
         case CET_Add:
           {
+            _currentApp = data->appRecord;
 
-            WindowThumbnail* thumb = new WindowThumbnail(
-                _launcher->getCurrent()->text());
+            ILOG_DEBUG(ILX_COMPOSITOR, "CET_Add (%d)\n", data->windowID);
+            dfbWindow->Move(dfbWindow, 10000, 0);
+            dfbWindow->SetOpacity(dfbWindow, 0);
+            data->appRecord->thumb->addWindow(dfbWindow);
+            data->appRecord->view->addWindow(dfbWindow);
 
-            CompositorSurfaceView* surface = new CompositorSurfaceView();
-            addWidget(surface);
-            widgetToBack(surface);
-            _currentSurface = surface;
-
-            // Attach CompositorSurfaceView to buffer
-
-            thumb->setSourceFromWindow(dfbWindow);
-            surface->setSourceFromWindow(dfbWindow);
-            surface->setGeometry(0, 0, width(), height());
-            surface->_window = dfbWindow;
-
-            _launcher->getCurrent()->setThumb(thumb);
-            _launcher->getCurrent()->setCompositedSurface(surface);
-            _switcher->addCW(thumb);
-            _surfaces.push_back(surface);
-
-            animLauncher(true);
+            showLauncher(false);
           }
           break;
 
         case CET_Remove:
-          // Detach CompositorSurfaceView from buffer
+          ILOG_DEBUG(ILX_COMPOSITOR, "CET_Remove (%d)\n", data->windowID);
+          data->appRecord->thumb->removeWindow(dfbWindow);
+          data->appRecord->view->removeWindow(dfbWindow);
+          break;
 
         case CET_Config:
+          {
+            ILOG_INFO(ILX_COMPOSITOR, "CET_CONFIG (%d)\n", data->windowID);
+
+            if (data->appRecord && data->appRecord->view)
+              {
+                data->appRecord->view->onWindowConfig(data->windowID,
+                    data->config, data->flags);
+                data->appRecord->thumb->onWindowConfig(data->windowID,
+                    data->config, data->flags);
+              }
+          }
+          break;
+
         case CET_Focus:
+          break;
+
         case CET_Restack:
+          break;
+
         case CET_State:
           break;
 
         default:
           break;
           }
+
+        if (dfbWindow)
+          dfbWindow->Release(dfbWindow);
+        delete data;
       }
   }
 
@@ -527,56 +557,33 @@ namespace ilixi
     switch (event.type)
       {
     case DWET_KEYDOWN:
-      if (_currentSurface
-          && ((event.key_symbol == DIKS_SMALL_H)
-              || (event.key_symbol == DIKS_HOME)))
+      if (event.key_symbol == DIKS_HOME)
         {
-          if (_launcherOn)
-            animLauncher(true);
-          else
-            animLauncher(false); // show launcher
+          showLauncher(true); // show launcher
           return true;
         }
       else if (event.key_symbol == DIKS_TAB && event.modifiers == DIMM_ALT)
         {
-          if (_surfaces.size() < 2)
+          if (_appVector.size() < 2)
             return true;
 
           if (!_switcher->visible())
-            animSwitcher(false); // show switcher
-          next();
+            showSwitcher(true);
+
+          _switcher->scrollTo(_switcher->nextThumb());
           return true;
         }
       break;
 
     case DWET_KEYUP:
       {
-        if (_currentSurface && event.key_symbol == DIKS_ALT)
+        if (event.key_symbol == DIKS_ALT)
           {
-            if (_surfaces.size() < 2)
+            if (_appVector.size() < 2)
               return true;
 
             if (_switcher->visible())
-              animSwitcher(true);
-
-            if (_launcherOn)
-              {
-                _launcherOn = false;
-                _launcher->setVisible(_launcherOn);
-                _backgroundFlags = BGFNone;
-              }
-
-            if (_switcher->getCurrentCW()->sourceID()
-                != _currentSurface->sourceID())
-              {
-                _currentSurface->hide();
-                _currentSurface = lookUpSurfaceView(
-                    _switcher->getCurrentCW()->sourceID());
-                _launcherOn = false;
-                _backgroundFlags = BGFNone;
-                _currentSurface->show();
-                focusWindow(_currentSurface->_window);
-              }
+              showSwitcher(false);
             return true;
           }
       }
@@ -588,18 +595,10 @@ namespace ilixi
     return false;
   }
 
-  bool
-  Compositor::windowPostEventFilter(const DFBWindowEvent& event)
-  {
-    if (!_launcherOn)
-      return _currentSurface->consumeWindowEvent(const_cast<DFBWindowEvent*>(&event));
-    return false;
-  }
-
   void
   Compositor::compose()
   {
-    if (_launcherOn)
+    if (_launcher->visible())
       {
         Painter painter(this);
         painter.begin();
