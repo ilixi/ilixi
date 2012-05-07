@@ -36,7 +36,7 @@ namespace ilixi
    *
    * \warning Does not support sub-surfaces at the moment.
    */
-  class SurfaceView : public SurfaceEventListener, virtual public Widget
+  class SurfaceView : public SurfaceEventListener, public Widget
   {
   public:
     /*!
@@ -65,6 +65,19 @@ namespace ilixi
     sourceID() const;
 
     /*!
+     * Returns source window, if any.
+     */
+    IDirectFBWindow*
+    dfbWindow() const;
+
+    /*!
+     * Returns source window id.
+     * If there is no window, returns 0.
+     */
+    DFBWindowID
+    dfbWindowID() const;
+
+    /*!
      * Sets source surface using given id.
      */
     void
@@ -84,9 +97,6 @@ namespace ilixi
 
     void
     paint(const Rectangle& targetArea);
-
-    virtual bool
-    consumeWindowEvent(DFBWindowEvent* event);
 
   protected:
     /*!
@@ -111,15 +121,17 @@ namespace ilixi
      * Blits source surface on itself.
      */
     virtual void
-    renderSource();
+    renderSource(const Rectangle& rect);
 
   private:
     //! This property stores the scale ratio in horizontal direction.
-    float _hScale;
+    double _hScale;
     //! This property stores the scale ratio in vertical direction.
-    float _vScale;
+    double _vScale;
     //! This property stores the window interface of source surface, if any.
-    IDirectFBWindow* _window;
+    IDirectFBWindow* _sourceWindow;
+    //! This property stores the id of window, if any.
+    DFBWindowID _windowID;
 
     void
     onSourceUpdate(const DFBSurfaceEvent& event);
@@ -129,6 +141,37 @@ namespace ilixi
 
     void
     onSVGeomUpdate();
+
+    // handlers
+    virtual void
+    keyDownEvent(const KeyEvent& keyEvent);
+
+    virtual void
+    keyUpEvent(const KeyEvent& keyEvent);
+
+    virtual void
+    pointerButtonDownEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    pointerButtonUpEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    pointerMotionEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    pointerWheelEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    focusInEvent();
+
+    virtual void
+    focusOutEvent();
+
+    virtual void
+    enterEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    leaveEvent(const PointerEvent& pointerEvent);
 
   };
 
