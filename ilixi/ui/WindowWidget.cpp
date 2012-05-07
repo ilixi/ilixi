@@ -174,13 +174,9 @@ WindowWidget::showWindow()
 
       ILOG_INFO(ILX_WINDOWWIDGET, "Getting layer surface\n");
       DFBDisplayLayerConfig dlc;
-      dlc.flags = (DFBDisplayLayerConfigFlags) (DLCONF_PIXELFORMAT
-          | DLCONF_BUFFERMODE);
-      dlc.pixelformat = DSPF_ARGB;
+      dlc.flags = DLCONF_BUFFERMODE;
       dlc.buffermode = DLBM_BACKVIDEO;
       AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface);
-      _exclusiveSurface->Clear(_exclusiveSurface, 255, 255, 255, 255);
-      _exclusiveSurface->Flip(_exclusiveSurface, NULL, DSFLIP_NONE);
 
       int w, h;
       _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
