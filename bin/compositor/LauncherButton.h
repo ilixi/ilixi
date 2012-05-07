@@ -39,7 +39,7 @@ namespace ilixi
 
   protected:
     void
-    compose();
+    compose(const Rectangle& rect);
   };
 
 } /* namespace ilixi */

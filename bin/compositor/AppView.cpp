@@ -73,7 +73,7 @@ namespace ilixi
   }
 
   void
-  AppView::compose()
+  AppView::compose(const Rectangle& rect)
   {
   }
 

@@ -96,10 +96,10 @@ namespace ilixi
   }
 
   void
-  MenuItem::compose()
+  MenuItem::compose(const Rectangle& rect)
   {
     Painter p(this);
-    p.begin();
+    p.begin(rect);
 
     float val = _tweenIn->value();
     if (_doOut)

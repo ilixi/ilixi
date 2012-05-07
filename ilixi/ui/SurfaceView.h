@@ -115,7 +115,7 @@ namespace ilixi
      * Reimplement for decorations.
      */
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     /*!
      * Blits source surface on itself.

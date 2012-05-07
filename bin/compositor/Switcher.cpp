@@ -165,10 +165,10 @@ namespace ilixi
   }
 
   void
-  Switcher::compose()
+  Switcher::compose(const Rectangle& rect)
   {
     Painter p(this);
-    p.begin();
+    p.begin(rect);
     p.setBrush(Color(0, 0, 0, 80));
     p.fillRectangle(0, height() - (height() * _tween->value()), width(),
         height());

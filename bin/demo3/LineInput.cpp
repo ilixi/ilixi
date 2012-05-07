@@ -355,10 +355,10 @@ LineInput::drawCursor()
 }
 
 void
-LineInput::compose()
+LineInput::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
 
   if (state() & FocusedState)
     p.setPen(Color(51, 128, 204));

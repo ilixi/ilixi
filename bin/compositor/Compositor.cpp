@@ -388,7 +388,6 @@ namespace ilixi
     data->windowID = info->window_id;
     appRecord->_windows.push_back(info->window_id);
 
-    ILOG_DEBUG( ILX_COMPOSITOR, "postUserEvent( CET_Add )\n");
     postUserEvent(CET_Add, data);
   }
 
@@ -596,12 +595,12 @@ namespace ilixi
   }
 
   void
-  Compositor::compose()
+  Compositor::compose(const Rectangle& rect)
   {
     if (_launcher->visible())
       {
         Painter painter(this);
-        painter.begin();
+        painter.begin(rect);
         stylist()->drawAppFrame(&painter, this);
         painter.end();
       }

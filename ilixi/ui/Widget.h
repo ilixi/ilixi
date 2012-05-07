@@ -849,7 +849,7 @@ namespace ilixi
      * Reimplement this method in derived classes.
      */
     virtual void
-    compose()=0;
+    compose(const Rectangle& rect)=0;
 
     /*!
      * This method is called if a key is pressed while the widget has focus.

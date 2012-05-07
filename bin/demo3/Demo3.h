@@ -35,7 +35,7 @@ public:
   ~Demo3();
 
   void
-  compose();
+  compose(const ilixi::Rectangle& rect);
 };
 
 #endif /* ILIXI_DEMO3_H_ */

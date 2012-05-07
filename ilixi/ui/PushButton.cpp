@@ -81,10 +81,10 @@ PushButton::focusOutEvent()
 }
 
 void
-PushButton::compose()
+PushButton::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawPushButton(&p, this);
   p.end();
 }

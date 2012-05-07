@@ -136,7 +136,7 @@ namespace ilixi
      * @param rect
      */
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     /*!
      * Returns frame's canvas x-coordinate including the left margin.

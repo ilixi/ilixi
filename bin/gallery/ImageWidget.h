@@ -30,7 +30,7 @@ protected:
   tweenSlot();
 
   virtual void
-  compose();
+  compose(const ilixi::Rectangle& rect);
 
   virtual void
   pointerButtonUpEvent(const ilixi::PointerEvent& event);

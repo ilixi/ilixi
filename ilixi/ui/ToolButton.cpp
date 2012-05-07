@@ -130,10 +130,10 @@ ToolButton::setToolButtonStyle(ToolButtonStyle style)
 }
 
 void
-ToolButton::compose()
+ToolButton::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawToolButton(&p, this);
   p.end();
 }

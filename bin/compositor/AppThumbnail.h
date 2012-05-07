@@ -54,7 +54,7 @@ namespace ilixi
 
   protected:
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     virtual void
     pointerButtonUpEvent(const PointerEvent& pointerEvent);

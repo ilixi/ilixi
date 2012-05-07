@@ -39,10 +39,10 @@ namespace ilixi
   }
 
   void
-  LauncherButton::compose()
+  LauncherButton::compose(const Rectangle& rect)
   {
     Painter p(this);
-    p.begin();
+    p.begin(rect);
     if (state() & PressedState)
       p.setBrush(Color(128, 128, 128));
     else

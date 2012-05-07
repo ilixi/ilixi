@@ -49,10 +49,10 @@ ImageWidget::tweenSlot()
 }
 
 void
-ImageWidget::compose()
+ImageWidget::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
 
   float val1 = _circleIn->value();
   float val2 = _bounceIn->value();

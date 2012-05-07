@@ -58,7 +58,7 @@ namespace ilixi
      * @param rect Clipped rectangle to paint.
      */
     void
-    compose();
+    compose(const Rectangle& rect);
 
     /*!
      * Sets position of text and icon if any.

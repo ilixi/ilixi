@@ -103,10 +103,10 @@ Frame::updateLayoutGeometry()
 }
 
 void
-Frame::compose()
+Frame::compose(const Rectangle& rect)
 {
   Painter painter(this);
-  painter.begin();
+  painter.begin(rect);
   stylist()->drawFrame(&painter, this);
   painter.end();
 }

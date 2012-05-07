@@ -120,7 +120,7 @@ namespace ilixi
      * \sa setBackgroundFilled()
      */
     virtual void
-    compose();
+    compose(const Rectangle& rect);
   };
 }
 #endif /* ILIXI_APPLICATION_H_ */

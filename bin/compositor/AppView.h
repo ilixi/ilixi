@@ -47,7 +47,7 @@ namespace ilixi
 
   protected:
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
   private:
     TweenAnimation _ani;

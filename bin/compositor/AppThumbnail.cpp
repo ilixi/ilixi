@@ -23,9 +23,11 @@
 
 #include "AppThumbnail.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 namespace ilixi
 {
+  D_DEBUG_DOMAIN( ILX_APPTHUMBNAIL, "ilixi/Compositor/AppThumbnail", "AppThumbnail");
 
   AppThumbnail::AppThumbnail(const std::string& text, AppFlags flags,
       Widget* parent) :
@@ -72,14 +74,15 @@ namespace ilixi
   }
 
   void
-  AppThumbnail::compose()
+  AppThumbnail::compose(const Rectangle& rect)
   {
   }
 
   void
   AppThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
-//    sigFocused(this);
+    ILOG_INFO(ILX_APPTHUMBNAIL, "PointerUp\n");
+    sigFocused(this);
     sigSelected();
   }
 
@@ -93,6 +96,7 @@ namespace ilixi
   void
   AppThumbnail::focusInEvent()
   {
+    ILOG_INFO(ILX_APPTHUMBNAIL, "FocusIn\n");
     sigFocused(this);
     _ani.stop();
     _overlayTween->setInitialValue(0);
@@ -105,6 +109,7 @@ namespace ilixi
   void
   AppThumbnail::focusOutEvent()
   {
+    ILOG_INFO(ILX_APPTHUMBNAIL, "FocusOut\n");
     hideOverlay();
     _ani.stop();
     _overlayTween->setInitialValue(1);

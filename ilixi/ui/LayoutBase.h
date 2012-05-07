@@ -134,7 +134,7 @@ namespace ilixi
      * Does nothing.
      */
     void
-    compose();
+    compose(const Rectangle& rect);
 
   private:
     RadioGroup* _group;

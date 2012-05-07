@@ -176,7 +176,7 @@ LayoutBase::paint(const Rectangle& rect)
 }
 
 void
-LayoutBase::compose()
+LayoutBase::compose(const Rectangle& rect)
 {
 }
 

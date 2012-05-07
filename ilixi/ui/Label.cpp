@@ -70,10 +70,10 @@ Label::setMargin(const Margin& margin)
 }
 
 void
-Label::compose()
+Label::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawFrame(&p, this);
   stylist()->drawLabel(&p, this);
   p.end();

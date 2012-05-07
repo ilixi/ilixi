@@ -57,7 +57,7 @@ namespace ilixi
     informGroup(bool checked);
 
     void
-    compose();
+    compose(const Rectangle& rect);
 
     virtual void
     updateTextLayoutGeometry();

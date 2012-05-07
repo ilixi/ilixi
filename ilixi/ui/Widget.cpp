@@ -494,7 +494,7 @@ Widget::paint(const Rectangle& rect)
       if (intersect.isValid())
         {
 //          ILOG_DEBUG(ILX_WIDGET, "Paint( %p )\n", this);
-          compose();
+          compose(intersect);
           paintChildren(intersect);
         }
     }

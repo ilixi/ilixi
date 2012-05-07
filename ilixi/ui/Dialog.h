@@ -170,7 +170,7 @@ namespace ilixi
 
     //! Draws dialog frame using designer.
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     //! Positions button layout if any.
     void

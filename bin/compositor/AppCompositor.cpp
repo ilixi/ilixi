@@ -30,7 +30,7 @@ namespace ilixi
   AppCompositor::AppCompositor(Widget* parent, AppFlags flags) :
       Widget(parent), _appFlags(flags), _zoomFactor(1)
   {
-    setInputMethod(PointerInputTracking);
+    setInputMethod(NoInput);
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &AppCompositor::updateAppCompositorGeometry));
   }

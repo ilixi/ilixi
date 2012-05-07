@@ -40,9 +40,10 @@ Painter::~Painter()
 }
 
 void
-Painter::begin()
+Painter::begin(const Rectangle& rect)
 {
   _myWidget->surface()->lock();
+  _myWidget->surface()->clip(rect);
   _state = Active;
   applyBrush();
 

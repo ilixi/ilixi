@@ -68,7 +68,7 @@ namespace ilixi
     ImageDialog* _dialog;
 
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     void
     updateVKMenuGeometry();

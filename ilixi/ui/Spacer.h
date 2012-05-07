@@ -49,7 +49,7 @@ namespace ilixi
     Orientation _orientation;
 
     virtual void
-    compose();
+    compose(const Rectangle& rect);
   };
 
 }

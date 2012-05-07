@@ -62,7 +62,7 @@ namespace ilixi
     pointerButtonUpEvent(const PointerEvent& pointerEvent);
 
     void
-    compose();
+    compose(const Rectangle& rect);
 
   private:
     Image* _image;

@@ -154,7 +154,7 @@ namespace ilixi
      * Draws scroll thumbs.
      */
     virtual void
-    compose();
+    compose(const Rectangle& rect);
   private:
     //! This property stores the options for ScrollArea.
     u8 _options;

@@ -199,7 +199,7 @@ ScrollArea::paint(const Rectangle& rect)
               _content->moveTo(_cx, _cy);
               paintChildren(intersect);
             }
-          compose();
+          compose(rect);
         }
     }
 }
@@ -282,10 +282,10 @@ ScrollArea::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
-ScrollArea::compose()
+ScrollArea::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   if (_options & DrawFrame)
     p.drawRectangle(0, 0, width(), height());
   if (_tween->value())

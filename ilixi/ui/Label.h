@@ -79,7 +79,7 @@ namespace ilixi
      * Draws label using stylist.
      */
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     //! Sets text layout geometry of label.
     virtual void

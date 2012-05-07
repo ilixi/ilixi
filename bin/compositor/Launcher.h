@@ -52,7 +52,7 @@ namespace ilixi
     addButton(const char* name, const char* icon);
 
     void
-    compose();
+    compose(const Rectangle& rect);
 
   private:
     Compositor* _compositor;

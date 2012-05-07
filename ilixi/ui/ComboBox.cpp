@@ -174,10 +174,10 @@ ComboBox::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
-ComboBox::compose()
+ComboBox::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawComboBox(&p, this);
   p.end();
 }

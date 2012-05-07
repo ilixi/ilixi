@@ -76,7 +76,7 @@ namespace ilixi
      * You should call this method in order to serialise access to the widget's surface.
      */
     void
-    begin();
+    begin(const Rectangle& rect);
 
     /*!
      * Unlocks current widget's surface.

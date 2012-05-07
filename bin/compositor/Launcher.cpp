@@ -86,10 +86,10 @@ namespace ilixi
   }
 
   void
-  Launcher::compose()
+  Launcher::compose(const Rectangle& rect)
   {
     Painter p(this);
-    p.begin();
+    p.begin(rect);
     p.setBrush(Color(0, 0, 0, 120));
     p.fillRectangle(0, 0, width(), height());
     p.end();

@@ -171,7 +171,7 @@ namespace ilixi
   }
 
   void
-  VKMenu::compose()
+  VKMenu::compose(const Rectangle& rect)
   {
   }
 

@@ -91,7 +91,7 @@ namespace ilixi
     pointerWheelEvent(const PointerEvent& event);
 
     virtual void
-    compose();
+    compose(const Rectangle& rect);
 
     virtual void
     updateTextLayoutGeometry();

@@ -58,7 +58,7 @@ namespace ilixi
   }
 
   void
-  Spacer::compose()
+  Spacer::compose(const Rectangle& rect)
   {
   }
 

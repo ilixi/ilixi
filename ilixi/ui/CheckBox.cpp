@@ -138,10 +138,10 @@ CheckBox::setTriState(bool triState)
 }
 
 void
-CheckBox::compose()
+CheckBox::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawCheckBox(&p, this);
   p.end();
 }

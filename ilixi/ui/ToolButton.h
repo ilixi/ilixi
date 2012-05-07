@@ -83,7 +83,7 @@ namespace ilixi
      * @param rect Clipped rectangle to paint.
      */
     void
-    compose();
+    compose(const Rectangle& rect);
 
     virtual void
     updateTextLayoutGeometry();

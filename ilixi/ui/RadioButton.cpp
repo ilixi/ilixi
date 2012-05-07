@@ -103,10 +103,10 @@ RadioButton::informGroup(bool checked)
 }
 
 void
-RadioButton::compose()
+RadioButton::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
   stylist()->drawRadioButton(&p, this);
   p.end();
 }

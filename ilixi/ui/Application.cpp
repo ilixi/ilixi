@@ -163,10 +163,10 @@ Application::postUserEvent(unsigned int type, void* data)
 }
 
 void
-Application::compose()
+Application::compose(const Rectangle& rect)
 {
   Painter painter(this);
-  painter.begin();
+  painter.begin(rect);
   stylist()->drawAppFrame(&painter, this);
   painter.end();
 }

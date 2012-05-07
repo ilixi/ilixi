@@ -143,7 +143,7 @@ namespace ilixi
     drawCursor();
 
     void
-    compose();
+    compose(const Rectangle& rect);
 
     void
     updateTextLayoutGeometry();

@@ -110,7 +110,7 @@ WindowWidget::paint(const Rectangle& rect)
               if (_backgroundFlags & BGFFill)
                 {
                   surface()->clear(intersect);
-                  compose();
+                  compose(rect);
                 }
               else if (_backgroundFlags & BGFClear)
                 surface()->clear(intersect);

@@ -155,7 +155,7 @@ namespace ilixi
         Rectangle intersect = _frameGeometry.intersected(rect);
         if (intersect.isValid())
           {
-            compose();
+            compose(intersect);
             renderSource(intersect);
             paintChildren(intersect);
           }
@@ -175,7 +175,7 @@ namespace ilixi
   }
 
   void
-  SurfaceView::compose()
+  SurfaceView::compose(const Rectangle& rect)
   {
   }
 
@@ -189,7 +189,13 @@ namespace ilixi
         dfbSurface->SetClip(dfbSurface, &rs);
 
         if (opacity() == 255)
-          dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+          {
+            DFBSurfacePixelFormat fmt;
+            _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
+            if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
+              dfbSurface->SetBlittingFlags(dfbSurface,
+                  DSBLIT_BLEND_ALPHACHANNEL);
+          }
         else
           {
             dfbSurface->SetBlittingFlags(dfbSurface,

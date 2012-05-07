@@ -86,10 +86,10 @@ ScrollItem::pointerButtonDownEvent(const PointerEvent& event)
 }
 
 void
-ScrollItem::compose()
+ScrollItem::compose(const Rectangle& rect)
 {
   Painter p(this);
-  p.begin();
+  p.begin(rect);
 
   // draw frame
   Color(51, 128, 204);
