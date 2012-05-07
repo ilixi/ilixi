@@ -254,6 +254,7 @@ namespace ilixi
       {
         if (_currentApp)
           _currentApp->view->hide();
+        _backgroundFlags = BGFAll;
         _launcher->setVisible(true);
         _homeButton->hide();
         showSwitcher(false);
@@ -262,6 +263,7 @@ namespace ilixi
       {
         if (_currentApp)
           _currentApp->view->show();
+        _backgroundFlags = BGFNone;
         _launcher->setVisible(false);
         _homeButton->show();
         showSwitcher(false);
