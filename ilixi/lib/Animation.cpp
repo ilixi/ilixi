@@ -87,8 +87,11 @@ Animation::start()
 void
 Animation::stop()
 {
-  _state = Stopped;
-  _cb.stop();
+  if (_state == Running)
+    {
+      _state = Stopped;
+      _cb.stop();
+    }
 }
 
 void
