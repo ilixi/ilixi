@@ -177,7 +177,7 @@ WindowWidget::showWindow()
       DFBDisplayLayerConfig config;
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
           | DLCONF_WIDTH | DLCONF_HEIGHT);
-      config.buffermode = DLBM_BACKVIDEO;
+      config.buffermode = DLBM_BACKSYSTEM;
       Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();
