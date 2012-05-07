@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,24 +26,24 @@
 
 using namespace ilixi;
 
-TextBase::TextBase(Widget* parent) :
-    Widget(parent), _font(NULL)
+TextBase::TextBase(Widget* owner) :
+    _owner(owner), _font(NULL)
 {
-  sigGeometryUpdated.connect(
+  _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
 }
 
-TextBase::TextBase(const std::string& text, Widget* parent) :
-    Widget(parent), _font(NULL), _layout(text)
+TextBase::TextBase(const std::string& text, Widget* owner) :
+    _owner(owner), _font(NULL), _layout(text)
 {
-  sigGeometryUpdated.connect(
+  _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
 }
 
 TextBase::TextBase(const TextBase& tb) :
-    Widget(tb), _font(tb._font), _layout(tb._layout)
+    _owner(tb._owner), _font(tb._font), _layout(tb._layout)
 {
-  sigGeometryUpdated.connect(
+  _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
 }
 
@@ -112,7 +112,7 @@ TextBase::setFont(Font* font)
       _font = font;
       if (_font->_font)
         _font->_font->AddRef(_font->_font);
-      doLayout();
+      _owner->doLayout();
       sigFontChanged();
     }
 }
@@ -124,19 +124,19 @@ TextBase::setText(const std::string &text)
     {
       _layout.setText(text);
       sigTextChanged(text);
-      update();
+      _owner->update();
     }
 }
 
 void
 TextBase::updateTextLayoutGeometry()
 {
-  _layout.setBounds(0, 0, width(), height());
+  _layout.setBounds(0, 0, _owner->width(), _owner->height());
   _layout.doLayout(font()); // Fixme can not connect to signal as it is.
 }
 
 Font*
 TextBase::defaultFont() const
 {
-  return stylist()->defaultFont(StyleHint::DefaultFont);
+  return _owner->stylist()->defaultFont(StyleHint::DefaultFont);
 }

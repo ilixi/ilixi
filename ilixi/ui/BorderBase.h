@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -29,15 +29,16 @@
 namespace ilixi
 {
   //! Abstract base class for widgets with rectangular borders.
-  class BorderBase : virtual public Widget
+  class BorderBase
   {
+    friend class Stylist;
   public:
     /*!
      * Constructor.
      *
      * @param parent
      */
-    BorderBase(Widget* parent = 0);
+    BorderBase(Widget* owner);
 
     /*!
      * Copy constructor.
@@ -98,6 +99,10 @@ namespace ilixi
 
     //! This property holds widget's border width.
     int _borderWidth;
+
+  private:
+    //! Owner of this border base.
+    Widget* _owner;
   };
 }
 

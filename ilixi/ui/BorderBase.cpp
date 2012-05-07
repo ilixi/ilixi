@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,14 +26,14 @@
 
 using namespace ilixi;
 
-BorderBase::BorderBase(Widget* parent) :
-    Widget(parent), _borderStyle(NoBorder), _borderWidth(0)
+BorderBase::BorderBase(Widget* owner) :
+    _borderStyle(NoBorder), _borderWidth(0), _owner(owner)
 {
 }
 
 BorderBase::BorderBase(const BorderBase& borderbase) :
-    Widget(borderbase), _borderStyle(borderbase._borderStyle), _borderWidth(
-        borderbase._borderWidth)
+    _borderStyle(borderbase._borderStyle), _borderWidth(
+        borderbase._borderWidth), _owner(borderbase._owner)
 {
 }
 
@@ -54,7 +54,7 @@ BorderBase::borderWidth() const
   if (_borderStyle == NoBorder)
     return 0;
   else if (_borderStyle == StyledBorder)
-    return stylist()->defaultParameter(StyleHint::BorderWidth);
+    return _owner->stylist()->defaultParameter(StyleHint::BorderWidth);
   else
     return _borderWidth;
 }
@@ -65,8 +65,8 @@ BorderBase::borderOffset() const
   if (_borderStyle == NoBorder)
     return 0;
   else if (_borderStyle == StyledBorder)
-    return std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
-        stylist()->defaultParameter(StyleHint::FrameBorderRadius));
+    return std::max(_owner->stylist()->defaultParameter(StyleHint::BorderWidth),
+        _owner->stylist()->defaultParameter(StyleHint::FrameBorderRadius));
   else
     return _borderWidth;
 }

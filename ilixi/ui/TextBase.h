@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -31,18 +31,18 @@
 namespace ilixi
 {
   //! Base class for widgets with text display.
-  class TextBase : virtual public Widget
+  class TextBase
   {
   public:
     /*!
      * Constructor.
      */
-    TextBase(Widget* parent = 0);
+    TextBase(Widget* owner);
 
     /*!
      * Constructor.
      */
-    TextBase(const std::string& text, Widget* parent = 0);
+    TextBase(const std::string& text, Widget* owner);
 
     /*!
      * Copy constructor.
@@ -138,6 +138,8 @@ namespace ilixi
   private:
     //! Font for this widget.
     Font* _font;
+    //! Owner of this text layout.
+    Widget* _owner;
 
     //! Returns default font for this widget.
     virtual Font*
