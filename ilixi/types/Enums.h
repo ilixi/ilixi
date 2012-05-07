@@ -58,8 +58,8 @@ namespace ilixi
   enum SurfaceDescription
   {
     DefaultDescription = 0x03, //!< (InitialiseSurface )
-    BlitDescription = 0x11, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
-    WindowDescription = 0x13  //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
+    BlitDescription = 0x09, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
+    WindowDescription = 0x11 //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
   };
 
   /*!
@@ -277,7 +277,8 @@ namespace ilixi
 
   enum AppOptions
   {
-    OptNone = 0x001, OptCompositor = 0x002,
+    OptNone = 0x000, //!< Default application option.
+    OptExclusive = 0x001 //!< Application will use layer exclusively.
   };
 }
 
