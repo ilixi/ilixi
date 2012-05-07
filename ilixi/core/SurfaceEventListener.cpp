@@ -29,7 +29,7 @@ namespace ilixi
 {
 
   SurfaceEventListener::SurfaceEventListener(DFBSurfaceID id) :
-      _id(id), _source(NULL)
+      _surfaceID(id), _sourceSurface(NULL)
   {
     AppBase::addSurfaceEventListener(this);
   }
@@ -42,19 +42,19 @@ namespace ilixi
   void
   SurfaceEventListener::attachEB()
   {
-    AppBase::attachSourceSurface(_source);
+    AppBase::attachSourceSurface(_sourceSurface);
   }
 
   void
   SurfaceEventListener::detachEB()
   {
-    AppBase::detachSourceSurface(_source);
+    AppBase::detachSourceSurface(_sourceSurface);
   }
 
   bool
   SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
   {
-    if (event.surface_id == _id)
+    if (event.surface_id == _surfaceID)
       {
         if (event.type == DSEVT_DESTROYED)
           onSourceDestroyed(event);

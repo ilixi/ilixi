@@ -62,10 +62,10 @@ namespace ilixi
 
   protected:
     //! ID of source surface.
-    DFBSurfaceID _id;
+    DFBSurfaceID _surfaceID;
 
     //! This property stores source surface.
-    IDirectFBSurface* _source;
+    IDirectFBSurface* _sourceSurface;
 
     /*!
      * This method is called if source surface is updated.
