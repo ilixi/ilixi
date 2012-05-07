@@ -29,6 +29,8 @@
 
 namespace ilixi
 {
+  class Tween;
+
   //! A scroll area.
   /*!
    * This class provides a way to scroll over a large content using pointer.
@@ -159,8 +161,6 @@ namespace ilixi
     //! This is the content of scroll area.
     Widget* _content;
 
-    //! This value is used for tweening.
-    float _aniVal;
     //! This property stores the X coordinate of content.
     float _cx;
     //! This property stores the Y coordinate of content.
@@ -172,6 +172,7 @@ namespace ilixi
 
     //! This tween animation is essentially used for fading thumbs.
     TweenAnimation* _ani;
+    Tween* _tween;
 
     //! Current point.
     Point _sCur;

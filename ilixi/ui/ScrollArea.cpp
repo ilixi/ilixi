@@ -37,8 +37,8 @@ const int rubber = 35;
 const float friction = 0.04;
 
 ScrollArea::ScrollArea(Widget* parent) :
-    Widget(parent), _options(0x009), _content(NULL), _aniVal(0), _cx(0), _cy(0), _vx(
-        0), _vy(0)
+    Widget(parent), _options(0x009), _content(NULL), _cx(0), _cy(0), _vx(0), _vy(
+        0)
 {
   setInputMethod(PointerInputTracking);
   setConstraints(NoConstraint, NoConstraint);
@@ -46,7 +46,8 @@ ScrollArea::ScrollArea(Widget* parent) :
       sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
 
   _ani = new TweenAnimation();
-  _ani->addTween(Tween::CUBIC, Tween::EASE_OUT, _aniVal, 1, 0);
+  _tween = new Tween(Tween::CUBIC, Tween::EASE_OUT, 1, 0);
+  _ani->addTween(_tween);
   _ani->setDuration(1000);
   _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
 
@@ -215,7 +216,6 @@ ScrollArea::pointerGrabEvent(const PointerEvent& event)
   _sCur = Point(event.x, event.y);
   _sPre = _sCur;
   _ani->stop();
-  _aniVal = 1;
   updateScrollArea(1);
   _options &= ~TargetedScroll;
 }
@@ -266,7 +266,6 @@ ScrollArea::pointerMotionEvent(const PointerEvent& event)
       _events.push(event);
       if (_events.size() == queueSize)
         _events.pop();
-      _aniVal = 1;
       updateScrollArea(1);
     }
 }
@@ -289,9 +288,9 @@ ScrollArea::compose()
   p.begin();
   if (_options & DrawFrame)
     p.drawRectangle(0, 0, width(), height());
-  if (_aniVal)
+  if (_tween->value())
     {
-      p.setBrush(Color(0, 0, 0, _aniVal * 255));
+      p.setBrush(Color(0, 0, 0, _tween->value() * 255));
       if (_options & DrawHorizontalThumb)
         {
           int y = _thumbs.y();
@@ -338,7 +337,7 @@ ScrollArea::updateVThumb()
 void
 ScrollArea::updateScollAreaGeometry()
 {
-  _content->moveTo(0,0);
+  _content->moveTo(0, 0);
   Size contentSize = _content->preferredSize();
   if (contentSize.isValid())
     {
@@ -397,18 +396,18 @@ ScrollArea::updateScrollArea(int step)
   else if (_options & TargetedScroll)
     {
       if (_options & HorizontalScroll)
-        _cx = _sCur.x() - (1 - _aniVal) * _vx;
+        _cx = _sCur.x() - (1 - _tween->value()) * _vx;
       if (_options & VerticalScroll)
-        _cy = _sCur.y() - (1 - _aniVal) * _vy;
+        _cy = _sCur.y() - (1 - _tween->value()) * _vy;
     }
   else
     {
       if (_options & HorizontalScroll)
         {
           if (_cx >= 0)
-            _vx = -(1 - _aniVal) * (_cx) / rubber;
+            _vx = -(1 - _tween->value()) * (_cx) / rubber;
           else if (_cx <= _sMax.x())
-            _vx = (1 - _aniVal) * (_sMax.x() - _cx) / rubber;
+            _vx = (1 - _tween->value()) * (_sMax.x() - _cx) / rubber;
           else if (fabs(_vx) > friction)
             _vx -= _vx * friction;
           else
@@ -419,9 +418,9 @@ ScrollArea::updateScrollArea(int step)
       if (_options & VerticalScroll)
         {
           if (_cy >= 0)
-            _vy = -(1 - _aniVal) * (_cy) / rubber;
+            _vy = -(1 - _tween->value()) * (_cy) / rubber;
           else if (_cy <= _sMax.y())
-            _vy = (1 - _aniVal) * (_sMax.y() - _cy) / rubber;
+            _vy = (1 - _tween->value()) * (_sMax.y() - _cy) / rubber;
           else if (fabs(_vy) > friction)
             _vy -= _vy * friction;
           else

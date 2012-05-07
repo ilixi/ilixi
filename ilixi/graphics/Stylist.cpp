@@ -264,8 +264,8 @@ Stylist::drawFrame(Painter* painter, BorderBase* frame)
   // TODO complete drawing for all border styles.
   if (frame->borderStyle() == NoBorder)
     return;
-  painter->setPen(_palette.getGroup(frame->state()).borderBottom);
-  painter->drawRectangle(0, 0, frame->width(), frame->height());
+  painter->setPen(_palette.getGroup(frame->_owner->state()).borderBottom);
+  painter->drawRectangle(0, 0, frame->_owner->width(), frame->_owner->height());
 }
 
 void
@@ -347,7 +347,6 @@ Stylist::drawPushButton(Painter* painter, PushButton* button)
   if (state & FocusedState)
     {
       Color c = _palette.focusBottom;
-      c.adjustBrightness(_focus.valueIn);
       painter->setPen(c);
     }
   else
@@ -503,14 +502,14 @@ Stylist::initAnimations()
 {
   _focus.in = new TweenAnimation();
   _focus.in->setDuration(500);
-  _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, _focus.valueIn, 0, 1);
+  _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
   _focus.in->sigExec.connect(
       sigc::bind<Stylist::StyledAnimation>(
           sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
 
   _focus.out = new TweenAnimation();
   _focus.out->setDuration(250);
-  _focus.out->addTween(Tween::SINE, Tween::EASE_IN, _focus.valueOut, 1, 0);
+  _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
   _focus.out->sigExec.connect(
       sigc::bind<Stylist::StyledAnimation>(
           sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));

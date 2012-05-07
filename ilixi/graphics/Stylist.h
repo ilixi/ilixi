@@ -197,8 +197,6 @@ namespace ilixi
       TweenAnimation* out;
       Widget* targetIn;
       Widget* targetOut;
-      float valueIn;
-      float valueOut;
     };
 
     AnimatedElement _focus;
