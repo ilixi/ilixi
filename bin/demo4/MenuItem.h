@@ -67,10 +67,14 @@ namespace ilixi
     updateTextLayoutGeometry();
 
   private:
+    bool _doOut;
     ilixi::Image* _image;
-    float _val1;
-    ilixi::TweenAnimation* _inAni;
-    ilixi::TweenAnimation* _outAni;
+
+    ilixi::TweenAnimation _inAni;
+    ilixi::Tween* _tweenIn;
+
+    ilixi::TweenAnimation _outAni;
+    ilixi::Tween* _tweenOut;
   };
 
 } /* namespace ilixi */

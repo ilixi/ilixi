@@ -28,22 +28,22 @@ namespace ilixi
 {
 
   MenuItem::MenuItem(const std::string& text, Widget* parent) :
-      Button(text, parent), _image(NULL), _val1(0)
+      Button(text, parent), _image(NULL), _doOut(false)
   {
     setConstraints(FixedConstraint, FixedConstraint);
     setInputMethod(KeyAndPointerInput);
 
 //    _image = new Image(ILIXI_DATADIR"images/default.png", 196, 196);
 
-    _inAni = new TweenAnimation();
-    _inAni->addTween(Tween::CIRCLE, Tween::EASE_OUT, _val1, 0, 1);
-    _inAni->setDuration(500);
-    _inAni->sigExec.connect(sigc::mem_fun(this, &MenuItem::tweenSlot));
+    _tweenIn = new Tween(Tween::CIRCLE, Tween::EASE_OUT, 0, 1);
+    _inAni.addTween(_tweenIn);
+    _inAni.setDuration(500);
+    _inAni.sigExec.connect(sigc::mem_fun(this, &MenuItem::tweenSlot));
 
-    _outAni = new TweenAnimation();
-    _outAni->addTween(Tween::SINE, Tween::EASE_OUT, _val1, 1, 0);
-    _outAni->setDuration(300);
-    _outAni->sigExec.connect(sigc::mem_fun(this, &MenuItem::tweenSlot));
+    _tweenOut = new Tween(Tween::SINE, Tween::EASE_OUT, 1, 0);
+    _outAni.addTween(_tweenOut);
+    _outAni.setDuration(300);
+    _outAni.sigExec.connect(sigc::mem_fun(this, &MenuItem::tweenSlot));
 
 //    setLayoutAlignment(TextLayout::Center);
   }
@@ -82,15 +82,17 @@ namespace ilixi
   MenuItem::focusInEvent()
   {
     sigFocused(this);
-    _outAni->stop();
-    _inAni->start();
+    _outAni.stop();
+    _doOut = false;
+    _inAni.start();
   }
 
   void
   MenuItem::focusOutEvent()
   {
-    _inAni->stop();
-    _outAni->start();
+    _inAni.stop();
+    _doOut = true;
+    _outAni.start();
   }
 
   void
@@ -99,17 +101,21 @@ namespace ilixi
     Painter p(this);
     p.begin();
 
+    float val = _tweenIn->value();
+    if (_doOut)
+      val = _tweenOut->value();
+
     // draw image
-    p.setBrush(Color(0, 0, 0, 155 + _val1 * 100));
-    p.drawImage(_image, -20 * _val1, 40 - 20 * _val1, 196 + 40 * _val1,
-        156 + 40 * _val1,
+    p.setBrush(Color(0, 0, 0, 155 + val * 100));
+    p.drawImage(_image, -20 * val, 40 - 20 * val, 196 + 40 * val,
+        156 + 40 * val,
         (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
             | DSBLIT_BLEND_COLORALPHA | DSBLIT_SRC_PREMULTIPLY));
 
     // overlay rect
-    int y = height() - _val1 * 50;
+    int y = height() - val * 50;
     Color c("006666");
-    c.setSaturation(_val1);
+    c.setSaturation(val);
     p.setBrush(c);
     p.fillRectangle(0, y, width(), 50);
 

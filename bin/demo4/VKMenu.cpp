@@ -32,7 +32,7 @@ namespace ilixi
 {
 
   VKMenu::VKMenu(Widget* parent) :
-      Widget(parent), _val1(0)
+      Widget(parent)
   {
     setInputMethod(PointerInput);
     setConstraints(ExpandingConstraint, FixedConstraint);
@@ -51,7 +51,7 @@ namespace ilixi
     char title[128];
 
     SurfaceView* view = new SurfaceView(4);
-    view->setMaximumSize(196,196);
+    view->setMaximumSize(196, 196);
     box1->addWidget(view);
 
     for (int i = 0; i < 20; ++i)
@@ -73,16 +73,19 @@ namespace ilixi
 
 // ----------------------------------------------------
 
-    _inAni = new TweenAnimation();
-    _inAni->addTween(Tween::BOUNCE, Tween::EASE_OUT, _val1, 1, 0);
-    _inAni->addTween(Tween::CIRCLE, Tween::EASE_OUT, _val2, 0, 1);
-    _inAni->setDuration(1000);
-    _inAni->sigExec.connect(sigc::mem_fun(this, &VKMenu::tweenSlot));
-    _inAni->sigFinished.connect(
+    _bounce = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 1, 0);
+    _inAni.addTween(_bounce);
+
+    _circle = new Tween(Tween::CIRCLE, Tween::EASE_OUT, 0, 1);
+    _inAni.addTween(_circle);
+
+    _inAni.setDuration(1000);
+    _inAni.sigExec.connect(sigc::mem_fun(this, &VKMenu::tweenSlot));
+    _inAni.sigFinished.connect(
         sigc::mem_fun(this, &VKMenu::clearScrollerAnimDelay));
 
-    _inAni->setDelay(1000);
-    _inAni->start();
+    _inAni.setDelay(1000);
+    _inAni.start();
 
     _dialog = new ImageDialog("Image Dialog");
   }
@@ -108,7 +111,7 @@ namespace ilixi
   void
   VKMenu::clearScrollerAnimDelay()
   {
-    _inAni->setDelay(0);
+    _inAni.setDelay(0);
   }
 
   void
@@ -120,7 +123,7 @@ namespace ilixi
   void
   VKMenu::tweenSlot()
   {
-    _level1->moveTo(0, _val1 * height());
+    _level1->moveTo(0, _bounce->value() * height());
     repaint();
   }
 
@@ -146,7 +149,8 @@ namespace ilixi
                 dfbSurface->SetBlittingFlags(dfbSurface,
                     (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
                         | DSBLIT_BLEND_COLORALPHA));
-                dfbSurface->SetColor(dfbSurface, 0, 0, 0, _val2 * 255);
+                dfbSurface->SetColor(dfbSurface, 0, 0, 0,
+                    _circle->value() * 255);
                 surface()->blit(_level1->surface(),
                     Rectangle(0, 0, width(), height()), _level1->x(),
                     _level1->y());

@@ -65,12 +65,15 @@ protected:
 #endif
 
 private:
+  bool _doOut;
   ilixi::Image* _image;
-  float _val1;
-  float _valBounce;
-  float _iconT;
-  ilixi::TweenAnimation* _inAni;
-  ilixi::TweenAnimation* _outAni;
+  ilixi::TweenAnimation _inAni;
+  ilixi::Tween* _circleIn;
+  ilixi::Tween* _bounceIn;
+
+  ilixi::TweenAnimation _outAni;
+  ilixi::Tween* _circleOut;
+  ilixi::Tween* _bounceOut;
 };
 
 #endif /* IMAGEWIDGET_H_ */

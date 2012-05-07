@@ -59,12 +59,11 @@ namespace ilixi
     paint(const Rectangle& rect);
 
   protected:
-    float _val1;
-    float _val2;
-
     ScrollArea* _level1;
 
-    TweenAnimation* _inAni;
+    TweenAnimation _inAni;
+    Tween* _bounce;
+    Tween* _circle;
 
     ImageDialog* _dialog;
 
