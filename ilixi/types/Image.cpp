@@ -160,7 +160,7 @@ Image::loadImage()
 
   desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
       | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
-  desc.caps = DSCAPS_SYSTEMONLY;
+  desc.caps = DSCAPS_PREMULTIPLIED;
   desc.pixelformat = DSPF_ARGB;
 
   if (width() > 0)

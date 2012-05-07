@@ -47,6 +47,7 @@ Painter::begin()
   applyBrush();
 
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
+  dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
   ILOG_DEBUG(ILX_PAINTER, "begin() %p\n", this);
 }
 
