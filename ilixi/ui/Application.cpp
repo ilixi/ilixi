@@ -81,6 +81,8 @@ Application::exec()
 
   show();
 
+  setLayerSize(width(), height());
+
   while (true)
     {
       if (appState() & Terminating)

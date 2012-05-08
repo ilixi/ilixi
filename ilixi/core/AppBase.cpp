@@ -199,6 +199,13 @@ AppBase::cursorPosition()
   return __instance->__cursorNew;
 }
 
+void
+AppBase::setLayerSize(int width, int height)
+{
+  __layerSize.w = width - 1;
+  __layerSize.h = height - 1;
+}
+
 bool
 AppBase::addCallback(Callback* cb)
 {
@@ -650,6 +657,16 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
       else if (event.axis == DIAI_Y)
         __cursorNew.y = event.axisabs;
     }
+
+  if (__cursorNew.x < 0)
+    __cursorNew.x = 0;
+  else if (__cursorNew.x > __layerSize.w)
+    __cursorNew.x = __layerSize.w;
+
+  if (__cursorNew.y < 0)
+    __cursorNew.y = 0;
+  else if (__cursorNew.y > __layerSize.h)
+    __cursorNew.y = __layerSize.h;
 
   if (we.window.type == DWET_MOTION)
     {

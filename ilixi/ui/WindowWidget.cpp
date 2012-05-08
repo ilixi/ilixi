@@ -173,11 +173,17 @@ WindowWidget::showWindow()
       provider->RenderTo(provider, _cursorImage, NULL);
       provider->Release(provider);
 
+      DFBGraphicsDeviceDescription deviceDesc;
+      AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
+
       ILOG_INFO(ILX_WINDOWWIDGET, "Setting layer configuration\n");
       DFBDisplayLayerConfig config;
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
           | DLCONF_WIDTH | DLCONF_HEIGHT);
-      config.buffermode = DLBM_BACKSYSTEM;
+      if (deviceDesc.acceleration_mask == DFXL_NONE)
+        config.buffermode = DLBM_BACKSYSTEM;
+      else
+        config.buffermode = DLBM_BACKVIDEO;
       Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();

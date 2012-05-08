@@ -132,6 +132,9 @@ namespace ilixi
     static DFBPoint
     cursorPosition();
 
+    void
+    setLayerSize(int width, int height);
+
   private:
     //! This property stores various options for application behaviour.
     AppOptions __options;
@@ -141,6 +144,7 @@ namespace ilixi
     IMaestro::AppState __state;
 
     DFBPoint __cursorOld, __cursorNew;
+    DFBDimension __layerSize;
 
     typedef std::list<Callback*> CallbackList;
     //! List of callbacks
