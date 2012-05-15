@@ -28,27 +28,37 @@
 namespace ilixi
 {
 
-  SurfaceEventListener::SurfaceEventListener(DFBSurfaceID id) :
-      _surfaceID(id), _sourceSurface(NULL)
+  SurfaceEventListener::SurfaceEventListener() :
+      _surfaceID(0), _sourceSurface(NULL)
   {
-    AppBase::addSurfaceEventListener(this);
   }
 
   SurfaceEventListener::~SurfaceEventListener()
   {
+  }
+
+  DFBSurfaceID
+  SurfaceEventListener::sourceID() const
+  {
+    return _surfaceID;
+  }
+
+  IDirectFBSurface*
+  SurfaceEventListener::sourceSurface() const
+  {
+    return _sourceSurface;
+  }
+
+  void
+  SurfaceEventListener::attachSourceSurface()
+  {
+    AppBase::addSurfaceEventListener(this);
+  }
+
+  void
+  SurfaceEventListener::detachSourceSurface()
+  {
     AppBase::removeSurfaceEventListener(this);
-  }
-
-  void
-  SurfaceEventListener::attachEB()
-  {
-    AppBase::attachSourceSurface(_sourceSurface);
-  }
-
-  void
-  SurfaceEventListener::detachEB()
-  {
-    AppBase::detachSourceSurface(_sourceSurface);
   }
 
   bool

@@ -158,9 +158,6 @@ namespace ilixi
     //! Serialises access to _selList.
     pthread_mutex_t __selMutex;
 
-    typedef std::map<DFBSurfaceID, IDirectFBSurface*> SourceSurfaceList;
-    SourceSurfaceList __ssMap;
-
     typedef std::list<WindowWidget*> WindowList;
     //! Application wide list of windows.
     WindowList __windowList;
@@ -274,12 +271,6 @@ namespace ilixi
      */
     static void
     detachDFBWindow(Window* window);
-
-    static void
-    attachSourceSurface(IDirectFBSurface* surface);
-
-    static void
-    detachSourceSurface(IDirectFBSurface* surface);
 
     void
     handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type);

@@ -30,19 +30,18 @@
 namespace ilixi
 {
 
-  SurfaceView::SurfaceView(DFBSurfaceID id, Widget* parent) :
-      SurfaceEventListener(id), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
-          NULL), _windowID(0)
+  SurfaceView::SurfaceView(Widget* parent) :
+      SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
+          NULL), _windowID(0), _flipCount(0)
   {
     setInputMethod(KeyAndPointerInputTracking);
-    setSourceFromSurfaceID(id);
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
   }
 
   SurfaceView::~SurfaceView()
   {
-    detachEB();
+    detachSourceSurface();
     if (_sourceSurface)
       _sourceSurface->Release(_sourceSurface);
     if (_sourceWindow)
@@ -62,12 +61,6 @@ namespace ilixi
     return Size(50, 50);
   }
 
-  DFBSurfaceID
-  SurfaceView::sourceID() const
-  {
-    return _surfaceID;
-  }
-
   IDirectFBWindow*
   SurfaceView::dfbWindow() const
   {
@@ -85,7 +78,7 @@ namespace ilixi
   {
     if (id)
       {
-        detachEB();
+        detachSourceSurface();
 
         DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), id,
             &_sourceSurface);
@@ -99,7 +92,7 @@ namespace ilixi
         else
           {
             _sourceSurface->GetID(_sourceSurface, &_surfaceID);
-            attachEB();
+            attachSourceSurface();
           }
       }
   }
@@ -109,12 +102,12 @@ namespace ilixi
   {
     if (source)
       {
-        detachEB();
+        detachSourceSurface();
 
         _sourceSurface = source;
         _sourceSurface->GetID(_sourceSurface, &_surfaceID);
 
-        attachEB();
+        attachSourceSurface();
       }
   }
 
@@ -123,7 +116,7 @@ namespace ilixi
   {
     if (window)
       {
-        detachEB();
+        detachSourceSurface();
 
         DFBResult ret = window->GetSurface(window, &_sourceSurface);
 
@@ -141,7 +134,7 @@ namespace ilixi
             _sourceWindow->GetID(_sourceWindow, &_windowID);
 
             _sourceSurface->GetID(_sourceSurface, &_surfaceID);
-            attachEB();
+            attachSourceSurface();
           }
       }
   }
@@ -184,6 +177,12 @@ namespace ilixi
   {
     if (_sourceSurface)
       {
+        if (_flipCount)
+          {
+            _sourceSurface->FrameAck(_sourceSurface, _flipCount);
+            _flipCount = 0;
+          }
+
         IDirectFBSurface* dfbSurface = surface()->DFBSurface();
         DFBRegion rs = mapToSurface(rect).dfbRegion();
         dfbSurface->SetClip(dfbSurface, &rs);
@@ -222,6 +221,7 @@ namespace ilixi
   {
     if (visible())
       {
+        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
         // TODO Use rect for update.
 //        Rectangle rect(event.update.x1 / hScale(), event.update.y1 / vScale(),
 //            (event.update.x2 + 1 - event.update.x1) / hScale(),
@@ -230,6 +230,8 @@ namespace ilixi
 //        update(mapFromSurface(rect));
         update();
       }
+    else
+      _flipCount = event.flip_count;
   }
 
   void

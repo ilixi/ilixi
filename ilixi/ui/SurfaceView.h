@@ -41,10 +41,8 @@ namespace ilixi
   public:
     /*!
      * Constructor
-     * @param id of source surface
-     * @param parent widget.
      */
-    SurfaceView(DFBSurfaceID id = 0, Widget* parent = 0);
+    SurfaceView(Widget* parent = 0);
 
     /*!
      * Destructor.
@@ -57,12 +55,6 @@ namespace ilixi
      */
     virtual ilixi::Size
     preferredSize() const;
-
-    /*!
-     * Returns the id of source surface.
-     */
-    DFBSurfaceID
-    sourceID() const;
 
     /*!
      * Returns source window, if any.
@@ -132,6 +124,8 @@ namespace ilixi
     IDirectFBWindow* _sourceWindow;
     //! This property stores the id of window, if any.
     DFBWindowID _windowID;
+    //! This property stores the flip counter for last update.
+    unsigned int _flipCount;
 
     void
     onSourceUpdate(const DFBSurfaceEvent& event);

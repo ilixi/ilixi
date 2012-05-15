@@ -37,10 +37,8 @@ namespace ilixi
   public:
     /*!
      * Constructor will automatically add listener to Application.
-     *
-     * @param id source surface id
      */
-    SurfaceEventListener(DFBSurfaceID id);
+    SurfaceEventListener();
 
     /*!
      * Destructor will automatically remove listener from Application.
@@ -49,16 +47,16 @@ namespace ilixi
     ~SurfaceEventListener();
 
     /*!
-     * Attaches source surface to event buffer.
+     * Returns the id of source surface.
      */
-    void
-    attachEB();
+    DFBSurfaceID
+    sourceID() const;
 
     /*!
-     * Detaches source surface from event buffer.
+     * Returns the source surface.
      */
-    void
-    detachEB();
+    IDirectFBSurface*
+    sourceSurface() const;
 
   protected:
     //! ID of source surface.
@@ -66,6 +64,18 @@ namespace ilixi
 
     //! This property stores source surface.
     IDirectFBSurface* _sourceSurface;
+
+    /*!
+     * Attach source surface to application event buffer.
+     */
+    void
+    attachSourceSurface();
+
+    /*!
+     * Detach source surface from application event buffer.
+     */
+    void
+    detachSourceSurface();
 
     /*!
      * This method is called if source surface is updated.

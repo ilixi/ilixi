@@ -250,7 +250,6 @@ AppBase::removeCallback(Callback* cb)
         }
 
       pthread_mutex_unlock(&__instance->__cbMutex);
-      ILOG_ERROR(ILX_APPBASE, "Cannot remove callback, %p not found!\n", cb);
     }
   return false;
 }
@@ -295,6 +294,10 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
           return false;
         }
       __instance->__selList.push_back(sel);
+
+      sel->sourceSurface()->MakeClient(sel->sourceSurface());
+      sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(), __buffer);
+
       pthread_mutex_unlock(&__instance->__selMutex);
       ILOG_DEBUG(ILX_APPBASE, "SurfaceEventListener %p is added.\n", sel);
       return true;
@@ -315,6 +318,8 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
           if (sel == *it)
             {
               __instance->__selList.erase(it);
+              sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(),
+                  __buffer);
               pthread_mutex_unlock(&__instance->__selMutex);
               ILOG_DEBUG( ILX_APPBASE,
                   "SurfaceEventListener %p is removed.\n", sel);
@@ -494,14 +499,10 @@ AppBase::handleEvents()
 
       case DFEC_SURFACE:
         {
-          SourceSurfaceList::iterator it = __ssMap.find(
-              event.surface.surface_id);
-          if (it != __ssMap.end())
-            {
-              IDirectFBSurface* surface = it->second;
-              surface->FrameAck(surface, event.surface.flip_count);
-              consumeSurfaceEvent((const DFBSurfaceEvent&) event);
-            }
+          for (SurfaceListenerList::iterator it = __selList.begin();
+              it != __selList.end(); ++it)
+            ((SurfaceEventListener*) *it)->consumeSurfaceEvent(
+                (const DFBSurfaceEvent&) event);
         }
         break;
 
@@ -554,41 +555,6 @@ AppBase::detachDFBWindow(Window* window)
         ILOG_ERROR(ILX_APPBASE, "Buffer reset error!");
 
       ILOG_DEBUG(ILX_APPBASE, "Window %p is detached.\n", window);
-    }
-}
-
-void
-AppBase::attachSourceSurface(IDirectFBSurface* surface)
-{
-  if (surface)
-    {
-      DFBSurfaceID id;
-      surface->GetID(surface, &id);
-      if (__instance->__ssMap.find(id) == __instance->__ssMap.end())
-        {
-          __instance->__ssMap.insert(
-              pair<DFBSurfaceID, IDirectFBSurface*>(id, surface));
-          surface->MakeClient(surface);
-          surface->AttachEventBuffer(surface, __buffer);
-          ILOG_INFO(ILX_APPBASE, "SourceSurface %p is attached.\n", surface);
-        }
-    }
-}
-
-void
-AppBase::detachSourceSurface(IDirectFBSurface* surface)
-{
-  if (surface)
-    {
-      DFBSurfaceID id;
-      surface->GetID(surface, &id);
-      SourceSurfaceList::iterator it = __instance->__ssMap.find(id);
-      if (it != __instance->__ssMap.end())
-        {
-          surface->DetachEventBuffer(surface, __buffer);
-          __instance->__ssMap.erase(id);
-          ILOG_INFO(ILX_APPBASE, "SourceSurface %p is detached.\n", surface);
-        }
     }
 }
 
