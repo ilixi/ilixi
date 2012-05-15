@@ -82,6 +82,9 @@ Application::exec()
   show();
 
   setLayerSize(width(), height());
+  _backgroundImage->setSize(width(), height());
+
+  fpsInit(&_fps);
 
   while (true)
     {
@@ -92,6 +95,8 @@ Application::exec()
           runCallbacks();
           handleEvents();
           updateWindows();
+          ILOG_DEBUG(ILX_APPLICATION, "FPS: %s\n", _fps.fps_string);
+          fpsCount(&_fps, 1000);
         }
     }
 
