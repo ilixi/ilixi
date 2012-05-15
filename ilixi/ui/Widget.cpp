@@ -65,6 +65,9 @@ Widget::Widget(const Widget& widget) :
 
 Widget::~Widget()
 {
+  if (eventManager() && hasFocus())
+    eventManager()->clear(this);
+
   for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     delete *it;
   delete _surface;
@@ -734,7 +737,9 @@ Widget::setSurfaceFlags(SurfaceDescription desc)
 EventManager*
 Widget::eventManager() const
 {
-  return _rootWindow->_eventManager;
+  if (_rootWindow)
+    return _rootWindow->_eventManager;
+  return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

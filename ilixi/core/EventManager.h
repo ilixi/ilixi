@@ -135,6 +135,9 @@ namespace ilixi
     void
     setOSKWidgetText(const std::string& text);
 
+    void
+    clear(Widget* widget);
+
   private:
     bool
     selectNeighbourFromChildren(Widget* target, Direction direction);

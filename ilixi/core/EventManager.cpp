@@ -317,3 +317,14 @@ EventManager::setOSKWidgetText(const std::string& text)
 {
   // TODO implement OSK
 }
+
+void
+EventManager::clear(Widget* widget)
+{
+  if (_focusedWidget == widget)
+    _focusedWidget = NULL;
+  if (_grabbedWidget == widget)
+    _grabbedWidget = NULL;
+  if (_exposedWidget == widget)
+    _exposedWidget = NULL;
+}
