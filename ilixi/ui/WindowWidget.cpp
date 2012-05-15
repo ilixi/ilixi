@@ -348,18 +348,18 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
           return true;
         }
       break;
-
-    case DIKS_OK:
-    case DIKS_RETURN:
-      if (_eventManager->focusedWidget())
-        {
-          if (_eventManager->focusedWidget() != target)
-            _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
-          else
-            _eventManager->setGrabbedWidget(NULL);
-          return true;
-        }
-      break;
+// TODO Grab using key input.
+//    case DIKS_OK:
+//    case DIKS_RETURN:
+//      if (_eventManager->focusedWidget())
+//        {
+//          if (_eventManager->focusedWidget() != target)
+//            _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
+//          else
+//            _eventManager->setGrabbedWidget(NULL);
+//          return true;
+//        }
+//      break;
 
     case DIKS_TAB: // handle TAB release.
       if (event.modifiers == DIMM_SHIFT)
