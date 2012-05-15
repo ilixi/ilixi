@@ -373,6 +373,7 @@ namespace ilixi
       {
         DFBWindowEvent event;
 
+        event.flags = DWEF_NONE;
         event.type = DWET_GOTFOCUS;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
@@ -386,6 +387,7 @@ namespace ilixi
       {
         DFBWindowEvent event;
 
+        event.flags = DWEF_NONE;
         event.type = DWET_LOSTFOCUS;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
