@@ -71,9 +71,10 @@ AC_FUNC_ERROR_AT_LINE
 DIRECTFB_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
+SAWMAN_REQ_VERSION=1.6.0
 
 AC_MSG_NOTICE([checking if dependencies are installed...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
 
 ######################################################################
 # Conditional inclusions
