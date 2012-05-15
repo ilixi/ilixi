@@ -24,5 +24,9 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 					QuitButton.cpp \
 					SwitchButton.h \
 					SwitchButton.cpp\
+					types/AppInstance.h \
+					types/AppInstance.cpp \
+					types/AppInfo.h \
+					types/AppInfo.cpp \
 					ApplicationManager.h \
 					ApplicationManager.cpp

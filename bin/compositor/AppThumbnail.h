@@ -30,24 +30,19 @@
 
 namespace ilixi
 {
+  class Compositor;
 
   class AppThumbnail : public AppCompositor
   {
   public:
-    AppThumbnail(const std::string& text, AppFlags flags = APP_NONE,
-        Widget* parent = 0);
+    AppThumbnail(Compositor* compositor, AppInstance* instance, Widget* parent =
+        0);
 
     virtual
     ~AppThumbnail();
 
     Size
     preferredSize() const;
-
-    void
-    showOverlay();
-
-    void
-    hideOverlay();
 
     sigc::signal<void> sigSelected;
     sigc::signal<void, AppThumbnail*> sigFocused;
@@ -70,16 +65,10 @@ namespace ilixi
 
   private:
     TweenAnimation _ani;
-    Tween* _overlayTween;
     Tween* _opacityTween;
-
-    Label* _label;
 
     void
     tweenSlot();
-
-    void
-    onAppThumbnailGeometryUpdated();
   };
 
 } /* namespace ilixi */

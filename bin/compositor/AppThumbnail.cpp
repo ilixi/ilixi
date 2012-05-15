@@ -22,31 +22,22 @@
  */
 
 #include "AppThumbnail.h"
+#include "Compositor.h"
 #include "graphics/Painter.h"
-#include "core/Logger.h"
 
 namespace ilixi
 {
-  D_DEBUG_DOMAIN( ILX_APPTHUMBNAIL, "ilixi/Compositor/AppThumbnail", "AppThumbnail");
 
-  AppThumbnail::AppThumbnail(const std::string& text, AppFlags flags,
+  AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance,
       Widget* parent) :
-      AppCompositor(parent, flags)
+      AppCompositor(compositor, instance, parent)
   {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyAndPointerInputTracking);
     setConstraints(FixedConstraint, FixedConstraint);
-    _ani.setDuration(500);
+    _ani.setDuration(300);
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);
-    _overlayTween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _ani.addTween(_opacityTween);
-    _ani.addTween(_overlayTween);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppThumbnail::tweenSlot));
-
-    _label = new Label(text);
-    addChild(_label);
-
-    sigGeometryUpdated.connect(
-        sigc::mem_fun(this, &AppThumbnail::onAppThumbnailGeometryUpdated));
 
     setVisible(false);
   }
@@ -62,18 +53,6 @@ namespace ilixi
   }
 
   void
-  AppThumbnail::showOverlay()
-  {
-    // TODO implement.
-  }
-
-  void
-  AppThumbnail::hideOverlay()
-  {
-    // TODO implement.
-  }
-
-  void
   AppThumbnail::compose(const Rectangle& rect)
   {
   }
@@ -81,7 +60,6 @@ namespace ilixi
   void
   AppThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
-    ILOG_INFO(ILX_APPTHUMBNAIL, "PointerUp\n");
     sigFocused(this);
     sigSelected();
   }
@@ -89,18 +67,15 @@ namespace ilixi
   void
   AppThumbnail::keyUpEvent(const KeyEvent& keyEvent)
   {
-//    if (keyEvent.keySymbol == DIKS_SPACE)
-//      sigSelected();
+    if (keyEvent.keySymbol == DIKS_SPACE)
+      sigSelected();
   }
 
   void
   AppThumbnail::focusInEvent()
   {
-    ILOG_INFO(ILX_APPTHUMBNAIL, "FocusIn\n");
     sigFocused(this);
     _ani.stop();
-    _overlayTween->setInitialValue(0);
-    _overlayTween->setEndValue(1);
     _opacityTween->setInitialValue(128);
     _opacityTween->setEndValue(255);
     _ani.start();
@@ -109,11 +84,7 @@ namespace ilixi
   void
   AppThumbnail::focusOutEvent()
   {
-    ILOG_INFO(ILX_APPTHUMBNAIL, "FocusOut\n");
-    hideOverlay();
     _ani.stop();
-    _overlayTween->setInitialValue(1);
-    _overlayTween->setEndValue(0);
     _opacityTween->setInitialValue(255);
     _opacityTween->setEndValue(128);
     _ani.start();
@@ -123,15 +94,7 @@ namespace ilixi
   AppThumbnail::tweenSlot()
   {
     setOpacity(_opacityTween->value());
-    _label->setY(height() - (height() / 2) * _overlayTween->value());
     update();
-  }
-
-  void
-  AppThumbnail::onAppThumbnailGeometryUpdated()
-  {
-    raiseChildToFront(_label);
-    _label->setGeometry(0, height(), width(), height() / 2);
   }
 
 } /* namespace ilixi */

@@ -34,7 +34,7 @@ namespace ilixi
   {
     friend class Compositor;
   public:
-    AppView(Widget* parent = 0, AppFlags flags = APP_NONE);
+    AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);
 
     virtual
     ~AppView();

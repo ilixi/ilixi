@@ -49,20 +49,13 @@ namespace ilixi
     initButtons();
 
     void
-    addButton(const char* name, const char* icon);
+    addButton(const std::string& name, const std::string& icon);
 
     void
     compose(const Rectangle& rect);
 
   private:
     Compositor* _compositor;
-
-    typedef std::vector<AppInfo*> AppList;
-    AppList _apps;
-
-    typedef std::vector<LauncherButton*> ButtonList;
-    ButtonList _buttons;
-
     Font* _font;
 
     void

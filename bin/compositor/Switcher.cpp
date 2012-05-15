@@ -68,11 +68,8 @@ namespace ilixi
   void
   Switcher::scrollTo(AppThumbnail* thumb)
   {
-    if (_current)
-      _current->hideOverlay();
     _scrollArea->scrollTo(thumb);
     _current = thumb;
-    _current->showOverlay();
     _scrollArea->scrollTo(thumb);
     _current = thumb;
     thumb->setFocus();

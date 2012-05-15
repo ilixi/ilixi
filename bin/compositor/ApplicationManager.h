@@ -1,140 +1,130 @@
 /*
- * ApplicationManager.h
- *
- *  Created on: May 1, 2012
- *      Author: tarik
+ Copyright 2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_APPLICATIONMANAGER_H_
 #define ILIXI_APPLICATIONMANAGER_H_
 
+#include "types/AppInfo.h"
+#include "types/AppInstance.h"
 #include <sys/types.h>
-#include <vector>
-#include <sigc++/signal.h>
 
 namespace ilixi
 {
-  enum AppFlags
-  {
-    APP_NONE = 0x000000, //!<
+  class Compositor;
 
-    // ui toolkits
-    APP_LITE = 0x000001, //!<
-    APP_ILIXI = 0x000002, //!<
-    APP_QT = 0x000004, //!<
-    APP_ANDROID = 0x000008, //!<
-    APP_FLASH = 0x000010,
-    APP_WEB = 0x000020,
-    APP_FLTK = 0x000040, //!<
-    APP_GTK = 0x000080, //!<
-    APP_X11 = 0x000100,
+  typedef std::list<AppInfo*> AppInfoList;
+  typedef std::list<AppInstance*> AppInstanceList;
 
-    // window managers
-    APP_WM_DEFAULT = 0x001000,
-    APP_WM_SAWMAN = 0x002000,
-
-    // capabilities
-    APP_NO_MAINWINDOW = 0x010000,
-
-    // constraints
-    APP_ALLOW_MULTIPLE = 0x100000, //!<
-  };
-
-  enum DependencyFlags
-  {
-    DEP_NONE = 0x0000,
-
-    // Requirements
-    DEP_3D = 0x0001, //!<
-    DEP_RC = 0x0002, //!<
-    DEP_TOUCH = 0x0004, //!<
-    DEP_MOUSE = 0x0008 //!<
-
-  // Recommended
-  };
-
-  struct AppInfo
-  {
-    unsigned long appID;
-    const char* name;
-    const char* path;
-    const char* args;
-    const char* icon;
-    const char* licence;
-    const char* author;
-    int version;
-    long long installTime;
-    AppFlags appFlags;
-    DependencyFlags depFlags;
-  };
-
-  struct AppInstanceRecord
-  {
-    unsigned long appID; // AppInfo::appID
-    unsigned int instanceID;
-    pid_t pid;
-    long long start_time;
-  };
-
-  typedef std::vector<AppInfo*> AppInfoList;
-  typedef std::vector<AppInstanceRecord*> AppInstanceRecordList;
-
-  // Singleton
-  class ApplicationManager : virtual public sigc::trackable
+  class ApplicationManager
   {
 
   public:
-    static ApplicationManager*
-    instance();
+    ApplicationManager(Compositor* compositor);
 
     virtual
     ~ApplicationManager();
 
     AppInfo*
-    lookUpAppRecord(const char* name);
+    infoByName(const std::string& name);
 
     AppInfo*
-    lookUpAppRecord(unsigned long appID);
+    infoByAppID(AppID appID);
 
     AppInfo*
-    lookUpAppRecord(unsigned int instanceID);
+    infoByInstanceID(InstanceID instanceID);
 
     AppInfo*
-    lookUpAppRecord(pid_t pid);
+    infoByPID(pid_t pid);
 
-    AppInstanceRecord*
-    lookUpAppInstanceRecord(unsigned long appID);
+    AppInstance*
+    instanceByAppID(AppID appID);
 
-    AppInstanceRecord*
-    lookUpAppInstanceRecord(unsigned int instanceID);
+    AppInstance*
+    instanceByInstanceID(InstanceID instanceID);
 
-    AppInstanceRecord*
-    lookUpAppInstanceRecord(pid_t pid);
+    AppInstance*
+    instanceByPID(pid_t pid);
 
     AppInfoList
     applicationList();
 
-    void
-    startApplication(const char* name);
+    unsigned int
+    instanceCount() const;
 
     void
-    stopApplication(const char* name);
+    startApp(const std::string& name);
 
-    void
-    stopApplication(unsigned long appID);
+    DirectResult
+    startApplication(const std::string& name);
+
+    DirectResult
+    stopApplication(pid_t pid);
 
     void
     stopAll();
 
-    sigc::signal<void, unsigned long> sigViewRequest;
-    sigc::signal<void, AppInfo*> sigAppStart;
+  protected:
+
+    /*!
+     * Called when a DirectFB process starts.
+     */
+    virtual DirectResult
+    processAdded(SaWManProcess *process);
+
+    /*!
+     * Called when a DirectFB process stops.
+     */
+    virtual DirectResult
+    processRemoved(SaWManProcess *process);
+
+    /*!
+     * Called when a window is added to stack.
+     */
+    virtual DirectResult
+    windowAdded(SaWManWindowInfo *info);
+
+    /*!
+     * Called when a window is removed from stack.
+     */
+    virtual DirectResult
+    windowRemoved(SaWManWindowInfo *info);
+
+    /*!
+     * Called when a window is configured.
+     */
+    virtual DirectResult
+    windowReconfig(SaWManWindowReconfig *reconfig);
 
   private:
-    static ApplicationManager* __instance;
-    AppInfoList _apps;
-    AppInstanceRecordList _instances;
+    Compositor* _compositor;
+    AppInfoList _infos;
+    AppInstanceList _instances;
 
-    ApplicationManager();
+    ISaWMan *_saw;
+    ISaWManManager *_manager;
+    SaWManCallbacks _callbacks;
+
+    pthread_mutex_t _mutex;
 
     void
     initApps();
@@ -143,6 +133,28 @@ namespace ilixi
     addApplication(const char* name, const char* path, const char* args,
         const char* icon, const char* licence, const char* author, int version,
         AppFlags appFlags, DependencyFlags depFlags = DEP_NONE);
+
+    // SaWMan callbacks...
+    friend DirectResult
+    start_request(void *context, const char *name, pid_t *ret_pid);
+
+    friend DirectResult
+    stop_request(void *context, pid_t pid, FusionID caller);
+
+    friend DirectResult
+    process_added(void *context, SaWManProcess *process);
+
+    friend DirectResult
+    process_removed(void *context, SaWManProcess *process);
+
+    friend DirectResult
+    window_added(void *context, SaWManWindowInfo *info);
+
+    friend DirectResult
+    window_removed(void *context, SaWManWindowInfo *info);
+
+    friend DirectResult
+    window_reconfig(void *context, SaWManWindowReconfig *reconfig);
   };
 
 } /* namespace ilixi */

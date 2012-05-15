@@ -33,41 +33,14 @@
 #include "SwitchButton.h"
 #include "QuitButton.h"
 #include "AppView.h"
+#include "ApplicationManager.h"
 
 namespace ilixi
 {
-  struct CompositedAppRecord
-  {
-    unsigned long appID; // Package manager ID
-    unsigned int instanceID;
-    pid_t processID;
-    AppView* view;
-    AppThumbnail* thumb;
-    // TODO should add lookUpAppRecord(DFBWindowID)
-    std::vector<DFBWindowID> _windows;
-    pthread_mutex_t mutex;
-  };
 
   class Compositor : public Application
   {
-    friend void
-    window_add(void *context, const DFBWindowInfo *info);
-
-    friend void
-    window_remove(void *context, DFBWindowID id);
-
-    friend void
-    window_config(void *context, DFBWindowID id, const DFBWindowConfig *config,
-        DFBWindowConfigFlags flags);
-
-    friend void
-    window_state(void *context, DFBWindowID id, const DFBWindowState *state);
-
-    friend void
-    window_restack(void *context, DFBWindowID id, unsigned int index);
-
-    friend void
-    window_focus(void *context, DFBWindowID id);
+    friend class ApplicationManager;
 
   public:
     Compositor(int argc, char* argv[]);
@@ -75,26 +48,8 @@ namespace ilixi
     virtual
     ~Compositor();
 
-    CompositedAppRecord*
-    lookUpAppRecord(unsigned long appID);
-
-    CompositedAppRecord*
-    lookUpAppRecord(unsigned int instanceID);
-
-    CompositedAppRecord*
-    lookUpAppRecordUsingWindowID(DFBWindowID windowID);
-
-    void
-    addAppRecord(CompositedAppRecord* appRecord);
-
-    void
-    removeAppRecord(unsigned long appID);
-
-    IDirectFBWindow*
-    getWindow(DFBWindowID id);
-
-    void
-    focusWindow(IDirectFBWindow* window);
+    ApplicationManager*
+    appMan() const;
 
     void
     showLauncher(bool show);
@@ -103,7 +58,7 @@ namespace ilixi
     showSwitcher(bool show);
 
     void
-    handleViewRequest(unsigned long appID);
+    handleViewRequest(AppInstance* instance);
 
     void
     handleSwitchRequest();
@@ -112,13 +67,8 @@ namespace ilixi
     handleQuit();
 
   private:
-    CompositedAppRecord* _currentApp;
-
-    typedef std::vector<CompositedAppRecord*> AppVector;
-    AppVector _appVector;
-
-    IDirectFBWindows* _iWindows;
-    DFBWindowsWatcher _watcher;
+    ApplicationManager* _appMan;
+    AppInstance* _currentApp;
 
     Switcher* _switcher;
     Launcher* _launcher;
@@ -133,7 +83,8 @@ namespace ilixi
       CET_Config, //!< Window configured
       CET_Focus, //!< Window focused
       CET_Restack, //!< Window restack
-      CET_State //!< Window state
+      CET_State, //!< Window state
+      CET_Quit //!< Application terminated
     };
 
     struct CompositorEvent
@@ -145,28 +96,29 @@ namespace ilixi
     struct CompositorEventData
     {
       CompositorEventData() :
-          windowID(0), appRecord(0), config(0), flags(DWCONF_NONE)
+          instance(NULL), windowID(0), reconfig(0)
       {
       }
 
+      AppInstance* instance;
       DFBWindowID windowID;
-      CompositedAppRecord* appRecord;
-      const DFBWindowConfig* config;
-      DFBWindowConfigFlags flags;
+      SaWManWindowReconfig* reconfig;
     };
 
     void
     onVisible();
 
-    void
-    addWindow(const DFBWindowInfo* info);
+    IDirectFBWindow*
+    getWindow(DFBWindowID id);
 
     void
-    removeWindow(DFBWindowID id);
+    addWindow(AppInstance* instance, const SaWManWindowInfo* info);
 
     void
-    configWindow(DFBWindowID window_id, const DFBWindowConfig *config,
-        DFBWindowConfigFlags flags);
+    removeWindow(AppInstance* instance, const SaWManWindowInfo* info);
+
+    void
+    configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);
@@ -176,6 +128,9 @@ namespace ilixi
 
     void
     focusWindow(DFBWindowID id);
+
+    void
+    processRemoved(AppInstance* instance);
 
     void
     updateCompositorGeometry();

@@ -48,9 +48,6 @@ namespace ilixi
 
   Launcher::~Launcher()
   {
-    for (AppList::iterator it = _apps.begin(); it != _apps.end(); ++it)
-      delete *it;
-
     delete _font;
     ILOG_DEBUG(ILX, "~Launcher %p\n", this);
   }
@@ -58,31 +55,30 @@ namespace ilixi
   Size
   Launcher::preferredSize() const
   {
-    return Size(_buttons.size() * 96, _buttons.size() * 96);
+    return Size(_children.size() * 96, _children.size() * 96);
   }
 
   void
-  Launcher::addButton(const char* name, const char* icon)
+  Launcher::addButton(const std::string& name, const std::string& icon)
   {
     LauncherButton* button = new LauncherButton(name, this);
     button->setFont(_font);
     button->setIcon(icon, Size(96, 96));
     addChild(button);
-    _buttons.push_back(button);
 
     button->sigClicked.connect(
-        sigc::bind<const char*>(
-            sigc::mem_fun(ApplicationManager::instance(),
-                &ApplicationManager::startApplication), name));
+        sigc::bind<std::string>(
+            sigc::mem_fun(_compositor->appMan(), &ApplicationManager::startApp),
+            name));
   }
 
   void
   Launcher::initButtons()
   {
-    AppInfoList list = ApplicationManager::instance()->applicationList();
+    AppInfoList list = _compositor->appMan()->applicationList();
 
     for (AppInfoList::iterator it = list.begin(); it != list.end(); ++it)
-      addButton(((AppInfo*) *it)->name, ((AppInfo*) *it)->icon);
+      addButton(((AppInfo*) *it)->name(), ((AppInfo*) *it)->icon());
   }
 
   void
@@ -104,12 +100,19 @@ namespace ilixi
     if (wC)
       {
         int y = -1;
-        for (unsigned int i = 0; i < _buttons.size(); ++i)
+        int i = 0;
+        for (WidgetList::iterator it = _children.begin(); it != _children.end();
+            ++it, ++i)
           {
             if (i % wC == 0)
               y++;
-            _buttons[i]->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
-            _buttons[i]->setSize(120, 120);
+            LauncherButton* button = dynamic_cast<LauncherButton*>(*it);
+            if (button)
+              {
+
+                button->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
+                button->setSize(120, 120);
+              }
           }
       }
   }

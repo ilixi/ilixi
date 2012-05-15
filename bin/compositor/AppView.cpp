@@ -27,8 +27,9 @@
 namespace ilixi
 {
 
-  AppView::AppView(Widget* parent, AppFlags flags) :
-      AppCompositor(parent, flags)
+  AppView::AppView(Compositor* compositor, AppInstance* instance,
+      Widget* parent) :
+      AppCompositor(compositor, instance, parent)
   {
     setInputMethod(PointerInputTracking);
 
