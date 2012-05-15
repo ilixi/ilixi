@@ -23,7 +23,6 @@
 
 #include "VKMenu.h"
 #include "ui/HBoxLayout.h"
-#include "ui/SurfaceView.h"
 #include "graphics/Painter.h"
 #include <sigc++/bind.h>
 #include "core/Logger.h"
@@ -49,10 +48,6 @@ namespace ilixi
 
     MenuItem* item;
     char title[128];
-
-    SurfaceView* view = new SurfaceView(4);
-    view->setMaximumSize(196, 196);
-    box1->addWidget(view);
 
     for (int i = 0; i < 20; ++i)
       {
