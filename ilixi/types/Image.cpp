@@ -106,6 +106,12 @@ Image::setImagePath(const std::string& path)
 }
 
 void
+Image::setSize(int width, int height)
+{
+  setSize(Size(width, height));
+}
+
+void
 Image::setSize(const Size& s)
 {
   if (s.isValid() && s != _size)

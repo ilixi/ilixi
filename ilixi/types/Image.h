@@ -112,6 +112,14 @@ namespace ilixi
 
     /*!
      * Sets image size.
+     * @param width
+     * @param height
+     */
+    void
+    setSize(int width, int height);
+
+    /*!
+     * Sets image size.
      * @param size
      */
     void
