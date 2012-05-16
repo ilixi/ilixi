@@ -82,7 +82,8 @@ Application::exec()
   show();
 
   setLayerSize(width(), height());
-  _backgroundImage->setSize(width(), height());
+  if (_backgroundImage)
+    _backgroundImage->setSize(width(), height());
 
   fpsInit(&_fps);
 
