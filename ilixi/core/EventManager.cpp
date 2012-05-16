@@ -36,7 +36,7 @@ EventManager::EventManager(WindowWidget* creator) :
 
 EventManager::~EventManager()
 {
-  ILOG_DEBUG(ILX, "~EventManager %p\n", this);
+  ILOG_DEBUG(ILX_EVENTMANAGER, "~EventManager %p\n", this);
 }
 
 Widget*
@@ -100,13 +100,6 @@ EventManager::setFocusedWidget(Widget* widget)
       _focusedWidget->_state = (WidgetState) (_focusedWidget->_state
           & ~FocusedState);
       _focusedWidget->focusOutEvent();
-#if ILIXI_MULTI_ENABLED
-      if (_oskWidget)
-        {
-          AppBase::__appInstance->callMaestro(OSKEvent, Hidden);
-          _oskWidget = NULL;
-        }
-#endif
     }
 
   _focusedWidget = widget;
@@ -250,65 +243,88 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 bool
 EventManager::selectNext(Widget* target, Widget* startFrom)
 {
-  return false;
-  if (!target)
+  if (startFrom && target == _creator)
+    startFrom = NULL;
+  else if (!target)
     {
-      if (!_focusedWidget)
-        target = _creator;
-      else
+      if (_focusedWidget)
         target = _focusedWidget;
+      else
+        target = _creator;
     }
 
-  ILOG_DEBUG(ILX, "Target %p\n", target);
   if (target->_children.size())
     {
       Widget* targetChild;
-      int i = 1;
       for (Widget::WidgetListIterator it = target->_children.begin(), end =
-          target->_children.end(); it != end; ++it, ++i)
+          target->_children.end(); it != end; ++it)
         {
           targetChild = (Widget*) *it;
 
-          if (startFrom == targetChild)
+          if (startFrom)
             {
-              startFrom = NULL;
-//              continue;
+              if (startFrom == targetChild)
+                startFrom = NULL;
             }
-
-          else if (!startFrom)
+          else
             {
-              ILOG_DEBUG(ILX, "TargetChild %p\n", targetChild);
-              // check children of child recursively...
               if (targetChild->_children.size())
                 {
                   if (selectNext(targetChild))
                     return true;
                 }
-              else // get next child from parent.
-                {
-                  ILOG_DEBUG(ILX, " No more children\n");
-                }
-
-              // now see if child can receive focus.
-              if (setFocusedWidget(targetChild))
-                {
-                  ILOG_DEBUG(ILX, "Focused TargetChild %p\n", targetChild);
-                  return true;
-                }
-
+              else if (setFocusedWidget(targetChild))
+                return true;
             }
         }
-
-      selectNext(target->_parent, target);
+      return selectNext(target->_parent, target);
     }
-  else
-    selectNext(target->_parent, target);
+  else if (target != _creator)
+    return selectNext(target->_parent, target);
   return false;
 }
 
 bool
-EventManager::selectPrevious(Widget* target, Widget* start)
+EventManager::selectPrevious(Widget* target, Widget* startFrom)
 {
+  if (startFrom && target == _creator)
+    startFrom = NULL;
+  else if (!target)
+    {
+      if (_focusedWidget)
+        target = _focusedWidget;
+      else
+        target = _creator;
+    }
+
+  if (target->_children.size())
+    {
+      Widget* targetChild;
+      for (Widget::WidgetListReverseIterator it = target->_children.rbegin(),
+          end = target->_children.rend(); it != end; ++it)
+        {
+          targetChild = (Widget*) *it;
+
+          if (startFrom)
+            {
+              if (startFrom == targetChild)
+                startFrom = NULL;
+            }
+          else
+            {
+              if (targetChild->_children.size())
+                {
+                  if (selectPrevious(targetChild))
+                    return true;
+                }
+              else if (setFocusedWidget(targetChild))
+                return true;
+            }
+        }
+      return selectPrevious(target->_parent, target);
+    }
+  else if (target != _creator)
+    return selectPrevious(target->_parent, target);
   return false;
 }
 
