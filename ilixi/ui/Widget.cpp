@@ -29,6 +29,7 @@
 
 using namespace ilixi;
 
+unsigned int Widget::_idCounter = 0;
 Stylist* Widget::_stylist = NULL;
 
 Widget::Widget(Widget* parent) :
@@ -37,6 +38,7 @@ Widget::Widget(Widget* parent) :
         NULL), _preSelectedWidget(NULL), _xResizeConstraint(NoConstraint), _yResizeConstraint(
         NoConstraint)
 {
+  _id = _idCounter++;
   _neighbours[0] = NULL;
   _neighbours[1] = NULL;
   _neighbours[2] = NULL;
@@ -55,6 +57,7 @@ Widget::Widget(const Widget& widget) :
         widget._xResizeConstraint), _yResizeConstraint(
         widget._yResizeConstraint)
 {
+  _id = _idCounter++;
   _neighbours[0] = widget._neighbours[0];
   _neighbours[1] = widget._neighbours[1];
   _neighbours[2] = widget._neighbours[2];
@@ -195,7 +198,7 @@ bool
 Widget::visible() const
 {
   if (_parent)
-    return !(_state & InvisibleState) && _parent->visible();
+    return (!(_state & InvisibleState) && _parent->visible());
   return !(_state & InvisibleState);
 }
 

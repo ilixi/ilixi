@@ -990,6 +990,10 @@ namespace ilixi
      */
     Size _maxSize;
 
+    unsigned int _id;
+
+    static unsigned int _idCounter;
+
     //! Pointer to application wide Stylist instance.
     /*!
      * The stylist is set and maintained by the main application. It is used for acquiring default
