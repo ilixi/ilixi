@@ -27,7 +27,7 @@
 #include "ui/Application.h"
 #include "ImageDialog.h"
 
-class Gallery: public ilixi::Application
+class Gallery : public ilixi::Application
 {
 public:
   Gallery(int argc, char* argv[]);

@@ -23,30 +23,37 @@
 
 #include "Gallery.h"
 #include "ImageWidget.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
 
 Gallery::Gallery(int argc, char* argv[]) :
-  Application(argc, argv)
+    Application(argc, argv)
 {
   setTitle("Gallery");
   setBackgroundFilled(true);
   setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
 
+  int x = 0;
+  int y = 0;
+  int w = 200;
+  int h = 140;
   char file[128];
-  int i = 0;
   ImageWidget* widget;
-  for (int x = 0; x < 4; ++x)
+  for (int i = 0; i < 16; ++i)
     {
-      for (int y = 0; y < 3; ++y)
+      sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
+      widget = new ImageWidget(file);
+      widget->setImage(new Image(file, 196, 196));
+      widget->setGeometry(x * w, y * h, w, h);
+      ILOG_DEBUG(ILX, "%d%d - %d%d\n", x, y, w, h);
+      widget->sigPressed.connect(sigc::mem_fun(this, &Gallery::showImage));
+      addWidget(widget);
+      x++;
+      if (x > 3)
         {
-          sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
-          widget = new ImageWidget(file);
-          widget->setGeometry(x * 198, y * 160, 197, 159);
-          widget->setImage(new Image(file, 400, 275));
-          widget->sigPressed.connect(sigc::mem_fun(this, &Gallery::showImage));
-          addWidget(widget);
-          ++i;
+          x = 0;
+          y++;
         }
     }
 

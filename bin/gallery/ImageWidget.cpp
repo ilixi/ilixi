@@ -66,7 +66,8 @@ ImageWidget::compose(const Rectangle& rect)
   p.setBrush(Color(0, 0, 0, 125 + val1 * 130));
   p.drawImage(_image, -20 * val1, -20 * val1, width() + 40 * val1,
       height() + 40 * val1,
-      (DFBSurfaceBlittingFlags) (DSBLIT_SRC_PREMULTCOLOR | DSBLIT_BLEND_COLORALPHA));
+      (DFBSurfaceBlittingFlags) (DSBLIT_SRC_PREMULTCOLOR
+          | DSBLIT_BLEND_COLORALPHA));
 
   // overlay rect
   int y = height() - val2 * 50;
