@@ -126,7 +126,7 @@ Surface::setGeometry(int x, int y, int width, int height)
 void
 Surface::flip()
 {
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_WAITFORSYNC);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
   ILOG_DEBUG(ILX_SURFACE, "Flip ()\n");
@@ -138,7 +138,7 @@ Surface::flip(const Rectangle& rect)
   DFBRegion r = rect.dfbRegion();
   ILOG_DEBUG(ILX_SURFACE,
       "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_NONE);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_WAITFORSYNC);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
 }

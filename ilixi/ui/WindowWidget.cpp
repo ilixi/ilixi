@@ -183,7 +183,7 @@ WindowWidget::showWindow()
       if (deviceDesc.acceleration_mask == DFXL_NONE)
         config.buffermode = DLBM_BACKSYSTEM;
       else
-        config.buffermode = DLBM_TRIPLE;//BACKVIDEO;
+        config.buffermode = DLBM_BACKVIDEO;
       Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();
