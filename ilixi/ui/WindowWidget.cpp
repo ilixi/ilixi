@@ -106,6 +106,10 @@ WindowWidget::paint(const Rectangle& rect)
 
           if (intersect.isValid())
             {
+#ifdef ILIXI_STEREO_OUTPUT
+              // Left eye
+              surface()->DFBSurface()->SetStereoEye(surface()->DFBSurface(),
+                  DSSE_LEFT);
               surface()->clip(intersect);
               if (_backgroundFlags & BGFFill)
                 {
@@ -125,7 +129,34 @@ WindowWidget::paint(const Rectangle& rect)
                       AppBase::cursorPosition().x, AppBase::cursorPosition().y);
                 }
 
+              // Right eye
+              surface()->DFBSurface()->SetStereoEye(surface()->DFBSurface(),
+                  DSSE_RIGHT);
+#endif
+              surface()->clip(intersect);
+              if (_backgroundFlags & BGFFill)
+                {
+                  surface()->clear(intersect);
+                  compose(rect);
+                }
+              else if (_backgroundFlags & BGFClear)
+                surface()->clear(intersect);
+
+              paintChildren(intersect);
+
+              if (AppBase::appOptions() & OptExclusive)
+                {
+                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                      DSBLIT_BLEND_ALPHACHANNEL);
+                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                }
+
+#ifdef ILIXI_STEREO_OUTPUT
+              surface()->flipStereo(intersect);
+#else
               surface()->flip(intersect);
+#endif
             }
           sem_post(&_updates._paintReady);
         }
@@ -179,11 +210,18 @@ WindowWidget::showWindow()
       ILOG_INFO(ILX_WINDOWWIDGET, "Setting layer configuration\n");
       DFBDisplayLayerConfig config;
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
-          | DLCONF_WIDTH | DLCONF_HEIGHT);
+          | DLCONF_WIDTH | DLCONF_HEIGHT | DLCONF_OPTIONS);
       if (deviceDesc.acceleration_mask == DFXL_NONE)
         config.buffermode = DLBM_BACKSYSTEM;
       else
         config.buffermode = DLBM_BACKVIDEO;
+
+#ifdef ILIXI_STEREO_OUTPUT
+      config.options = DLOP_STEREO;
+#else
+      config.options = DLOP_NONE;
+#endif
+
       Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();

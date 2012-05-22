@@ -100,10 +100,15 @@ Window::initDFBWindow(const Size& size)
       | DWDESC_PIXELFORMAT | DWDESC_OPTIONS | DWDESC_STACKING);
 
   desc.pixelformat = DSPF_ARGB;
-  desc.caps =
-      (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL); // DWCAPS_NODECORATION
   desc.surface_caps = DSCAPS_DOUBLE;
   desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL | DWOP_SCALE);
+#ifdef ILIXI_STEREO_OUTPUT
+  desc.caps =
+        (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL | DWCAPS_STEREO);
+#else
+  desc.caps =
+        (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
+#endif
 
   DFBDisplayLayerConfig conf;
   ret = AppBase::getLayer()->GetConfiguration(AppBase::getLayer(), &conf);

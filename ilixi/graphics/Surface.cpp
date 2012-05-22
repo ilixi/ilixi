@@ -138,7 +138,19 @@ Surface::flip(const Rectangle& rect)
   DFBRegion r = rect.dfbRegion();
   ILOG_DEBUG(ILX_SURFACE,
       "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_WAITFORSYNC);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_BLIT);
+  if (ret)
+    ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+}
+
+void
+Surface::flipStereo(const Rectangle& rect)
+{
+  DFBRegion r = rect.dfbRegion();
+  ILOG_DEBUG(ILX_SURFACE,
+      "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
+  DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &r, &r,
+      DSFLIP_WAITFORSYNC);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
 }

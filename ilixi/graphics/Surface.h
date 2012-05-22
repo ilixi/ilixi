@@ -111,6 +111,9 @@ namespace ilixi
     void
     flip(const Rectangle& rect);
 
+    void
+    flipStereo(const Rectangle& rect);
+
     /*!
      * Lock surface mutex. This is mainly used by Painter to serialise updates.
      */

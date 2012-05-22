@@ -98,6 +98,10 @@ if test "$enable_profiling" = "yes"; then
     CFLAGS="$CFLAGS -pg"
 fi
 
+ILIXI_STEREO_OUTPUT=0
+AC_SUBST(ILIXI_STEREO_OUTPUT)
+AC_ARG_ENABLE([stereo], AS_HELP_STRING([--enable-stereo], [enable stereo @<:@default=no@:>@]), [ILIXI_STEREO_OUTPUT=1], [enable_stereo=no])
+
 ######################################################################
 # DOXYGEN SUPPORT
 ######################################################################
