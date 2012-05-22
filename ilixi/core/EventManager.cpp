@@ -172,7 +172,7 @@ EventManager::selectNeighbour(Direction direction)
         }
 
       // Should terminate if we can not find anything.
-      if (step)
+      if (step || target == NULL)
         return false;
 
       if (target != _creator) // Target is not a window.
@@ -241,10 +241,16 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 }
 
 bool
-EventManager::selectNext(Widget* target, Widget* startFrom)
+EventManager::selectNext(Widget* target, Widget* startFrom, int iter)
 {
+  if (iter)
+    return true;
+
   if (startFrom && target == _creator)
-    startFrom = NULL;
+    {
+      startFrom = NULL;
+      iter++;
+    }
   else if (!target)
     {
       if (_focusedWidget)
@@ -270,25 +276,31 @@ EventManager::selectNext(Widget* target, Widget* startFrom)
             {
               if (targetChild->_children.size())
                 {
-                  if (selectNext(targetChild))
+                  if (selectNext(targetChild, NULL, iter))
                     return true;
                 }
               else if (setFocusedWidget(targetChild))
                 return true;
             }
         }
-      return selectNext(target->_parent, target);
+      return selectNext(target->_parent, target, iter);
     }
   else if (target != _creator)
-    return selectNext(target->_parent, target);
+    return selectNext(target->_parent, target, iter);
   return false;
 }
 
 bool
-EventManager::selectPrevious(Widget* target, Widget* startFrom)
+EventManager::selectPrevious(Widget* target, Widget* startFrom, int iter)
 {
+  if (iter)
+    return true;
+
   if (startFrom && target == _creator)
-    startFrom = NULL;
+    {
+      startFrom = NULL;
+      iter++;
+    }
   else if (!target)
     {
       if (_focusedWidget)
@@ -314,17 +326,17 @@ EventManager::selectPrevious(Widget* target, Widget* startFrom)
             {
               if (targetChild->_children.size())
                 {
-                  if (selectPrevious(targetChild))
+                  if (selectPrevious(targetChild, NULL, iter))
                     return true;
                 }
               else if (setFocusedWidget(targetChild))
                 return true;
             }
         }
-      return selectPrevious(target->_parent, target);
+      return selectPrevious(target->_parent, target, iter);
     }
   else if (target != _creator)
-    return selectPrevious(target->_parent, target);
+    return selectPrevious(target->_parent, target, iter);
   return false;
 }
 

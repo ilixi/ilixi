@@ -127,10 +127,10 @@ namespace ilixi
     selectNeighbour(Direction direction);
 
     bool
-    selectNext(Widget* target = NULL, Widget* startFrom = NULL);
+    selectNext(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
 
     bool
-    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL);
+    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
 
     void
     setOSKWidgetText(const std::string& text);
