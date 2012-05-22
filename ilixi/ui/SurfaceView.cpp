@@ -34,7 +34,7 @@ namespace ilixi
       SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
           NULL), _windowID(0), _flipCount(0)
   {
-    setInputMethod(KeyAndPointerInputTracking);
+    setInputMethod(KeyAndPointerInput);
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
   }

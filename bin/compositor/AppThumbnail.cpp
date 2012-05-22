@@ -32,7 +32,7 @@ namespace ilixi
       Widget* parent) :
       AppCompositor(compositor, instance, parent)
   {
-    setInputMethod(KeyAndPointerInputTracking);
+    setInputMethod(KeyAndPointerInput);
     setConstraints(FixedConstraint, FixedConstraint);
     _ani.setDuration(300);
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);

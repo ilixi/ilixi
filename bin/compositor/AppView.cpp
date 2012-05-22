@@ -31,7 +31,7 @@ namespace ilixi
       Widget* parent) :
       AppCompositor(compositor, instance, parent)
   {
-    setInputMethod(PointerInputTracking);
+    setInputMethod(KeyAndPointerInput);
 
     _ani.setDuration(300);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
@@ -55,6 +55,7 @@ namespace ilixi
   {
     _ani.stop();
     setVisible(true);
+    setFocus();
     _opacityTween->setInitialValue(0);
     _opacityTween->setEndValue(255);
     _zoomTween->setInitialValue(0.8);
