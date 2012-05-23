@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config/m4])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SRCDIR([ilixi/ilixiGUI.h])
+AX_PREFIX_CONFIG_H(ilixi/ilixiConfig.h)
 AC_PREREQ(2.65)
 
 ######################################################################
@@ -69,24 +69,28 @@ AC_FUNC_ERROR_AT_LINE
 
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.6.0
+SAWMAN_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
-SAWMAN_REQ_VERSION=1.6.0
 
 AC_MSG_NOTICE([checking if dependencies are installed...])
 PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
 
 ######################################################################
-# Conditional inclusions
+# Conditionals
 ######################################################################
-ILIXI_LOGGER_ENABLED=0
 LOGGER_LEVEL="none"
-AC_SUBST(ILIXI_LOGGER_ENABLED)
-AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 LOGGER_LEVEL="up to error"])
+AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=no@:>@]), [LOGGER_LEVEL="up to error"])
+if test "$enable_log" = "yes"; then
+	AC_DEFINE([LOGGER_ENABLED], [], [Enable logger])
+fi
 
-ILIXI_LOG_DEBUG_ENABLED=0
-AC_SUBST(ILIXI_LOG_DEBUG_ENABLED)
-AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages @<:@default=no@:>@]), [ILIXI_LOGGER_ENABLED=1 ILIXI_LOG_DEBUG_ENABLED=1 LOGGER_LEVEL="up to debug" CPPFLAGS="-DDIRECT_ENABLE_DEBUG $CPPFLAGS"])
+AC_ARG_ENABLE([log-debug], AS_HELP_STRING([--enable-log-debug], [enables logger and submits up to debug level messages @<:@default=no@:>@]), [LOGGER_LEVEL="up to debug"])
+if test "$enable_log_debug" = "yes"; then
+	AC_DEFINE([LOGGER_ENABLED], [], [Enable logger])
+	AC_DEFINE([LOG_DEBUG_ENABLED], [], [Log debug messages])
+	CFLAGS="$CFLAGS -DDIRECT_ENABLE_DEBUG"
+fi
 
 AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
 if test "$enable_debug" = "yes"; then
@@ -98,9 +102,10 @@ if test "$enable_profiling" = "yes"; then
     CFLAGS="$CFLAGS -pg"
 fi
 
-ILIXI_STEREO_OUTPUT=0
-AC_SUBST(ILIXI_STEREO_OUTPUT)
-AC_ARG_ENABLE([stereo], AS_HELP_STRING([--enable-stereo], [enable stereo @<:@default=no@:>@]), [ILIXI_STEREO_OUTPUT=1], [enable_stereo=no])
+AC_ARG_ENABLE([stereo], AS_HELP_STRING([--enable-stereo], [enable stereo @<:@default=no@:>@]), [], [enable_stereo=no])
+if test "$enable_stereo" = "yes"; then
+	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereo output])
+fi
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -121,8 +126,8 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 # Output
 ######################################################################
 CXXFLAGS="$CFLAGS"
-ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
-AC_SUBST(ILIXI_DATADIR)
+AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
+AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 
 AC_CONFIG_FILES([ \
 		Makefile  \
@@ -132,7 +137,6 @@ AC_CONFIG_FILES([ \
 		doc/Makefile \
 		doc/resources/Makefile \
 		ilixi/Makefile \
-		ilixi/ilixiConfig.h \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \
 		ilixi/lib/Makefile \

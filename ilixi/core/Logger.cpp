@@ -22,7 +22,7 @@
  */
 
 #include "core/Logger.h"
-#if ILIXI_LOGGER_ENABLED
+#ifdef ILIXI_LOGGER_ENABLED
 #include <cstdarg>
 #include <syslog.h>
 
@@ -32,7 +32,7 @@ using namespace std;
 void
 ilixi::ilixi_log_init(char* ident, int facility)
 {
-#if ILIXI_LOG_DEBUG_ENABLED == 0
+#ifdef ILIXI_LOG_DEBUG_ENABLED
   setlogmask(LOG_UPTO(LOG_NOTICE));
 #endif
   if (facility)

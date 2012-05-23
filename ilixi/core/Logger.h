@@ -29,7 +29,7 @@
 
 namespace ilixi
 {
-#if ILIXI_LOGGER_ENABLED
+#ifdef ILIXI_LOGGER_ENABLED
   D_DEBUG_DOMAIN( ILX, "ilixi", "ilixi");
   D_DEBUG_DOMAIN( ILX_CORE, "ilixi/core", "Important stuff");
   D_DEBUG_DOMAIN( ILX_GRAPHICS, "ilixi/graphics", "Graphics related");
@@ -93,7 +93,7 @@ namespace ilixi
   void
   ilixi_log(int level, const char* message, ...);
 
-#if ILIXI_LOG_DEBUG_ENABLED
+#ifdef ILIXI_LOG_DEBUG_ENABLED
 #define ILOG_DEBUG( Domain, _fmt... )   D_DEBUG_AT(Domain, _fmt)
 #define ILOG_INFO( Domain, _fmt...)     D_LOG(Domain, INFO, _fmt)
 #define ILOG_NOTICE( Domain, _fmt...)   D_LOG(Domain, NOTICE, _fmt)
