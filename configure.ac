@@ -129,6 +129,9 @@ CXXFLAGS="$CFLAGS"
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 
+ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
+AC_SUBST(ILIXI_DATADIR)
+
 AC_CONFIG_FILES([ \
 		Makefile  \
 		data/Makefile \
