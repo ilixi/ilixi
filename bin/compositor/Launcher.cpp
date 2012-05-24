@@ -48,7 +48,6 @@ namespace ilixi
 
   Launcher::~Launcher()
   {
-    delete _font;
     ILOG_DEBUG(ILX, "~Launcher %p\n", this);
   }
 

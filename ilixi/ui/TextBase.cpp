@@ -52,7 +52,7 @@ TextBase::~TextBase()
   if (_font)
     {
       _font->_ref--;
-      if (!_font->_ref)
+      if (_font->_ref == 0)
         delete _font;
     }
   ILOG_DEBUG(ILX_TEXTBASE, "~TextBase %p\n", this);
@@ -107,9 +107,13 @@ TextBase::setFont(Font* font)
 {
   if (font)
     {
-      _font->_ref--;
-      if (!_font->_ref)
-        delete _font;
+      if (_font)
+        {
+          _font->_ref--;
+          if (_font->_ref == 0)
+            delete _font;
+          _font = NULL;
+        }
 
       _font = font;
       _font->_ref++;

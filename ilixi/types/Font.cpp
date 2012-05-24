@@ -33,7 +33,7 @@ Font::Font() :
 }
 
 Font::Font(const std::string& file, int size) :
-    _modified(true), _ref(0), _fileName(""), _font(NULL)
+    _modified(true), _ref(0), _fileName(file), _font(NULL)
 {
   // Fixme is height absolutely necessary here?
   _desc.flags = DFDESC_HEIGHT;
