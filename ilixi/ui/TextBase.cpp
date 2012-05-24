@@ -51,10 +51,9 @@ TextBase::~TextBase()
 {
   if (_font)
     {
-      if (_font->_font && !_font->_font->refs)
+      _font->_ref--;
+      if (!_font->_ref)
         delete _font;
-      else
-        _font->release();
     }
   ILOG_DEBUG(ILX_TEXTBASE, "~TextBase %p\n", this);
 }
@@ -108,10 +107,12 @@ TextBase::setFont(Font* font)
 {
   if (font)
     {
-      delete _font;
+      _font->_ref--;
+      if (!_font->_ref)
+        delete _font;
+
       _font = font;
-      if (_font->_font)
-        _font->_font->AddRef(_font->_font);
+      _font->_ref++;
       _owner->doLayout();
       sigFontChanged();
     }

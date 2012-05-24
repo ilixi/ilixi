@@ -207,12 +207,14 @@ namespace ilixi
   private:
     //! Flag is set to true if font is modified.
     bool _modified;
+    //! Reference counter.
+    unsigned int _ref;
+    //! Filename for font.
+    std::string _fileName;
     //! DirectFB font interface.
     IDirectFBFont* _font;
     //! DirectFB font description.
     DFBFontDescription _desc;
-    //! Filename for font.
-    std::string _fileName;
 
     //! Applies font to surface.
     bool

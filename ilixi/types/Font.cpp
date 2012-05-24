@@ -28,12 +28,12 @@
 using namespace ilixi;
 
 Font::Font() :
-    _modified(true), _font(NULL), _fileName("")
+    _modified(true), _ref(0), _fileName(""), _font(NULL)
 {
 }
 
 Font::Font(const std::string& file, int size) :
-    _modified(true), _font(NULL), _fileName(file)
+    _modified(true), _ref(0), _fileName(""), _font(NULL)
 {
   // Fixme is height absolutely necessary here?
   _desc.flags = DFDESC_HEIGHT;
@@ -41,8 +41,8 @@ Font::Font(const std::string& file, int size) :
 }
 
 Font::Font(const Font& font) :
-    _modified(true), _fileName(font._fileName), _desc(font._desc), _font(
-        font._font)
+    _modified(true), _ref(0), _fileName(font._fileName), _font(font._font), _desc(
+        font._desc)
 {
   if (_font)
     _font->AddRef(_font);
@@ -249,6 +249,7 @@ Font::loadFont()
   if (_modified)
     {
       release();
+
       if (_fileName == "")
         {
           ILOG_ERROR(ILX_FONT, "Font filename is invalid.\n");
@@ -259,13 +260,13 @@ Font::loadFont()
           _fileName.c_str(), &_desc, &_font);
       if (ret)
         {
-          ILOG_ERROR(
-              ILX_FONT, "Error while creating font %s!\n", _fileName.c_str());
+          ILOG_ERROR( ILX_FONT,
+              "Error while creating font %s!\n", _fileName.c_str());
           return false;
         }
 
-      ILOG_DEBUG(
-          ILX_FONT, "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
+      ILOG_DEBUG( ILX_FONT,
+          "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
       _modified = false;
     }
 
@@ -277,9 +278,8 @@ Font::release()
 {
   if (_font)
     {
-      DirectResult ret = _font->Release(_font);
-      if (ret)
-        ILOG_ERROR(ILX_FONT, "Error while releasing font: %x\n", ret);
+      if (_font->Release(_font) != DR_OK)
+        ILOG_ERROR(ILX_FONT, "Error while releasing font!\n");
       _font = NULL;
     }
 }
