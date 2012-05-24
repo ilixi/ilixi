@@ -26,12 +26,14 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <stdexcept>
 #include "Compositor.h"
 
 namespace ilixi
 {
 
-  D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/AppMan", "ApplicationManager");
+  D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/compositor/AppMan",
+      "ApplicationManager");
 
   //*********************************************************************
 
@@ -93,8 +95,11 @@ namespace ilixi
   {
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Initialising Application Manager.\n");
     pthread_mutex_init(&_mutex, NULL);
-    SaWManInit(NULL, NULL);
-    SaWManCreate(&_saw);
+    if (SaWManInit(NULL, NULL) != DR_OK)
+      ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to initialise SaWMan!\n");
+
+    if (SaWManCreate(&_saw) != DR_OK)
+      ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan!\n");
 
     _callbacks.Start = start_request;
     _callbacks.Stop = stop_request;
@@ -112,7 +117,8 @@ namespace ilixi
     _callbacks.ApplicationIDChanged = NULL;
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Creating SaWManager.\n");
-    _saw->CreateManager(_saw, &_callbacks, this, &_manager);
+    if (_saw->CreateManager(_saw, &_callbacks, this, &_manager) != DR_OK)
+      ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan manager!\n");
 
     initApps();
   }
@@ -485,6 +491,19 @@ namespace ilixi
             & ~SWMCF_POSITION);
       }
 
+    SaWManProcess process;
+    _manager->GetProcessInfo(_manager, reconfig->handle, &process);
+
+    SaWManWindowInfo winInfo;
+    _manager->GetWindowInfo(_manager, reconfig->handle, &winInfo);
+
+    AppInstance* instance = instanceByPID(process.pid);
+    if (instance)
+      {
+        _manager->Lock(_manager);
+        _compositor->configWindow(instance, reconfig, &winInfo);
+        _manager->Unlock(_manager);
+      }
     return DR_OK;
   }
 

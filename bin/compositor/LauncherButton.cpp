@@ -30,7 +30,7 @@ namespace ilixi
   LauncherButton::LauncherButton(const std::string& name, Widget* parent) :
       ToolButton(name, parent)
   {
-    setInputMethod(PointerInput);
+    setInputMethod(KeyAndPointerInput);
     setToolButtonStyle(ToolButton::IconAboveText);
   }
 
@@ -43,7 +43,9 @@ namespace ilixi
   {
     Painter p(this);
     p.begin(rect);
-    if (state() & PressedState)
+    if (state() & FocusedState)
+      p.setBrush(Color(51, 102, 255));
+    else if (state() & PressedState)
       p.setBrush(Color(128, 128, 128));
     else
       p.setBrush(Color(255, 255, 255));

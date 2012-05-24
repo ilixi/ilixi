@@ -118,7 +118,8 @@ namespace ilixi
     removeWindow(AppInstance* instance, const SaWManWindowInfo* info);
 
     void
-    configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig);
+    configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
+        SaWManWindowInfo* winInfo);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);

@@ -72,8 +72,7 @@ namespace ilixi
     updateAppCompositorGeometry();
 
     void
-    onWindowConfig(DFBWindowID windowID, const DFBWindowConfig* config,
-        DFBWindowConfigFlags flags);
+    onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *reconfig);
   };
 
 } /* namespace ilixi */

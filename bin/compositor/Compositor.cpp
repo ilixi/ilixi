@@ -37,11 +37,18 @@ namespace ilixi
   Compositor::Compositor(int argc, char* argv[]) :
       Application(argc, argv, OptExclusive), _appMan(NULL), _currentApp(NULL)
   {
+//    try
+//      {
+        _appMan = new ApplicationManager(this);
+//      }
+//    catch (const std::exception& e)
+//      {
+//        throw;
+//      }
+
     setTitle("Compositor");
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
     setMargin(0);
-
-    _appMan = new ApplicationManager(this);
 
     _launcher = new Launcher(this);
     addWidget(_launcher);
@@ -100,6 +107,7 @@ namespace ilixi
       {
         if (_currentApp)
           {
+            _switcher->setNeighbour(Up, _currentApp->view());
             _currentApp->view()->show();
             AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
             if (info->appFlags() & APP_NEEDS_CLEAR)
@@ -231,14 +239,20 @@ namespace ilixi
 
   void
   Compositor::configWindow(AppInstance* instance,
-      SaWManWindowReconfig *reconfig)
+      SaWManWindowReconfig *reconfig, SaWManWindowInfo* winInfo)
   {
     ILOG_DEBUG(ILX_COMPOSITOR,
         "%s( ID %lu )\n", __FUNCTION__, reconfig->handle);
 
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
-//    data->windowID = info->win_id;
+    data->reconfig = new SaWManWindowReconfig;
+    data->reconfig->caps = reconfig->caps;
+    data->reconfig->current = reconfig->current;
+    data->reconfig->flags = reconfig->flags;
+    data->reconfig->handle = reconfig->handle;
+    data->reconfig->request = reconfig->request;
+    data->windowID = winInfo->win_id;
 
     postUserEvent(CET_Config, data);
   }
@@ -331,6 +345,7 @@ namespace ilixi
                     new AppView(this, data->instance, this));
                 data->instance->view()->setGeometry(0, 0, width(), height());
                 addWidget(data->instance->view());
+                data->instance->view()->setNeighbour(Down, _switcher);
                 widgetToBack(data->instance->view());
               }
 
@@ -362,13 +377,12 @@ namespace ilixi
           {
             ILOG_INFO(ILX_COMPOSITOR, "CET_CONFIG (%d)\n", data->windowID);
 
-//            if (data->appRecord && data->appRecord->view)
-//              {
-//                data->appRecord->view->onWindowConfig(data->windowID,
-//                    data->config, data->flags);
-//                data->appRecord->thumb->onWindowConfig(data->windowID,
-//                    data->config, data->flags);
-//              }
+            data->instance->view()->onWindowConfig(data->windowID,
+                data->reconfig);
+            data->instance->thumb()->onWindowConfig(data->windowID,
+                data->reconfig);
+
+            delete data->reconfig;
           }
           break;
 
@@ -461,7 +475,14 @@ namespace ilixi
 int
 main(int argc, char* argv[])
 {
-  ilixi::Compositor app(argc, argv);
-  app.exec();
+  try
+    {
+      ilixi::Compositor app(argc, argv);
+      app.exec();
+    }
+  catch (const std::exception& e)
+    {
+      ILOG_FATAL(ilixi::ILX_COMPOSITOR, "Exception: %s\n", e.what());
+    }
   return 0;
 }

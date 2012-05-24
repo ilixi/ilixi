@@ -141,21 +141,25 @@ namespace ilixi
 
   void
   AppCompositor::onWindowConfig(DFBWindowID windowID,
-      const DFBWindowConfig* config, DFBWindowConfigFlags flags)
+      const SaWManWindowReconfig *reconfig)
   {
     for (WidgetList::iterator it = _children.begin(); it != _children.end();
         ++it)
       {
-        ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config %x\n", flags);
+        ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config %x\n", reconfig->flags);
         SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view && view->dfbWindowID() == windowID)
           {
+            if (reconfig->flags & SWMCF_OPACITY)
+              view->setOpacity(reconfig->request.opacity);
 
-            if (flags & DWCONF_POSITION)
-              view->moveTo(config->bounds.x, config->bounds.y);
+            if (reconfig->flags & SWMCF_POSITION)
+              view->moveTo(reconfig->request.bounds.x,
+                  reconfig->request.bounds.y);
 
-            if (flags & DWCONF_SIZE)
-              view->setSize(config->bounds.w, config->bounds.h);
+            if (reconfig->flags & SWMCF_SIZE)
+              view->setSize(reconfig->request.bounds.w,
+                  reconfig->request.bounds.h);
 
             view->update();
             return;

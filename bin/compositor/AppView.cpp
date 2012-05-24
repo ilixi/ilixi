@@ -31,7 +31,7 @@ namespace ilixi
       Widget* parent) :
       AppCompositor(compositor, instance, parent)
   {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(PointerInput);
 
     _ani.setDuration(300);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
