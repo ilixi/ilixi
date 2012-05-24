@@ -28,7 +28,6 @@
 
 using namespace std;
 using namespace ilixi;
-using namespace IMaestro;
 
 IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
@@ -36,10 +35,11 @@ IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
 AppBase::AppBase(int argc, char* argv[], AppOptions options) :
-    __options(options), __title(""), __state(Hidden), __activeWindow(NULL)
+    __options(options), __title(""), __state(APS_HIDDEN), __activeWindow(NULL)
 {
   if (__instance)
-    exit(1);
+    ILOG_THROW(ILX_APPBASE, "Cannot allow more than one instance!\n");
+
   __instance = this;
   pthread_mutex_init(&__cbMutex, NULL);
   pthread_mutex_init(&__selMutex, NULL);
@@ -81,12 +81,6 @@ AppBase::windowPreEventFilter(const DFBWindowEvent& event)
   return false;
 }
 
-AppState
-AppBase::appState() const
-{
-  return (__state);
-}
-
 void
 AppBase::setAppState(AppState state)
 {
@@ -105,7 +99,7 @@ AppBase::getDFB()
   return __dfb;
 }
 
-bool
+void
 AppBase::initDFB(int argc, char **argv)
 {
   if (!__dfb)
@@ -113,46 +107,28 @@ AppBase::initDFB(int argc, char **argv)
       ILOG_DEBUG(ILX_APPBASE, "Initialising DirectFB interfaces...\n");
 
       if (DirectFBInit(&argc, &argv) != DFB_OK)
-        {
-          ILOG_ERROR(ILX_APPBASE, "Error while initialising DirectFB!\n");
-          return false;
-        }
+        ILOG_THROW(ILX_APPBASE, "Error while initialising DirectFB!\n");
 
       if (DirectFBCreate(&__dfb) != DFB_OK)
-        {
-          ILOG_ERROR(ILX_APPBASE, "Error while creating DirectFB interface!\n");
-          return false;
-        }
+        ILOG_THROW(ILX_APPBASE, "Error while creating DirectFB interface!\n");
 
       if (__dfb->GetDisplayLayer(__dfb, DLID_PRIMARY, &__layer) != DFB_OK)
-        {
-          ILOG_ERROR(ILX_APPBASE, "Error while getting primary layer!\n");
-          return false;
-        }
+        ILOG_THROW(ILX_APPBASE, "Error while getting primary layer!\n");
 
       if (__options & OptExclusive)
         {
           if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE,
               &__buffer) != DFB_OK)
-            {
-              ILOG_ERROR(ILX_APPBASE,
-                  "Error while creating input event buffer!\n");
-              return false;
-            }
+            ILOG_THROW(ILX_APPBASE,
+                "Error while creating input event buffer!\n");
         }
-      else
-        {
-          if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
-            {
-              ILOG_ERROR(ILX_APPBASE, "Error while creating event buffer!\n");
-              return false;
-            }
-        }
-      ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
+      else if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
+        ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
 
-      return true;
+      ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
     }
-  return false;
+  else
+    ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are already initialised.\n");
 }
 
 void
@@ -161,16 +137,27 @@ AppBase::releaseDFB()
   if (__dfb)
     {
       ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
-      __buffer->Release(__buffer);
-      __buffer = NULL;
-      __layer->Release(__layer);
-      __layer = NULL;
+
+      if (__buffer)
+        {
+          __buffer->Release(__buffer);
+          __buffer = NULL;
+        }
+
+      if (__layer)
+        {
+          __layer->Release(__layer);
+          __layer = NULL;
+        }
+
       __dfb->Release(__dfb);
       __dfb = NULL;
       __activeWindow = NULL;
+
       pthread_mutex_destroy(&__cbMutex);
       pthread_mutex_destroy(&__selMutex);
       pthread_mutex_destroy(&__windowMutex);
+
       ILOG_INFO(ILX_APPBASE, "DirectFB interface is released.\n");
     }
 }
@@ -426,7 +413,7 @@ AppBase::removeWindow(WindowWidget* window)
             }
         }
       pthread_mutex_unlock(&__instance->__windowMutex);
-      ILOG_ERROR( ILX_APPBASE,
+      ILOG_DEBUG( ILX_APPBASE,
           "Cannot remove WindowWidget, %p not found!\n", window);
     }
   return false;
@@ -552,7 +539,8 @@ AppBase::detachDFBWindow(Window* window)
 
       ret = __buffer->Reset(__buffer);
       if (ret != DFB_OK)
-        ILOG_ERROR(ILX_APPBASE, "Buffer reset error!");
+        ILOG_ERROR(ILX_APPBASE,
+            "Buffer reset error: %s", DirectFBErrorString(ret));
 
       ILOG_DEBUG(ILX_APPBASE, "Window %p is detached.\n", window);
     }
@@ -588,6 +576,10 @@ AppBase::handleButtonInputEvent(const DFBInputEvent& event,
   we.window.type = type;
   we.window.x = __cursorNew.x;
   we.window.y = __cursorNew.y;
+
+  we.window.cx = __cursorNew.x;
+  we.window.cy = __cursorNew.y;
+
   we.window.button = event.button;
 
   __buffer->PostEvent(__buffer, &we);
@@ -626,13 +618,13 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
 
   if (__cursorNew.x < 0)
     __cursorNew.x = 0;
-  else if (__cursorNew.x > __layerSize.w)
-    __cursorNew.x = __layerSize.w;
+  else if (__cursorNew.x > __layerSize.w - 1)
+    __cursorNew.x = __layerSize.w - 1;
 
   if (__cursorNew.y < 0)
     __cursorNew.y = 0;
-  else if (__cursorNew.y > __layerSize.h)
-    __cursorNew.y = __layerSize.h;
+  else if (__cursorNew.y > __layerSize.h - 1)
+    __cursorNew.y = __layerSize.h - 1;
 
   if (we.window.type == DWET_MOTION)
     {
@@ -643,8 +635,12 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
       activeWindow()->update(cnew.united(cold));
     }
 
-  we.window.x = __cursorNew.x;
-  we.window.y = __cursorNew.y;
+  we.window.x = 0;
+  we.window.y = 0;
+
+  we.window.cx = __cursorNew.x;
+  we.window.cy = __cursorNew.y;
+
   we.window.button = event.button;
 
   __buffer->PostEvent(__buffer, &we);

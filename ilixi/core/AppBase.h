@@ -26,7 +26,6 @@
 
 #include <string>
 #include "types/Enums.h"
-#include "core/IFusion.h"
 #include "core/EventManager.h"
 #include "core/SurfaceEventListener.h"
 #include "core/Callback.h"
@@ -55,6 +54,16 @@ namespace ilixi
     friend class SurfaceEventListener;
     friend class SurfaceView;
     friend class Application;
+
+    /*!
+     * This enum is used to specify the state of an application.
+     */
+    enum AppState
+    {
+      APS_TERM = 0x0000001, //!< Application is about to terminate shortly.
+      APS_VISIBLE = 0x0000002, //!< Application has a visible window and has access to events.
+      APS_HIDDEN = 0x0000004, //!< Application has no window and has no access to events.
+    };
 
   public:
     /*!
@@ -94,22 +103,16 @@ namespace ilixi
     windowPreEventFilter(const DFBWindowEvent& event);
 
     /*!
-     * Returns current state of application.
-     */
-    IMaestro::AppState
-    appState() const;
-
-    /*!
      * Sets application state flag.
      */
     void
-    setAppState(IMaestro::AppState state);
+    setAppState(AppState state);
 
     /*!
      * Clears application state flag.
      */
     void
-    clearAppState(IMaestro::AppState state);
+    clearAppState(AppState state);
 
     /*!
      * Returns DirectFB interface.
@@ -141,7 +144,7 @@ namespace ilixi
     //! Application title.
     std::string __title;
     //! Application state.
-    IMaestro::AppState __state;
+    AppState __state;
 
     DFBPoint __cursorOld, __cursorNew;
     DFBDimension __layerSize;
@@ -179,7 +182,7 @@ namespace ilixi
      * Initialise DirectFB. This method is executed
      * only once by main Application during its construction.
      */
-    bool
+    void
     initDFB(int argc, char **argv);
 
     /*!

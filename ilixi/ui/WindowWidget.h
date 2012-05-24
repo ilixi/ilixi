@@ -90,15 +90,6 @@ namespace ilixi
     closeWindow();
 
     /*!
-     * This method executes before sending key down events to
-     * focused widget.
-     *
-     * @return true if event is consumed.
-     */
-    virtual bool
-    keyListener(DFBInputDeviceKeySymbol key);
-
-    /*!
      * Handles incoming input events if window has focus.
      * Behaviour is dependant on incoming event type. Key events are sent to focused widget.
      * Pointer events are consumed by the widget which contains the event coordinates. If two or more

@@ -28,7 +28,6 @@
 #include <string.h>
 
 using namespace ilixi;
-using namespace IMaestro;
 
 Application::Application(int argc, char* argv[], AppOptions opts) :
     AppBase(argc, argv, opts), WindowWidget(), _backgroundImage(NULL)
@@ -63,7 +62,7 @@ void
 Application::quit()
 {
   setVisible(false);
-  setAppState(Terminating);
+  setAppState(APS_TERM);
 }
 
 void
@@ -89,7 +88,7 @@ Application::exec()
 
   while (true)
     {
-      if (appState() & Terminating)
+      if (__state & APS_TERM)
         break;
       else
         {
@@ -103,7 +102,7 @@ Application::exec()
 
   hide();
 
-  ILOG_DEBUG(ILX_APPLICATION, "Stopping...\n");
+  ILOG_INFO(ILX_APPLICATION, "Stopping...\n");
 
   sigQuit();
 }
@@ -123,13 +122,10 @@ Application::setBackgroundImage(std::string imagePath)
 void
 Application::show()
 {
-  if (appState() & Hidden)
+  if (__state & APS_HIDDEN)
     {
       showWindow();
-
-      clearAppState(Hidden);
-      setAppState(Visible);
-
+      __state = APS_VISIBLE;
       sigVisible();
     }
 }
@@ -137,13 +133,10 @@ Application::show()
 void
 Application::hide()
 {
-  if (appState() & Visible)
+  if (__state & APS_VISIBLE)
     {
-      clearAppState(Visible);
-      setAppState(Hidden);
-
       closeWindow();
-
+      __state = APS_HIDDEN;
       sigHidden();
     }
 }

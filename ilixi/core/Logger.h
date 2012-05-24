@@ -26,6 +26,7 @@
 
 #include "ilixiConfig.h"
 #include "directfb.h"
+#include <stdexcept>
 
 namespace ilixi
 {
@@ -98,34 +99,24 @@ namespace ilixi
 #define ILOG_INFO( Domain, _fmt...)     D_LOG(Domain, INFO, _fmt)
 #define ILOG_NOTICE( Domain, _fmt...)   D_LOG(Domain, NOTICE, _fmt)
 #define ILOG_WARNING( Domain, _fmt...)  D_LOG(Domain, WARNING, _fmt)
-
-//#define ILOG_DEBUG(_fmt...)     ilixi_log(7, _fmt)
-//#define ILOG_INFO(_fmt...)      ilixi_log(6, _fmt)
-//#define ILOG_NOTICE(_fmt...)    ilixi_log(5, _fmt)
-//#define ILOG_WARNING(_fmt...)   ilixi_log(4, _fmt)
-
 #else // ILIXI_LOG_DEBUG_ENABLED = 0
-#define ILOG_DEBUG(_fmt...)     do {} while(0)
-#define ILOG_INFO(_fmt...)      do {} while(0)
-#define ILOG_NOTICE(_fmt...)    do {} while(0)
-#define ILOG_WARNING(_fmt...)   do {} while(0)
+#define ILOG_DEBUG(_fmt...)             do {} while(0)
+#define ILOG_INFO(_fmt...)              do {} while(0)
+#define ILOG_NOTICE(_fmt...)            do {} while(0)
+#define ILOG_WARNING(_fmt...)           do {} while(0)
 #endif // end ILIXI_LOG_DEBUG_ENABLED
 #define ILOG_ERROR(Domain, _fmt...)     D_LOG(Domain, ERROR, _fmt)
 #define ILOG_FATAL(Domain, _fmt...)     D_LOG(Domain, FATAL, _fmt)
-
-//#define ILOG_ERROR(_fmt...)     ilixi_log(3, _fmt)
-//#define ILOG_FATAL(_fmt...)     ilixi_log(2, _fmt)
-#define ILOG_OPEN(ident)        ilixi_log_init(ident)
-#define ILOG_CLOSE()            ilixi_log_close()
 #else // ILIXI_LOGGER_ENABLED = 0
-#define ILOG_DEBUG(_fmt...)     do {} while(0)
-#define ILOG_INFO(_fmt...)      do {} while(0)
-#define ILOG_NOTICE(_fmt...)    do {} while(0)
-#define ILOG_WARNING(_fmt...)   do {} while(0)
-#define ILOG_ERROR(_fmt...)     do {} while(0)
-#define ILOG_FATAL(_fmt...)     do {} while(0)
-#define ILOG_OPEN(ident)        do {} while(0)
-#define ILOG_CLOSE()            do {} while(0)
+#define ILOG_DEBUG(_fmt...)             do {} while(0)
+#define ILOG_INFO(_fmt...)              do {} while(0)
+#define ILOG_NOTICE(_fmt...)            do {} while(0)
+#define ILOG_WARNING(_fmt...)           do {} while(0)
+#define ILOG_ERROR(_fmt...)             do {} while(0)
+#define ILOG_FATAL(_fmt...)             do {} while(0)
+#define ILOG_OPEN(ident)                do {} while(0)
+#define ILOG_CLOSE()                    do {} while(0)
 #endif // end ILIXI_LOGGER_ENABLED
+#define ILOG_THROW(Domain, _msg)        do { ILOG_ERROR(Domain, _msg); throw std::runtime_error( _msg ); } while(0)
 }
 #endif /* ILIXI_LOGGER_H_ */

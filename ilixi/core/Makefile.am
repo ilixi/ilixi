@@ -7,7 +7,6 @@ libilixi_core_la_LIBADD 		= 	@DEPS_LIBS@
 libilixi_core_la_SOURCES 	= 	AppBase.cpp \
      						Callback.cpp \
      						EventManager.cpp \
-     						IFusion.cpp \
      						Logger.cpp \
      						SurfaceEventListener.cpp \
      						Thread.cpp \
@@ -17,7 +16,6 @@ ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
 ilixi_include_HEADERS		=	AppBase.h \
      						Callback.h \
      						EventManager.h \
-     						IFusion.h \
      						Logger.h \
      						SurfaceEventListener.h \
      						Thread.h \

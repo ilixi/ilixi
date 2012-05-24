@@ -69,8 +69,10 @@ WindowWidget::~WindowWidget()
   delete _window;
   if (AppBase::appOptions() & OptExclusive)
     {
-      _exclusiveSurface->Release(_exclusiveSurface);
-      _cursorImage->Release(_cursorImage);
+      if (_exclusiveSurface)
+        _exclusiveSurface->Release(_exclusiveSurface);
+      if (_cursorImage)
+        _cursorImage->Release(_cursorImage);
     }
   ILOG_DEBUG(ILX_WINDOWWIDGET, "~WindowWidget %p\n", this);
 }
@@ -117,7 +119,7 @@ WindowWidget::paint(const Rectangle& rect)
                   compose(rect);
                 }
               else if (_backgroundFlags & BGFClear)
-                surface()->clear(intersect);
+              surface()->clear(intersect);
 
               paintChildren(intersect);
 
@@ -186,28 +188,31 @@ WindowWidget::showWindow()
 {
   if (AppBase::appOptions() & OptExclusive)
     {
-      ILOG_INFO(ILX_WINDOWWIDGET, "Creating cursor...\n");
+      // setup cursor
       IDirectFBImageProvider* provider;
       DFBSurfaceDescription desc;
-      AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-          ILIXI_DATADIR"images/pointer.png", &provider);
+      if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
+          ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
+        ILOG_THROW(ILX_WINDOWWIDGET,
+            "Error while creating cursor image provider!\n");
 
       provider->GetSurfaceDescription(provider, &desc);
-
       desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
           | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
       desc.caps = DSCAPS_PREMULTIPLIED;
       desc.pixelformat = DSPF_ARGB;
 
-      AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc, &_cursorImage);
+      if (AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
+          &_cursorImage) != DFB_OK)
+        ILOG_THROW(ILX_WINDOWWIDGET, "Error while creating cursor surface!\n");
 
       provider->RenderTo(provider, _cursorImage, NULL);
       provider->Release(provider);
 
+      // setup layer
       DFBGraphicsDeviceDescription deviceDesc;
       AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
 
-      ILOG_INFO(ILX_WINDOWWIDGET, "Setting layer configuration\n");
       DFBDisplayLayerConfig config;
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
           | DLCONF_WIDTH | DLCONF_HEIGHT | DLCONF_OPTIONS);
@@ -225,10 +230,14 @@ WindowWidget::showWindow()
       Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();
-      AppBase::__layer->SetConfiguration(AppBase::__layer, &config);
+      if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
+          != DFB_OK)
+        ILOG_THROW(ILX_WINDOWWIDGET,
+            "Error while setting layer configuration!\n");
 
-      ILOG_INFO(ILX_WINDOWWIDGET, "Getting layer surface\n");
-      AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface);
+      if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
+          != DFB_OK)
+        ILOG_THROW(ILX_WINDOWWIDGET, "Error while getting layer surface!\n");
 
       int w, h;
       _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
@@ -283,19 +292,13 @@ WindowWidget::closeWindow()
 }
 
 bool
-WindowWidget::keyListener(DFBInputDeviceKeySymbol key)
-{
-  return false;
-}
-
-bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
   // handle all other events...
   Widget* target = this;
-  Widget* grabbed = _eventManager->grabbedWidget();
-  if (grabbed && grabbed->visible())
-    target = grabbed;
+//  Widget* grabbed = _eventManager->grabbedWidget();
+//  if (grabbed && grabbed->visible())
+//    target = grabbed;
 
   switch (event.type)
     {
@@ -305,44 +308,42 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
   case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
     _eventManager->setExposedWidget(NULL,
-        PointerEvent(PointerMotion, event.x, event.y));
+        PointerEvent(PointerMotion, event.cx, event.cy));
     _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerMotion, event.x, event.y));
+        PointerEvent(PointerMotion, event.cx, event.cy));
     return true;
 
   case DWET_BUTTONUP:
     _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerButtonUp, event.x, event.y, 0,
+        PointerEvent(PointerButtonUp, event.cx, event.cy, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
     return target->consumePointerEvent(
-        PointerEvent(PointerButtonUp, event.x, event.y, 0,
+        PointerEvent(PointerButtonUp, event.cx, event.cy, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_BUTTONDOWN:
     return target->consumePointerEvent(
-        PointerEvent(PointerButtonDown, event.x, event.y, 0,
+        PointerEvent(PointerButtonDown, event.cx, event.cy, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_MOTION:
     return target->consumePointerEvent(
-        PointerEvent(PointerMotion, event.x, event.y, event.step,
+        PointerEvent(PointerMotion, event.cx, event.cy, event.step,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_WHEEL:
     ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
     return target->consumePointerEvent(
-        PointerEvent(PointerWheel, event.x, event.y, event.step,
+        PointerEvent(PointerWheel, event.cx, event.cy, event.step,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_KEYUP:
-    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_KEYUP: %c \n", event.key_code);
     if (_eventManager->focusedWidget())
       return _eventManager->focusedWidget()->consumeKeyEvent(
           KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers, event.locks));
     return false;
 
   case DWET_KEYDOWN:
-    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_KEYDOWN: %c \n", event.key_code);
     switch (event.key_symbol)
       {
 
@@ -408,15 +409,12 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
       } // end switch
 
-    if (keyListener(event.key_symbol))
-      return true;
+//    else if (_eventManager->grabbedWidget())
+//      return _eventManager->grabbedWidget()->consumeKeyEvent(
+//          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
+//              event.locks));
 
-    else if (_eventManager->grabbedWidget())
-      return _eventManager->grabbedWidget()->consumeKeyEvent(
-          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
-              event.locks));
-
-    else if (_eventManager->focusedWidget())
+    if (_eventManager->focusedWidget())
       return _eventManager->focusedWidget()->consumeKeyEvent(
           KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
               event.locks));

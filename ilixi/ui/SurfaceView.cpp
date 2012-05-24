@@ -34,7 +34,7 @@ namespace ilixi
       SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
           NULL), _windowID(0), _flipCount(0)
   {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyAndPointerInputTracking);
     sigGeometryUpdated.connect(
         sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
   }
@@ -266,6 +266,8 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_KEYDOWN;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
         event.key_symbol = keyEvent.keySymbol;
         event.modifiers = keyEvent.modifierMask;
@@ -283,6 +285,8 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_KEYUP;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
         event.key_symbol = keyEvent.keySymbol;
         event.modifiers = keyEvent.modifierMask;
@@ -300,9 +304,17 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_BUTTONDOWN;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
+
+        ILOG_INFO(ILX_SURFACEVIEW,
+            "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -319,9 +331,17 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_BUTTONUP;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
+
+        ILOG_INFO(ILX_SURFACEVIEW,
+            "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -338,9 +358,17 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_MOTION;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
+
+//        ILOG_INFO(ILX_SURFACEVIEW,
+//            "Motion E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -357,9 +385,14 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_WHEEL;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -377,6 +410,7 @@ namespace ilixi
 
         event.flags = DWEF_NONE;
         event.type = DWET_GOTFOCUS;
+        event.window_id = _windowID;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
       }
@@ -391,6 +425,7 @@ namespace ilixi
 
         event.flags = DWEF_NONE;
         event.type = DWET_LOSTFOCUS;
+        event.window_id = _windowID;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
       }
@@ -404,9 +439,17 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_ENTER;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
+
+        ILOG_INFO(ILX_SURFACEVIEW,
+            "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -423,9 +466,17 @@ namespace ilixi
         DFBWindowEvent event;
 
         event.type = DWET_LEAVE;
+        event.window_id = _windowID;
+        event.flags = DWEF_NONE;
 
-        event.x = event.cx = pointerEvent.x * hScale();
-        event.y = event.cy = pointerEvent.y * vScale();
+        event.x = pointerEvent.x * hScale() -absX();
+        event.y = pointerEvent.y * vScale() -absY();
+
+        event.cx = pointerEvent.x * hScale();
+        event.cy = pointerEvent.y * vScale();
+
+        ILOG_INFO(ILX_SURFACEVIEW,
+            "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;

@@ -23,7 +23,6 @@
 
 #include "core/Window.h"
 #include "core/AppBase.h"
-#include "core/IFusion.h"
 #include "core/Logger.h"
 #include <algorithm>
 

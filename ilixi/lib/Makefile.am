@@ -15,4 +15,4 @@ ilixi_include_HEADERS	=	Animation.h \
 						Easing.h \
 						Tween.h \
 						TweenAnimation.h \
-						Timer.h 
+						Timer.h
