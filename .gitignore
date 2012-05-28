@@ -3,3 +3,11 @@ aclocal.m4
 config.h.in
 configure
 autom4te.cache
+*.o
+*.lo
+Makefile
+*.m4
+Makefile.in
+*.la
+.deps
+.libs
