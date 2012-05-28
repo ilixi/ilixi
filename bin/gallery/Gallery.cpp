@@ -24,6 +24,7 @@
 #include "Gallery.h"
 #include "ImageWidget.h"
 #include "core/Logger.h"
+#include <sigc++/bind.h>
 
 using namespace ilixi;
 
@@ -47,7 +48,9 @@ Gallery::Gallery(int argc, char* argv[]) :
       widget->setImage(new Image(file, 196, 196));
       widget->setGeometry(x * w, y * h, w, h);
       ILOG_DEBUG(ILX, "%d%d - %d%d\n", x, y, w, h);
-      widget->sigPressed.connect(sigc::mem_fun(this, &Gallery::showImage));
+      widget->sigPressed.connect(
+          sigc::bind<std::string>(sigc::mem_fun(this, &Gallery::showImage),
+              file));
       addWidget(widget);
       x++;
       if (x > 3)

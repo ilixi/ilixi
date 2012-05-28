@@ -16,7 +16,7 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent) :
 {
   _inAni.setDuration(500);
   _inAni.sigExec.connect(sigc::mem_fun(this, &ImageWidget::tweenSlot));
-  _circleIn = new Tween(Tween::CIRCLE, Tween::EASE_OUT, 0, 1);
+  _circleIn = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
   _inAni.addTween(_circleIn);
   _bounceIn = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0, 1);
   _inAni.addTween(_bounceIn);
@@ -91,7 +91,7 @@ ImageWidget::updateTextLayoutGeometry()
 void
 ImageWidget::pointerButtonUpEvent(const PointerEvent& event)
 {
-  sigPressed(_layout.text());
+  sigPressed();
 }
 
 #if POINTER_MODE

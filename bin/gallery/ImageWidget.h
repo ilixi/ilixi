@@ -23,7 +23,7 @@ public:
   void
   setImage(ilixi::Image* image);
 
-  sigc::signal<void, std::string> sigPressed;
+  sigc::signal<void> sigPressed;
 
 protected:
   void
