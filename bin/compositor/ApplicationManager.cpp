@@ -557,11 +557,11 @@ namespace ilixi
 
     addApplication("Matrix", "df_matrix", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/matrix.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+        APP_NEEDS_CLEAR, DEP_NONE);
 
     addApplication("Knuckles", "df_knuckles", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/knuckles.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+        APP_NEEDS_CLEAR, DEP_NONE);
 
     addApplication("Particle", "df_particle", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/particle.png", "MIT", "Andreas Shimokawa", 1,

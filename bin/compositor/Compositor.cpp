@@ -37,14 +37,7 @@ namespace ilixi
   Compositor::Compositor(int argc, char* argv[]) :
       Application(argc, argv, OptExclusive), _appMan(NULL), _currentApp(NULL)
   {
-//    try
-//      {
-        _appMan = new ApplicationManager(this);
-//      }
-//    catch (const std::exception& e)
-//      {
-//        throw;
-//      }
+    _appMan = new ApplicationManager(this);
 
     setTitle("Compositor");
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
@@ -132,8 +125,9 @@ namespace ilixi
 
     if (show)
       {
-        _switcher->show();
         _switchButton->hide();
+        _switcher->show();
+        eventManager()->setGrabbedWidget(NULL);
       }
     else
       {

@@ -75,25 +75,25 @@ namespace ilixi
   AppThumbnail::focusInEvent()
   {
     sigFocused(this);
-    _ani.stop();
-    _opacityTween->setInitialValue(128);
-    _opacityTween->setEndValue(255);
-    _ani.start();
+//    _ani.stop();
+//    _opacityTween->setInitialValue(128);
+//    _opacityTween->setEndValue(255);
+//    _ani.start();
   }
 
   void
   AppThumbnail::focusOutEvent()
   {
-    _ani.stop();
-    _opacityTween->setInitialValue(255);
-    _opacityTween->setEndValue(128);
-    _ani.start();
+//    _ani.stop();
+//    _opacityTween->setInitialValue(255);
+//    _opacityTween->setEndValue(128);
+//    _ani.start();
   }
 
   void
   AppThumbnail::tweenSlot()
   {
-    setOpacity(_opacityTween->value());
+//    setOpacity(_opacityTween->value());
     update();
   }
 
