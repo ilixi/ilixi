@@ -553,7 +553,7 @@ namespace ilixi
 
     addApplication("Inputs", "df_input", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/input.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+        APP_NEEDS_CLEAR, DEP_NONE);
 
     addApplication("Matrix", "df_matrix", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/matrix.png", "MIT", "Andreas Shimokawa", 1,
