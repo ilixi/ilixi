@@ -34,7 +34,7 @@ Application::Application(int argc, char* argv[], AppOptions opts) :
 {
   // TODO parse command line arguments here...
   // parse app-meta file...
-  ILOG_TRACE(ILX_APPLICATION);
+  ILOG_TRACE_W(ILX_APPLICATION);
   initDFB(argc, argv);
   setStylist(new Stylist());
   setBackgroundFilled(false);
@@ -50,7 +50,7 @@ Application::~Application()
 {
   delete _backgroundImage;
   delete _stylist;
-  ILOG_TRACE(ILX_APPLICATION);
+  ILOG_TRACE_W(ILX_APPLICATION);
 }
 
 Image*
@@ -167,7 +167,7 @@ Application::postUserEvent(unsigned int type, void* data)
 void
 Application::compose(const PaintEvent& event)
 {
-  ILOG_TRACE(ILX_APPLICATION);
+  ILOG_TRACE_W(ILX_APPLICATION);
   Painter painter(this);
   painter.begin(event.rect);
   stylist()->drawAppFrame(&painter, this);
