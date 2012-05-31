@@ -28,9 +28,10 @@
 using namespace ilixi;
 
 Painter::Painter(Widget* widget) :
-    _myWidget(widget), dfbSurface(_myWidget->surface()->DFBSurface()), _brush(), _pen(), _font(), _state(
+    _myWidget(widget), dfbSurface(_myWidget->surface()->dfbSurface()), _brush(), _pen(), _font(), _state(
         None)
 {
+  _affine = NULL;
 }
 
 Painter::~Painter()
@@ -43,10 +44,11 @@ void
 Painter::begin(const Rectangle& rect)
 {
   _myWidget->surface()->lock();
-  _myWidget->surface()->clip(rect);
+  _myWidget->surface()->clip(
+      Rectangle(rect.x() - _myWidget->x(), rect.y() - _myWidget->y(),
+          rect.width(), rect.height()));
   _state = Active;
   applyBrush();
-
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
   dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
   ILOG_DEBUG(ILX_PAINTER, "begin() %p\n", this);
@@ -60,6 +62,15 @@ Painter::end()
       _state = None;
       if (_state & Clipped)
         _myWidget->surface()->resetClip();
+      if (_state & Transformed)
+        {
+          int32_t* tmp = _affine->invert().m();
+          dfbSurface->SetMatrix(dfbSurface, tmp);
+          dfbSurface->SetRenderOptions(dfbSurface, DSRO_NONE);
+          delete tmp;
+          delete _affine;
+        }
+
       _myWidget->surface()->unlock();
       ILOG_DEBUG(ILX_PAINTER, "end() %p\n", this);
     }
@@ -295,6 +306,25 @@ Painter::setPen(const Color& color)
 {
   _pen.setColor(color);
   ILOG_DEBUG(ILX_PAINTER, "setPen() %p\n", this);
+}
+
+void
+Painter::setAffine2D(const Affine2D& affine2D)
+{
+  if (_state & Active)
+    {
+      if (!_affine)
+        _affine = new Affine2D(affine2D);
+      else
+        *_affine *= affine2D;
+
+      dfbSurface->SetRenderOptions(dfbSurface, DSRO_MATRIX);
+      int32_t* tmp = affine2D.m();
+      dfbSurface->SetMatrix(dfbSurface, tmp);
+      delete tmp;
+      _state |= Transformed;
+      ILOG_DEBUG(ILX_PAINTER, "setAffine2D() %p\n", this);
+    }
 }
 
 void

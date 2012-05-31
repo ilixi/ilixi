@@ -29,6 +29,7 @@
 #include "types/Pen.h"
 #include "types/Font.h"
 #include "types/Image.h"
+#include "types/Affine2D.h"
 
 namespace ilixi
 {
@@ -299,6 +300,13 @@ namespace ilixi
     void
     setPen(const Color& color);
 
+    /*!
+     * Sets to transformation matrix.
+     * @param affine2D
+     */
+    void
+    setAffine2D(const Affine2D& affine2D);
+
   private:
     enum PainterFlags
     {
@@ -306,7 +314,8 @@ namespace ilixi
       Active = 0x001, //!< Painter is activated by begin()
       BrushActive = 0x002,
       FontModified = 0x004,
-      Clipped = 0x008
+      Clipped = 0x008,
+      Transformed = 0x010
     };
 
     //! This property holds Painter's current widget.
@@ -322,6 +331,8 @@ namespace ilixi
     Font _font;
     //! Set using painter flags
     unsigned char _state;
+
+    Affine2D* _affine;
 
     //! Apply brush to context if it is modified.
     void
