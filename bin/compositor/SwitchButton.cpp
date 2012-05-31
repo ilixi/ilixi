@@ -84,10 +84,10 @@ namespace ilixi
   }
 
   void
-  SwitchButton::compose(const Rectangle& rect)
+  SwitchButton::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(rect);
+    p.begin(event.rect);
     p.setBrush(Color(0, 0, 0, 255));
     p.drawImage(_image, -80 * _tween->value(), 80 * _tween->value());
     p.end();

@@ -123,22 +123,22 @@ namespace ilixi
   }
 
   void
-  VKMenu::paint(const Rectangle& rect)
+  VKMenu::paint(const PaintEvent& event)
   {
     if (visible())
       {
-        updateSurface();
-        Rectangle intersect = _frameGeometry.intersected(rect);
-        if (intersect.isValid())
+        PaintEvent evt(_frameGeometry, event);
+        if (evt.isValid())
           {
-            IDirectFBSurface* dfbSurface = surface()->DFBSurface();
+            updateSurface(evt);
+            IDirectFBSurface* dfbSurface = surface()->dfbSurface();
 
             if (_level1->visible())
               {
                 if (_level1->surface())
                   _level1->surface()->clear();
 
-                _level1->paint(intersect);
+                _level1->paint(evt);
                 _level1->surface()->flip();
 
                 dfbSurface->SetBlittingFlags(dfbSurface,
@@ -166,7 +166,7 @@ namespace ilixi
   }
 
   void
-  VKMenu::compose(const Rectangle& rect)
+  VKMenu::compose(const PaintEvent& event)
   {
   }
 

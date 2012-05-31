@@ -86,10 +86,10 @@ ScrollItem::pointerButtonDownEvent(const PointerEvent& event)
 }
 
 void
-ScrollItem::compose(const Rectangle& rect)
+ScrollItem::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
 
   // draw frame
   Color(51, 128, 204);
@@ -110,7 +110,7 @@ ScrollItem::compose(const Rectangle& rect)
 }
 
 void
-ScrollItem::updateTextLayoutGeometry()
+ScrollItem::updateTextBaseGeometry()
 {
   _layout.setBounds(50, 0, width() - 30, height());
   _layout.doLayout(font());

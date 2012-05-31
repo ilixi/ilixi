@@ -143,10 +143,10 @@ namespace ilixi
     drawCursor();
 
     void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
 
     virtual Font*
     defaultFont() const;

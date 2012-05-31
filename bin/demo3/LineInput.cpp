@@ -355,10 +355,10 @@ LineInput::drawCursor()
 }
 
 void
-LineInput::compose(const Rectangle& rect)
+LineInput::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
 
   if (state() & FocusedState)
     p.setPen(Color(51, 128, 204));
@@ -391,7 +391,7 @@ LineInput::compose(const Rectangle& rect)
 }
 
 void
-LineInput::updateTextLayoutGeometry()
+LineInput::updateTextBaseGeometry()
 {
   _layout.setBounds(borderOffset(), borderWidth(), width() - 2 * borderOffset(),
       height() - 2 * borderWidth());

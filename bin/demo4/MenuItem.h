@@ -61,10 +61,10 @@ namespace ilixi
     focusOutEvent();
 
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
 
   private:
     bool _doOut;

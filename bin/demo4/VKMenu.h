@@ -56,7 +56,7 @@ namespace ilixi
     tweenSlot();
 
     virtual void
-    paint(const Rectangle& rect);
+    paint(const PaintEvent& event);
 
   protected:
     ScrollArea* _level1;
@@ -68,7 +68,7 @@ namespace ilixi
     ImageDialog* _dialog;
 
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     void
     updateVKMenuGeometry();

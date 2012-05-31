@@ -30,13 +30,13 @@ protected:
   tweenSlot();
 
   virtual void
-  compose(const ilixi::Rectangle& rect);
+  compose(const ilixi::PaintEvent& event);
 
   virtual void
   pointerButtonUpEvent(const ilixi::PointerEvent& event);
 
   void
-  updateTextLayoutGeometry();
+  updateTextBaseGeometry();
 
 #if POINTER_MODE
   /*!

@@ -75,7 +75,7 @@ namespace ilixi
   }
 
   void
-  AppView::compose(const Rectangle& rect)
+  AppView::compose(const PaintEvent& event)
   {
   }
 

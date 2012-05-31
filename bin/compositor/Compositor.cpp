@@ -52,17 +52,20 @@ namespace ilixi
     addWidget(_switcher);
 
     _homeButton = new HomeButton();
+    _homeButton->setZ(20);
     _homeButton->sigPressed.connect(
         sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showLauncher), true));
     addWidget(_homeButton);
 
     _switchButton = new SwitchButton();
+    _switchButton->setZ(20);
     _switchButton->setVisible(false);
     _switchButton->sigPressed.connect(
         sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showSwitcher), true));
     addWidget(_switchButton);
 
     _quitButton = new QuitButton();
+    _quitButton->setZ(20);
     _quitButton->sigPressed.connect(
         sigc::mem_fun(this, &Compositor::handleQuit));
     addWidget(_quitButton);

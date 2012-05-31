@@ -52,7 +52,7 @@ namespace ilixi
     addButton(const std::string& name, const std::string& icon);
 
     void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
   private:
     Compositor* _compositor;

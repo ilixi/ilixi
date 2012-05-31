@@ -63,6 +63,7 @@ namespace ilixi
     LauncherButton* button = new LauncherButton(name, this);
     button->setFont(_font);
     button->setIcon(icon, Size(96, 96));
+    button->setZ(10);
     addChild(button);
 
     button->sigClicked.connect(
@@ -81,10 +82,10 @@ namespace ilixi
   }
 
   void
-  Launcher::compose(const Rectangle& rect)
+  Launcher::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(rect);
+    p.begin(event.rect);
     p.setBrush(Color(0, 0, 0, 120));
     p.fillRectangle(0, 0, width(), height());
     p.end();

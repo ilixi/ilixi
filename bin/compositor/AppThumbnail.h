@@ -49,7 +49,7 @@ namespace ilixi
 
   protected:
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     virtual void
     pointerButtonUpEvent(const PointerEvent& pointerEvent);

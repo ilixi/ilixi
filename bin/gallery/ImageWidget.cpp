@@ -8,6 +8,7 @@
 #include "ImageWidget.h"
 #include "graphics/Painter.h"
 #include "core/Logger.h"
+#include "ui/PushButton.h"
 
 using namespace ilixi;
 
@@ -29,6 +30,10 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent) :
   _outAni.addTween(_bounceOut);
 
   setInputMethod(KeyAndPointerInput);
+
+  PushButton* button = new PushButton("text");
+  button->setGeometry(10, 10, 50, 20);
+  addChild(button);
 }
 
 ImageWidget::~ImageWidget()
@@ -49,10 +54,10 @@ ImageWidget::tweenSlot()
 }
 
 void
-ImageWidget::compose(const Rectangle& rect)
+ImageWidget::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
 
   float val1 = _circleIn->value();
   float val2 = _bounceIn->value();
@@ -82,7 +87,7 @@ ImageWidget::compose(const Rectangle& rect)
 }
 
 void
-ImageWidget::updateTextLayoutGeometry()
+ImageWidget::updateTextBaseGeometry()
 {
   _layout.setBounds(0, 0, width() - 10, 50);
   _layout.doLayout(font());

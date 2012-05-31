@@ -86,7 +86,7 @@ namespace ilixi
     HBoxLayout* _box;
 
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     void
     updateSwitcherGeometry();

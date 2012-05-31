@@ -62,10 +62,10 @@ protected:
   pointerButtonDownEvent(const ilixi::PointerEvent& event);
 
   virtual void
-  compose(const ilixi::Rectangle& rect);
+  compose(const ilixi::PaintEvent& event);
 
   void
-  updateTextLayoutGeometry();
+  updateTextBaseGeometry();
 
 private:
   float _val1;

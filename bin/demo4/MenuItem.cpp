@@ -96,10 +96,10 @@ namespace ilixi
   }
 
   void
-  MenuItem::compose(const Rectangle& rect)
+  MenuItem::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(rect);
+    p.begin(event.rect);
 
     float val = _tweenIn->value();
     if (_doOut)
@@ -130,7 +130,7 @@ namespace ilixi
   }
 
   void
-  MenuItem::updateTextLayoutGeometry()
+  MenuItem::updateTextBaseGeometry()
   {
     Size s = textExtents();
     int x = (width() - s.width()) / 2;

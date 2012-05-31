@@ -53,7 +53,7 @@ namespace ilixi
   }
 
   void
-  AppThumbnail::compose(const Rectangle& rect)
+  AppThumbnail::compose(const PaintEvent& event)
   {
   }
 
