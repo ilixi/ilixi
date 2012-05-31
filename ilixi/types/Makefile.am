@@ -4,7 +4,8 @@ noinst_LTLIBRARIES 			= 	libilixi_types.la
 libilixi_types_la_CPPFLAGS 	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ 
 libilixi_types_la_CFLAGS 	= 	$(AM_CFLAGS)
 libilixi_types_la_LIBADD 	= 	@DEPS_LIBS@
-libilixi_types_la_SOURCES 	=	BoxLayout.cpp \
+libilixi_types_la_SOURCES 	=	Affine2D.cpp \
+							BoxLayout.cpp \
           					Brush.cpp \
           					Color.cpp \
           					Font.cpp \
@@ -19,7 +20,8 @@ libilixi_types_la_SOURCES 	=	BoxLayout.cpp \
           					WidgetLayout.cpp
 
 ilixi_includedir 			= 	$(includedir)/$(PACKAGE)-$(VERSION)/types
-nobase_ilixi_include_HEADERS 	= 	BoxLayout.h \
+nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
+							BoxLayout.h \
           					Brush.h \
           					Color.h \
           					Enums.h \
