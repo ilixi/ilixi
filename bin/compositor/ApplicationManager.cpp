@@ -543,10 +543,6 @@ namespace ilixi
         ILIXI_DATADIR"compositor/input.png", "MIT", "Andreas Shimokawa", 1,
         APP_NEEDS_CLEAR, DEP_MOUSE);
 
-    addApplication("Penguins", "df_andi", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
-
     addApplication("Neo", "df_neo", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/neo.png", "MIT", "Andreas Shimokawa", 1,
         APP_NONE, DEP_NONE);
@@ -567,9 +563,23 @@ namespace ilixi
         ILIXI_DATADIR"compositor/particle.png", "MIT", "Andreas Shimokawa", 1,
         APP_NONE, DEP_NONE);
 
+#ifdef ILIXI_STEREO_OUTPUT
+    addApplication("Texture", "df_texture3d", "--dfb:force-windowed",
+          ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
+          APP_NEEDS_CLEAR, DEP_NONE);
+
+    addApplication("Penguins", "df_andi3d", "--dfb:force-windowed",
+        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
+        APP_NONE, DEP_NONE);
+#else
     addApplication("Texture", "df_texture", "--dfb:force-windowed",
         ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
         APP_NEEDS_CLEAR, DEP_NONE);
+
+    addApplication("Penguins", "df_andi", "--dfb:force-windowed",
+        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
+        APP_NONE, DEP_NONE);
+#endif
 
     // lite
     addApplication("DFBTerm", "dfbterm", "",
@@ -582,6 +592,10 @@ namespace ilixi
 
     // ilixi
     addApplication("Gallery", "ilixi_demo1", "",
+        ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
+        APP_ILIXI, DEP_MOUSE);
+
+    addApplication("Carousel", "ilixi_carousel", "",
         ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
         APP_ILIXI, DEP_MOUSE);
 
