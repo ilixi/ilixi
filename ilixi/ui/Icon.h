@@ -77,7 +77,7 @@ namespace ilixi
     updateImageSize();
 
     void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
   };
 

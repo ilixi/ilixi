@@ -28,18 +28,21 @@
 using namespace ilixi;
 
 Label::Label(std::string text, Widget* parent) :
-  Widget(parent), BorderBase(this), TextBase(text, this), _margin(0)
+    Widget(parent), BorderBase(this), TextBase(text, this), _margin(0)
 {
   setConstraints(NoConstraint, MinimumConstraint);
+  ILOG_TRACE(ILX_LABEL);
 }
 
 Label::Label(const Label& label) :
-  BorderBase(label), TextBase(label), _margin(label._margin)
+    BorderBase(label), TextBase(label), _margin(label._margin)
 {
+  ILOG_TRACE(ILX_LABEL);
 }
 
 Label::~Label()
 {
+  ILOG_TRACE(ILX_LABEL);
 }
 
 int
@@ -70,17 +73,18 @@ Label::setMargin(const Margin& margin)
 }
 
 void
-Label::compose(const Rectangle& rect)
+Label::compose(const PaintEvent& event)
 {
+  ILOG_TRACE(ILX_LABEL);
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawFrame(&p, this);
   stylist()->drawLabel(&p, this);
   p.end();
 }
 
 void
-Label::updateTextLayoutGeometry()
+Label::updateTextBaseGeometry()
 {
   _layout.setBounds(_margin.right() + borderOffset(),
       _margin.top() + borderWidth(),

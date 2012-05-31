@@ -139,10 +139,10 @@ Icon::updateImageSize()
 }
 
 void
-Icon::compose(const Rectangle& rect)
+Icon::compose(const PaintEvent& event)
 {
   Painter painter(this);
-  painter.begin(rect);
+  painter.begin(event.rect);
   stylist()->drawIcon(&painter, this);
   painter.end();
 }

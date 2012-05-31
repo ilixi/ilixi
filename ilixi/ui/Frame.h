@@ -128,7 +128,7 @@ namespace ilixi
      * set to canvasWidth() and canvasHeight() of frame respectively.
      */
     virtual void
-    updateLayoutGeometry();
+    updateContainerGeometry();
 
     /*!
      * Draw frame borders.
@@ -136,7 +136,7 @@ namespace ilixi
      * @param rect
      */
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     /*!
      * Returns frame's canvas x-coordinate including the left margin.

@@ -88,7 +88,7 @@ namespace ilixi
     setSourceFromWindow(IDirectFBWindow* window);
 
     void
-    paint(const Rectangle& targetArea);
+    paint(const PaintEvent& event);
 
   protected:
     /*!
@@ -107,13 +107,13 @@ namespace ilixi
      * Reimplement for decorations.
      */
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     /*!
      * Blits source surface on itself.
      */
     virtual void
-    renderSource(const Rectangle& rect);
+    renderSource(const PaintEvent& event);
 
   private:
     //! This property stores the scale ratio in horizontal direction.
@@ -126,6 +126,9 @@ namespace ilixi
     DFBWindowID _windowID;
     //! This property stores the flip counter for last update.
     unsigned int _flipCount;
+#ifdef ILIXI_STEREO_OUTPUT
+    bool _sourceStereo;
+#endif
 
     void
     onSourceUpdate(const DFBSurfaceEvent& event);

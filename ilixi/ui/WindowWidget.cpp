@@ -33,6 +33,7 @@ IDirectFBSurface* WindowWidget::_cursorImage = NULL;
 WindowWidget::WindowWidget(Widget* parent) :
     Frame(parent), _window(NULL), _eventManager(NULL)
 {
+  ILOG_DEBUG(ILX_WINDOWWIDGET, "WindowWidget\n");
   setVisible(false);
   pthread_mutex_init(&_updates._listLock, NULL);
   sem_init(&_updates._updateReady, 0, 0);
@@ -46,8 +47,8 @@ WindowWidget::WindowWidget(Widget* parent) :
     {
       if (AppBase::activeWindow())
         {
-          ILOG_ERROR(ILX_WINDOWWIDGET,
-              "Error cannot have multiple windows in exclusive mode!\n");
+          ILOG_ERROR(
+              ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
           exit(1);
         }
     }
@@ -74,7 +75,7 @@ WindowWidget::~WindowWidget()
       if (_cursorImage)
         _cursorImage->Release(_cursorImage);
     }
-  ILOG_DEBUG(ILX_WINDOWWIDGET, "~WindowWidget %p\n", this);
+  ILOG_TRACE_W(ILX_WINDOWWIDGET);
 }
 
 EventManager* const
@@ -86,11 +87,12 @@ WindowWidget::windowEventManager() const
 void
 WindowWidget::doLayout()
 {
+  ILOG_TRACE_W(ILX_WINDOWWIDGET);
   update();
 }
 
 void
-WindowWidget::paint(const Rectangle& rect)
+WindowWidget::paint(const PaintEvent& event)
 {
   if (visible())
     {
@@ -99,29 +101,31 @@ WindowWidget::paint(const Rectangle& rect)
       if (ready)
         {
           sem_wait(&_updates._updateReady);
-          updateSurface();
-          Rectangle intersect = _frameGeometry.intersected(
-              _updates._updateRegion);
+
+          PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
+              PaintEvent::LeftEye);
 
           //          DFBRegion r = intersect.dfbRegion();
           //          _window->BeginUpdates(_window, &r);
 
-          if (intersect.isValid())
+          if (evt.isValid())
             {
+              ILOG_TRACE_W(ILX_WINDOWWIDGET);
+              updateSurface(evt);
 #ifdef ILIXI_STEREO_OUTPUT
               // Left eye
-              surface()->DFBSurface()->SetStereoEye(surface()->DFBSurface(),
+              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
                   DSSE_LEFT);
-              surface()->clip(intersect);
+              surface()->clip(evt.rect);
               if (_backgroundFlags & BGFFill)
                 {
-                  surface()->clear(intersect);
-                  compose(rect);
+                  surface()->clear(evt.rect);
+                  compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-              surface()->clear(intersect);
+              surface()->clear(evt.rect);
 
-              paintChildren(intersect);
+              paintChildren(evt);
 
               if (AppBase::appOptions() & OptExclusive)
                 {
@@ -132,19 +136,20 @@ WindowWidget::paint(const Rectangle& rect)
                 }
 
               // Right eye
-              surface()->DFBSurface()->SetStereoEye(surface()->DFBSurface(),
+              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
                   DSSE_RIGHT);
+              evt.eye = PaintEvent::RightEye;
 #endif
-              surface()->clip(intersect);
+              surface()->clip(evt.rect);
               if (_backgroundFlags & BGFFill)
                 {
-                  surface()->clear(intersect);
-                  compose(rect);
+                  surface()->clear(evt.rect);
+                  compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-                surface()->clear(intersect);
+                surface()->clear(evt.rect);
 
-              paintChildren(intersect);
+              paintChildren(evt);
 
               if (AppBase::appOptions() & OptExclusive)
                 {
@@ -155,9 +160,9 @@ WindowWidget::paint(const Rectangle& rect)
                 }
 
 #ifdef ILIXI_STEREO_OUTPUT
-              surface()->flipStereo(intersect);
+              surface()->flipStereo(evt.rect);
 #else
-              surface()->flip(intersect);
+              surface()->flip(evt.rect);
 #endif
             }
           sem_post(&_updates._paintReady);
@@ -165,7 +170,7 @@ WindowWidget::paint(const Rectangle& rect)
       else
         {
           pthread_mutex_lock(&_updates._listLock);
-          _updates._updateQueue.push_back(rect);
+          _updates._updateQueue.push_back(event.rect);
           pthread_mutex_unlock(&_updates._listLock);
         }
     }
@@ -179,13 +184,14 @@ WindowWidget::repaint(const Rectangle& rect)
       sem_wait(&_updates._paintReady);
       _updates._updateRegion = rect;
       sem_post(&_updates._updateReady);
-      paint(_updates._updateRegion);
+      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
     }
 }
 
 void
 WindowWidget::showWindow()
 {
+  ILOG_TRACE_W(ILX_WINDOWWIDGET);
   if (AppBase::appOptions() & OptExclusive)
     {
       // setup cursor
@@ -227,7 +233,6 @@ WindowWidget::showWindow()
       config.options = DLOP_NONE;
 #endif
 
-      Size s = preferredSize();
       config.width = 800; //s.width();
       config.height = 600; //s.height();
       if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
@@ -264,8 +269,8 @@ WindowWidget::showWindow()
   if (!_eventManager->focusedWidget())
     _eventManager->selectNeighbour(Right);
 
-  paint(Rectangle(0, 0, width(), height()));
-
+  paint(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
+  updateWindow();
   if (!(AppBase::appOptions() & OptExclusive))
     _window->showWindow();
 
@@ -275,6 +280,7 @@ WindowWidget::showWindow()
 void
 WindowWidget::closeWindow()
 {
+  ILOG_TRACE_W(ILX_WINDOWWIDGET);
   setVisible(false);
 
   if (!(AppBase::appOptions() & OptExclusive))
@@ -402,9 +408,12 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     case DIKS_TAB: // handle TAB release.
       if (event.modifiers == DIMM_SHIFT)
-        _eventManager->selectPrevious();
+//        _eventManager->selectPrevious();
+        ILOG_DEBUG(
+            ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectPrevious());
       else
-        _eventManager->selectNext();
+//        _eventManager->selectNext();
+        ILOG_DEBUG(ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectNext());
       return true;
 
       } // end switch
@@ -436,6 +445,7 @@ WindowWidget::updateWindow()
       pthread_mutex_unlock(&_updates._listLock);
       return;
     }
+  ILOG_TRACE_W(ILX_WINDOWWIDGET);
 
   Rectangle updateTemp = _updates._updateQueue[0];
   if (size > 1)
@@ -447,9 +457,14 @@ WindowWidget::updateWindow()
   if (!updateTemp.isNull())
     {
       sem_wait(&_updates._paintReady);
+#ifdef ILIXI_STEREO_OUTPUT
+      _updates._updateRegion = _frameGeometry;
+#else
       _updates._updateRegion = updateTemp;
+#endif
+
       sem_post(&_updates._updateReady);
-      paint(_updates._updateRegion);
+      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
     }
   pthread_mutex_unlock(&_updates._listLock);
 }

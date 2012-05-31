@@ -24,8 +24,8 @@
 #ifndef ILIXI_SURFACE_H_
 #define ILIXI_SURFACE_H_
 
-#include "types/Rectangle.h"
-#include <string>
+#include "types/Event.h"
+#include "ilixiConfig.h"
 
 namespace ilixi
 {
@@ -70,13 +70,13 @@ namespace ilixi
      * Returns the interface to the underlying DirectFB surface.
      */
     IDirectFBSurface*
-    DFBSurface();
+    dfbSurface();
 
     /*!
      * Returns the DirectFB surface ID, if there is no surface returns 0.
      */
     DFBSurfaceID
-    DFBSurfaceId() const;
+    dfbSurfaceId() const;
 
     /*!
      * This method is used for modifying the current geometry of DirectFB surface.
@@ -110,9 +110,6 @@ namespace ilixi
      */
     void
     flip(const Rectangle& rect);
-
-    void
-    flipStereo(const Rectangle& rect);
 
     /*!
      * Lock surface mutex. This is mainly used by Painter to serialise updates.
@@ -202,12 +199,40 @@ namespace ilixi
     void
     setOpacity(u8 opacity);
 
+#ifdef ILIXI_STEREO_OUTPUT
+    bool
+    createDFBSubSurfaceStereo(const Rectangle& geometry,
+        IDirectFBSurface* parent, int zIndex);
+
+    void
+    setStereoGeometry(const Rectangle& geometry, int zIndex);
+
+    void
+    setStereoGeometry(int x, int y, int width, int height, int zIndex);
+
+    PaintEvent::PaintEventEye
+    stereoEye() const;
+
+    void
+    setStereoEye(PaintEvent::PaintEventEye eye);
+
+    IDirectFBSurface*
+    getStereoSurface(PaintEvent::PaintEventEye eye);
+
+    void
+    flipStereo(const Rectangle& rect);
+#endif
+
   private:
     //! Interface to DFB surface.
     IDirectFBSurface* _dfbSurface;
     //! Interface to parent DFB surface.
     IDirectFBSurface* _parentSurface;
 
+#ifdef ILIXI_STEREO_OUTPUT
+    IDirectFBSurface* _rightSurface;
+    PaintEvent::PaintEventEye _eye;
+#endif
     //! This mutex is used for serialising writes to surface by Painter.
     pthread_mutex_t _surfaceLock;
 

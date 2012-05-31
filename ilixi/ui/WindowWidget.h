@@ -68,7 +68,7 @@ namespace ilixi
      * formed by updateWindow or repaint methods.
      */
     virtual void
-    paint(const Rectangle& rect);
+    paint(const PaintEvent& event);
 
     /*!
      * Immediately repaints inside given rectangle.

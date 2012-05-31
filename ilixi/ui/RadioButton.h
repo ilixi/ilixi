@@ -57,10 +57,10 @@ namespace ilixi
     informGroup(bool checked);
 
     void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     virtual void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
   };
 
 } /* namespace ilixi */

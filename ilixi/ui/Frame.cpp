@@ -37,7 +37,7 @@ Frame::Frame(Widget* parent) :
 
 Frame::~Frame()
 {
-  ILOG_DEBUG(ILX_FRAME, "~Frame %p\n", this);
+  ILOG_TRACE(ILX_FRAME);
 }
 
 int
@@ -97,16 +97,18 @@ Frame::setMargin(const Margin& margin)
 }
 
 void
-Frame::updateLayoutGeometry()
+Frame::updateContainerGeometry()
 {
+  ILOG_TRACE(ILX_FRAME);
   _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
 
 void
-Frame::compose(const Rectangle& rect)
+Frame::compose(const PaintEvent& event)
 {
+  ILOG_TRACE(ILX_FRAME);
   Painter painter(this);
-  painter.begin(rect);
+  painter.begin(event.rect);
   stylist()->drawFrame(&painter, this);
   painter.end();
 }

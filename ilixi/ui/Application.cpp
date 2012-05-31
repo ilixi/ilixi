@@ -34,6 +34,7 @@ Application::Application(int argc, char* argv[], AppOptions opts) :
 {
   // TODO parse command line arguments here...
   // parse app-meta file...
+  ILOG_TRACE(ILX_APPLICATION);
   initDFB(argc, argv);
   setStylist(new Stylist());
   setBackgroundFilled(false);
@@ -49,7 +50,7 @@ Application::~Application()
 {
   delete _backgroundImage;
   delete _stylist;
-  ILOG_DEBUG(ILX_APPLICATION, "~Application %p\n", this);
+  ILOG_TRACE(ILX_APPLICATION);
 }
 
 Image*
@@ -84,7 +85,7 @@ Application::exec()
   if (_backgroundImage)
     _backgroundImage->setSize(width(), height());
 
-  fpsInit(&_fps);
+//  fpsInit(&_fps);
 
   while (true)
     {
@@ -95,8 +96,8 @@ Application::exec()
           runCallbacks();
           handleEvents();
           updateWindows();
-          ILOG_DEBUG(ILX_APPLICATION, "FPS: %s\n", _fps.fps_string);
-          fpsCount(&_fps, 1000);
+//          ILOG_DEBUG(ILX_APPLICATION, "FPS: %s\n", _fps.fps_string);
+//          fpsCount(&_fps, 1000);
         }
     }
 
@@ -164,10 +165,11 @@ Application::postUserEvent(unsigned int type, void* data)
 }
 
 void
-Application::compose(const Rectangle& rect)
+Application::compose(const PaintEvent& event)
 {
+  ILOG_TRACE(ILX_APPLICATION);
   Painter painter(this);
-  painter.begin(rect);
+  painter.begin(event.rect);
   stylist()->drawAppFrame(&painter, this);
   painter.end();
 }

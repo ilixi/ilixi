@@ -91,10 +91,10 @@ namespace ilixi
     pointerWheelEvent(const PointerEvent& event);
 
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     virtual void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
 
     virtual Font*
     defaultFont() const;

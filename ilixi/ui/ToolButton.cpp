@@ -130,16 +130,16 @@ ToolButton::setToolButtonStyle(ToolButtonStyle style)
 }
 
 void
-ToolButton::compose(const Rectangle& rect)
+ToolButton::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawToolButton(&p, this);
   p.end();
 }
 
 void
-ToolButton::updateTextLayoutGeometry()
+ToolButton::updateTextBaseGeometry()
 {
   // Fixme align icon vertically.
   int textHeight = textExtents().height();

@@ -114,7 +114,7 @@ namespace ilixi
      * Tiles if modified and paints children.
      */
     virtual void
-    paint(const Rectangle& targetArea);
+    paint(const PaintEvent& event);
 
   protected:
     //! This flag specifies whether layout is modified since latest tiling operation.
@@ -134,7 +134,7 @@ namespace ilixi
      * Does nothing.
      */
     void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
   private:
     RadioGroup* _group;

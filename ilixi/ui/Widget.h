@@ -52,6 +52,9 @@ namespace ilixi
     friend class WidgetLayout;
     friend class ScrollArea; // Blit
 
+    friend bool
+    compareZ(Widget* first, Widget* second);
+
   public:
     /*!
      * Constructor.
@@ -77,6 +80,12 @@ namespace ilixi
     ~Widget();
 
     /*!
+     * Returns widget's unique id.
+     */
+    unsigned int
+    id() const;
+
+    /*!
      * Returns x coordinate of the widget relative to its parent.
      */
     int
@@ -87,6 +96,12 @@ namespace ilixi
      */
     int
     y() const;
+
+    /*!
+     * Returns position on z axis.
+     */
+    int
+    z() const;
 
     /*!
      * Returns absolute x coordinate of the widget in window coordinates.
@@ -339,6 +354,14 @@ namespace ilixi
     setY(int y);
 
     /*!
+     * Sets the widget's position on z axis.
+     *
+     * @param zIndex
+     */
+    void
+    setZ(int z);
+
+    /*!
      * Sets the widget's surface height in pixels.
      *
      * @param height in pixels
@@ -523,12 +546,12 @@ namespace ilixi
      *
      * Warning: You should not override this method unless you know what you are doing.
      *
-     * @param targetArea Bounding rectangle to paint in absolute coordinates.
+     * @param event A paintEvent which includes bounding rectangle to paint.
      *
      * @sa compose()
      */
     virtual void
-    paint(const Rectangle& targetArea);
+    paint(const PaintEvent& event);
 
     /*!
      * Repaints widget immediately without any clipping.
@@ -827,14 +850,14 @@ namespace ilixi
      * @param rect bounding rectangle in absolute coordinates.
      */
     virtual void
-    paintChildren(const Rectangle& rect);
+    paintChildren(const PaintEvent& event);
 
     /*!
      * This method is called within widget's paint method in order to initialise or
      * modify widget's surface and update the geometry of widget's frame and children.
      */
     void
-    updateSurface();
+    updateSurface(const PaintEvent& event);
 
     /*!
      * This method updates widget's absolute geometry and it is called when
@@ -849,7 +872,7 @@ namespace ilixi
      * Reimplement this method in derived classes.
      */
     virtual void
-    compose(const Rectangle& rect)=0;
+    compose(const PaintEvent& event)=0;
 
     /*!
      * This method is called if a key is pressed while the widget has focus.
@@ -989,6 +1012,8 @@ namespace ilixi
      * disable maximum size for width or height use 0 for that value.
      */
     Size _maxSize;
+
+    int _z;
 
     unsigned int _id;
 

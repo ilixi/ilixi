@@ -102,6 +102,37 @@ namespace ilixi
     PointerButtonMask buttonMask;
     long timestamp;
   };
+
+  struct PaintEvent
+  {
+    enum PaintEventEye
+    {
+      LeftEye, RightEye, BothEyes
+    };
+
+    PaintEvent()
+    {
+    }
+
+    PaintEvent(Rectangle r, const PaintEvent& evt) :
+        rect(r.intersected(evt.rect)), eye(evt.eye)
+    {
+    }
+
+    PaintEvent(Rectangle r, PaintEventEye e) :
+        rect(r), eye(e)
+    {
+    }
+
+    bool
+    isValid()
+    {
+      return rect.isValid();
+    }
+
+    Rectangle rect;
+    PaintEventEye eye;
+  };
 }
 
 #endif /* ILIXI_EVENTS_H_ */

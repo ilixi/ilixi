@@ -27,11 +27,20 @@
 
 using namespace ilixi;
 
+#ifdef ILIXI_STEREO_OUTPUT
+Surface::Surface() :
+_dfbSurface(NULL), _parentSurface(NULL), _rightSurface(NULL), _eye(
+    PaintEvent::LeftEye)
+  {
+    pthread_mutex_init(&_surfaceLock, NULL);
+  }
+#else
 Surface::Surface() :
     _dfbSurface(NULL), _parentSurface(NULL)
 {
   pthread_mutex_init(&_surfaceLock, NULL);
 }
+#endif
 
 Surface::~Surface()
 {
@@ -78,18 +87,30 @@ Surface::createDFBSubSurface(const Rectangle& geometry,
           "Cannot get sub-surface: %s", DirectFBErrorString(ret));
       return false;
     }
-  _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+  ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+  if (ret)
+    {
+      ILOG_ERROR( ILX_SURFACE,
+          "Cannot set blitting flags of sub-surface: %s", DirectFBErrorString(ret));
+      return false;
+    }
   return true;
 }
 
 IDirectFBSurface*
-Surface::DFBSurface()
+Surface::dfbSurface()
 {
+#ifdef ILIXI_STEREO_OUTPUT
+  if (_eye == PaintEvent::LeftEye)
   return _dfbSurface;
+  return _rightSurface;
+#else
+  return _dfbSurface;
+#endif
 }
 
 DFBSurfaceID
-Surface::DFBSurfaceId() const
+Surface::dfbSurfaceId() const
 {
   unsigned int id = 0;
   if (_dfbSurface)
@@ -119,7 +140,7 @@ Surface::setGeometry(int x, int y, int width, int height)
             "Cannot set geometry: %s\n", DirectFBErrorString(ret));
     }
   else
-    ILOG_ERROR(ILX_SURFACE,
+    ILOG_ERROR( ILX_SURFACE,
         "No Parent Surface, need to create surface again!\n");
 }
 
@@ -129,30 +150,20 @@ Surface::flip()
   DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_WAITFORSYNC);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
-  ILOG_DEBUG(ILX_SURFACE, "Flip ()\n");
+  else
+    ILOG_DEBUG(ILX_SURFACE, "[%p] %s\n", this, __FUNCTION__);
 }
 
 void
 Surface::flip(const Rectangle& rect)
 {
   DFBRegion r = rect.dfbRegion();
-  ILOG_DEBUG(ILX_SURFACE,
-      "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
   DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_BLIT);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
-}
-
-void
-Surface::flipStereo(const Rectangle& rect)
-{
-  DFBRegion r = rect.dfbRegion();
-  ILOG_DEBUG(ILX_SURFACE,
-      "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
-  DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &r, &r,
-      DSFLIP_WAITFORSYNC);
-  if (ret)
-    ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+  else
+    ILOG_DEBUG(ILX_SURFACE,
+        "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
 }
 
 void
@@ -177,7 +188,8 @@ Surface::clear()
   DFBResult ret = _dfbSurface->Clear(_dfbSurface, 0, 0, 0, 0);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Clear error: %s\n", DirectFBErrorString(ret));
-  ILOG_DEBUG(ILX_SURFACE, "Clear\n");
+  else
+    ILOG_DEBUG(ILX_SURFACE, "Clear\n");
 }
 
 void
@@ -187,7 +199,7 @@ Surface::clear(const Rectangle& rect)
   _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, 0);
   _dfbSurface->FillRectangle(_dfbSurface, rect.x(), rect.y(), rect.width(),
       rect.height());
-  ILOG_DEBUG(ILX_SURFACE,
+  ILOG_DEBUG( ILX_SURFACE,
       "Clear (%d, %d, %d, %d)\n", rect.x(), rect.y(), rect.width(), rect.height());
 }
 
@@ -196,6 +208,8 @@ Surface::clip(const Rectangle& rect)
 {
   DFBRegion r = rect.dfbRegion();
   _dfbSurface->SetClip(_dfbSurface, &r);
+  ILOG_DEBUG(ILX_SURFACE,
+      "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
 }
 
 void
@@ -213,6 +227,9 @@ Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
       DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, &r, x, y);
       if (ret)
         ILOG_ERROR(ILX_SURFACE, "Blit error: %s\n", DirectFBErrorString(ret));
+      else
+        ILOG_DEBUG(ILX_SURFACE,
+            "[%p] %s Rect(%d, %d, %d, %d) P(%d, %d)\n", this, __FUNCTION__, crop.x(), crop.y(), crop.width(), crop.height(), x, y);
     }
 }
 
@@ -224,6 +241,9 @@ Surface::blit(IDirectFBSurface* source, int x, int y)
       DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, NULL, x, y);
       if (ret)
         ILOG_ERROR(ILX_SURFACE, "Blit error: %s\n", DirectFBErrorString(ret));
+      else
+        ILOG_DEBUG(ILX_SURFACE,
+            "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
     }
 }
 
@@ -231,7 +251,7 @@ void
 Surface::blit(Surface* source, const Rectangle& crop, int x, int y)
 {
   if (source)
-    blit(source->DFBSurface(), crop, x, y);
+    blit(source->dfbSurface(), crop, x, y);
 }
 
 void
@@ -239,10 +259,13 @@ Surface::blit(Surface* source, int x, int y)
 {
   if (source)
     {
-      DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->DFBSurface(), NULL,
+      DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->dfbSurface(), NULL,
           x, y);
       if (ret)
         ILOG_ERROR(ILX_SURFACE, "Blit error: %s\n", DirectFBErrorString(ret));
+      else
+        ILOG_DEBUG(ILX_SURFACE,
+            "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
     }
 }
 
@@ -255,13 +278,122 @@ Surface::setOpacity(u8 opacity)
           (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
               | DSBLIT_BLEND_COLORALPHA));
       _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, opacity);
+      ILOG_DEBUG(ILX_SURFACE, "[%p] %s %u\n", this, __FUNCTION__, opacity);
     }
 }
+
+#ifdef ILIXI_STEREO_OUTPUT
+bool
+Surface::createDFBSubSurfaceStereo(const Rectangle& geometry,
+    IDirectFBSurface* parent, int zIndex)
+  {
+    release();
+    DFBRectangle r = geometry.dfbRect();
+    _parentSurface = parent;
+
+    r.x += zIndex;
+    DFBResult ret = _parentSurface->GetSubSurface(_parentSurface, &r,
+        &_dfbSurface);
+    if (ret)
+      {
+        ILOG_ERROR( ILX_SURFACE,
+            "Cannot get sub-surface left: %s", DirectFBErrorString(ret));
+        return false;
+      }
+    ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+
+    r.x -= zIndex + zIndex;
+    ret = _parentSurface->GetSubSurface(_parentSurface, &r, &_rightSurface);
+    if (ret)
+      {
+        ILOG_ERROR( ILX_SURFACE,
+            "Cannot get sub-surface right: %s", DirectFBErrorString(ret));
+        return false;
+      }
+    ret = _rightSurface->SetBlittingFlags(_rightSurface,
+        DSBLIT_BLEND_ALPHACHANNEL);
+
+    return true;
+  }
+
+void
+Surface::setStereoGeometry(const Rectangle& geometry, int zIndex)
+  {
+    setStereoGeometry(geometry.x(), geometry.y(), geometry.width(),
+        geometry.height(), zIndex);
+  }
+
+void
+Surface::setStereoGeometry(int x, int y, int width, int height, int zIndex)
+  {
+    DFBRectangle r =
+      { x, y, width, height};
+    if (_parentSurface)
+      {
+
+        r.x += zIndex;
+        DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
+            &r);
+        if (ret)
+        ILOG_ERROR( ILX_SURFACE,
+            "Cannot set left geometry: %s\n", DirectFBErrorString(ret));
+
+        r.x -= zIndex + zIndex;
+        ret = _rightSurface->MakeSubSurface(_rightSurface, _parentSurface, &r);
+        if (ret)
+        ILOG_ERROR( ILX_SURFACE,
+            "Cannot set right geometry: %s\n", DirectFBErrorString(ret));
+      }
+    else
+    ILOG_ERROR(ILX_SURFACE,
+        "No Parent Surface, need to create surface again!\n");
+  }
+
+PaintEvent::PaintEventEye
+Surface::stereoEye() const
+  {
+    return _eye;
+  }
+
+void
+Surface::setStereoEye(PaintEvent::PaintEventEye eye)
+  {
+    _eye = eye;
+  }
+
+IDirectFBSurface*
+Surface::getStereoSurface(PaintEvent::PaintEventEye eye)
+  {
+    if (eye == PaintEvent::LeftEye)
+    return _dfbSurface;
+    return _rightSurface;
+  }
+
+void
+Surface::flipStereo(const Rectangle& rect)
+  {
+    DFBRegion r = rect.dfbRegion();
+    ILOG_DEBUG(ILX_SURFACE,
+        "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
+    DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &r, &r,
+        DSFLIP_WAITFORSYNC);
+    if (ret)
+    ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+  }
+
+#endif
 
 void
 Surface::release()
 {
   lock();
+#ifdef ILIXI_STEREO_OUTPUT
+  if (_rightSurface)
+    {
+      _rightSurface->Release(_rightSurface);
+      _rightSurface = NULL;
+    }
+#endif
   if (_dfbSurface)
     {
       _dfbSurface->Release(_dfbSurface);

@@ -34,7 +34,7 @@ Button::Button(const std::string& text, Widget* parent) :
 
 Button::~Button()
 {
-  ILOG_DEBUG(ILX_BUTTON, "~Button %p\n", this);
+  ILOG_TRACE(ILX_BUTTON);
 }
 
 bool

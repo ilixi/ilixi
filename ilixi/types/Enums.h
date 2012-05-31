@@ -45,11 +45,11 @@ namespace ilixi
    */
   enum SurfaceFlags
   {
-    InitialiseSurface = 0x01, //!< Set if widget should (re)initialise its surface.
-    SurfaceModified = 0x02, //!< Set if widget's surface geometry is modified.
-    HasOwnSurface = 0x08, //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
-    RootSurface = 0x10
-  //!< Widget's surface is directly acquired from root Window (not a sub-surface).
+    InitialiseSurface = 0x001, //!< Set if widget should (re)initialise its surface.
+    SurfaceModified = 0x002, //!< Set if widget's surface geometry is modified.
+    HasOwnSurface = 0x008, //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+    RootSurface = 0x010, //!< Widget's surface is directly acquired from root Window (not a sub-surface).
+    DoZSort = 0x020
   };
 
   /*!

@@ -103,16 +103,16 @@ RadioButton::informGroup(bool checked)
 }
 
 void
-RadioButton::compose(const Rectangle& rect)
+RadioButton::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawRadioButton(&p, this);
   p.end();
 }
 
 void
-RadioButton::updateTextLayoutGeometry()
+RadioButton::updateTextBaseGeometry()
 {
   int x = 2 * stylist()->defaultParameter(StyleHint::RadioOffset)
       + stylist()->defaultParameter(StyleHint::RadioWidth);

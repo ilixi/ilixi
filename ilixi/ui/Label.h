@@ -79,11 +79,11 @@ namespace ilixi
      * Draws label using stylist.
      */
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
 
     //! Sets text layout geometry of label.
     virtual void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
   };
 }
 

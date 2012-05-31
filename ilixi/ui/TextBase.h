@@ -133,7 +133,7 @@ namespace ilixi
      * method once you set the geometry.
      */
     virtual void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
 
   private:
     //! Font for this widget.

@@ -95,6 +95,8 @@ namespace ilixi
   ilixi_log(int level, const char* message, ...);
 
 #ifdef ILIXI_LOG_DEBUG_ENABLED
+#define ILOG_TRACE(Domain)              D_DEBUG_AT(Domain, "[P:%p] %s\n", this, __FUNCTION__)
+#define ILOG_TRACE_W(Domain)            D_DEBUG_AT(Domain, "[ID:%d P:%p] %s\n", id(), this, __FUNCTION__)
 #define ILOG_DEBUG( Domain, _fmt... )   D_DEBUG_AT(Domain, _fmt)
 #define ILOG_INFO( Domain, _fmt...)     D_LOG(Domain, INFO, _fmt)
 #define ILOG_NOTICE( Domain, _fmt...)   D_LOG(Domain, NOTICE, _fmt)

@@ -43,13 +43,13 @@ namespace ilixi
     setOrientation(Orientation orientation);
 
     virtual void
-    paint(const Rectangle& targetArea);
+    paint(const PaintEvent& event);
 
   private:
     Orientation _orientation;
 
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
   };
 
 }

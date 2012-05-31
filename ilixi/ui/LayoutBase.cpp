@@ -23,12 +23,14 @@
 
 #include "ui/LayoutBase.h"
 #include "ui/RadioButton.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
 
 LayoutBase::LayoutBase(Widget* parent) :
     Widget(parent), _modified(false), _spacing(5)
 {
+  ILOG_TRACE_W(ILX_LAYOUT);
   _group = new RadioGroup();
   setInputMethod(PointerInput);
 }
@@ -36,6 +38,7 @@ LayoutBase::LayoutBase(Widget* parent) :
 LayoutBase::~LayoutBase()
 {
   delete _group;
+  ILOG_TRACE_W(ILX_LAYOUT);
 }
 
 int
@@ -47,6 +50,7 @@ LayoutBase::heightForWidth(int width) const
 Size
 LayoutBase::preferredSize() const
 {
+  ILOG_TRACE_W(ILX_LAYOUT);
   if (_children.size())
     {
       Rectangle r;
@@ -161,24 +165,24 @@ LayoutBase::doLayout()
 }
 
 void
-LayoutBase::paint(const Rectangle& rect)
+LayoutBase::paint(const PaintEvent& event)
 {
   if (visible())
     {
-      updateSurface();
-      Rectangle intersect = _frameGeometry.intersected(rect);
-      if (intersect.isValid())
+      PaintEvent evt(_frameGeometry, event);
+      if (evt.isValid())
         {
+          ILOG_TRACE_W(ILX_LAYOUT);
+          updateSurface(evt);
           if (_modified)
             tile();
-
-          paintChildren(intersect);
+          paintChildren(evt);
         }
     }
 }
 
 void
-LayoutBase::compose(const Rectangle& rect)
+LayoutBase::compose(const PaintEvent& event)
 {
 }
 

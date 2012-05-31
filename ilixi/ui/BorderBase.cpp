@@ -39,7 +39,6 @@ BorderBase::BorderBase(const BorderBase& borderbase) :
 
 BorderBase::~BorderBase()
 {
-  ILOG_DEBUG(ILX_BORDERBASE, "~BorderBase %p\n", this);
 }
 
 WidgetBorderStyle

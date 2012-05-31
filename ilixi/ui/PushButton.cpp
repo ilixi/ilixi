@@ -30,18 +30,20 @@ using namespace ilixi;
 PushButton::PushButton(const std::string& text, Widget* parent) :
     Button(text, parent)
 {
+  ILOG_TRACE_W(ILX_PUSHBUTTON);
   setConstraints(MinimumConstraint, FixedConstraint);
   _layout.setSingleLine(true);
 }
 
 PushButton::~PushButton()
 {
-  ILOG_DEBUG(ILX_PUSHBUTTON, "~PushButton %p\n", this);
+  ILOG_TRACE_W(ILX_PUSHBUTTON);
 }
 
 Size
 PushButton::preferredSize() const
 {
+  ILOG_TRACE_W(ILX_PUSHBUTTON);
   if (text().empty() && !icon())
     return stylist()->defaultSize(StyleHint::PushButton);
 
@@ -81,17 +83,19 @@ PushButton::focusOutEvent()
 }
 
 void
-PushButton::compose(const Rectangle& rect)
+PushButton::compose(const PaintEvent& event)
 {
+  ILOG_TRACE_W(ILX_PUSHBUTTON);
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawPushButton(&p, this);
   p.end();
 }
 
 void
-PushButton::updateTextLayoutGeometry()
+PushButton::updateTextBaseGeometry()
 {
+  ILOG_TRACE(ILX_PUSHBUTTON);
   int border = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
       stylist()->defaultParameter(StyleHint::ButtonRadius));
 

@@ -30,21 +30,21 @@ TextBase::TextBase(Widget* owner) :
     _owner(owner), _font(NULL)
 {
   _owner->sigGeometryUpdated.connect(
-      sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
+      sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::TextBase(const std::string& text, Widget* owner) :
     _owner(owner), _font(NULL), _layout(text)
 {
   _owner->sigGeometryUpdated.connect(
-      sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
+      sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::TextBase(const TextBase& tb) :
     _owner(tb._owner), _font(tb._font), _layout(tb._layout)
 {
   _owner->sigGeometryUpdated.connect(
-      sigc::mem_fun(this, &TextBase::updateTextLayoutGeometry));
+      sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::~TextBase()
@@ -55,7 +55,6 @@ TextBase::~TextBase()
       if (_font->_ref == 0)
         delete _font;
     }
-  ILOG_DEBUG(ILX_TEXTBASE, "~TextBase %p\n", this);
 }
 
 Font*
@@ -134,7 +133,7 @@ TextBase::setText(const std::string &text)
 }
 
 void
-TextBase::updateTextLayoutGeometry()
+TextBase::updateTextBaseGeometry()
 {
   _layout.setBounds(0, 0, _owner->width(), _owner->height());
   _layout.doLayout(font()); // Fixme can not connect to signal as it is.

@@ -34,7 +34,7 @@ ContainerBase::ContainerBase(Widget* parent) :
   setLayout(new LayoutBase(this));
   setInputMethod(PointerInput);
   sigGeometryUpdated.connect(
-      sigc::mem_fun(this, &ContainerBase::updateLayoutGeometry));
+      sigc::mem_fun(this, &ContainerBase::updateContainerGeometry));
 }
 
 ContainerBase::~ContainerBase()
@@ -149,7 +149,7 @@ ContainerBase::raiseWidget(Widget* widget)
 }
 
 void
-ContainerBase::updateLayoutGeometry()
+ContainerBase::updateContainerGeometry()
 {
   _layout->setGeometry(0, 0, width(), height());
 }

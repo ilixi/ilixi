@@ -216,10 +216,10 @@ Dialog::canvasHeight() const
 }
 
 void
-Dialog::compose(const Rectangle& rect)
+Dialog::compose(const PaintEvent& event)
 {
   Painter painter(this);
-  painter.begin(rect);
+  painter.begin(event.rect);
   stylist()->drawDialog(&painter, this);
   painter.end();
 }

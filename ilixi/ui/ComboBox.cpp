@@ -174,10 +174,10 @@ ComboBox::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
-ComboBox::compose(const Rectangle& rect)
+ComboBox::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawComboBox(&p, this);
   p.end();
 }
@@ -193,7 +193,7 @@ ComboBox::updateSelected(int index)
 }
 
 void
-ComboBox::updateTextLayoutGeometry()
+ComboBox::updateTextBaseGeometry()
 {
   int border = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
       stylist()->defaultParameter(StyleHint::ComboBoxRadius));

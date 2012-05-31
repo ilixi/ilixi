@@ -174,14 +174,14 @@ ScrollArea::scrollTo(Widget* widget)
 }
 
 void
-ScrollArea::paint(const Rectangle& rect)
+ScrollArea::paint(const PaintEvent& event)
 {
   if (visible())
     {
-      updateSurface();
-      Rectangle intersect = _frameGeometry.intersected(rect);
-      if (intersect.isValid())
+      PaintEvent evt(_frameGeometry, event);
+      if (evt.isValid())
         {
+          updateSurface(evt);
           if (_options & SmoothScrolling)
             {
               _content->moveTo(_cx, _cy);
@@ -189,7 +189,9 @@ ScrollArea::paint(const Rectangle& rect)
                 _content->surface()->clear();
 
               _content->paint(
-                  Rectangle(0, 0, _content->width(), _content->height()));
+                  PaintEvent(
+                      Rectangle(0, 0, _content->width(), _content->height()),
+                      evt.eye));
               _content->surface()->flip();
               surface()->blit(_content->surface(),
                   Rectangle(-_cx, -_cy, width(), height()), 0, 0);
@@ -197,9 +199,9 @@ ScrollArea::paint(const Rectangle& rect)
           else
             {
               _content->moveTo(_cx, _cy);
-              paintChildren(intersect);
+              paintChildren(evt);
             }
-          compose(rect);
+          compose(evt);
         }
     }
 }
@@ -282,10 +284,10 @@ ScrollArea::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
-ScrollArea::compose(const Rectangle& rect)
+ScrollArea::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   if (_options & DrawFrame)
     p.drawRectangle(0, 0, width(), height());
   if (_tween->value())

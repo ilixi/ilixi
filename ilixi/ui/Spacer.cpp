@@ -52,13 +52,13 @@ namespace ilixi
   }
 
   void
-  Spacer::paint(const Rectangle& rect)
+  Spacer::paint(const PaintEvent& event)
   {
     // no surface is allocated.
   }
 
   void
-  Spacer::compose(const Rectangle& rect)
+  Spacer::compose(const PaintEvent& event)
   {
   }
 

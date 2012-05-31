@@ -120,7 +120,7 @@ namespace ilixi
      * Paints scroll area.
      */
     virtual void
-    paint(const Rectangle& rect);
+    paint(const PaintEvent& event);
 
     virtual void
     doLayout();
@@ -154,7 +154,7 @@ namespace ilixi
      * Draws scroll thumbs.
      */
     virtual void
-    compose(const Rectangle& rect);
+    compose(const PaintEvent& event);
   private:
     //! This property stores the options for ScrollArea.
     u8 _options;

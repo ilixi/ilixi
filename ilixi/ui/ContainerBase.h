@@ -159,7 +159,7 @@ namespace ilixi
      * If your implementation needs specific position or dimension for layout, you should reimplement this method.
      */
     virtual void
-    updateLayoutGeometry();
+    updateContainerGeometry();
 
     /*!
      * Redirects the incoming pointer events to layout.

@@ -138,16 +138,16 @@ CheckBox::setTriState(bool triState)
 }
 
 void
-CheckBox::compose(const Rectangle& rect)
+CheckBox::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event.rect);
   stylist()->drawCheckBox(&p, this);
   p.end();
 }
 
 void
-CheckBox::updateTextLayoutGeometry()
+CheckBox::updateTextBaseGeometry()
 {
   int x = 2 * stylist()->defaultParameter(StyleHint::CheckBoxOffset)
       + stylist()->defaultParameter(StyleHint::CheckBoxWidth);
