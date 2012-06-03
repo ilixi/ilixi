@@ -47,8 +47,8 @@ WindowWidget::WindowWidget(Widget* parent) :
     {
       if (AppBase::activeWindow())
         {
-          ILOG_ERROR(
-              ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
+          ILOG_ERROR( ILX_WINDOWWIDGET,
+              "Error cannot have multiple windows in exclusive mode!\n");
           exit(1);
         }
     }
@@ -123,7 +123,7 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-              surface()->clear(evt.rect);
+                surface()->clear(evt.rect);
 
               paintChildren(evt);
 
@@ -214,6 +214,45 @@ WindowWidget::showWindow()
 
       provider->RenderTo(provider, _cursorImage, NULL);
       provider->Release(provider);
+
+      // setup screen
+      IDirectFBScreen* pScreen;
+      DFBScreenEncoderConfig sEncoderCfg;
+      DFBScreenEncoderDescription sEncoderDesc;
+
+      AppBase::__layer->GetScreen(AppBase::__layer, &pScreen);
+      sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD
+          | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS
+          | DSECONF_RESOLUTION | DSECONF_FRAMING);
+
+      sEncoderCfg.tv_standard = DSETV_DIGITAL;
+      sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT
+          | DSOC_HDMI);
+      sEncoderCfg.scanmode = DSESM_PROGRESSIVE;
+      sEncoderCfg.resolution = DSOR_1280_720;
+      sEncoderCfg.frequency = DSEF_60HZ;
+
+      /* Find the most appropriate framing encoder configuration */
+      pScreen->GetEncoderDescriptions(pScreen, &sEncoderDesc);
+
+      if (sEncoderDesc.all_framing & DSEPF_STEREO_FRAME_PACKING)
+        sEncoderCfg.framing = DSEPF_STEREO_FRAME_PACKING;
+      else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_FULL)
+        sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_FULL;
+      else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_HALF)
+        sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_HALF;
+      else if (sEncoderDesc.all_framing & DSEPF_STEREO_TOP_AND_BOTTOM)
+        sEncoderCfg.framing = DSEPF_STEREO_TOP_AND_BOTTOM;
+      else
+        sEncoderCfg.framing = DSEPF_MONO;
+
+      DFBResult err = pScreen->SetEncoderConfiguration(pScreen, 0,
+          &sEncoderCfg);
+      if (err == DFB_UNSUPPORTED)
+        {
+          sEncoderCfg.framing = DSEPF_MONO;
+          pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
+        }
 
       // setup layer
       DFBGraphicsDeviceDescription deviceDesc;
@@ -409,8 +448,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     case DIKS_TAB: // handle TAB release.
       if (event.modifiers == DIMM_SHIFT)
 //        _eventManager->selectPrevious();
-        ILOG_DEBUG(
-            ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectPrevious());
+        ILOG_DEBUG( ILX_WINDOWWIDGET,
+            "TAB %d\n", _eventManager->selectPrevious());
       else
 //        _eventManager->selectNext();
         ILOG_DEBUG(ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectNext());
