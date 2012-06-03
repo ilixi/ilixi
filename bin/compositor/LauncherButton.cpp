@@ -23,6 +23,7 @@
 
 #include "LauncherButton.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 namespace ilixi
 {

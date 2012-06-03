@@ -52,20 +52,20 @@ namespace ilixi
     addWidget(_switcher);
 
     _homeButton = new HomeButton();
-    _homeButton->setZ(20);
+    _homeButton->setZ(5);
     _homeButton->sigPressed.connect(
         sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showLauncher), true));
     addWidget(_homeButton);
 
     _switchButton = new SwitchButton();
-    _switchButton->setZ(20);
+    _switchButton->setZ(5);
     _switchButton->setVisible(false);
     _switchButton->sigPressed.connect(
         sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showSwitcher), true));
     addWidget(_switchButton);
 
     _quitButton = new QuitButton();
-    _quitButton->setZ(20);
+    _quitButton->setZ(5);
     _quitButton->sigPressed.connect(
         sigc::mem_fun(this, &Compositor::handleQuit));
     addWidget(_quitButton);
@@ -343,6 +343,7 @@ namespace ilixi
                 data->instance->view()->setGeometry(0, 0, width(), height());
                 addWidget(data->instance->view());
                 data->instance->view()->setNeighbour(Down, _switcher);
+                data->instance->view()->setZ(-5);
                 widgetToBack(data->instance->view());
               }
 

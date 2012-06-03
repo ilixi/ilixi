@@ -43,7 +43,6 @@ namespace ilixi
 
     _box = new HBoxLayout();
     _box->setSpacing(20);
-    _box->setZ(10);
 
     _scrollArea->setContent(_box);
 
@@ -129,7 +128,7 @@ namespace ilixi
     if (_box->addWidget(thumb))
       {
         thumb->setVisible(true);
-        thumb->setZ(10);
+        thumb->setZ(5);
         _thumbs.push_back(thumb);
         thumb->sigFocused.connect(sigc::mem_fun(this, &Switcher::scrollTo));
         thumb->sigSelected.connect(sigc::mem_fun(this, &Switcher::viewRequest));

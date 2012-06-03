@@ -63,7 +63,7 @@ namespace ilixi
     LauncherButton* button = new LauncherButton(name, this);
     button->setFont(_font);
     button->setIcon(icon, Size(96, 96));
-    button->setZ(10);
+    button->setZ(3);
     addChild(button);
 
     button->sigClicked.connect(
