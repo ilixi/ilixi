@@ -102,13 +102,14 @@ WindowWidget::paint(const PaintEvent& event)
         {
           sem_wait(&_updates._updateReady);
 
+          updateSurface(event);
+
           PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
               PaintEvent::LeftEye);
 
           //          DFBRegion r = intersect.dfbRegion();
           //          _window->BeginUpdates(_window, &r);
 
-          updateSurface(event);
           if (evt.isValid())
             {
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
@@ -132,10 +133,12 @@ WindowWidget::paint(const PaintEvent& event)
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                      AppBase::cursorPosition().x - 10,
+                      AppBase::cursorPosition().y);
                 }
 
               // Right eye
+              surface()->setStereoEye(PaintEvent::RightEye);
               surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
                   DSSE_RIGHT);
               evt.eye = PaintEvent::RightEye;
@@ -155,8 +158,15 @@ WindowWidget::paint(const PaintEvent& event)
                 {
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
+#ifdef ILIXI_STEREO_OUTPUT
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                      AppBase::cursorPosition().x + 10,
+                      AppBase::cursorPosition().y);
+#else
+                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                      AppBase::cursorPosition().x,
+                      AppBase::cursorPosition().y);
+#endif
                 }
 
 #ifdef ILIXI_STEREO_OUTPUT
@@ -164,6 +174,7 @@ WindowWidget::paint(const PaintEvent& event)
 #else
               surface()->flip(evt.rect);
 #endif
+              ILOG_TRACE_W(ILX_WINDOWWIDGET);
             }
           sem_post(&_updates._paintReady);
         }
@@ -503,7 +514,7 @@ WindowWidget::updateWindow()
 #endif
 
       sem_post(&_updates._updateReady);
-      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
+      paint(PaintEvent(_updates._updateRegion, PaintEvent::LeftEye));
     }
   pthread_mutex_unlock(&_updates._listLock);
 }
