@@ -29,17 +29,17 @@ using namespace ilixi;
 
 #ifdef ILIXI_STEREO_OUTPUT
 Surface::Surface() :
-_dfbSurface(NULL), _parentSurface(NULL), _rightSurface(NULL), _eye(
-    PaintEvent::LeftEye)
-  {
-    pthread_mutex_init(&_surfaceLock, NULL);
-  }
-#else
-Surface::Surface() :
-    _dfbSurface(NULL), _parentSurface(NULL)
+    _dfbSurface(NULL), _parentSurface(NULL), _rightSurface(NULL), _eye(
+        PaintEvent::LeftEye)
 {
   pthread_mutex_init(&_surfaceLock, NULL);
 }
+#else
+Surface::Surface() :
+_dfbSurface(NULL), _parentSurface(NULL)
+  {
+    pthread_mutex_init(&_surfaceLock, NULL);
+  }
 #endif
 
 Surface::~Surface()
@@ -108,7 +108,7 @@ Surface::dfbSurface()
 {
 #ifdef ILIXI_STEREO_OUTPUT
   if (_eye == PaintEvent::LeftEye)
-  return _dfbSurface;
+    return _dfbSurface;
   return _rightSurface;
 #else
   return _dfbSurface;
@@ -292,100 +292,102 @@ Surface::setOpacity(u8 opacity)
 bool
 Surface::createDFBSubSurfaceStereo(const Rectangle& geometry,
     IDirectFBSurface* parent, int zIndex)
-  {
-    release();
-    DFBRectangle r = geometry.dfbRect();
-    _parentSurface = parent;
+{
+  release();
+  DFBRectangle r = geometry.dfbRect();
+  _parentSurface = parent;
 
-    r.x += zIndex;
-    DFBResult ret = _parentSurface->GetSubSurface(_parentSurface, &r,
-        &_dfbSurface);
-    if (ret)
-      {
-        ILOG_ERROR( ILX_SURFACE,
-            "Cannot get sub-surface left: %s", DirectFBErrorString(ret));
-        return false;
-      }
-    ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+  r.x += zIndex;
+  DFBResult ret = _parentSurface->GetSubSurface(_parentSurface, &r,
+      &_dfbSurface);
+  if (ret)
+    {
+      ILOG_ERROR( ILX_SURFACE,
+          "Cannot get sub-surface left: %s", DirectFBErrorString(ret));
+      return false;
+    }
+  ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
 
-    r.x -= zIndex + zIndex;
-    ret = _parentSurface->GetSubSurface(_parentSurface, &r, &_rightSurface);
-    if (ret)
-      {
-        ILOG_ERROR( ILX_SURFACE,
-            "Cannot get sub-surface right: %s", DirectFBErrorString(ret));
-        return false;
-      }
-    ret = _rightSurface->SetBlittingFlags(_rightSurface,
-        DSBLIT_BLEND_ALPHACHANNEL);
+  r.x -= zIndex + zIndex;
+  ret = _parentSurface->GetSubSurface(_parentSurface, &r, &_rightSurface);
+  if (ret)
+    {
+      ILOG_ERROR( ILX_SURFACE,
+          "Cannot get sub-surface right: %s", DirectFBErrorString(ret));
+      return false;
+    }
+  ret = _rightSurface->SetBlittingFlags(_rightSurface,
+      DSBLIT_BLEND_ALPHACHANNEL);
 
-    return true;
-  }
+  return true;
+}
 
 void
 Surface::setStereoGeometry(const Rectangle& geometry, int zIndex)
-  {
-    setStereoGeometry(geometry.x(), geometry.y(), geometry.width(),
-        geometry.height(), zIndex);
-  }
+{
+  setStereoGeometry(geometry.x(), geometry.y(), geometry.width(),
+      geometry.height(), zIndex);
+}
 
 void
 Surface::setStereoGeometry(int x, int y, int width, int height, int zIndex)
-  {
-    DFBRectangle r =
-      { x, y, width, height};
-    if (_parentSurface)
-      {
+{
+  DFBRectangle r =
+    { x, y, width, height };
+  if (_parentSurface)
+    {
 
-        r.x += zIndex;
-        DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
-            &r);
-        if (ret)
+      r.x += zIndex;
+      DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
+          &r);
+      if (ret)
         ILOG_ERROR( ILX_SURFACE,
             "Cannot set left geometry: %s\n", DirectFBErrorString(ret));
 
-        r.x -= zIndex + zIndex;
-        ret = _rightSurface->MakeSubSurface(_rightSurface, _parentSurface, &r);
-        if (ret)
+      r.x -= zIndex + zIndex;
+      ret = _rightSurface->MakeSubSurface(_rightSurface, _parentSurface, &r);
+      if (ret)
         ILOG_ERROR( ILX_SURFACE,
             "Cannot set right geometry: %s\n", DirectFBErrorString(ret));
-      }
-    else
+    }
+  else
     ILOG_ERROR(ILX_SURFACE,
         "No Parent Surface, need to create surface again!\n");
-  }
+}
 
 PaintEvent::PaintEventEye
 Surface::stereoEye() const
-  {
-    return _eye;
-  }
+{
+  return _eye;
+}
 
 void
 Surface::setStereoEye(PaintEvent::PaintEventEye eye)
-  {
-    _eye = eye;
-  }
+{
+  _eye = eye;
+  ILOG_DEBUG(ILX_SURFACE,
+      "[%p] %s(%s)\n", this, __FUNCTION__, eye == PaintEvent::LeftEye ? "Left" : "Right");
+}
 
 IDirectFBSurface*
 Surface::getStereoSurface(PaintEvent::PaintEventEye eye)
-  {
-    if (eye == PaintEvent::LeftEye)
+{
+  if (eye == PaintEvent::LeftEye)
     return _dfbSurface;
-    return _rightSurface;
-  }
+  return _rightSurface;
+}
 
 void
 Surface::flipStereo(const Rectangle& rect)
-  {
-    DFBRegion r = rect.dfbRegion();
-    ILOG_DEBUG(ILX_SURFACE,
-        "Flip (%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
-    DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &r, &r,
-        DSFLIP_WAITFORSYNC);
-    if (ret)
+{
+  DFBRegion r = rect.dfbRegion();
+  ILOG_DEBUG(ILX_SURFACE,
+      "[%p] %s(%d,%d,%d,%d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
+  DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &r, &r,
+      DSFLIP_WAITFORSYNC);
+  if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
-  }
+}
 
 #endif
 

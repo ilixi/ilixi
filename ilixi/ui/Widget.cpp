@@ -950,7 +950,7 @@ namespace ilixi
 
 #ifdef ILIXI_STEREO_OUTPUT
     if (_surface)
-    _surface->setStereoEye(event.eye);
+      _surface->setStereoEye(event.eye);
 
     if (_surfaceDesc & InitialiseSurface)
       {
@@ -959,20 +959,16 @@ namespace ilixi
         _surface->setStereoEye(event.eye);
         bool ret = false;
         if (_surfaceDesc & HasOwnSurface)
-        ret = _surface->createDFBSurface(width(), height());
+          ret = _surface->createDFBSurface(width(), height());
         else if (_surfaceDesc & RootSurface)
-        ret = _surface->createDFBSubSurfaceStereo(surfaceGeometry(),
-            _rootWindow->windowSurface(), z());
+          ret = _surface->createDFBSubSurfaceStereo(surfaceGeometry(),
+              _rootWindow->windowSurface(), z());
         else if (_parent)
-        ret = _surface->createDFBSubSurfaceStereo(_frameGeometry,
-            _rootWindow->windowSurface(), z());
+          ret = _surface->createDFBSubSurfaceStereo(_frameGeometry,
+              _rootWindow->windowSurface(), z());
         if (ret)
-          {
-            ILOG_DEBUG(
-                ILX_WIDGET, "Widget %d created %s surface %p\n", _id, event.eye == PaintEvent::LeftEye ? "left" : "right", _surface);
-            _surfaceDesc = (SurfaceDescription) (_surfaceDesc
-                & ~InitialiseSurface);
-          }
+          _surfaceDesc =
+              (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
       }
 #else
     if (_surfaceDesc & InitialiseSurface)
@@ -1003,8 +999,8 @@ namespace ilixi
           }
 
         if (ret)
-          _surfaceDesc =
-              (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
+        _surfaceDesc =
+        (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
       }
 #endif
 
@@ -1035,7 +1031,7 @@ namespace ilixi
 #ifdef ILIXI_STEREO_OUTPUT
       _surface->setStereoGeometry(_frameGeometry, z());
 #else
-      _surface->setGeometry(surfaceGeometry());
+    _surface->setGeometry(surfaceGeometry());
 #endif
 
     _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
