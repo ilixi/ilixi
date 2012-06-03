@@ -44,9 +44,15 @@ void
 Painter::begin(const Rectangle& rect)
 {
   _myWidget->surface()->lock();
+#ifdef ILIXI_STEREO_OUTPUT
+  _myWidget->surface()->clip(
+      Rectangle(rect.x() - _myWidget->x(), rect.y() - _myWidget->y(),
+          rect.width(), rect.height()));
+#else
   _myWidget->surface()->clip(
       Rectangle(rect.x() - _myWidget->absX(), rect.y() - _myWidget->absY(),
           rect.width(), rect.height()));
+#endif
   _state = Active;
   applyBrush();
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
