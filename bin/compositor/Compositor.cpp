@@ -334,6 +334,8 @@ namespace ilixi
           {
             ILOG_DEBUG(ILX_COMPOSITOR, "CET_Add (%d)\n", data->windowID);
             IDirectFBWindow* dfbWindow = getWindow(data->windowID);
+            if (!dfbWindow)
+              break;
             AppInfo* appInfo = _appMan->infoByInstanceID(
                 data->instance->instanceID());
             if (data->instance->view() == NULL)
