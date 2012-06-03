@@ -99,10 +99,10 @@ LayoutBase::addWidget(Widget* widget)
 {
   if (addChild(widget))
     {
-      doLayout();
       RadioButton* radio = dynamic_cast<RadioButton*>(widget);
       if (radio)
         _group->add(radio);
+      doLayout();
       return true;
     }
   return false;
@@ -169,11 +169,11 @@ LayoutBase::paint(const PaintEvent& event)
 {
   if (visible())
     {
+      updateSurface(event);
       PaintEvent evt(_frameGeometry, event);
       if (evt.isValid())
         {
           ILOG_TRACE_W(ILX_LAYOUT);
-          updateSurface(evt);
           if (_modified)
             tile();
           paintChildren(evt);

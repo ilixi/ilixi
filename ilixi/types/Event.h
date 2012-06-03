@@ -130,6 +130,7 @@ namespace ilixi
       return rect.isValid();
     }
 
+    Rectangle absRect;
     Rectangle rect;
     PaintEventEye eye;
   };

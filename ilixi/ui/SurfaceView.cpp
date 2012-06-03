@@ -169,10 +169,10 @@ namespace ilixi
   {
     if (visible())
       {
+        updateSurface(event);
         PaintEvent evt(_frameGeometry, event);
         if (evt.isValid())
           {
-            updateSurface(evt);
             compose(evt);
             renderSource(evt);
             paintChildren(evt);

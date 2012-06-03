@@ -30,11 +30,12 @@ Button::Button(const std::string& text, Widget* parent) :
     Widget(parent), TextBase(text, this), _buttonFlag(None), _icon(NULL)
 {
   setInputMethod(KeyAndPointerInput);
+  ILOG_TRACE_W(ILX_BUTTON);
 }
 
 Button::~Button()
 {
-  ILOG_TRACE(ILX_BUTTON);
+  ILOG_TRACE_W(ILX_BUTTON);
 }
 
 bool

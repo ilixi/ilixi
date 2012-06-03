@@ -69,6 +69,9 @@ Surface::createDFBSurface(int width, int height)
       return false;
     }
   _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+  ILOG_DEBUG(ILX_SURFACE,
+      "[%p] %s(width %d, height %d)\n", this, __FUNCTION__, width, height);
+  ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p\n", _dfbSurface);
   return true;
 }
 
@@ -94,6 +97,9 @@ Surface::createDFBSubSurface(const Rectangle& geometry,
           "Cannot set blitting flags of sub-surface: %s", DirectFBErrorString(ret));
       return false;
     }
+  ILOG_DEBUG(ILX_SURFACE,
+      "[%p] %s(x %d, y %d, w %d, h %d, parent %p)\n", this, __FUNCTION__, geometry.x(), geometry.y(), geometry.width(), geometry.height(), parent);
+  ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p\n", _dfbSurface);
   return true;
 }
 

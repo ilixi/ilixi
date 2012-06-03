@@ -37,7 +37,7 @@ Frame::Frame(Widget* parent) :
 
 Frame::~Frame()
 {
-  ILOG_TRACE(ILX_FRAME);
+  ILOG_TRACE_W(ILX_FRAME);
 }
 
 int
@@ -99,14 +99,14 @@ Frame::setMargin(const Margin& margin)
 void
 Frame::updateContainerGeometry()
 {
-  ILOG_TRACE(ILX_FRAME);
+  ILOG_TRACE_W(ILX_FRAME);
   _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
 
 void
 Frame::compose(const PaintEvent& event)
 {
-  ILOG_TRACE(ILX_FRAME);
+  ILOG_TRACE_W(ILX_FRAME);
   Painter painter(this);
   painter.begin(event.rect);
   stylist()->drawFrame(&painter, this);

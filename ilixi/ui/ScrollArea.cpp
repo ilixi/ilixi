@@ -178,10 +178,10 @@ ScrollArea::paint(const PaintEvent& event)
 {
   if (visible())
     {
+      updateSurface(event);
       PaintEvent evt(_frameGeometry, event);
       if (evt.isValid())
         {
-          updateSurface(evt);
           if (_options & SmoothScrolling)
             {
               _content->moveTo(_cx, _cy);

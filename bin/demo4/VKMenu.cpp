@@ -127,10 +127,10 @@ namespace ilixi
   {
     if (visible())
       {
+        updateSurface(event);
         PaintEvent evt(_frameGeometry, event);
         if (evt.isValid())
           {
-            updateSurface(evt);
             IDirectFBSurface* dfbSurface = surface()->dfbSurface();
 
             if (_level1->visible())

@@ -45,7 +45,7 @@ Painter::begin(const Rectangle& rect)
 {
   _myWidget->surface()->lock();
   _myWidget->surface()->clip(
-      Rectangle(rect.x() - _myWidget->x(), rect.y() - _myWidget->y(),
+      Rectangle(rect.x() - _myWidget->absX(), rect.y() - _myWidget->absY(),
           rect.width(), rect.height()));
   _state = Active;
   applyBrush();

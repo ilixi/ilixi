@@ -29,16 +29,19 @@ using namespace ilixi;
 BorderBase::BorderBase(Widget* owner) :
     _borderStyle(NoBorder), _borderWidth(0), _owner(owner)
 {
+  ILOG_TRACE(ILX_BORDERBASE);
 }
 
 BorderBase::BorderBase(const BorderBase& borderbase) :
     _borderStyle(borderbase._borderStyle), _borderWidth(
         borderbase._borderWidth), _owner(borderbase._owner)
 {
+  ILOG_TRACE(ILX_BORDERBASE);
 }
 
 BorderBase::~BorderBase()
 {
+  ILOG_TRACE(ILX_BORDERBASE);
 }
 
 WidgetBorderStyle

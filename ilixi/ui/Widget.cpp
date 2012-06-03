@@ -533,11 +533,11 @@ namespace ilixi
   {
     if (visible())
       {
+        updateSurface(event);
         PaintEvent evt(_frameGeometry, event);
         if (evt.isValid())
           {
             ILOG_TRACE_W(ILX_WIDGET);
-            updateSurface(evt);
             compose(evt);
             paintChildren(evt);
           }
@@ -945,15 +945,13 @@ namespace ilixi
   void
   Widget::updateSurface(const PaintEvent& event)
   {
-#ifdef ILIXI_STEREO_OUTPUT
-    if (_surface)
-    _surface->setStereoEye(event.eye);
-#endif
-
     if (_surfaceDesc & SurfaceModified)
       sigGeometryUpdated();
 
 #ifdef ILIXI_STEREO_OUTPUT
+    if (_surface)
+    _surface->setStereoEye(event.eye);
+
     if (_surfaceDesc & InitialiseSurface)
       {
         delete _surface;
@@ -984,21 +982,29 @@ namespace ilixi
         bool ret = false;
 
         if (_surfaceDesc & HasOwnSurface)
-          ret = _surface->createDFBSurface(width(), height());
+          {
+            ILOG_DEBUG( ILX_WIDGET,
+                "  -> SurfaceDesc: 0x%03x HasOwnSurface\n", _surfaceDesc);
+            ret = _surface->createDFBSurface(width(), height());
+          }
         else if (_surfaceDesc & RootSurface)
-          ret = _surface->createDFBSubSurface(surfaceGeometry(),
-              _rootWindow->windowSurface());
+          {
+            ILOG_DEBUG( ILX_WIDGET,
+                "  -> SurfaceDesc: 0x%03x RootSurface\n", _surfaceDesc);
+            ret = _surface->createDFBSubSurface(surfaceGeometry(),
+                _rootWindow->windowSurface());
+          }
         else if (_parent)
-          ret = _surface->createDFBSubSurface(surfaceGeometry(),
-              _parent->surface()->dfbSurface());
+          {
+            ILOG_DEBUG( ILX_WIDGET,
+                "  -> SurfaceDesc: 0x%03x Default\n", _surfaceDesc);
+            ret = _surface->createDFBSubSurface(surfaceGeometry(),
+                _parent->surface()->dfbSurface());
+          }
 
         if (ret)
-          {
-            ILOG_DEBUG(
-                ILX_WIDGET, "Widget %d created a surface %p\n", _id, _surface);
-            _surfaceDesc = (SurfaceDescription) (_surfaceDesc
-                & ~InitialiseSurface);
-          }
+          _surfaceDesc =
+              (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
       }
 #endif
 
@@ -1022,8 +1028,8 @@ namespace ilixi
 
     _frameGeometry.moveTo(x, y);
 
-    ILOG_DEBUG(
-        ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, x, y);
+    ILOG_DEBUG( ILX_WIDGET,
+        "Widget %d updateFrameGeometry( %d, %d)\n", _id, x, y);
 
     if (_surface && !(_surfaceDesc & HasOwnSurface))
 #ifdef ILIXI_STEREO_OUTPUT
@@ -1034,10 +1040,9 @@ namespace ilixi
 
     _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
 
-//    // update children frame geometry
-//    for (WidgetList::const_iterator it = _children.begin();
-//        it != _children.end(); ++it)
-//      ((Widget*) *it)->sigGeometryUpdated();
+    for (WidgetList::const_iterator it = _children.begin();
+        it != _children.end(); ++it)
+      ((Widget*) *it)->setSurfaceGeometryModified();
   }
 
   void

@@ -45,11 +45,11 @@ namespace ilixi
    */
   enum SurfaceFlags
   {
-    InitialiseSurface = 0x001, //!< Set if widget should (re)initialise its surface.
-    SurfaceModified = 0x002, //!< Set if widget's surface geometry is modified.
-    HasOwnSurface = 0x008, //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
-    RootSurface = 0x010, //!< Widget's surface is directly acquired from root Window (not a sub-surface).
-    DoZSort = 0x020
+    InitialiseSurface = 0x01, //!< Set if widget should (re)initialise its surface.
+    SurfaceModified = 0x02, //!< Set if widget's surface geometry is modified.
+    DoZSort = 0x04,
+    HasOwnSurface = 0x08, //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+    RootSurface = 0x10 //!< Widget's surface is directly acquired from root Window (not a sub-surface).
   };
 
   /*!
@@ -57,9 +57,9 @@ namespace ilixi
    */
   enum SurfaceDescription
   {
-    DefaultDescription = 0x03, //!< (InitialiseSurface )
-    BlitDescription = 0x09, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | HasOwnSurface)
-    WindowDescription = 0x11 //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | RootWindow)
+    DefaultDescription = 0x03, //!< (InitialiseSurface | SurfaceModified)
+    BlitDescription = 0x0B, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | SurfaceModified | HasOwnSurface)
+    WindowDescription = 0x13 //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | SurfaceModified | RootWindow)
   };
 
   /*!

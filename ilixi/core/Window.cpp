@@ -102,19 +102,19 @@ Window::initDFBWindow(const Size& size)
   desc.surface_caps = DSCAPS_DOUBLE;
   desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL | DWOP_SCALE);
 #ifdef ILIXI_STEREO_OUTPUT
-  desc.caps =
-        (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL | DWCAPS_STEREO);
+  desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL
+      | DWCAPS_STEREO);
 #else
   desc.caps =
-        (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
+  (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
 #endif
 
   DFBDisplayLayerConfig conf;
   ret = AppBase::getLayer()->GetConfiguration(AppBase::getLayer(), &conf);
   if (ret != DFB_OK)
     {
-      ILOG_ERROR(
-          ILX_WINDOW, "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_WINDOW,
+          "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
 
@@ -152,18 +152,22 @@ Window::initDFBWindow(const Size& size)
       &_dfbWindow);
   if (ret != DFB_OK)
     {
-      ILOG_ERROR(
-          ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_WINDOW,
+          "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
 
   ret = _dfbWindow->GetSurface(_dfbWindow, &_windowSurface);
   if (ret != DFB_OK)
     {
-      ILOG_ERROR(
-          ILX_WINDOW, "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
+      ILOG_ERROR( ILX_WINDOW,
+          "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
       return false;
     }
+
+#ifdef ILIXI_STEREO_OUTPUT
+  _dfbWindow->SetStereoDepth(_dfbWindow, 0);
+#endif
 
   ILOG_INFO(ILX_WINDOW, "Window %p is initialised.\n", this);
   return true;

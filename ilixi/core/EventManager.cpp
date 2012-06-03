@@ -127,6 +127,8 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
       _grabbedWidget = widget;
       if (_grabbedWidget)
         _grabbedWidget->pointerGrabEvent(pointerEvent);
+      ILOG_DEBUG(ILX_EVENTMANAGER,
+          "setGrabbedWidget ( widget %p, event.x %d, event.y %d )\n", widget, pointerEvent.x, pointerEvent.y);
       return true;
     }
   return false;

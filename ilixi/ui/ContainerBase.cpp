@@ -39,7 +39,7 @@ ContainerBase::ContainerBase(Widget* parent) :
 
 ContainerBase::~ContainerBase()
 {
-  ILOG_DEBUG(ILX, "~ContainerBase %p\n", this);
+  ILOG_TRACE_W(ILX_CONTAINER);
 }
 
 int
@@ -151,6 +151,7 @@ ContainerBase::raiseWidget(Widget* widget)
 void
 ContainerBase::updateContainerGeometry()
 {
+  ILOG_TRACE_W(ILX_CONTAINER);
   _layout->setGeometry(0, 0, width(), height());
 }
 

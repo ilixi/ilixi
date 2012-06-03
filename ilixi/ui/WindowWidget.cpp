@@ -108,10 +108,10 @@ WindowWidget::paint(const PaintEvent& event)
           //          DFBRegion r = intersect.dfbRegion();
           //          _window->BeginUpdates(_window, &r);
 
+          updateSurface(event);
           if (evt.isValid())
             {
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
-              updateSurface(evt);
 #ifdef ILIXI_STEREO_OUTPUT
               // Left eye
               surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
