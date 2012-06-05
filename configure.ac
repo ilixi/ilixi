@@ -158,6 +158,7 @@ AC_CONFIG_FILES([ \
 		bin/navigation/Makefile \
 		bin/compositor/Makefile \
 		bin/compositor/images/Makefile \
+		bin/carousel/Makefile \
 		ilixi-$VERSION.pc:ilixi.pc.in
 ])
 AC_OUTPUT
