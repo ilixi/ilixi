@@ -7,6 +7,7 @@ libilixi_ui_la_LIBADD 	= 	@DEPS_LIBS@
 libilixi_ui_la_SOURCES 	= 	Application.cpp \
           				BorderBase.cpp \
           				Button.cpp \
+          				Carousel.cpp \
           				CheckBox.cpp \
           				ComboBox.cpp \
           				ContainerBase.cpp \
@@ -31,6 +32,7 @@ ilixi_includedir 		= 	$(includedir)/$(PACKAGE)-$(VERSION)/ui
 ilixi_include_HEADERS 	= 	Application.h \
           				BorderBase.h \
           				Button.h \
+          				Carousel.h \
           				CheckBox.h \
           				ComboBox.h \
           				ContainerBase.h \
