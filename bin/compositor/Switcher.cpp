@@ -166,7 +166,7 @@ namespace ilixi
   Switcher::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(event.rect);
+    p.begin(event);
     p.setBrush(Color(0, 0, 0, 80));
     p.fillRectangle(0, height() - (height() * _tween->value()), width(),
         height());

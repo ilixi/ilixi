@@ -97,7 +97,7 @@ namespace ilixi
   QuitButton::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(event.rect);
+    p.begin(event);
     p.setBrush(Color(0, 0, 0, 255));
     p.drawImage(_image, 80 * _tween->value(), -80 * _tween->value());
     p.end();

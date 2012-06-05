@@ -141,9 +141,6 @@ namespace ilixi
 
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
-
-    virtual void
-    compose(const Rectangle& rect);
   };
 
 } /* namespace ilixi */

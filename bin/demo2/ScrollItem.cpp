@@ -23,18 +23,24 @@
 
 #include "ScrollItem.h"
 #include "graphics/Painter.h"
+#include "core/Logger.h"
 
 using namespace ilixi;
+
+D_DEBUG_DOMAIN( ILX_SCROLLITEM, "ilixi/ui/ScrollItem", "ScrollItem");
 
 ScrollItem::ScrollItem(const std::string& text, Widget* parent) :
     Widget(parent), TextBase(text, this), _val1(0)
 {
   setConstraints(MinimumConstraint, FixedConstraint);
   setInputMethod(KeyAndPointerInput);
+  ILOG_TRACE_W(ILX_SCROLLITEM);
 }
 
 ScrollItem::~ScrollItem()
 {
+  ILOG_TRACE_W(ILX_SCROLLITEM);
+  delete _image;
 }
 
 Size
@@ -89,7 +95,7 @@ void
 ScrollItem::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
 
   // draw frame
   Color(51, 128, 204);

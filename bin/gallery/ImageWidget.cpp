@@ -57,7 +57,7 @@ void
 ImageWidget::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
 
   float val1 = _circleIn->value();
   float val2 = _bounceIn->value();

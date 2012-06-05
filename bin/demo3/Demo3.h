@@ -35,7 +35,7 @@ public:
   ~Demo3();
 
   void
-  compose(const ilixi::Rectangle& rect);
+  compose(const ilixi::PaintEvent& event);
 };
 
 #endif /* ILIXI_DEMO3_H_ */

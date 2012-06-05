@@ -85,10 +85,10 @@ Demo3::~Demo3()
 }
 
 void
-Demo3::compose(const Rectangle& rect)
+Demo3::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(rect);
+  p.begin(event);
 
   p.setBrush(Color(128, 128, 128));
 

@@ -458,18 +458,6 @@ namespace ilixi
     return false;
   }
 
-  void
-  Compositor::compose(const Rectangle& rect)
-  {
-    if (_launcher->visible())
-      {
-        Painter painter(this);
-        painter.begin(rect);
-        stylist()->drawAppFrame(&painter, this);
-        painter.end();
-      }
-  }
-
 } /* namespace ilixi */
 
 int
