@@ -33,6 +33,7 @@ namespace ilixi
   {
     setInputMethod(KeyAndPointerInput);
     setToolButtonStyle(ToolButton::IconAboveText);
+    setZ(3);
   }
 
   LauncherButton::~LauncherButton()
@@ -40,10 +41,24 @@ namespace ilixi
   }
 
   void
+  LauncherButton::enterEvent(const PointerEvent& event)
+  {
+    setZ(6);
+    update();
+  }
+
+  void
+  LauncherButton::leaveEvent(const PointerEvent& event)
+  {
+    setZ(3);
+    update();
+  }
+
+  void
   LauncherButton::compose(const PaintEvent& event)
   {
     Painter p(this);
-    p.begin(event.rect);
+    p.begin(event);
     if (state() & FocusedState)
       p.setBrush(Color(51, 102, 255));
     else if (state() & PressedState)

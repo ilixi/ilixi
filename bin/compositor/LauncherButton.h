@@ -38,6 +38,18 @@ namespace ilixi
     ~LauncherButton();
 
   protected:
+    /*!
+     * Just updates button.
+     */
+    virtual void
+    enterEvent(const PointerEvent& event);
+
+    /*!
+     * Just updates button.
+     */
+    virtual void
+    leaveEvent(const PointerEvent& event);
+
     void
     compose(const PaintEvent& event);
   };
