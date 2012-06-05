@@ -27,6 +27,8 @@
 namespace ilixi
 {
 
+  D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
+
   AppView::AppView(Compositor* compositor, AppInstance* instance,
       Widget* parent) :
       AppCompositor(compositor, instance, parent)
@@ -44,15 +46,18 @@ namespace ilixi
     _ani.addTween(_zoomTween);
 
     setVisible(false);
+    ILOG_TRACE_W(ILX_APPVIEW);
   }
 
   AppView::~AppView()
   {
+    ILOG_TRACE_W(ILX_APPVIEW);
   }
 
   void
   AppView::show()
   {
+    ILOG_TRACE_W(ILX_APPVIEW);
     _ani.stop();
     setVisible(true);
     setFocus();
@@ -66,6 +71,7 @@ namespace ilixi
   void
   AppView::hide()
   {
+    ILOG_TRACE_W(ILX_APPVIEW);
     _ani.stop();
     _opacityTween->setInitialValue(255);
     _opacityTween->setEndValue(0);
@@ -84,9 +90,6 @@ namespace ilixi
   {
     setOpacity(_opacityTween->value());
     setZoomFactor(_zoomTween->value());
-//    _appCompositor->setGeometry(_scaleTween->value(), _scaleTween->value(),
-//        width() - 2 * _scaleTween->value(),
-//        height() - 2 * _scaleTween->value());
     update();
   }
 

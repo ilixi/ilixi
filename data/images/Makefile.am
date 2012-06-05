@@ -7,5 +7,6 @@ miscdata_DATA 	=	arrowDown.png \
      			default.png \
      			ilixi_bg.jpg \
      			noImage.png \
-			pointer.png
+			pointer.png \
+			grid.png
 EXTRA_DIST 	= 	$(miscdata_DATA)

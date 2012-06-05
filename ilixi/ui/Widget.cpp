@@ -514,7 +514,7 @@ namespace ilixi
   void
   Widget::setParent(Widget* parent)
   {
-    if (parent != _parent)
+//    if (parent != _parent)
       {
         // remove me from old parent's children list...
         if (_parent)

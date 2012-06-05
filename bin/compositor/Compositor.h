@@ -27,13 +27,13 @@
 #include <map>
 #include <directfb_windows.h>
 #include "ui/Application.h"
-#include "Switcher.h"
 #include "Launcher.h"
 #include "HomeButton.h"
 #include "SwitchButton.h"
 #include "QuitButton.h"
 #include "AppView.h"
 #include "ApplicationManager.h"
+#include "Switcher.h"
 
 namespace ilixi
 {

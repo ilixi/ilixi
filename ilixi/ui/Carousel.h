@@ -56,6 +56,7 @@ namespace ilixi
     setSource(Widget* source);
 
     sigc::signal<void> sigFocused;
+    sigc::signal<void> sigPressed;
 
   protected:
     void
@@ -69,6 +70,9 @@ namespace ilixi
 
     virtual void
     leaveEvent(const PointerEvent& event);
+
+    virtual void
+    keyUpEvent(const KeyEvent& event);
 
   private:
     Widget* _source;
@@ -100,6 +104,11 @@ namespace ilixi
     void
     showItem(CarouselItem* item);
 
+    /*!
+     * This signal is emitted once an item is selected.
+     */
+    sigc::signal<void, CarouselItem*> sigItemSelected;
+
   protected:
     void
     compose(const PaintEvent& event);
@@ -110,9 +119,9 @@ namespace ilixi
     Point _center;
     Size _itemSize;
     float _angleStep;
+
     TweenAnimation _animation;
     Tween* _tween;
-    WidgetListIterator _it;
 
     void
     tweenSlot();

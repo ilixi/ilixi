@@ -67,7 +67,7 @@ namespace ilixi
     else
     painter.drawImage(background(), 30, 0, width(), height());
 #else
-    painter.drawImage(background(), 30, 0, width(), height());
+    painter.drawImage(background(), 0, 0, width(), height());
 #endif
     painter.end();
   }

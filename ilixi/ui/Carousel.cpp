@@ -31,6 +31,8 @@ namespace ilixi
 {
 
   const double PI = 3.141592;
+  const double PI_TWICE = PI * 2;
+  const double PI_HALF = PI / 2.0;
 
   CarouselItem::CarouselItem(Carousel* parent) :
       Widget(parent), _source(NULL), _carousel(parent), _angle(0), _scale(0)
@@ -53,10 +55,10 @@ namespace ilixi
   void
   CarouselItem::setAngle(float angle)
   {
-    if (angle > (2.0 * PI))
-      angle = angle - (2.0 * PI);
+    if (angle > (PI_TWICE))
+      angle = angle - (PI_TWICE);
     else if (angle < 0)
-      angle = (2.0 * PI) + angle;
+      angle = (PI_TWICE) + angle;
     _angle = angle;
   }
 
@@ -123,6 +125,13 @@ namespace ilixi
   }
 
   void
+  CarouselItem::keyUpEvent(const KeyEvent& event)
+  {
+    if (event.keySymbol == DIKS_SPACE || event.keySymbol == DIKS_OK)
+      sigPressed();
+  }
+
+  void
   CarouselItem::updateCarouselItemGeometry()
   {
     if (_source)
@@ -159,17 +168,18 @@ namespace ilixi
   Carousel::addItem(Widget* widget)
   {
     CarouselItem* item = new CarouselItem(this);
-    item->setSource(widget);
     addChild(item);
+    item->setSource(widget);
     item->sigFocused.connect(
         sigc::bind<CarouselItem*>(sigc::mem_fun(this, &Carousel::showItem),
             item));
-    _it = _children.begin();
+    updateCarouselGeometry();
   }
 
   void
   Carousel::removeItem(Widget* widget)
   {
+    removeChild(widget);
   }
 
   void
@@ -179,7 +189,7 @@ namespace ilixi
       {
         if (((CarouselItem*) *it) == widget)
           {
-            float target = PI / 2.0 - widget->angle();
+            float target = PI_HALF - widget->angle();
             _animation.stop();
             _tween->setEndValue(target);
             _animation.start();
@@ -219,6 +229,7 @@ namespace ilixi
   void
   Carousel::tweenEndSlot()
   {
+    CarouselItem* selected;
     int i = 0;
     for (WidgetListIterator it = _children.begin(); it != _children.end();
         ++it, ++i)
@@ -228,12 +239,15 @@ namespace ilixi
         if (!item)
           continue;
         item->setAngle(item->angle() + _tween->endValue());
+        if (item->scale() == 1)
+          selected = item;
         ILOG_DEBUG( ILX_CAROUSEL,
             "%d z%d "
             "angle: %f "
             "scale %f - "
             "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
       }
+    sigItemSelected(selected);
   }
 
   void
@@ -242,7 +256,7 @@ namespace ilixi
     if (_children.empty())
       return;
 
-    _angleStep = (2 * PI) / _children.size();
+    _angleStep = (PI_TWICE) / _children.size();
 
     int i = 0;
     int xUnit = width() / 9.0;
@@ -256,9 +270,9 @@ namespace ilixi
     _itemSize = Size(xUnit * 3, yUnit * 3);
 
     ILOG_DEBUG( ILX_CAROUSEL,
-        "Size: %u AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _children.size(), _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
+        "AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
 
-    float angle = PI / 2.0;
+    float angle = PI_HALF;
 
     Widget* right = getNeighbour(Right);
     Widget* first = NULL;

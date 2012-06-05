@@ -15,16 +15,19 @@ namespace ilixi
       Application(argc, argv)
   {
     setTitle("Stacking");
+    setBackgroundImage(ILIXI_DATADIR"images/grid.png");
 
     PushButton* cont1 = new PushButton("Send to Back");
     addWidget(cont1);
+    cont1->setZ(10);
     cont1->sigClicked.connect(sigc::mem_fun(this, &Stacker::sendBack));
-    cont1->moveTo(0, 0);
+    cont1->moveTo(10, 0);
 
     PushButton* cont2 = new PushButton("Bring to front");
     addWidget(cont2);
+    cont2->setZ(10);
     cont2->sigClicked.connect(sigc::mem_fun(this, &Stacker::bringForward));
-    cont2->moveTo(0, 50);
+    cont2->moveTo(10, 50);
 
     PushButton* cont3 = new PushButton("Raise");
     addWidget(cont3);
@@ -78,14 +81,18 @@ namespace ilixi
   void
   Stacker::raise()
   {
-    ILOG_DEBUG(ILX, "raise: %d\n", raiseWidget(pb1));
+    pb1->setZ(pb1->z() + 1);
+    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
+//    ILOG_DEBUG(ILX, "raise: %d\n", raiseWidget(pb1));
     update();
   }
 
   void
   Stacker::lower()
   {
-    ILOG_DEBUG(ILX, "lower: %d\n", lowerWidget(pb1));
+    pb1->setZ(pb1->z() - 1);
+    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
+//    ILOG_DEBUG(ILX, "lower: %d\n", lowerWidget(pb1));
     update();
   }
 

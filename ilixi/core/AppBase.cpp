@@ -41,7 +41,10 @@ AppBase::AppBase(int argc, char* argv[], AppOptions options) :
     ILOG_THROW(ILX_APPBASE, "Cannot allow more than one instance!\n");
 
   __instance = this;
-  pthread_mutex_init(&__cbMutex, NULL);
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutex_init(&__cbMutex, &attr);
   pthread_mutex_init(&__selMutex, NULL);
   pthread_mutex_init(&__windowMutex, NULL);
 

@@ -25,8 +25,8 @@
 #include "graphics/Painter.h"
 #include "core/Logger.h"
 #include "sigc++/bind.h"
-
-#define HS_H 196
+#include "switcher/HorizontalSwitcher.h"
+#include "switcher/CarouselSwitcher.h"
 
 using namespace std;
 
@@ -35,7 +35,8 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/compositor", "Compositor");
 
   Compositor::Compositor(int argc, char* argv[]) :
-      Application(argc, argv, OptExclusive), _appMan(NULL), _currentApp(NULL)
+      Application(argc, argv, OptExclusive), _appMan(NULL), _currentApp(NULL), _switcher(
+          NULL)
   {
     _appMan = new ApplicationManager(this);
 
@@ -46,7 +47,16 @@ namespace ilixi
     _launcher = new Launcher(this);
     addWidget(_launcher);
 
-    _switcher = new Switcher();
+    for (int i = 1; i < argc; i++)
+      {
+        ILOG_INFO(ILX, "%s\n", argv[i]);
+        if (strcmp(argv[i], "carousel") == 0)
+          _switcher = new CarouselSwitcher();
+      }
+
+    if (_switcher == NULL)
+      _switcher = new HorizontalSwitcher();
+
     _switcher->sigSwitchRequest.connect(
         sigc::mem_fun(this, &Compositor::handleSwitchRequest));
     addWidget(_switcher);
@@ -149,14 +159,18 @@ namespace ilixi
   void
   Compositor::handleSwitchRequest()
   {
+    ILOG_INFO(ILX, "0! %p\n", _currentApp);
     if (_currentApp)
       _currentApp->view()->hide();
+    ILOG_INFO(ILX, "1! %p\n", _currentApp);
 
     _currentApp = _switcher->currentThumb()->instance();
     showLauncher(false);
+    ILOG_INFO(ILX, "2! %p\n", _currentApp);
 
     if (_switcher->visible())
       showSwitcher(false);
+    ILOG_INFO(ILX, "3! %p\n", _currentApp);
   }
 
   void
@@ -315,7 +329,7 @@ namespace ilixi
   Compositor::updateCompositorGeometry()
   {
     _launcher->setGeometry(0, 0, width(), height());
-    _switcher->setGeometry(0, height() - HS_H, width(), HS_H);
+    _switcher->setOptimalGeometry(width(), height());
     _homeButton->moveTo(0, 0);
     _switchButton->moveTo(0, height() - 80);
     _quitButton->moveTo(width() - 80, 0);
