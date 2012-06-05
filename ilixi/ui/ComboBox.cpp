@@ -177,7 +177,7 @@ void
 ComboBox::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawComboBox(&p, this);
   p.end();
 }

@@ -569,10 +569,10 @@ namespace ilixi
     /*!
      * Repaints widget immediately using clipping.
      *
-     * @param rect Bounding rectangle to repaint in absolute coordinates.
+     * @param event contains a rectangle to update.
      */
     virtual void
-    repaint(const Rectangle& rect);
+    repaint(const PaintEvent& event);
 
     /*!
      * Repaints widget and updates parent window inside main event loop.
@@ -588,10 +588,10 @@ namespace ilixi
     /*!
      * This method will repaint inside given rectangle.
      *
-     * @param rect Bounding rectangle to update in absolute coordinates.
+     * @param event contains a rectangle to update.
      */
     void
-    update(const Rectangle& rect);
+    update(const PaintEvent& event);
 
     /*!
      * Invalidates parent layout and force it to tile again on next paint.

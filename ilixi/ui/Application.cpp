@@ -169,7 +169,7 @@ Application::compose(const PaintEvent& event)
 {
   ILOG_TRACE_W(ILX_APPLICATION);
   Painter painter(this);
-  painter.begin(event.rect);
+  painter.begin(event);
   stylist()->drawAppFrame(&painter, this);
   painter.end();
 }

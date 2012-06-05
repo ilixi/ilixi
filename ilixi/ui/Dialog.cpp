@@ -219,7 +219,7 @@ void
 Dialog::compose(const PaintEvent& event)
 {
   Painter painter(this);
-  painter.begin(event.rect);
+  painter.begin(event);
   stylist()->drawDialog(&painter, this);
   painter.end();
 }

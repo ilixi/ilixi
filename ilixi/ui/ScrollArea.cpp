@@ -287,7 +287,7 @@ void
 ScrollArea::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   if (_options & DrawFrame)
     p.drawRectangle(0, 0, width(), height());
   if (_tween->value())

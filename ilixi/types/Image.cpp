@@ -31,33 +31,37 @@ using namespace ilixi;
 Image::Image() :
     _dfbSurface(NULL), _imagePath(""), _size()
 {
+  ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::Image(const std::string& path) :
     _dfbSurface(NULL), _imagePath(path), _size()
 {
+  ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::Image(const std::string& path, int width, int height) :
     _dfbSurface(NULL), _imagePath(path), _size(width, height)
 {
-
+  ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::Image(const std::string& path, const Size& size) :
     _dfbSurface(NULL), _imagePath(path), _size(size)
 {
+  ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::Image(const Image& img) :
     _dfbSurface(NULL), _imagePath(img._imagePath), _size(img._size)
 {
+  ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::~Image()
 {
+  ILOG_TRACE(ILX_IMAGE);
   invalidateSurface();
-  ILOG_DEBUG(ILX_IMAGE, "~Image %p\n", this);
 }
 
 int
@@ -129,6 +133,7 @@ Image::invalidateSurface()
       _dfbSurface->ReleaseSource(_dfbSurface);
       _dfbSurface->Release(_dfbSurface);
       _dfbSurface = NULL;
+      ILOG_TRACE(ILX_IMAGE);
     }
 }
 

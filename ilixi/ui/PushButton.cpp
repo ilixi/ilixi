@@ -87,7 +87,7 @@ PushButton::compose(const PaintEvent& event)
 {
   ILOG_TRACE_W(ILX_PUSHBUTTON);
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawPushButton(&p, this);
   p.end();
 }

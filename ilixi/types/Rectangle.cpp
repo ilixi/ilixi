@@ -206,17 +206,9 @@ Rectangle::unite(const Rectangle &r)
 {
   if (this != &r && !r.isNull())
     {
-      if (left() > r.left())
-        setLeft(r.left());
-
-      if (top() > r.top())
-        setTop(r.top());
-
-      if (right() < r.right())
-        setRight(r.right());
-
-      if (bottom() < r.bottom())
-        setBottom(r.bottom());
+      setTopLeft(Point(std::min(left(), r.left()), std::min(top(), r.top())));
+      setBottomRight(
+          Point(std::max(right(), r.right()), std::max(bottom(), r.bottom())));
     }
 }
 
@@ -362,6 +354,6 @@ DFBRegion
 Rectangle::dfbRegion() const
 {
   DFBRegion r =
-    { x(), y(), right() - 1, bottom() - 1 };
+    { x(), y(), right(), bottom() };
   return r;
 }

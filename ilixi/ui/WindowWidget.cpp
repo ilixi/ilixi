@@ -104,17 +104,21 @@ WindowWidget::paint(const PaintEvent& event)
 
           updateSurface(event);
 
+#ifdef ILIXI_STEREO_OUTPUT
           PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
-              PaintEvent::LeftEye);
-
-          //          DFBRegion r = intersect.dfbRegion();
-          //          _window->BeginUpdates(_window, &r);
-
+              _frameGeometry.intersected(_updates._updateRegionRight));
+#else
+          PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion));
+#endif
           if (evt.isValid())
             {
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
+
 #ifdef ILIXI_STEREO_OUTPUT
               // Left eye
+              ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
+              evt.eye = PaintEvent::LeftEye;
+              surface()->setStereoEye(PaintEvent::LeftEye);
               surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
                   DSSE_LEFT);
               surface()->clip(evt.rect);
@@ -124,7 +128,33 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-                surface()->clear(evt.rect);
+              surface()->clear(evt.rect);
+
+              paintChildren(evt);
+
+              if (AppBase::appOptions() & OptExclusive)
+                {
+                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                      DSBLIT_BLEND_ALPHACHANNEL);
+                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                      AppBase::cursorPosition().x + 10,
+                      AppBase::cursorPosition().y);
+                }
+
+              // Right eye
+              ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
+              evt.eye = PaintEvent::RightEye;
+              surface()->setStereoEye(PaintEvent::RightEye);
+              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
+                  DSSE_RIGHT);
+              surface()->clip(evt.right);
+              if (_backgroundFlags & BGFFill)
+                {
+                  surface()->clear(evt.right);
+                  compose(evt);
+                }
+              else if (_backgroundFlags & BGFClear)
+              surface()->clear(evt.right);
 
               paintChildren(evt);
 
@@ -137,12 +167,8 @@ WindowWidget::paint(const PaintEvent& event)
                       AppBase::cursorPosition().y);
                 }
 
-              // Right eye
-              surface()->setStereoEye(PaintEvent::RightEye);
-              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
-                  DSSE_RIGHT);
-              evt.eye = PaintEvent::RightEye;
-#endif
+              surface()->flipStereo(evt.rect, evt.right);
+#else
               surface()->clip(evt.rect);
               if (_backgroundFlags & BGFFill)
                 {
@@ -158,20 +184,12 @@ WindowWidget::paint(const PaintEvent& event)
                 {
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
-#ifdef ILIXI_STEREO_OUTPUT
+
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x + 10,
-                      AppBase::cursorPosition().y);
-#else
-                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x,
-                      AppBase::cursorPosition().y);
-#endif
+                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+
                 }
 
-#ifdef ILIXI_STEREO_OUTPUT
-              surface()->flipStereo(evt.rect);
-#else
               surface()->flip(evt.rect);
 #endif
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
@@ -182,18 +200,24 @@ WindowWidget::paint(const PaintEvent& event)
         {
           pthread_mutex_lock(&_updates._listLock);
           _updates._updateQueue.push_back(event.rect);
+#ifdef ILIXI_STEREO_OUTPUT
+          _updates._updateQueueRight.push_back(event.right);
+#endif
           pthread_mutex_unlock(&_updates._listLock);
         }
     }
 }
 
 void
-WindowWidget::repaint(const Rectangle& rect)
+WindowWidget::repaint(const PaintEvent& event)
 {
   if (visible())
     {
       sem_wait(&_updates._paintReady);
-      _updates._updateRegion = rect;
+      _updates._updateRegion = event.rect;
+#ifdef ILIXI_STEREO_OUTPUT
+      _updates._updateRegionRight = event.right;
+#endif
       sem_post(&_updates._updateReady);
       paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
     }
@@ -264,6 +288,7 @@ WindowWidget::showWindow()
           sEncoderCfg.framing = DSEPF_MONO;
           pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
         }
+      pScreen->Release(pScreen);
 
       // setup layer
       DFBGraphicsDeviceDescription deviceDesc;
@@ -271,7 +296,7 @@ WindowWidget::showWindow()
 
       DFBDisplayLayerConfig config;
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
-          | DLCONF_WIDTH | DLCONF_HEIGHT | DLCONF_OPTIONS);
+          | DLCONF_OPTIONS);
       if (deviceDesc.acceleration_mask == DFXL_NONE)
         config.buffermode = DLBM_BACKSYSTEM;
       else
@@ -283,8 +308,6 @@ WindowWidget::showWindow()
       config.options = DLOP_NONE;
 #endif
 
-      config.width = 800; //s.width();
-      config.height = 600; //s.height();
       if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
           != DFB_OK)
         ILOG_THROW(ILX_WINDOWWIDGET,
@@ -504,17 +527,31 @@ WindowWidget::updateWindow()
 
   _updates._updateQueue.clear();
 
+#ifdef ILIXI_STEREO_OUTPUT
+  Rectangle updateTempRight = _updates._updateQueueRight[0];
+  if (size > 1)
+  for (int i = 1; i < size; ++i)
+  updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
+
+  _updates._updateQueueRight.clear();
+#endif
+
   if (!updateTemp.isNull())
     {
       sem_wait(&_updates._paintReady);
 #ifdef ILIXI_STEREO_OUTPUT
-      _updates._updateRegion = _frameGeometry;
+      _updates._updateRegion = updateTemp;
+      _updates._updateRegionRight = updateTempRight;
 #else
       _updates._updateRegion = updateTemp;
 #endif
 
       sem_post(&_updates._updateReady);
-      paint(PaintEvent(_updates._updateRegion, PaintEvent::LeftEye));
+#ifdef ILIXI_STEREO_OUTPUT
+      paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
+#else
+      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
+#endif
     }
   pthread_mutex_unlock(&_updates._listLock);
 }

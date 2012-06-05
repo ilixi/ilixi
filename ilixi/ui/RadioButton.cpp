@@ -106,7 +106,7 @@ void
 RadioButton::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawRadioButton(&p, this);
   p.end();
 }

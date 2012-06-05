@@ -142,7 +142,7 @@ void
 Icon::compose(const PaintEvent& event)
 {
   Painter painter(this);
-  painter.begin(event.rect);
+  painter.begin(event);
   stylist()->drawIcon(&painter, this);
   painter.end();
 }

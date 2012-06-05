@@ -29,21 +29,24 @@ using namespace ilixi;
 Pen::Pen() :
     _modified(true), _color(0, 0, 0)
 {
+  ILOG_TRACE(ILX_PEN);
 }
 
 Pen::Pen(const Pen& pen) :
     _modified(true), _color(pen._color)
 {
+  ILOG_TRACE(ILX_PEN);
 }
 
 Pen::Pen(const Color& color) :
     _modified(true), _color(color)
 {
+  ILOG_TRACE(ILX_PEN);
 }
 
 Pen::~Pen()
 {
-  ILOG_DEBUG(ILX_PEN, "~Pen %p\n", this);
+  ILOG_TRACE(ILX_PEN);
 }
 
 Color

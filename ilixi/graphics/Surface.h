@@ -220,7 +220,7 @@ namespace ilixi
     getStereoSurface(PaintEvent::PaintEventEye eye);
 
     void
-    flipStereo(const Rectangle& rect);
+    flipStereo(const Rectangle& left, const Rectangle& right);
 #endif
 
   private:

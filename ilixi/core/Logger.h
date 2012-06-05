@@ -56,6 +56,7 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
   D_DEBUG_DOMAIN( ILX_BORDERBASE, "ilixi/ui/BorderBase", "BorderBase");
   D_DEBUG_DOMAIN( ILX_BUTTON, "ilixi/ui/Button", "Button");
+  D_DEBUG_DOMAIN( ILX_CAROUSEL, "ilixi/ui/Carousel", "Carousel");
   D_DEBUG_DOMAIN( ILX_CHECKBOX, "ilixi/ui/CheckBox", "CheckBox");
   D_DEBUG_DOMAIN( ILX_COMBOBOX, "ilixi/ui/ComboBox", "ComboBox");
   D_DEBUG_DOMAIN( ILX_CONTAINER, "ilixi/ui/ContainerBase", "ContainerBase");
@@ -95,8 +96,8 @@ namespace ilixi
   ilixi_log(int level, const char* message, ...);
 
 #ifdef ILIXI_LOG_DEBUG_ENABLED
-#define ILOG_TRACE(Domain)              D_DEBUG_AT(Domain, "[P:%p] %s\n", this, __FUNCTION__)
-#define ILOG_TRACE_W(Domain)            D_DEBUG_AT(Domain, "[ID:%d P:%p] %s\n", id(), this, __FUNCTION__)
+#define ILOG_TRACE(Domain)              D_DEBUG_AT(Domain, "[%p] %s\n", this, __FUNCTION__)
+#define ILOG_TRACE_W(Domain)            D_DEBUG_AT(Domain, "[%d:%p] %s\n", id(), this, __FUNCTION__)
 #define ILOG_DEBUG( Domain, _fmt... )   D_DEBUG_AT(Domain, _fmt)
 #define ILOG_INFO( Domain, _fmt...)     D_LOG(Domain, INFO, _fmt)
 #define ILOG_NOTICE( Domain, _fmt...)   D_LOG(Domain, NOTICE, _fmt)

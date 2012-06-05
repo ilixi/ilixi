@@ -83,13 +83,13 @@ namespace ilixi
 
   Widget::~Widget()
   {
+    ILOG_TRACE_W(ILX_WIDGET);
     if (eventManager() && hasFocus())
       eventManager()->clear(this);
 
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
       delete *it;
     delete _surface;
-    ILOG_TRACE_W(ILX_WIDGET);
   }
 
   unsigned int
@@ -332,10 +332,14 @@ namespace ilixi
   void
   Widget::setZ(int z)
   {
-    if (_parent)
-      _parent->_surfaceDesc = (SurfaceDescription) (_parent->_surfaceDesc
-          | DoZSort);
-    _z = z;
+    if (z != _z)
+      {
+        if (_parent)
+          _parent->_surfaceDesc = (SurfaceDescription) (_parent->_surfaceDesc
+              | DoZSort);
+        _z = z;
+        setSurfaceGeometryModified();
+      }
   }
 
   void
@@ -533,11 +537,11 @@ namespace ilixi
   {
     if (visible())
       {
+        ILOG_TRACE_W(ILX_WIDGET);
         updateSurface(event);
         PaintEvent evt(_frameGeometry, event);
         if (evt.isValid())
           {
-            ILOG_TRACE_W(ILX_WIDGET);
             compose(evt);
             paintChildren(evt);
           }
@@ -548,22 +552,22 @@ namespace ilixi
   Widget::repaint()
   {
     if (_surface && _parent && !(_state & InvisibleState))
-      _parent->repaint(_frameGeometry);
+      _parent->repaint(PaintEvent(_frameGeometry, z()));
   }
 
   void
-  Widget::repaint(const Rectangle& rect)
+  Widget::repaint(const PaintEvent& event)
   {
     if (_surface && _parent && !(_state & InvisibleState))
       {
         if (_surfaceDesc & HasOwnSurface)
           {
-            _surface->clear(
-                mapToSurface(rect.x(), rect.y(), rect.width(), rect.height()));
-            _parent->repaint(_frameGeometry.intersected(rect));
+            _surface->clear(mapToSurface(event.rect));
+//            _parent->repaint(_frameGeometry.intersected(rect));
+            _parent->repaint(PaintEvent(_frameGeometry, event));
           }
         else
-          _parent->repaint(rect);
+          _parent->repaint(event);
       }
   }
 
@@ -572,30 +576,28 @@ namespace ilixi
   {
     if (_surface)
       {
-        if (_parent && !(_state & InvisibleState))
-//        _parent->update(_frameGeometry);
-          _rootWindow->update(_frameGeometry);
+        if (_parent && !(_state & InvisibleState)) // FIXME move invis check above
+          _rootWindow->update(PaintEvent(_frameGeometry, z()));
         else
-          paint(PaintEvent(_frameGeometry, PaintEvent::BothEyes)); // FIXME Stereo paint
+          paint(PaintEvent(_frameGeometry, z()));
       }
   }
 
   void
-  Widget::update(const Rectangle& rect)
+  Widget::update(const PaintEvent& event)
   {
     if (_surface && _parent && !(_state & InvisibleState))
       {
         if (_surfaceDesc & HasOwnSurface)
           {
-            _surface->clear(
-                mapToSurface(rect.x(), rect.y(), rect.width(), rect.height()));
-            _parent->update(_frameGeometry.intersected(rect));
+            _surface->clear(mapToSurface(event.rect));
+            _parent->update(PaintEvent(_frameGeometry, event));
           }
         else
-          _parent->update(rect);
+          _parent->update(event);
       }
     else
-      paint(PaintEvent(rect, PaintEvent::BothEyes)); // FIXME Stereo paint
+      paint(event);
   }
 
   void
@@ -945,6 +947,7 @@ namespace ilixi
   void
   Widget::updateSurface(const PaintEvent& event)
   {
+    ILOG_TRACE_W(ILX_WIDGET);
     if (_surfaceDesc & SurfaceModified)
       sigGeometryUpdated();
 

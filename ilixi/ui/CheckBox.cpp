@@ -141,7 +141,7 @@ void
 CheckBox::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawCheckBox(&p, this);
   p.end();
 }

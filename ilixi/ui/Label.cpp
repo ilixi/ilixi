@@ -77,7 +77,7 @@ Label::compose(const PaintEvent& event)
 {
   ILOG_TRACE(ILX_LABEL);
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawFrame(&p, this);
   stylist()->drawLabel(&p, this);
   p.end();

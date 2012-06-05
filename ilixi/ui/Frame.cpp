@@ -108,7 +108,7 @@ Frame::compose(const PaintEvent& event)
 {
   ILOG_TRACE_W(ILX_FRAME);
   Painter painter(this);
-  painter.begin(event.rect);
+  painter.begin(event);
   stylist()->drawFrame(&painter, this);
   painter.end();
 }

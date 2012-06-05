@@ -74,7 +74,7 @@ namespace ilixi
      * Immediately repaints inside given rectangle.
      */
     virtual void
-    repaint(const Rectangle& rect);
+    repaint(const PaintEvent& event);
 
   protected:
     /*!
@@ -122,6 +122,10 @@ namespace ilixi
       sem_t _updateReady;
       sem_t _paintReady;
       Rectangle _updateRegion;
+#ifdef ILIXI_STEREO_OUTPUT
+      Rectangle _updateRegionRight;
+      std::vector<Rectangle> _updateQueueRight;
+#endif
       std::vector<Rectangle> _updateQueue;
     } _updates;
 

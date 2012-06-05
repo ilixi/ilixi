@@ -29,21 +29,24 @@ using namespace ilixi;
 Brush::Brush() :
     _modified(true), _color(1, 1, 1)
 {
+  ILOG_TRACE(ILX_BRUSH);
 }
 
 Brush::Brush(const Brush& brush) :
     _modified(true), _color(brush._color)
 {
+  ILOG_TRACE(ILX_BRUSH);
 }
 
 Brush::Brush(const Color& color) :
     _modified(true), _color(color)
 {
+  ILOG_TRACE(ILX_BRUSH);
 }
 
 Brush::~Brush()
 {
-  ILOG_DEBUG(ILX_BRUSH, "~Brush %p\n", this);
+  ILOG_TRACE(ILX_BRUSH);
 }
 
 Color

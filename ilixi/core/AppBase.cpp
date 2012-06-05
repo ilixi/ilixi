@@ -632,7 +632,7 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
           32);
       Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
           32);
-      activeWindow()->update(cnew.united(cold));
+      activeWindow()->update(PaintEvent(cnew.united(cold), 10));
     }
 
   we.window.x = 0;

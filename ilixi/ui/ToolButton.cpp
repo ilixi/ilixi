@@ -133,7 +133,7 @@ void
 ToolButton::compose(const PaintEvent& event)
 {
   Painter p(this);
-  p.begin(event.rect);
+  p.begin(event);
   stylist()->drawToolButton(&p, this);
   p.end();
 }

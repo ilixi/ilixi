@@ -30,6 +30,7 @@ using namespace ilixi;
 Font::Font() :
     _modified(true), _ref(0), _fileName(""), _font(NULL)
 {
+  ILOG_TRACE(ILX_FONT);
 }
 
 Font::Font(const std::string& file, int size) :
@@ -38,6 +39,7 @@ Font::Font(const std::string& file, int size) :
   // Fixme is height absolutely necessary here?
   _desc.flags = DFDESC_HEIGHT;
   _desc.height = size;
+  ILOG_TRACE(ILX_FONT);
 }
 
 Font::Font(const Font& font) :
@@ -46,12 +48,13 @@ Font::Font(const Font& font) :
 {
   if (_font)
     _font->AddRef(_font);
+  ILOG_TRACE(ILX_FONT);
 }
 
 Font::~Font()
 {
   release();
-  ILOG_DEBUG(ILX_FONT, "~Font %p\n", this);
+  ILOG_TRACE(ILX_FONT);
 }
 
 int

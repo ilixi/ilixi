@@ -26,6 +26,7 @@
 
 #include "directfb.h"
 #include "types/Rectangle.h"
+#include "ilixiConfig.h"
 
 namespace ilixi
 {
@@ -107,10 +108,53 @@ namespace ilixi
   {
     enum PaintEventEye
     {
-      LeftEye, RightEye, BothEyes
+      LeftEye = 0x01, RightEye = 0x02, BothEyes = 0x03
     };
 
     PaintEvent()
+    {
+    }
+
+#ifdef ILIXI_STEREO_OUTPUT
+    PaintEvent(Rectangle l, Rectangle r) :
+    right(r), rect(l), eye(BothEyes)
+      {
+      }
+
+    PaintEvent(Rectangle r, int disparity) :
+    right(r), rect(r), eye(BothEyes)
+      {
+        right.translate(-disparity, 0);
+        rect.translate(disparity, 0);
+      }
+
+    PaintEvent(Rectangle r, const PaintEvent& evt) :
+    right(r.intersected(evt.right)), rect(r.intersected(evt.rect)), eye(
+        evt.eye)
+      {
+      }
+
+    PaintEvent(Rectangle r, PaintEventEye e) :
+    right(r), rect(r), eye(e)
+      {
+      }
+
+    bool
+    isValid()
+      {
+        return rect.isValid() || right.isValid();
+      }
+
+    Rectangle right;
+    Rectangle rect;
+#else
+    PaintEvent(Rectangle r) :
+        rect(r), eye(BothEyes)
+    {
+    }
+
+    PaintEvent(Rectangle r, int disparity) :
+        rect(r), eye(BothEyes)
     {
     }
 
@@ -130,8 +174,8 @@ namespace ilixi
       return rect.isValid();
     }
 
-    Rectangle absRect;
     Rectangle rect;
+#endif
     PaintEventEye eye;
   };
 }
