@@ -34,7 +34,7 @@ IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
-AppBase::AppBase(int argc, char* argv[], AppOptions options) :
+AppBase::AppBase(int* argc, char*** argv, AppOptions options) :
     __options(options), __title(""), __state(APS_HIDDEN), __activeWindow(NULL)
 {
   if (__instance)
@@ -103,13 +103,13 @@ AppBase::getDFB()
 }
 
 void
-AppBase::initDFB(int argc, char **argv)
+AppBase::initDFB(int* argc, char*** argv)
 {
   if (!__dfb)
     {
       ILOG_DEBUG(ILX_APPBASE, "Initialising DirectFB interfaces...\n");
 
-      if (DirectFBInit(&argc, &argv) != DFB_OK)
+      if (DirectFBInit(argc, argv) != DFB_OK)
         ILOG_THROW(ILX_APPBASE, "Error while initialising DirectFB!\n");
 
       if (DirectFBCreate(&__dfb) != DFB_OK)

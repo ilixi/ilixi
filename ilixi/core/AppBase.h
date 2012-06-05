@@ -69,7 +69,7 @@ namespace ilixi
     /*!
      * Constructor.
      */
-    AppBase(int argc, char* argv[], AppOptions options);
+    AppBase(int* argc, char*** argv, AppOptions options);
 
     /*!
      * Destructor.
@@ -183,7 +183,7 @@ namespace ilixi
      * only once by main Application during its construction.
      */
     void
-    initDFB(int argc, char **argv);
+    initDFB(int* argc, char*** argv);
 
     /*!
      * Releases DirectFB resources.

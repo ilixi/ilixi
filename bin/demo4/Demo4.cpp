@@ -32,7 +32,7 @@
 using namespace ilixi;
 
 Demo4::Demo4(int argc, char* argv[]) :
-    Application(argc, argv)
+    Application(&argc, &argv)
 {
   setTitle("Demo4");
   setMargin(0);

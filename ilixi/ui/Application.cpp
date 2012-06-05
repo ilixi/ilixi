@@ -29,7 +29,7 @@
 
 using namespace ilixi;
 
-Application::Application(int argc, char* argv[], AppOptions opts) :
+Application::Application(int* argc, char*** argv, AppOptions opts) :
     AppBase(argc, argv, opts), WindowWidget(), _backgroundImage(NULL)
 {
   // TODO parse command line arguments here...

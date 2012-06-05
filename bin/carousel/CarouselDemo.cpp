@@ -31,7 +31,7 @@ namespace ilixi
 {
 
   CarouselDemo::CarouselDemo(int argc, char* argv[]) :
-      Application(argc, argv)
+      Application(&argc, &argv)
   {
     setTitle("CarouselDemo");
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
@@ -63,9 +63,9 @@ namespace ilixi
     painter.begin(event);
 #ifdef ILIXI_STEREO_OUTPUT
     if (event.eye == PaintEvent::LeftEye)
-    painter.drawImage(background(), -30, 0, width(), height());
+      painter.drawImage(background(), -30, 0, width(), height());
     else
-    painter.drawImage(background(), 30, 0, width(), height());
+      painter.drawImage(background(), 30, 0, width(), height());
 #else
     painter.drawImage(background(), 0, 0, width(), height());
 #endif

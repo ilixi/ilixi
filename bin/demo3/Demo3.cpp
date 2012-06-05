@@ -37,7 +37,7 @@
 using namespace ilixi;
 
 Demo3::Demo3(int argc, char* argv[]) :
-    Application(argc, argv)
+    Application(&argc, &argv)
 {
   setTitle("Forms Demo");
   setBackgroundFilled(true);

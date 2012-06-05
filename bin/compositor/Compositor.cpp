@@ -35,7 +35,7 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/compositor", "Compositor");
 
   Compositor::Compositor(int argc, char* argv[]) :
-      Application(argc, argv, OptExclusive), _appMan(NULL), _currentApp(NULL), _switcher(
+      Application(&argc, &argv, OptExclusive), _appMan(NULL), _currentApp(NULL), _switcher(
           NULL)
   {
     _appMan = new ApplicationManager(this);
@@ -49,7 +49,6 @@ namespace ilixi
 
     for (int i = 1; i < argc; i++)
       {
-        ILOG_INFO(ILX, "%s\n", argv[i]);
         if (strcmp(argv[i], "carousel") == 0)
           _switcher = new CarouselSwitcher();
       }

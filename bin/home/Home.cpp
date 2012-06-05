@@ -31,7 +31,7 @@
 using namespace ilixi;
 
 Home::Home(int argc, char* argv[]) :
-  Application(argc, argv)
+    Application(&argc, &argv)
 {
   setTitle("Home");
   setBackgroundFilled(true);
@@ -40,11 +40,13 @@ Home::Home(int argc, char* argv[]) :
 
   PushButton* demo1 = new PushButton("Picture gallery");
   addWidget(demo1);
-  demo1->sigClicked.connect(sigc::bind(sigc::mem_fun(this, &Home::runApp), "ilixi_demo1"));
+  demo1->sigClicked.connect(
+      sigc::bind(sigc::mem_fun(this, &Home::runApp), "ilixi_demo1"));
 
   PushButton* demo2 = new PushButton("Demo2");
   addWidget(demo2);
-  demo2->sigClicked.connect(sigc::bind(sigc::mem_fun(this, &Home::runApp), "ilixi_demo2"));
+  demo2->sigClicked.connect(
+      sigc::bind(sigc::mem_fun(this, &Home::runApp), "ilixi_demo2"));
 }
 
 Home::~Home()
@@ -57,7 +59,7 @@ Home::runApp(const char* path)
   pid_t id;
   int err;
   char* sArg[2];
-  sArg[0]= const_cast<char*>(path);
+  sArg[0] = const_cast<char*>(path);
   sArg[1] = NULL;
   if ((err = posix_spawnp(&id, sArg[0], NULL, NULL, sArg, environ)) != 0)
     {

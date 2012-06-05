@@ -40,7 +40,7 @@ namespace ilixi
     /*!
      * Constructor.
      */
-    Application(int argc, char* argv[], AppOptions opts = OptNone);
+    Application(int* argc, char*** argv, AppOptions opts = OptNone);
 
     /*!
      * Destructor.

@@ -29,7 +29,7 @@
 using namespace ilixi;
 
 Gallery::Gallery(int argc, char* argv[]) :
-    Application(argc, argv)
+    Application(&argc, &argv)
 {
   setTitle("Gallery");
   setBackgroundFilled(true);

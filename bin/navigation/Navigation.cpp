@@ -8,7 +8,7 @@ namespace ilixi
 {
 
   Navigation::Navigation(int argc, char* argv[]) :
-      Application(argc, argv)
+      Application(&argc, &argv)
   {
     setTitle("Navigation");
 

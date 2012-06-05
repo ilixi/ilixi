@@ -12,7 +12,7 @@ namespace ilixi
 {
 
   Stacker::Stacker(int argc, char* argv[]) :
-      Application(argc, argv)
+      Application(&argc, &argv)
   {
     setTitle("Stacking");
     setBackgroundImage(ILIXI_DATADIR"images/grid.png");
