@@ -130,6 +130,10 @@ namespace ilixi
     renderSource(const PaintEvent& event);
 
   private:
+    enum SurfaceViewState {
+      SVS_NONE,
+      SVS_READY
+    };
     //! This property stores the scale ratio in horizontal direction.
     double _hScale;
     //! This property stores the scale ratio in vertical direction.
@@ -140,6 +144,8 @@ namespace ilixi
     DFBWindowID _windowID;
     //! This property stores the flip counter for last update.
     unsigned int _flipCount;
+    //! This property is used to paint the source when it is ready.
+    SurfaceViewState _state;
 #ifdef ILIXI_STEREO_OUTPUT
     bool _sourceStereo;
 #endif

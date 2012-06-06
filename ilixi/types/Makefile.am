@@ -8,6 +8,7 @@ libilixi_types_la_SOURCES 	=	Affine2D.cpp \
 							BoxLayout.cpp \
           					Brush.cpp \
           					Color.cpp \
+          					Event.cpp \
           					Font.cpp \
           					Image.cpp \
           					Margin.cpp \

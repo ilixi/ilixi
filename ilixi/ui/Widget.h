@@ -51,6 +51,7 @@ namespace ilixi
     friend class EventManager;
     friend class WidgetLayout;
     friend class ScrollArea; // Blit
+    friend class PaintEvent;
 
     friend bool
     compareZ(Widget* first, Widget* second);

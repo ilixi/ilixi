@@ -32,7 +32,7 @@ namespace ilixi
 
   SurfaceView::SurfaceView(Widget* parent) :
       SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
-          NULL), _windowID(0), _flipCount(0)
+          NULL), _windowID(0), _flipCount(0), _state(SVS_NONE)
   {
     setInputMethod(KeyAndPointerInputTracking);
     sigGeometryUpdated.connect(
@@ -100,7 +100,7 @@ namespace ilixi
             DFBSurfaceCapabilities caps;
             _sourceSurface->GetCapabilities(_sourceSurface, &caps);
             if (caps & DSCAPS_STEREO)
-              _sourceStereo = true;
+            _sourceStereo = true;
 #endif
 
             attachSourceSurface();
@@ -122,7 +122,7 @@ namespace ilixi
         DFBSurfaceCapabilities caps;
         _sourceSurface->GetCapabilities(_sourceSurface, &caps);
         if (caps & DSCAPS_STEREO)
-          _sourceStereo = true;
+        _sourceStereo = true;
 #endif
 
         attachSourceSurface();
@@ -157,7 +157,7 @@ namespace ilixi
             DFBSurfaceCapabilities caps;
             _sourceSurface->GetCapabilities(_sourceSurface, &caps);
             if (caps & DSCAPS_STEREO)
-              _sourceStereo = true;
+            _sourceStereo = true;
 #endif
             attachSourceSurface();
           }
@@ -169,8 +169,7 @@ namespace ilixi
   {
     if (visible())
       {
-        updateSurface(event);
-        PaintEvent evt(_frameGeometry, event);
+        PaintEvent evt(this, event);
         if (evt.isValid())
           {
             compose(evt);
@@ -200,7 +199,7 @@ namespace ilixi
   void
   SurfaceView::renderSource(const PaintEvent& event)
   {
-    if (_sourceSurface)
+    if (_sourceSurface && _state == SVS_READY)
       {
 #ifdef ILIXI_STEREO_OUTPUT
         if (_flipCount && event.eye == PaintEvent::RightEye)
@@ -216,9 +215,9 @@ namespace ilixi
         if (_sourceStereo)
           {
             if (event.eye == PaintEvent::LeftEye)
-              _sourceSurface->SetStereoEye(_sourceSurface, DSSE_LEFT);
+            _sourceSurface->SetStereoEye(_sourceSurface, DSSE_LEFT);
             else
-              _sourceSurface->SetStereoEye(_sourceSurface, DSSE_RIGHT);
+            _sourceSurface->SetStereoEye(_sourceSurface, DSSE_RIGHT);
           }
 #endif
 
@@ -258,8 +257,11 @@ namespace ilixi
   void
   SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
   {
-    if (event.flip_count == 1)
-      sigSourceReady();
+    if (_state != SVS_READY)
+      {
+        sigSourceReady();
+        _state = SVS_READY;
+      }
 
     if (visible())
       {
@@ -287,6 +289,7 @@ namespace ilixi
     _sourceSurface = NULL;
     _sourceWindow = NULL;
     _surfaceID = 0;
+    _state = SVS_NONE;
     sigSourceDestroyed();
   }
 

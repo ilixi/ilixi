@@ -104,6 +104,7 @@ namespace ilixi
     long timestamp;
   };
 
+  class Widget;
   struct PaintEvent
   {
     enum PaintEventEye
@@ -115,64 +116,58 @@ namespace ilixi
     {
     }
 
+    PaintEvent(Widget* widget, const PaintEvent& evt);
+
 #ifdef ILIXI_STEREO_OUTPUT
     PaintEvent(Rectangle l, Rectangle r) :
-    right(r), rect(l), eye(BothEyes)
-      {
-      }
+        right(r), rect(l), eye(BothEyes)
+    {
+    }
 
     PaintEvent(Rectangle r, int disparity) :
-    right(r), rect(r), eye(BothEyes)
-      {
-        right.translate(-disparity, 0);
-        rect.translate(disparity, 0);
-      }
-
-    PaintEvent(Rectangle r, const PaintEvent& evt) :
-    right(r.intersected(evt.right)), rect(r.intersected(evt.rect)), eye(
-        evt.eye)
-      {
-      }
+        right(r), rect(r), eye(BothEyes)
+    {
+      right.translate(-disparity, 0);
+      rect.translate(disparity, 0);
+    }
 
     PaintEvent(Rectangle r, PaintEventEye e) :
-    right(r), rect(r), eye(e)
-      {
-      }
+        right(r), rect(r), eye(e)
+    {
+    }
 
     bool
     isValid()
-      {
-        return rect.isValid() || right.isValid();
-      }
+    {
+      if (eye & LeftEye)
+        return rect.isValid();
+      else
+        return right.isValid();
+    }
 
     Rectangle right;
     Rectangle rect;
 #else
     PaintEvent(Rectangle r) :
-        rect(r), eye(BothEyes)
-    {
-    }
+    rect(r), eye(BothEyes)
+      {
+      }
 
     PaintEvent(Rectangle r, int disparity) :
-        rect(r), eye(BothEyes)
-    {
-    }
-
-    PaintEvent(Rectangle r, const PaintEvent& evt) :
-        rect(r.intersected(evt.rect)), eye(evt.eye)
-    {
-    }
+    rect(r), eye(BothEyes)
+      {
+      }
 
     PaintEvent(Rectangle r, PaintEventEye e) :
-        rect(r), eye(e)
-    {
-    }
+    rect(r), eye(e)
+      {
+      }
 
     bool
     isValid()
-    {
-      return rect.isValid();
-    }
+      {
+        return rect.isValid();
+      }
 
     Rectangle rect;
 #endif

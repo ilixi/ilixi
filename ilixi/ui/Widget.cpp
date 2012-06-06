@@ -538,8 +538,7 @@ namespace ilixi
     if (visible())
       {
         ILOG_TRACE_W(ILX_WIDGET);
-        updateSurface(event);
-        PaintEvent evt(_frameGeometry, event);
+        PaintEvent evt(this, event);
         if (evt.isValid())
           {
             compose(evt);
@@ -568,7 +567,7 @@ namespace ilixi
         if (_surfaceDesc & HasOwnSurface)
           {
             _surface->clear(mapToSurface(event.rect));
-            _parent->repaint(PaintEvent(_frameGeometry, event));
+            _parent->repaint(PaintEvent(this, event));
           }
         else
           _parent->repaint(event);
@@ -597,7 +596,7 @@ namespace ilixi
         if (_surfaceDesc & HasOwnSurface)
           {
             _surface->clear(mapToSurface(event.rect));
-            _parent->update(PaintEvent(_frameGeometry, event));
+            _parent->update(PaintEvent(this, event));
           }
         else
           _parent->update(event);

@@ -169,8 +169,7 @@ LayoutBase::paint(const PaintEvent& event)
 {
   if (visible())
     {
-      updateSurface(event);
-      PaintEvent evt(_frameGeometry, event);
+      PaintEvent evt(this, event);
       if (evt.isValid())
         {
           ILOG_TRACE_W(ILX_LAYOUT);
