@@ -48,7 +48,7 @@ namespace ilixi
         sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
         widget = new ImageWidget(file);
         widget->setImage(new Image(file, 196, 196));
-        carousel->addItem(widget);
+        carousel->addWidget(widget);
       }
   }
 

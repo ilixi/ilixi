@@ -165,7 +165,26 @@ namespace ilixi
   }
 
   void
-  Carousel::addItem(Widget* widget)
+  Carousel::addItem(CarouselItem* item)
+  {
+    if (addChild(item))
+      {
+        item->sigFocused.connect(
+            sigc::bind<CarouselItem*>(sigc::mem_fun(this, &Carousel::showItem),
+                item));
+        updateCarouselGeometry();
+      }
+  }
+
+  void
+  Carousel::removeItem(CarouselItem* item)
+  {
+    removeChild(item);
+    updateCarouselGeometry();
+  }
+
+  void
+  Carousel::addWidget(Widget* widget)
   {
     CarouselItem* item = new CarouselItem(this);
     addChild(item);
@@ -177,9 +196,22 @@ namespace ilixi
   }
 
   void
-  Carousel::removeItem(Widget* widget)
+  Carousel::removeWidget(Widget* widget)
   {
-    removeChild(widget);
+    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
+      {
+        CarouselItem* item = dynamic_cast<CarouselItem*>(*it);
+        if (!item)
+          continue;
+
+        if (item->source() == widget)
+          {
+            _children.erase(it);
+            delete item;
+            updateCarouselGeometry();
+            break;
+          }
+      }
   }
 
   void
@@ -208,7 +240,6 @@ namespace ilixi
   {
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
       {
-
         CarouselItem* item = dynamic_cast<CarouselItem*>(*it);
         if (!item)
           continue;
