@@ -37,16 +37,30 @@ Painter::Painter(Widget* widget) :
 
 Painter::~Painter()
 {
-  end();
   ILOG_TRACE(ILX_PAINTER);
+  end();
 }
 
 void
 Painter::begin(const PaintEvent& event)
 {
+  ILOG_TRACE(ILX_PAINTER);
   _myWidget->surface()->lock();
 #ifdef ILIXI_STEREO_OUTPUT
-// TODO Clipping in stereo needed?
+  if (event.eye == PaintEvent::LeftEye)
+    {
+      _myWidget->surface()->clip(
+          Rectangle(event.rect.x() - _myWidget->absX() - _myWidget->z(),
+              event.rect.y() - _myWidget->absY(), event.rect.width(),
+              event.rect.height()));
+    }
+  else
+    {
+      _myWidget->surface()->clip(
+          Rectangle(event.right.x() - _myWidget->absX() + _myWidget->z(),
+              event.right.y() - _myWidget->absY(), event.right.width(),
+              event.right.height()));
+    }
 #else
   _myWidget->surface()->clip(
       Rectangle(event.rect.x() - _myWidget->absX(),
@@ -57,7 +71,6 @@ Painter::begin(const PaintEvent& event)
   applyBrush();
   dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
   dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
-  ILOG_TRACE(ILX_PAINTER);
 }
 
 void
@@ -65,6 +78,7 @@ Painter::end()
 {
   if (_state & Active)
     {
+      ILOG_TRACE(ILX_PAINTER);
       _state = None;
       if (_state & Clipped)
         _myWidget->surface()->resetClip();
@@ -76,9 +90,7 @@ Painter::end()
           delete tmp;
           delete _affine;
         }
-
       _myWidget->surface()->unlock();
-      ILOG_TRACE(ILX_PAINTER);
     }
 }
 
