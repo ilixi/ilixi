@@ -33,8 +33,8 @@ namespace ilixi
 
   AppCompositor::AppCompositor(Compositor* compositor, AppInstance* instance,
       Widget* parent) :
-      Widget(parent), _compositor(compositor), _instance(instance), _zoomFactor(
-          1)
+      Widget(parent), _compositor(compositor), _instance(instance), _state(
+          APPCOMP_NONE), _zoomFactor(1)
   {
     setInputMethod(NoInput);
     sigGeometryUpdated.connect(
@@ -58,6 +58,8 @@ namespace ilixi
     if (!eventHandling)
       view->setInputMethod(NoInput);
     view->setSourceFromWindow(window);
+    view->sigSourceReady.connect(
+        sigc::mem_fun(this, &AppCompositor::madeAvailable));
     addChild(view);
     updateAppCompositorGeometry();
   }
@@ -165,6 +167,13 @@ namespace ilixi
             return;
           }
       }
+  }
+
+  void
+  AppCompositor::madeAvailable()
+  {
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
+    _state = APPCOMP_READY;
   }
 
 } /* namespace ilixi */

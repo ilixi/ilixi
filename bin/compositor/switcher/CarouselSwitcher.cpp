@@ -98,12 +98,8 @@ namespace ilixi
   CarouselSwitcher::carouselItemSelected(CarouselItem* item)
   {
     _current = dynamic_cast<AppThumbnail*>(item->source());
-    ILOG_INFO(ILX, "HELLO! %p\n", _current);
     if (_current)
-      {
-        sigSwitchRequest();
-        ILOG_INFO(ILX, "HELLO! %p\n", _current);
-      }
+      sigSwitchRequest();
   }
 
 } /* namespace ilixi */

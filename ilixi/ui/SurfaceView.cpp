@@ -87,8 +87,8 @@ namespace ilixi
             &_sourceSurface);
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_SURFACEVIEW, "Error! GetSurface: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW,
+                "Error! GetSurface: %s", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _surfaceID = 0;
           }
@@ -140,8 +140,8 @@ namespace ilixi
 
         if (ret)
           {
-            ILOG_ERROR(
-                ILX_SURFACEVIEW, "Error! GetSurface: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW,
+                "Error! GetSurface: %s", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _sourceWindow = NULL;
           }
@@ -258,6 +258,9 @@ namespace ilixi
   void
   SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
   {
+    if (event.flip_count == 1)
+      sigSourceReady();
+
     if (visible())
       {
         _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
@@ -271,6 +274,7 @@ namespace ilixi
       }
     else
       _flipCount = event.flip_count;
+    sigSourceUpdated();
   }
 
   void
@@ -283,6 +287,7 @@ namespace ilixi
     _sourceSurface = NULL;
     _sourceWindow = NULL;
     _surfaceID = 0;
+    sigSourceDestroyed();
   }
 
   void
@@ -352,8 +357,8 @@ namespace ilixi
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO(
-            ILX_SURFACEVIEW, "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+        ILOG_INFO( ILX_SURFACEVIEW,
+            "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -379,8 +384,8 @@ namespace ilixi
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO(
-            ILX_SURFACEVIEW, "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+        ILOG_INFO( ILX_SURFACEVIEW,
+            "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -487,8 +492,8 @@ namespace ilixi
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO(
-            ILX_SURFACEVIEW, "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+        ILOG_INFO( ILX_SURFACEVIEW,
+            "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -514,8 +519,8 @@ namespace ilixi
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO(
-            ILX_SURFACEVIEW, "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+        ILOG_INFO( ILX_SURFACEVIEW,
+            "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;

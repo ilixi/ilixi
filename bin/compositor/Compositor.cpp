@@ -158,18 +158,14 @@ namespace ilixi
   void
   Compositor::handleSwitchRequest()
   {
-    ILOG_INFO(ILX, "0! %p\n", _currentApp);
     if (_currentApp)
       _currentApp->view()->hide();
-    ILOG_INFO(ILX, "1! %p\n", _currentApp);
 
     _currentApp = _switcher->currentThumb()->instance();
     showLauncher(false);
-    ILOG_INFO(ILX, "2! %p\n", _currentApp);
 
     if (_switcher->visible())
       showSwitcher(false);
-    ILOG_INFO(ILX, "3! %p\n", _currentApp);
   }
 
   void

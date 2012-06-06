@@ -59,8 +59,14 @@ namespace ilixi
     setZoomFactor(float zoomFactor);
 
   protected:
+    enum AppCompState
+    {
+      APPCOMP_NONE, APPCOMP_READY
+    };
+
     Compositor* _compositor;
     AppInstance* _instance;
+    AppCompState _state;
 
     virtual void
     compose();
@@ -73,6 +79,9 @@ namespace ilixi
 
     void
     onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *reconfig);
+
+    virtual void
+    madeAvailable();
   };
 
 } /* namespace ilixi */

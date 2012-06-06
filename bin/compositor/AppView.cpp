@@ -58,14 +58,18 @@ namespace ilixi
   AppView::show()
   {
     ILOG_TRACE_W(ILX_APPVIEW);
-    _ani.stop();
     setVisible(true);
-    setFocus();
-    _opacityTween->setInitialValue(0);
-    _opacityTween->setEndValue(255);
-    _zoomTween->setInitialValue(0.8);
-    _zoomTween->setEndValue(1);
-    _ani.start();
+
+    if (_state == APPCOMP_READY)
+      {
+        _ani.stop();
+        setFocus();
+        _opacityTween->setInitialValue(0);
+        _opacityTween->setEndValue(255);
+        _zoomTween->setInitialValue(0.8);
+        _zoomTween->setEndValue(1);
+        _ani.start();
+      }
   }
 
   void
@@ -98,6 +102,23 @@ namespace ilixi
   {
     if (_opacityTween->value() == 0)
       setVisible(false);
+  }
+
+  void
+  AppView::madeAvailable()
+  {
+    ILOG_TRACE_W(ILX_APPVIEW);
+    if (visible())
+      {
+        _ani.stop();
+        setFocus();
+        _opacityTween->setInitialValue(0);
+        _opacityTween->setEndValue(255);
+        _zoomTween->setInitialValue(0.8);
+        _zoomTween->setEndValue(1);
+        _ani.start();
+      }
+    _state = APPCOMP_READY;
   }
 
 } /* namespace ilixi */

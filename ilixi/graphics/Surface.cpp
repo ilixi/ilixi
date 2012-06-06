@@ -409,7 +409,7 @@ Surface::setStereoEye(PaintEvent::PaintEventEye eye)
 {
   _eye = eye;
   ILOG_DEBUG(ILX_SURFACE,
-      "[%p] %s(%s)\n", this, __FUNCTION__, eye == PaintEvent::LeftEye ? "Left" : "Right");
+      "[%p] %s(%s)\n", this, __FUNCTION__, eye & PaintEvent::LeftEye ? "Left" : "Right");
 }
 
 IDirectFBSurface*
@@ -427,8 +427,8 @@ Surface::flipStereo(const Rectangle& left, const Rectangle& right)
   DFBRegion r = right.dfbRegion();
   ILOG_DEBUG(ILX_SURFACE,
       "[%p] %s Left(%d,%d,%d,%d) Right(%d,%d,%d,%d)\n", this, __FUNCTION__,
-      l.x1, l.y1, l.x2, l.y2,
-      r.x1, r.y1, r.x2, r.y2);
+      left.x(), left.y(), left.width(), left.height(),
+      right.x(), right.y(), right.width(), right.height());
   DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &l, &r,
       DSFLIP_WAITFORSYNC);
   if (ret)

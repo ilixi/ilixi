@@ -90,6 +90,20 @@ namespace ilixi
     void
     paint(const PaintEvent& event);
 
+    /*!
+     * This signal is emitted after the first flip operation
+     * on source surface.
+     */
+    sigc::signal<void> sigSourceReady;
+    /*!
+     * This signal is emitted each time the source surface is updated.
+     */
+    sigc::signal<void> sigSourceUpdated;
+    /*!
+     * This signal is emitted once the source surface is destroyed.
+     */
+    sigc::signal<void> sigSourceDestroyed;
+
   protected:
     /*!
      * Scale ratio in horizontal direction.

@@ -59,6 +59,9 @@ namespace ilixi
 
     void
     tweenEndSlot();
+
+    virtual void
+    madeAvailable();
   };
 
 } /* namespace ilixi */

@@ -551,8 +551,13 @@ namespace ilixi
   void
   Widget::repaint()
   {
-    if (_surface && _parent && !(_state & InvisibleState))
-      _parent->repaint(PaintEvent(_frameGeometry, z()));
+    if (_surface)
+      {
+        if (_parent && !(_state & InvisibleState))
+          _rootWindow->repaint(PaintEvent(_frameGeometry, z()));
+        else
+          repaint(PaintEvent(_frameGeometry, z()));
+      }
   }
 
   void
@@ -563,12 +568,13 @@ namespace ilixi
         if (_surfaceDesc & HasOwnSurface)
           {
             _surface->clear(mapToSurface(event.rect));
-//            _parent->repaint(_frameGeometry.intersected(rect));
             _parent->repaint(PaintEvent(_frameGeometry, event));
           }
         else
           _parent->repaint(event);
       }
+    else
+      repaint(event);
   }
 
   void
