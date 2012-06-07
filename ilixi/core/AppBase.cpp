@@ -564,6 +564,7 @@ AppBase::handleKeyInputEvent(const DFBInputEvent& event,
 
   we.window.locks = event.locks;
   we.window.modifiers = event.modifiers;
+  we.window.button = event.button;
   we.window.buttons = event.buttons;
 
   __buffer->PostEvent(__buffer, &we);
@@ -584,6 +585,7 @@ AppBase::handleButtonInputEvent(const DFBInputEvent& event,
   we.window.cy = __cursorNew.y;
 
   we.window.button = event.button;
+  we.window.buttons = event.buttons;
 
   __buffer->PostEvent(__buffer, &we);
 }
@@ -645,6 +647,7 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
   we.window.cy = __cursorNew.y;
 
   we.window.button = event.button;
+  we.window.buttons = event.buttons;
 
   __buffer->PostEvent(__buffer, &we);
 }
