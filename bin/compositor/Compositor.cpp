@@ -245,10 +245,9 @@ namespace ilixi
 
   void
   Compositor::configWindow(AppInstance* instance,
-      SaWManWindowReconfig *reconfig, SaWManWindowInfo* winInfo)
+      SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info)
   {
-    ILOG_DEBUG(ILX_COMPOSITOR,
-        "%s( ID %lu )\n", __FUNCTION__, reconfig->handle);
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %lu )\n", __FUNCTION__, info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
@@ -258,9 +257,29 @@ namespace ilixi
     data->reconfig->flags = reconfig->flags;
     data->reconfig->handle = reconfig->handle;
     data->reconfig->request = reconfig->request;
-    data->windowID = winInfo->win_id;
+    data->windowID = info->win_id;
 
     postUserEvent(CET_Config, data);
+  }
+
+  void
+  Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
+      int order, DFBWindowID other)
+  {
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
+
+    CompositorEventData* data = new CompositorEventData;
+    data->instance = instance;
+    data->reconfig = new SaWManWindowReconfig;
+    data->reconfig->caps = DWCAPS_NONE;
+    data->reconfig->flags = SWMCF_STACKING;
+    SaWManWindowConfig reconfig;
+    reconfig.association = other;
+    reconfig.opacity = order;
+    data->reconfig->request = reconfig;
+    data->windowID = info->win_id;
+
+    postUserEvent(CET_Restack, data);
   }
 
   void
@@ -275,22 +294,6 @@ namespace ilixi
 //        data->windowID = id;
 //
 //        postUserEvent(CET_State, data);
-//      }
-  }
-
-  void
-  Compositor::restackWindow(DFBWindowID id, unsigned int index)
-  {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
-    ILOG_DEBUG(ILX_COMPOSITOR, "  -> index        %u\n", index);
-
-//    CompositedAppRecord* record = lookUpAppRecordByWindowID(id);
-//    if (record)
-//      {
-//        CompositorEventData* data = new CompositorEventData;
-//        data->windowID = id;
-//
-//        postUserEvent(CET_Restack, data);
 //      }
   }
 
@@ -399,6 +402,15 @@ namespace ilixi
           break;
 
         case CET_Restack:
+          {
+            ILOG_INFO(ILX_COMPOSITOR, "CET_Restack (%d)\n", data->windowID);
+            data->instance->view()->onWindowConfig(data->windowID,
+                data->reconfig);
+            data->instance->thumb()->onWindowConfig(data->windowID,
+                data->reconfig);
+
+            delete data->reconfig;
+          }
           break;
 
         case CET_State:

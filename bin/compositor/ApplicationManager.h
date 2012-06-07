@@ -115,6 +115,13 @@ namespace ilixi
     virtual DirectResult
     windowReconfig(SaWManWindowReconfig *reconfig);
 
+    /*!
+     * Called when window is restacked.
+     */
+    virtual DirectResult
+    windowRestack(SaWManWindowHandle handle, SaWManWindowHandle relative,
+        SaWManWindowRelation relation);
+
   private:
     Compositor* _compositor;
     AppInfoList _infos;
@@ -155,6 +162,10 @@ namespace ilixi
 
     friend DirectResult
     window_reconfig(void *context, SaWManWindowReconfig *reconfig);
+
+    friend DirectResult
+    window_restack(void *context, SaWManWindowHandle handle,
+        SaWManWindowHandle relative, SaWManWindowRelation relation);
   };
 
 } /* namespace ilixi */

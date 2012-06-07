@@ -119,13 +119,14 @@ namespace ilixi
 
     void
     configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-        SaWManWindowInfo* winInfo);
+        const SaWManWindowInfo* info);
+
+    void
+    restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
+        int order, DFBWindowID other);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);
-
-    void
-    restackWindow(DFBWindowID id, unsigned int index);
 
     void
     focusWindow(DFBWindowID id);

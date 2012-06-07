@@ -88,6 +88,14 @@ namespace ilixi
     return appMan->windowReconfig(reconfig);
   }
 
+  DirectResult
+  window_restack(void *context, SaWManWindowHandle handle,
+      SaWManWindowHandle relative, SaWManWindowRelation relation)
+  {
+    ApplicationManager* appMan = (ApplicationManager*) context;
+    return appMan->windowRestack(handle, relative, relation);
+  }
+
   //*********************************************************************
 
   ApplicationManager::ApplicationManager(Compositor* compositor) :
@@ -110,7 +118,7 @@ namespace ilixi
     _callbacks.WindowAdded = window_added;
     _callbacks.WindowRemoved = window_removed;
     _callbacks.WindowReconfig = window_reconfig;
-    _callbacks.WindowRestack = NULL;
+    _callbacks.WindowRestack = window_restack;
     _callbacks.StackResized = NULL;
     _callbacks.SwitchFocus = NULL;
     _callbacks.LayerReconfig = NULL;
@@ -484,13 +492,6 @@ namespace ilixi
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
         "  -> Window [%lu] Flags [0x%04x]\n", reconfig->handle, reconfig->flags);
 
-    if (reconfig->flags & SWMCF_POSITION)
-      {
-        ILOG_WARNING(ILX_APPLICATIONMANAGER, "SWMCF_POSITION not allowed!\n");
-        reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags
-            & ~SWMCF_POSITION);
-      }
-
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, reconfig->handle, &process);
 
@@ -500,10 +501,51 @@ namespace ilixi
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
       {
+        AppInfo* info = infoByPID(process.pid);
+
+        if (!(info->appFlags() & APP_ALLOW_WINDOW_CONFIG)
+            && (reconfig->flags & SWMCF_POSITION))
+          {
+            ILOG_WARNING(ILX_APPLICATIONMANAGER,
+                "SWMCF_POSITION not allowed!\n");
+            reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags
+                & ~SWMCF_POSITION);
+          }
+
         _manager->Lock(_manager);
         _compositor->configWindow(instance, reconfig, &winInfo);
         _manager->Unlock(_manager);
       }
+    return DR_OK;
+  }
+
+  DirectResult
+  ApplicationManager::windowRestack(SaWManWindowHandle handle,
+      SaWManWindowHandle relative, SaWManWindowRelation relation)
+  {
+    SaWManProcess process;
+    _manager->GetProcessInfo(_manager, handle, &process);
+
+    SaWManWindowInfo winInfo;
+    _manager->GetWindowInfo(_manager, handle, &winInfo);
+
+    DFBWindowID related = 0;
+    if (relative)
+      {
+        SaWManWindowInfo relativeInfo;
+        _manager->GetWindowInfo(_manager, relative, &relativeInfo);
+        related = relativeInfo.win_id;
+      }
+
+    AppInstance* instance = instanceByPID(process.pid);
+
+    if (instance)
+      {
+        _manager->Lock(_manager);
+        _compositor->restackWindow(instance, &winInfo, relation, related);
+        _manager->Unlock(_manager);
+      }
+
     return DR_OK;
   }
 
@@ -559,64 +601,64 @@ namespace ilixi
         ILIXI_DATADIR"compositor/knuckles.png", "MIT", "Andreas Shimokawa", 1,
         APP_NEEDS_CLEAR, DEP_NONE);
 
-    addApplication("Particle", "df_particle", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/particle.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+addApplication  ("Particle", "df_particle", "--dfb:force-windowed",
+      ILIXI_DATADIR"compositor/particle.png", "MIT", "Andreas Shimokawa", 1,
+      APP_NONE, DEP_NONE);
 
 #ifdef ILIXI_STEREO_OUTPUT
-    addApplication("Texture", "df_texture3d", "--dfb:force-windowed",
-          ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
-          APP_NEEDS_CLEAR, DEP_NONE);
+addApplication("Texture", "df_texture3d", "--dfb:force-windowed",
+    ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
+    APP_NEEDS_CLEAR, DEP_NONE);
 
-    addApplication("Penguins", "df_andi3d", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+addApplication("Penguins", "df_andi3d", "--dfb:force-windowed",
+    ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
+    APP_NONE, DEP_NONE);
 #else
-    addApplication("Texture", "df_texture", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NEEDS_CLEAR, DEP_NONE);
+addApplication("Texture", "df_texture", "--dfb:force-windowed",
+    ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
+    APP_NEEDS_CLEAR, DEP_NONE);
 
-    addApplication("Penguins", "df_andi", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
+addApplication("Penguins", "df_andi", "--dfb:force-windowed",
+    ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
+    APP_NONE, DEP_NONE);
 #endif
 
-    // lite
-    addApplication("DFBTerm", "dfbterm", "",
-        ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa", 1,
-        (AppFlags) (APP_LITE | APP_ALLOW_MULTIPLE | APP_NEEDS_CLEAR), DEP_NONE);
+// lite
+addApplication("DFBTerm", "dfbterm", "",
+    ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa", 1,
+    (AppFlags) (APP_LITE | APP_ALLOW_MULTIPLE | APP_NEEDS_CLEAR), DEP_NONE);
 
-    addApplication("ListTest", "lite_listtest", "",
-        ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa", 1,
-        APP_LITE, DEP_NONE);
+addApplication("ListTest", "lite_listtest", "",
+    ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa", 1,
+    APP_LITE, DEP_NONE);
 
-    // ilixi
-    addApplication("Gallery", "ilixi_demo1", "",
-        ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
-        APP_ILIXI, DEP_MOUSE);
+// ilixi
+addApplication("Gallery", "ilixi_demo1", "",
+    ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
+    APP_ILIXI, DEP_MOUSE);
 
-    addApplication("Carousel", "ilixi_carousel", "",
-        ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
-        APP_ILIXI, DEP_MOUSE);
+addApplication("Carousel", "ilixi_carousel", "",
+    ILIXI_DATADIR"compositor/gallery.png", "LGPLv3", "Andreas Shimokawa", 1,
+    APP_ILIXI, DEP_MOUSE);
 
-    // others
-    addApplication("Video Player", "dfbtest_video",
-        ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",
-        ILIXI_DATADIR"compositor/player.png", "LGPLv3", "Andreas Shimokawa", 1,
-        APP_ILIXI, DEP_MOUSE);
+// others
+addApplication("Video Player", "dfbtest_video",
+    ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",
+    ILIXI_DATADIR"compositor/player.png", "LGPLv3", "Andreas Shimokawa", 1,
+    APP_ILIXI, DEP_MOUSE);
 
-    addApplication("ClanBomber 2", "clanbomber2", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/clanbomber2.png", "LGPLv3",
-        "Andreas Shimokawa", 1, APP_NONE, DEP_MOUSE);
+addApplication("ClanBomber 2", "clanbomber2", "--dfb:force-windowed",
+    ILIXI_DATADIR"compositor/clanbomber2.png", "LGPLv3",
+    "Andreas Shimokawa", 1, APP_NONE, DEP_MOUSE);
 
-    // Check if installed
-    addApplication("QML Viewer", "qmlviewer", "-qws -display directfb",
-        ILIXI_DATADIR"compositor/qt-qml.png", "GPL", "Andreas Shimokawa", 1,
-        APP_QT, DEP_MOUSE);
+// Check if installed
+addApplication("QML Viewer", "qmlviewer", "-qws -display directfb",
+    ILIXI_DATADIR"compositor/qt-qml.png", "GPL", "Andreas Shimokawa", 1,
+    APP_QT, DEP_MOUSE);
 
-    addApplication("WebKitDFB", "WebKitDFB", "",
-        ILIXI_DATADIR"compositor/webkitdfb.png", "LGPLv3", "Andreas Shimokawa",
-        1, APP_LITE, DEP_MOUSE);
-  }
+addApplication("WebKitDFB", "WebKitDFB", "",
+    ILIXI_DATADIR"compositor/webkitdfb.png", "LGPLv3", "Andreas Shimokawa",
+    1, APP_LITE, DEP_MOUSE);
+}
 
 } /* namespace ilixi */

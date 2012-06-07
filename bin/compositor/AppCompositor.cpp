@@ -148,20 +148,55 @@ namespace ilixi
     for (WidgetList::iterator it = _children.begin(); it != _children.end();
         ++it)
       {
-        ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config %x\n", reconfig->flags);
         SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view && view->dfbWindowID() == windowID)
           {
-            if (reconfig->flags & SWMCF_OPACITY)
-              view->setOpacity(reconfig->request.opacity);
+            ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config 0x%02x\n", view->dfbWindowID(), reconfig->flags);
+            if (reconfig->flags & SWMCF_STACKING)
+              {
+                if (reconfig->request.association)
+                  {
+                    ILOG_ERROR(ILX_APPCOMPOSITOR, "Not yet implemented!\n");
+                  }
+                else
+                  {
+                    if (reconfig->request.opacity == 1)
+                      {
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> LowerToBottom\n");
+                        lowerChildToBottom(view);
+                      }
+                    else
+                      {
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> RaiseToTop\n");
+                        raiseChildToFront(view);
+                      }
+                  }
+              }
+            else
+              {
+                if (reconfig->flags & SWMCF_OPACITY)
+                  {
+                    ILOG_DEBUG(ILX_APPCOMPOSITOR,
+                        " -> opacity(%d)\n", reconfig->request.opacity);
+                    view->setOpacity(reconfig->request.opacity);
+                  }
 
-            if (reconfig->flags & SWMCF_POSITION)
-              view->moveTo(reconfig->request.bounds.x,
-                  reconfig->request.bounds.y);
+                if (reconfig->flags & SWMCF_POSITION)
+                  {
+                    ILOG_DEBUG(ILX_APPCOMPOSITOR,
+                        " -> moveTo(%d, %d)\n", reconfig->request.bounds.x, reconfig->request.bounds.y);
+                    view->moveTo(reconfig->request.bounds.x,
+                        reconfig->request.bounds.y);
+                  }
 
-            if (reconfig->flags & SWMCF_SIZE)
-              view->setSize(reconfig->request.bounds.w,
-                  reconfig->request.bounds.h);
+                if (reconfig->flags & SWMCF_SIZE)
+                  {
+                    ILOG_DEBUG(ILX_APPCOMPOSITOR,
+                        " -> setSize(%d, %d)\n", reconfig->request.bounds.w, reconfig->request.bounds.h);
+                    view->setSize(reconfig->request.bounds.w,
+                        reconfig->request.bounds.h);
+                  }
+              }
 
             view->update();
             return;
