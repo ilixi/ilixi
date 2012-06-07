@@ -84,7 +84,7 @@ namespace ilixi
   Widget::~Widget()
   {
     ILOG_TRACE_W(ILX_WIDGET);
-    if (eventManager() && hasFocus())
+    if (eventManager())
       eventManager()->clear(this);
 
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
