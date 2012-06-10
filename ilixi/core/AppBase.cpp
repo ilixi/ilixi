@@ -252,7 +252,7 @@ AppBase::runCallbacks()
   CallbackList::iterator it = __callbacks.begin();
   while (it != __callbacks.end())
     {
-      if (!((Callback*) *it)->_func(((Callback*) *it)->_data))
+      if (!((Callback*) *it)->_funck->funck())
         {
           ILOG_DEBUG( ILX_APPBASE,
               "Callback %p is removed.\n", ((Callback*) *it));

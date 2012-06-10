@@ -29,8 +29,7 @@ using namespace ilixi;
 
 Animation::Animation() :
     _state(Stopped), _delayDuration(0), _delayTime(0), _delayLast(0), _duration(
-        0), _currentTime(0), _lastTime(0), _loops(1), _currentLoop(1), _cb(
-        Callback::AnimationCB, this)
+        0), _currentTime(0), _lastTime(0), _loops(1), _currentLoop(1), _cb(this)
 {
 }
 
@@ -149,7 +148,7 @@ Animation::setState(AnimationState state)
 }
 
 bool
-Animation::animate()
+Animation::funck()
 {
   if (!_duration)
     {

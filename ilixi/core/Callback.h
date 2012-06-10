@@ -26,21 +26,28 @@
 
 namespace ilixi
 {
+
+  class Functionoid
+  {
+  public:
+    virtual bool
+    funck() = 0;
+
+    virtual
+    ~Functionoid() = 0;
+  };
+
+  inline
+  Functionoid::~Functionoid()
+  {
+  }
+
   class Callback
   {
     friend class AppBase;
 
   public:
-
-    typedef bool
-    (*CallbackFunc)(void *data);
-
-    enum CallbackType
-    {
-      None, AnimationCB, TimerCB
-    };
-
-    Callback(CallbackType type, void* data);
+    Callback(Functionoid* funck);
 
     virtual
     ~Callback();
@@ -52,8 +59,7 @@ namespace ilixi
     stop();
 
   private:
-    CallbackFunc _func;
-    void* _data;
+    Functionoid* _funck;
   };
 }
 

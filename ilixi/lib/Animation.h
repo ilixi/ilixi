@@ -33,7 +33,7 @@ namespace ilixi
   /*!
    * This class implements basic animation functionality.
    */
-  class Animation : public sigc::trackable
+  class Animation : public sigc::trackable, public Functionoid
   {
   public:
 
@@ -164,9 +164,9 @@ namespace ilixi
     virtual void
     setState(AnimationState state);
 
-    //! Iterates animation.
+    //! Callback which iterates animation.
     bool
-    animate();
+    funck();
 
     //! Reimplement this method...
     virtual void

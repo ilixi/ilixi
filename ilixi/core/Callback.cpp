@@ -28,39 +28,9 @@
 
 namespace ilixi
 {
-  bool
-  defaultCallback(void* data)
+  Callback::Callback(Functionoid* funck) :
+      _funck(funck)
   {
-    return 1;
-  }
-
-  bool
-  animationCallback(void* animation)
-  {
-    return ((Animation*) animation)->animate();
-  }
-
-  bool
-  timerCallback(void* timer)
-  {
-    return ((Timer*) timer)->step();
-  }
-
-  Callback::Callback(CallbackType type, void* data) :
-      _func(NULL), _data(data)
-  {
-    switch (type)
-      {
-    case AnimationCB:
-      _func = animationCallback;
-      break;
-    case TimerCB:
-      _func = timerCallback;
-      break;
-    default:
-      _func = defaultCallback;
-      break;
-      }
   }
 
   Callback::~Callback()

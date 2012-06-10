@@ -29,8 +29,7 @@ namespace ilixi
 {
 
   Timer::Timer() :
-      _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(Callback::TimerCB,
-          this)
+      _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(this)
   {
   }
 
@@ -78,9 +77,9 @@ namespace ilixi
   }
 
   bool
-  Timer::step()
+  Timer::funck()
   {
-    if(_repeats && _repeats == _count)
+    if (_repeats && _repeats == _count)
       return false; // TODO should remove callback
 
     long long stepTime = direct_clock_get_abs_millis() - _lastTime;

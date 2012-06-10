@@ -30,7 +30,7 @@
 namespace ilixi
 {
   //! Provides timers with milliseconds intervals.
-  class Timer : virtual public sigc::trackable
+  class Timer : public sigc::trackable, public Functionoid
   {
   public:
     /*!
@@ -87,10 +87,10 @@ namespace ilixi
     sigc::signal<void> sigExec;
   protected:
     /*!
-     * This function will actually fire timer.
+     * Callback functionoid which will actually fire timer.
      */
     bool
-    step();
+    funck();
 
   private:
     //! Interval between consecutive executions.
