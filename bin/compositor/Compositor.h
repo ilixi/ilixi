@@ -34,6 +34,7 @@
 #include "AppView.h"
 #include "ApplicationManager.h"
 #include "Switcher.h"
+#include "lib/FPSCalculator.h"
 
 namespace ilixi
 {
@@ -76,6 +77,9 @@ namespace ilixi
     SwitchButton* _switchButton;
     QuitButton* _quitButton;
 
+    Label* _fpsLabel;
+    FPSCalculator* _fps;
+
     enum CompositorEventType
     {
       CET_Add, //!< Window added
@@ -107,6 +111,9 @@ namespace ilixi
 
     void
     onVisible();
+
+    void
+    onFPSUpdate(float fps);
 
     IDirectFBWindow*
     getWindow(DFBWindowID id);

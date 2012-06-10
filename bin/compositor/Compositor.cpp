@@ -36,7 +36,8 @@ namespace ilixi
 
   Compositor::Compositor(int argc, char* argv[]) :
       Application(&argc, &argv, OptExclusive), _appMan(NULL), _currentApp(NULL), _switcher(
-          NULL)
+          NULL), _launcher(NULL), _homeButton(NULL), _switchButton(NULL), _quitButton(
+          NULL), _fpsLabel(NULL), _fps(NULL)
   {
     _appMan = new ApplicationManager(this);
 
@@ -51,6 +52,18 @@ namespace ilixi
       {
         if (strcmp(argv[i], "carousel") == 0)
           _switcher = new CarouselSwitcher();
+
+        else if (strcmp(argv[i], "fps") == 0)
+          {
+            _fpsLabel = new Label("FPS");
+            _fpsLabel->layout().setAlignment(TextLayout::Center);
+            addWidget(_fpsLabel);
+
+            _fps = new FPSCalculator();
+            _fps->sigUpdated.connect(
+                sigc::mem_fun(this, &Compositor::onFPSUpdate));
+            ILOG_INFO(ILX_APPBASE, "FPS\n");
+          }
       }
 
     if (_switcher == NULL)
@@ -86,8 +99,9 @@ namespace ilixi
 
   Compositor::~Compositor()
   {
+    delete _fps;
     delete _appMan;
-    ILOG_INFO(ILX_COMPOSITOR, "~Compositor\n");
+    ILOG_TRACE_W(ILX_COMPOSITOR);
   }
 
   ApplicationManager*
@@ -187,6 +201,14 @@ namespace ilixi
   Compositor::onVisible()
   {
     _quitButton->show();
+    if (_fps)
+      _fps->start();
+  }
+
+  void
+  Compositor::onFPSUpdate(float fps)
+  {
+    _fpsLabel->setText(_fps->fpsText());
   }
 
   IDirectFBWindow*
@@ -331,6 +353,8 @@ namespace ilixi
     _homeButton->moveTo(0, 0);
     _switchButton->moveTo(0, height() - 80);
     _quitButton->moveTo(width() - 80, 0);
+    if (_fpsLabel)
+      _fpsLabel->setGeometry((width() - 100) / 2, 0, 100, height());
   }
 
   void
