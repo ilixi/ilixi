@@ -43,6 +43,9 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_THREAD, "ilixi/core/Thread", "Thread");
   D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
 
+  D_DEBUG_DOMAIN( ILX_ANIMATIONSEQ, "ilixi/lib/AnimationSequence",
+      "AnimationSequence");
+
   D_DEBUG_DOMAIN( ILX_PAINTER, "ilixi/graphics/Painter", "Painter");
   D_DEBUG_DOMAIN( ILX_PALETTE, "ilixi/graphics/Palette", "Palette Parser");
   D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
@@ -69,6 +72,7 @@ namespace ilixi
   D_DEBUG_DOMAIN( ILX_PUSHBUTTON, "ilixi/ui/PushButton", "PushButton");
   D_DEBUG_DOMAIN( ILX_RADIOBUTTON, "ilixi/ui/RadioButton", "RadioButton");
   D_DEBUG_DOMAIN( ILX_SCROLLAREA, "ilixi/ui/ScrollArea", "ScrollArea");
+  D_DEBUG_DOMAIN( ILX_SLIDER, "ilixi/ui/Slider", "Slider");
   D_DEBUG_DOMAIN( ILX_SPACER, "ilixi/ui/Spacer", "Spacer");
   D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
   D_DEBUG_DOMAIN( ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");

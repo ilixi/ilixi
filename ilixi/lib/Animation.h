@@ -136,6 +136,11 @@ namespace ilixi
     setLoops(int loopCount);
 
     /*!
+     * This signal is emitted when animation starts.
+     */
+    sigc::signal<void> sigStarted;
+
+    /*!
      * This signal is emitted when animation is updated.
      */
     sigc::signal<void> sigExec;

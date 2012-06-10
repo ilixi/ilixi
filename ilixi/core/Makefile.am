@@ -19,5 +19,4 @@ ilixi_include_HEADERS		=	AppBase.h \
      						Logger.h \
      						SurfaceEventListener.h \
      						Thread.h \
-     						Util.h \
      						Window.h

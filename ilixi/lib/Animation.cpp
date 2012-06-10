@@ -81,6 +81,7 @@ Animation::start()
   setCurrentTime();
   _state = Running;
   _cb.start();
+  sigStarted();
 }
 
 void
