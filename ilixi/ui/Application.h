@@ -26,7 +26,6 @@
 
 #include "core/AppBase.h"
 #include "ui/WindowWidget.h"
-#include "core/Util.h"
 
 namespace ilixi
 {
@@ -113,7 +112,6 @@ namespace ilixi
     //! Background image of application.
     Image* _backgroundImage;
 
-    FPSData _fps;
     /*!
      * This method is used if application has backgroundFilled set to true.
      * Default implementation uses a Stylist to tile the background image or

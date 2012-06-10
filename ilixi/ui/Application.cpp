@@ -32,7 +32,6 @@ using namespace ilixi;
 Application::Application(int* argc, char*** argv, AppOptions opts) :
     AppBase(argc, argv, opts), WindowWidget(), _backgroundImage(NULL)
 {
-  // TODO parse command line arguments here...
   // parse app-meta file...
   ILOG_TRACE_W(ILX_APPLICATION);
   initDFB(argc, argv);
@@ -85,8 +84,6 @@ Application::exec()
   if (_backgroundImage)
     _backgroundImage->setSize(width(), height());
 
-//  fpsInit(&_fps);
-
   while (true)
     {
       if (__state & APS_TERM)
@@ -96,8 +93,6 @@ Application::exec()
           runCallbacks();
           handleEvents();
           updateWindows();
-//          ILOG_DEBUG(ILX_APPLICATION, "FPS: %s\n", _fps.fps_string);
-//          fpsCount(&_fps, 1000);
         }
     }
 
