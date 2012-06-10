@@ -46,6 +46,7 @@ namespace ilixi
   class CheckBox;
   class PushButton;
   class RadioButton;
+  class Slider;
   class ToolButton;
   class ComboBox;
 
@@ -167,6 +168,12 @@ namespace ilixi
      */
     virtual void
     drawRadioButton(Painter* painter, RadioButton* button);
+
+    /*!
+     * Draws a slider.
+     */
+    virtual void
+    drawSlider(Painter* painter, Slider* slider);
 
     /*!
      * Draws a toolbutton.

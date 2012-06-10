@@ -33,5 +33,6 @@
 #include "ui/RadioButton.h"
 #include "ui/ToolButton.h"
 #include "ui/ComboBox.h"
+#include "ui/Slider.h"
 
 #endif /* ILIXI_GUI_H_ */

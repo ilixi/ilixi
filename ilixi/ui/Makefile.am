@@ -18,6 +18,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
           				PushButton.cpp \
           				RadioButton.cpp \
           				ScrollArea.cpp \
+          				Slider.cpp \
           				Spacer.cpp \
           				SurfaceView.cpp \
           				Dialog.cpp \
@@ -43,6 +44,7 @@ ilixi_include_HEADERS 	= 	Application.h \
           				PushButton.h \
           				RadioButton.h \
           				ScrollArea.h \
+          				Slider.h \
           				Spacer.h \
           				SurfaceView.h \
           				Dialog.h \

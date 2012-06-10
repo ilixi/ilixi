@@ -402,6 +402,30 @@ Stylist::drawRadioButton(Painter* painter, RadioButton* button)
 }
 
 void
+Stylist::drawSlider(Painter* painter, Slider* slider)
+{
+  const WidgetState state = slider->state();
+
+  // frame
+  painter->setBrush(_palette.getGroup(state).bgBottom);
+  painter->fillRectangle(0, 0, slider->width(), slider->height());
+  painter->setPen(_palette.getGroup(state).borderBottom);
+  painter->drawRectangle(0, 0, slider->width(), slider->height());
+
+  // indicator
+
+  painter->fillRectangle(slider->_indicator.x(), slider->_indicator.y(),
+      slider->_indicator.width(), slider->_indicator.height());
+  if (state & FocusedState)
+    painter->setPen(_palette.focusBottom);
+  else
+    painter->setPen(_palette.getGroup(state).borderBottom);
+  painter->drawRectangle(slider->_indicator.x(), slider->_indicator.y(),
+      slider->_indicator.width(), slider->_indicator.height());
+
+}
+
+void
 Stylist::drawToolButton(Painter* painter, ToolButton* button)
 {
   const WidgetState state = button->state();
