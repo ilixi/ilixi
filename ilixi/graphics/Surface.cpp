@@ -350,6 +350,7 @@ Surface::createDFBSubSurfaceStereo(const Rectangle& geometry,
       return false;
     }
   ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
+  _dfbSurface->SetStereoEye(_dfbSurface, DSSE_LEFT);
 
   r.x -= zIndex + zIndex;
   ret = _parentSurface->GetSubSurface(_parentSurface, &r, &_rightSurface);
@@ -361,6 +362,7 @@ Surface::createDFBSubSurfaceStereo(const Rectangle& geometry,
     }
   ret = _rightSurface->SetBlittingFlags(_rightSurface,
       DSBLIT_BLEND_ALPHACHANNEL);
+  _rightSurface->SetStereoEye(_rightSurface, DSSE_RIGHT);
 
   return true;
 }

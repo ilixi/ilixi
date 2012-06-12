@@ -119,8 +119,6 @@ WindowWidget::paint(const PaintEvent& event)
               ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
               evt.eye = PaintEvent::LeftEye;
               surface()->setStereoEye(PaintEvent::LeftEye);
-              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
-                  DSSE_LEFT);
               surface()->clip(evt.rect);
               if (_backgroundFlags & BGFFill)
                 {
@@ -128,12 +126,13 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-              surface()->clear(evt.rect);
+                surface()->clear(evt.rect);
 
               paintChildren(evt);
 
               if (AppBase::appOptions() & OptExclusive)
                 {
+                  _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
@@ -145,8 +144,6 @@ WindowWidget::paint(const PaintEvent& event)
               ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
               evt.eye = PaintEvent::RightEye;
               surface()->setStereoEye(PaintEvent::RightEye);
-              surface()->dfbSurface()->SetStereoEye(surface()->dfbSurface(),
-                  DSSE_RIGHT);
               surface()->clip(evt.right);
               if (_backgroundFlags & BGFFill)
                 {
@@ -154,12 +151,13 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-              surface()->clear(evt.right);
+                surface()->clear(evt.right);
 
               paintChildren(evt);
 
               if (AppBase::appOptions() & OptExclusive)
                 {
+                  _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_RIGHT);
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
