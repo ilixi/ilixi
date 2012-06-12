@@ -262,19 +262,26 @@ namespace ilixi
         sigSourceReady();
         _state = SVS_READY;
       }
-
+    _flipCount = event.flip_count;
     if (visible())
       {
-//        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
-        // TODO Use rect for update.
-//        Rectangle rect(event.update.x1 / hScale(), event.update.y1 / vScale(),
-//            (event.update.x2 + 1 - event.update.x1) / hScale(),
-//            (event.update.y2 + 1 - event.update.y1) / vScale());
-//
-//        update(mapFromSurface(rect));
-        update();
+        Rectangle lRect = mapFromSurface(
+            Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(),
+                (event.update.x2 - event.update.x1) / hScale() + 1,
+                (event.update.y2 - event.update.y1) / vScale() + 1));
+
+#ifdef ILIXI_STEREO_OUTPUT
+        Rectangle rRect = mapFromSurface(
+            Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
+                (event.update_right.x2 - event.update_right.x1) / hScale() + 1,
+                (event.update_right.y2 - event.update_right.y1) / vScale() + 1));
+
+        update(PaintEvent(lRect, rRect));
+#else
+        update(PaintEvent(lRect));
+#endif
       }
-    _flipCount = event.flip_count;
+
     sigSourceUpdated();
   }
 

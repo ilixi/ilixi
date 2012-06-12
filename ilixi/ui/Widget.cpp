@@ -550,19 +550,16 @@ namespace ilixi
   void
   Widget::repaint()
   {
-    if (_surface)
-      {
-        if (_parent && !(_state & InvisibleState))
-          _rootWindow->repaint(PaintEvent(_frameGeometry, z()));
-        else
-          repaint(PaintEvent(_frameGeometry, z()));
-      }
+    if (_parent && !(_state & InvisibleState))
+      _rootWindow->repaint(PaintEvent(_frameGeometry, z()));
+    else
+      repaint(PaintEvent(_frameGeometry, z()));
   }
 
   void
   Widget::repaint(const PaintEvent& event)
   {
-    if (_surface && _parent && !(_state & InvisibleState))
+    if (_parent && !(_state & InvisibleState))
       {
         if (_surfaceDesc & HasOwnSurface)
           {
@@ -579,19 +576,16 @@ namespace ilixi
   void
   Widget::update()
   {
-    if (_surface)
-      {
-        if (_parent && !(_state & InvisibleState)) // FIXME move invis check above
-          _rootWindow->update(PaintEvent(_frameGeometry, z()));
-        else
-          paint(PaintEvent(_frameGeometry, z()));
-      }
+    if (_parent && !(_state & InvisibleState)) // FIXME move invis check above
+      _rootWindow->update(PaintEvent(_frameGeometry, z()));
+    else
+      paint(PaintEvent(_frameGeometry, z()));
   }
 
   void
   Widget::update(const PaintEvent& event)
   {
-    if (_surface && _parent && !(_state & InvisibleState))
+    if (_parent && !(_state & InvisibleState))
       {
         if (_surfaceDesc & HasOwnSurface)
           {
@@ -958,7 +952,7 @@ namespace ilixi
 
 #ifdef ILIXI_STEREO_OUTPUT
     if (_surface)
-      _surface->setStereoEye(event.eye);
+    _surface->setStereoEye(event.eye);
 
     if (_surfaceDesc & InitialiseSurface)
       {
@@ -967,16 +961,16 @@ namespace ilixi
         _surface->setStereoEye(event.eye);
         bool ret = false;
         if (_surfaceDesc & HasOwnSurface)
-          ret = _surface->createDFBSurface(width(), height());
+        ret = _surface->createDFBSurface(width(), height());
         else if (_surfaceDesc & RootSurface)
-          ret = _surface->createDFBSubSurfaceStereo(surfaceGeometry(),
-              _rootWindow->windowSurface(), z());
+        ret = _surface->createDFBSubSurfaceStereo(surfaceGeometry(),
+            _rootWindow->windowSurface(), z());
         else if (_parent)
-          ret = _surface->createDFBSubSurfaceStereo(_frameGeometry,
-              _rootWindow->windowSurface(), z());
+        ret = _surface->createDFBSubSurfaceStereo(_frameGeometry,
+            _rootWindow->windowSurface(), z());
         if (ret)
-          _surfaceDesc =
-              (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
+        _surfaceDesc =
+        (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
       }
 #else
     if (_surfaceDesc & InitialiseSurface)
@@ -1007,8 +1001,8 @@ namespace ilixi
           }
 
         if (ret)
-        _surfaceDesc =
-        (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
+          _surfaceDesc =
+              (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
       }
 #endif
 
@@ -1039,7 +1033,7 @@ namespace ilixi
 #ifdef ILIXI_STEREO_OUTPUT
       _surface->setStereoGeometry(_frameGeometry, z());
 #else
-    _surface->setGeometry(surfaceGeometry());
+      _surface->setGeometry(surfaceGeometry());
 #endif
 
     _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
