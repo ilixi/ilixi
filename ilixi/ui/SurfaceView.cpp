@@ -262,7 +262,7 @@ namespace ilixi
         sigSourceReady();
         _state = SVS_READY;
       }
-    _flipCount = event.flip_count;
+
     if (visible())
       {
         Rectangle lRect = mapFromSurface(
@@ -281,7 +281,8 @@ namespace ilixi
         update(PaintEvent(lRect));
 #endif
       }
-
+    if (!_flipCount)
+      _flipCount = event.flip_count;
     sigSourceUpdated();
   }
 
