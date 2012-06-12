@@ -31,23 +31,24 @@ Label::Label(std::string text, Widget* parent) :
     Widget(parent), BorderBase(this), TextBase(text, this), _margin(0)
 {
   setConstraints(NoConstraint, MinimumConstraint);
-  ILOG_TRACE(ILX_LABEL);
+  ILOG_TRACE_W(ILX_LABEL);
 }
 
 Label::Label(const Label& label) :
     BorderBase(label), TextBase(label), _margin(label._margin)
 {
-  ILOG_TRACE(ILX_LABEL);
+  ILOG_TRACE_W(ILX_LABEL);
 }
 
 Label::~Label()
 {
-  ILOG_TRACE(ILX_LABEL);
+  ILOG_TRACE_W(ILX_LABEL);
 }
 
 int
 Label::heightForWidth(int width) const
 {
+  ILOG_TRACE_W(ILX_LABEL);
   return textLayoutHeightForWidth(width - (2 * borderOffset() + _margin.hSum()))
       + 2 * borderWidth() + _margin.vSum();
 }
@@ -55,6 +56,7 @@ Label::heightForWidth(int width) const
 Size
 Label::preferredSize() const
 {
+  ILOG_TRACE_W(ILX_LABEL);
   Size s = textExtents();
   return Size(2 * borderOffset() + s.width() + _margin.hSum(),
       2 * borderWidth() + s.height() + _margin.vSum());
@@ -75,7 +77,7 @@ Label::setMargin(const Margin& margin)
 void
 Label::compose(const PaintEvent& event)
 {
-  ILOG_TRACE(ILX_LABEL);
+  ILOG_TRACE_W(ILX_LABEL);
   Painter p(this);
   p.begin(event);
   stylist()->drawFrame(&p, this);
@@ -86,6 +88,7 @@ Label::compose(const PaintEvent& event)
 void
 Label::updateTextBaseGeometry()
 {
+  ILOG_TRACE_W(ILX_LABEL);
   _layout.setBounds(_margin.right() + borderOffset(),
       _margin.top() + borderWidth(),
       width() - (2 * borderOffset() + _margin.hSum()),

@@ -29,6 +29,7 @@ using namespace ilixi;
 TextBase::TextBase(Widget* owner) :
     _owner(owner), _font(NULL)
 {
+  ILOG_TRACE(ILX_TEXTBASE);
   _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
@@ -36,6 +37,7 @@ TextBase::TextBase(Widget* owner) :
 TextBase::TextBase(const std::string& text, Widget* owner) :
     _owner(owner), _font(NULL), _layout(text)
 {
+  ILOG_TRACE(ILX_TEXTBASE);
   _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
@@ -43,12 +45,14 @@ TextBase::TextBase(const std::string& text, Widget* owner) :
 TextBase::TextBase(const TextBase& tb) :
     _owner(tb._owner), _font(tb._font), _layout(tb._layout)
 {
+  ILOG_TRACE(ILX_TEXTBASE);
   _owner->sigGeometryUpdated.connect(
       sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::~TextBase()
 {
+  ILOG_TRACE(ILX_TEXTBASE);
   if (_font)
     {
       _font->_ref--;
@@ -126,6 +130,7 @@ TextBase::setText(const std::string &text)
 {
   if (_layout.text() != text)
     {
+      ILOG_DEBUG(ILX_TEXTBASE, "setText( %s )\n", text.c_str());
       _layout.setText(text);
       sigTextChanged(text);
       _owner->update();
