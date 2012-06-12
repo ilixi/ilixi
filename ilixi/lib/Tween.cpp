@@ -86,6 +86,7 @@ Tween::setInitialValue(float initialValue)
   float end = endValue();
   _initialValue = initialValue;
   _change = end - _initialValue;
+  _value = _initialValue;
 }
 
 void

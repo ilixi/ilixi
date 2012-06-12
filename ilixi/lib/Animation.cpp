@@ -81,7 +81,6 @@ Animation::start()
   setCurrentTime();
   _state = Running;
   _cb.start();
-  sigStarted();
 }
 
 void
@@ -166,6 +165,8 @@ Animation::funck()
 
       if (_currentTime <= _duration)
         {
+          if (_currentTime == 0)
+            sigStarted();
           long stepTime = direct_clock_get_abs_millis() - _lastTime;
           step(stepTime);
           _currentTime += stepTime;
