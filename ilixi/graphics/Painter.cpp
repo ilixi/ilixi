@@ -169,6 +169,9 @@ Painter::fillRectangle(const Rectangle& rect)
 void
 Painter::drawText(const std::string& text, int x, int y)
 {
+  if (text.empty())
+    return;
+
   if (_state & Active)
     {
       applyBrush();
@@ -180,6 +183,9 @@ Painter::drawText(const std::string& text, int x, int y)
 void
 Painter::drawLayout(const TextLayout& layout)
 {
+  if (layout.text().empty())
+    return;
+
   if (_state & Active)
     {
       applyBrush();
@@ -200,6 +206,9 @@ Painter::drawLayout(const TextLayout& layout)
 void
 Painter::drawLayout(const TextLayout& layout, int x, int y)
 {
+  if (layout.text().empty())
+    return;
+
   if (_state & Active)
     {
       applyBrush();
