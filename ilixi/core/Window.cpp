@@ -106,7 +106,7 @@ Window::initDFBWindow(const Size& size)
       | DWCAPS_STEREO);
 #else
   desc.caps =
-  (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
+      (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
 #endif
 
   DFBDisplayLayerConfig conf;
@@ -146,6 +146,8 @@ Window::initDFBWindow(const Size& size)
       desc.width = w;
       desc.height = h;
       desc.stacking = DWSC_UPPER;
+
+      ILOG_DEBUG(ILX_WINDOW, " -> (%d, %d, %d, %d)\n", x, y, w, h);
     }
 
   ret = AppBase::getLayer()->CreateWindow(AppBase::getLayer(), &desc,

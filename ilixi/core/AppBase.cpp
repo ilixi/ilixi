@@ -643,6 +643,9 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
   we.window.x = 0;
   we.window.y = 0;
 
+  we.window.x = __cursorNew.x;
+  we.window.y = __cursorNew.y;
+
   we.window.cx = __cursorNew.x;
   we.window.cy = __cursorNew.y;
 

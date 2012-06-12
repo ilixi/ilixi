@@ -387,33 +387,33 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
   case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
     _eventManager->setExposedWidget(NULL,
-        PointerEvent(PointerMotion, event.cx, event.cy));
+        PointerEvent(PointerMotion, event.x, event.y));
     _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerMotion, event.cx, event.cy));
+        PointerEvent(PointerMotion, event.x, event.y));
     return true;
 
   case DWET_BUTTONUP:
     _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerButtonUp, event.cx, event.cy, 0,
+        PointerEvent(PointerButtonUp, event.x, event.y, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
     return target->consumePointerEvent(
-        PointerEvent(PointerButtonUp, event.cx, event.cy, 0,
+        PointerEvent(PointerButtonUp, event.x, event.y, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_BUTTONDOWN:
     return target->consumePointerEvent(
-        PointerEvent(PointerButtonDown, event.cx, event.cy, 0,
+        PointerEvent(PointerButtonDown, event.x, event.y, 0,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_MOTION:
     return target->consumePointerEvent(
-        PointerEvent(PointerMotion, event.cx, event.cy, event.step,
+        PointerEvent(PointerMotion, event.x, event.y, event.step,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_WHEEL:
     ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
     return target->consumePointerEvent(
-        PointerEvent(PointerWheel, event.cx, event.cy, event.step,
+        PointerEvent(PointerWheel, event.x, event.y, event.step,
             (PointerButton) event.button, (PointerButtonMask) event.buttons));
 
   case DWET_KEYUP:
