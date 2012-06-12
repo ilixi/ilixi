@@ -23,74 +23,17 @@
 
 #include "QuitButton.h"
 #include "graphics/Painter.h"
-#include "core/Logger.h"
 
 namespace ilixi
 {
 
-  QuitButton::QuitButton(Widget* parent) :
-      Widget(parent), _click(false)
+  QuitButton::QuitButton(const std::string& imagePath, Widget* parent) :
+      CompositorButton(imagePath, parent)
   {
-    setInputMethod(PointerInput);
-    setConstraints(FixedConstraint, FixedConstraint);
-
-    sigGeometryUpdated.connect(
-        sigc::mem_fun(this, &QuitButton::updateHBGeometry));
-    _image = new Image(ILIXI_DATADIR"compositor/comp_quit.png", 80, 80);
-    _anim.setDuration(500);
-    _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _anim.addTween(_tween);
-
-    _anim.sigExec.connect(sigc::mem_fun(this, &QuitButton::tweenSlot));
-
-    _anim.sigFinished.connect(sigc::mem_fun(this, &QuitButton::tweenEndSlot));
-    setVisible(false);
   }
 
   QuitButton::~QuitButton()
   {
-    delete _image;
-  }
-
-  Size
-  QuitButton::preferredSize() const
-  {
-    return Size(80, 80);
-  }
-
-  void
-  QuitButton::show()
-  {
-    _anim.stop();
-    setVisible(true);
-    _tween->setInitialValue(1);
-    _tween->setEndValue(0);
-    _anim.start();
-  }
-
-  void
-  QuitButton::hide()
-  {
-    _anim.stop();
-    _tween->setInitialValue(0);
-    _tween->setEndValue(1);
-    _anim.start();
-  }
-
-  void
-  QuitButton::pointerButtonDownEvent(const PointerEvent& pointerEvent)
-  {
-    _click = true;
-  }
-
-  void
-  QuitButton::pointerButtonUpEvent(const PointerEvent& pointerEvent)
-  {
-    if (_click)
-      {
-        sigPressed();
-        _click = false;
-      }
   }
 
   void
@@ -101,24 +44,6 @@ namespace ilixi
     p.setBrush(Color(0, 0, 0, 255));
     p.drawImage(_image, 80 * _tween->value(), -80 * _tween->value());
     p.end();
-  }
-
-  void
-  QuitButton::tweenSlot()
-  {
-    update();
-  }
-
-  void
-  QuitButton::tweenEndSlot()
-  {
-    if (_tween->value() == 1)
-      setVisible(false);
-  }
-
-  void
-  QuitButton::updateHBGeometry()
-  {
   }
 
 } /* namespace ilixi */

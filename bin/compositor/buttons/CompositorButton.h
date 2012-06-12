@@ -21,27 +21,54 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QUITBUTTON_H_
-#define QUITBUTTON_H_
+#ifndef COMPOSITORBUTTON_H_
+#define COMPOSITORBUTTON_H_
 
-#include "CompositorButton.h"
+#include "ui/Widget.h"
+#include "types/Image.h"
+#include "lib/TweenAnimation.h"
 
 namespace ilixi
 {
 
-  class QuitButton : public CompositorButton
+  class CompositorButton : public Widget
   {
   public:
-    QuitButton(const std::string& imagePath, Widget* parent = 0);
+    CompositorButton(const std::string& imagePath, Widget* parent = 0);
 
     virtual
-    ~QuitButton();
+    ~CompositorButton();
+
+    virtual Size
+    preferredSize() const;
+
+    void
+    show();
+
+    void
+    hide();
+
+    sigc::signal<void> sigPressed;
 
   protected:
-    void
-    compose(const PaintEvent& event);
+    bool _click;
+    TweenAnimation _anim;
+    Tween* _tween;
+    Image* _image;
 
+    virtual void
+    pointerButtonDownEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    pointerButtonUpEvent(const PointerEvent& pointerEvent);
+
+  private:
+    void
+    tweenSlot();
+
+    void
+    tweenEndSlot();
   };
 
 } /* namespace ilixi */
-#endif /* QUITBUTTON_H_ */
+#endif /* COMPOSITORBUTTON_H_ */

@@ -18,6 +18,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						Launcher.cpp \
 						LauncherButton.h \
 						LauncherButton.cpp \
+						buttons/CompositorButton.h \
+						buttons/CompositorButton.cpp \
 						buttons/HomeButton.h \
 						buttons/HomeButton.cpp \
 						buttons/QuitButton.h \

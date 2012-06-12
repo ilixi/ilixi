@@ -1,64 +1,45 @@
 /*
- * SwitchButton.h
- *
- *  Created on: Apr 3, 2012
- *      Author: tarik
+ Copyright 2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef SWITCHBUTTON_H_
 #define SWITCHBUTTON_H_
 
-#include "ui/Widget.h"
-#include "types/Image.h"
-#include "lib/TweenAnimation.h"
+#include "CompositorButton.h"
 
 namespace ilixi
 {
 
-  class SwitchButton : public Widget
+  class SwitchButton : public CompositorButton
   {
   public:
-    SwitchButton(Widget* parent = 0);
+    SwitchButton(const std::string& imagePath, Widget* parent = 0);
 
     virtual
     ~SwitchButton();
 
-    virtual Size
-    preferredSize() const;
-
-    void
-    show();
-
-    void
-    hide();
-
-    sigc::signal<void> sigPressed;
-
   protected:
-    bool _click;
-    TweenAnimation _anim;
-    Tween* _tween;
-
-    virtual void
-    pointerButtonDownEvent(const PointerEvent& pointerEvent);
-
-    virtual void
-    pointerButtonUpEvent(const PointerEvent& pointerEvent);
-
     void
     compose(const PaintEvent& event);
-
-  private:
-    Image* _image;
-
-    void
-    tweenSlot();
-
-    void
-    tweenEndSlot();
-
-    void
-    updateSBGeometry();
   };
 
 } /* namespace ilixi */
