@@ -265,7 +265,7 @@ namespace ilixi
 
     if (visible())
       {
-        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
+//        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
         // TODO Use rect for update.
 //        Rectangle rect(event.update.x1 / hScale(), event.update.y1 / vScale(),
 //            (event.update.x2 + 1 - event.update.x1) / hScale(),
@@ -274,8 +274,7 @@ namespace ilixi
 //        update(mapFromSurface(rect));
         update();
       }
-    else
-      _flipCount = event.flip_count;
+    _flipCount = event.flip_count;
     sigSourceUpdated();
   }
 
