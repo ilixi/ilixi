@@ -354,6 +354,6 @@ DFBRegion
 Rectangle::dfbRegion() const
 {
   DFBRegion r =
-    { x(), y(), right(), bottom() };
+    { x(), y(), right() - 1, bottom() - 1 };
   return r;
 }
