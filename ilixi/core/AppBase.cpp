@@ -183,6 +183,20 @@ AppBase::appOptions()
   return __instance->__options;
 }
 
+void
+AppBase::setAppOption(AppOptions option)
+{
+  ILOG_DEBUG(ILX_APPBASE, "Setting option: 0x%02x\n", option);
+  __instance->__options = (AppOptions) (__instance->__options | option);
+}
+
+void
+AppBase::unSetAppOption(AppOptions option)
+{
+  ILOG_DEBUG(ILX_APPBASE, "Clearing option: 0x%02x\n", option);
+  __instance->__options = (AppOptions) (__instance->__options & ~option);
+}
+
 DFBPoint
 AppBase::cursorPosition()
 {

@@ -101,7 +101,7 @@ namespace ilixi
      * Flips DFB surface.
      */
     void
-    flip();
+    flip(DFBSurfaceFlipFlags flags = DSFLIP_WAITFORSYNC);
 
     /*!
      * Flips DFB surface.
@@ -109,7 +109,7 @@ namespace ilixi
      * @param rect area to flip in surface coordinates.
      */
     void
-    flip(const Rectangle& rect);
+    flip(const Rectangle& rect, DFBSurfaceFlipFlags flags = DSFLIP_BLIT);
 
     /*!
      * Lock surface mutex. This is mainly used by Painter to serialise updates.

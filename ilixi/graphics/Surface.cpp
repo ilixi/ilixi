@@ -154,9 +154,9 @@ Surface::setGeometry(int x, int y, int width, int height)
 }
 
 void
-Surface::flip()
+Surface::flip(DFBSurfaceFlipFlags flags)
 {
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_WAITFORSYNC);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, flags);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
   else
@@ -164,7 +164,7 @@ Surface::flip()
 }
 
 void
-Surface::flip(const Rectangle& rect)
+Surface::flip(const Rectangle& rect, DFBSurfaceFlipFlags flags)
 {
   DFBRegion r = rect.dfbRegion();
   DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_BLIT);
@@ -428,9 +428,7 @@ Surface::flipStereo(const Rectangle& left, const Rectangle& right)
   DFBRegion l = left.dfbRegion();
   DFBRegion r = right.dfbRegion();
   ILOG_DEBUG(ILX_SURFACE,
-      "[%p] %s Left(%d,%d,%d,%d) Right(%d,%d,%d,%d)\n", this, __FUNCTION__,
-      left.x(), left.y(), left.width(), left.height(),
-      right.x(), right.y(), right.width(), right.height());
+      "[%p] %s Left(%d,%d,%d,%d) Right(%d,%d,%d,%d)\n", this, __FUNCTION__, left.x(), left.y(), left.width(), left.height(), right.x(), right.y(), right.width(), right.height());
   DFBResult ret = _dfbSurface->FlipStereo(_dfbSurface, &l, &r,
       DSFLIP_WAITFORSYNC);
   if (ret)

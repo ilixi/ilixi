@@ -126,7 +126,7 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-                surface()->clear(evt.rect);
+              surface()->clear(evt.rect);
 
               paintChildren(evt);
 
@@ -151,20 +151,24 @@ WindowWidget::paint(const PaintEvent& event)
                   compose(evt);
                 }
               else if (_backgroundFlags & BGFClear)
-                surface()->clear(evt.right);
+              surface()->clear(evt.right);
 
               paintChildren(evt);
 
               if (AppBase::appOptions() & OptExclusive)
                 {
-                  _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_RIGHT);
+                  _exclusiveSurface->SetStereoEye(_exclusiveSurface,
+                      DSSE_RIGHT);
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
                       AppBase::cursorPosition().x - 10,
                       AppBase::cursorPosition().y);
                 }
-
+              if ((AppBase::appOptions() & OptExclusive)
+                  && (AppBase::appOptions() & OptTripleAccelerated))
+              surface()->flipStereo(evt.rect, evt.right, DSFLIP_ONSYNC);
+              else
               surface()->flipStereo(evt.rect, evt.right);
 #else
               surface()->clip(evt.rect);
@@ -178,17 +182,21 @@ WindowWidget::paint(const PaintEvent& event)
 
               paintChildren(evt);
 
-              if (AppBase::appOptions() & OptExclusive)
+              if ((AppBase::appOptions() & OptExclusive))
                 {
+                  _exclusiveSurface->SetStereoEye(_exclusiveSurface,
+                      DSSE_RIGHT);
                   _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                       DSBLIT_BLEND_ALPHACHANNEL);
-
                   _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
                       AppBase::cursorPosition().x, AppBase::cursorPosition().y);
 
                 }
-
-              surface()->flip(evt.rect);
+              if ((AppBase::appOptions() & OptExclusive)
+                  && (AppBase::appOptions() & OptTripleAccelerated))
+                surface()->flip(evt.rect, DSFLIP_ONSYNC);
+              else
+                surface()->flip(evt.rect);
 #endif
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
             }
@@ -296,9 +304,16 @@ WindowWidget::showWindow()
       config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
           | DLCONF_OPTIONS);
       if (deviceDesc.acceleration_mask == DFXL_NONE)
-        config.buffermode = DLBM_BACKSYSTEM;
+        {
+          config.buffermode = DLBM_BACKSYSTEM;
+          AppBase::unSetAppOption(OptFullScreenUpdate);
+          ILOG_DEBUG(ILX_WINDOWWIDGET, "Not using fullscreen updates\n");
+        }
       else
-        config.buffermode = DLBM_BACKVIDEO;
+        {
+          config.buffermode = DLBM_TRIPLE;
+          AppBase::setAppOption(OptTripleAccelerated);
+        }
 
 #ifdef ILIXI_STEREO_OUTPUT
       config.options = DLOP_STEREO;
@@ -308,8 +323,16 @@ WindowWidget::showWindow()
 
       if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
           != DFB_OK)
-        ILOG_THROW(ILX_WINDOWWIDGET,
-            "Error while setting layer configuration!\n");
+        {
+          ILOG_WARNING(ILX_WINDOWWIDGET,
+              "Cannot set layer buffer mode to TRIPLE!\n");
+          AppBase::unSetAppOption(OptTripleAccelerated);
+          config.buffermode = DLBM_BACKVIDEO;
+          if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
+              != DFB_OK)
+            ILOG_THROW(ILX_WINDOWWIDGET,
+                "Error while setting layer configuration!\n");
+        }
 
       if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
           != DFB_OK)
@@ -538,10 +561,21 @@ WindowWidget::updateWindow()
     {
       sem_wait(&_updates._paintReady);
 #ifdef ILIXI_STEREO_OUTPUT
-      _updates._updateRegion = updateTemp;
-      _updates._updateRegionRight = updateTempRight;
+      if (AppBase::appOptions() & OptFullScreenUpdate)
+        {
+          _updates._updateRegion = frameGeometry();
+          _updates._updateRegionRight = frameGeometry();
+        }
+      else
+        {
+          _updates._updateRegion = updateTemp;
+          _updates._updateRegionRight = updateTempRight;
+        }
 #else
-      _updates._updateRegion = updateTemp;
+      if (AppBase::appOptions() & OptFullScreenUpdate)
+        _updates._updateRegion = frameGeometry();
+      else
+        _updates._updateRegion = updateTemp;
 #endif
 
       sem_post(&_updates._updateReady);

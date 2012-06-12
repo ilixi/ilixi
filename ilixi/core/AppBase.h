@@ -132,6 +132,12 @@ namespace ilixi
     static AppOptions
     appOptions();
 
+    static void
+    setAppOption(AppOptions option);
+
+    static void
+    unSetAppOption(AppOptions option);
+
     static DFBPoint
     cursorPosition();
 

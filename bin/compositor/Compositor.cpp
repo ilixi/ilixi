@@ -64,6 +64,9 @@ namespace ilixi
                 sigc::mem_fun(this, &Compositor::onFPSUpdate));
             ILOG_INFO(ILX_APPBASE, "FPS\n");
           }
+
+        else if (strcmp(argv[i], "fsu") == 0)
+          setAppOption(OptFullScreenUpdate);
       }
 
     if (_switcher == NULL)
