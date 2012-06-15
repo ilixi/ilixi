@@ -297,13 +297,29 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
               "SurfaceEventListener %p already added!\n", sel);
           return false;
         }
-      __instance->__selList.push_back(sel);
 
-      sel->sourceSurface()->MakeClient(sel->sourceSurface());
-      sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(), __buffer);
-
-      pthread_mutex_unlock(&__instance->__selMutex);
       ILOG_DEBUG(ILX_APPBASE, "SurfaceEventListener %p is added.\n", sel);
+      // check whether to attach source surface
+      bool attach = true;
+      for (SurfaceListenerList::iterator it = __instance->__selList.begin();
+          it != __instance->__selList.end(); ++it)
+        {
+          if (sel->sourceSurface()
+              == ((SurfaceEventListener*) *it)->sourceSurface())
+            attach = false;
+        }
+
+      if (attach)
+        {
+          sel->sourceSurface()->MakeClient(sel->sourceSurface());
+          sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(),
+              __buffer);
+          ILOG_DEBUG(ILX_APPBASE,
+              " -> Surface[%p] is attached.\n", sel->sourceSurface());
+        }
+
+      __instance->__selList.push_back(sel);
+      pthread_mutex_unlock(&__instance->__selMutex);
       return true;
     }
   return false;
@@ -316,24 +332,47 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
     {
       pthread_mutex_lock(&__instance->__selMutex);
 
+      bool ret = false;
+      IDirectFBSurface* source = sel->sourceSurface();
+
       for (SurfaceListenerList::iterator it = __instance->__selList.begin();
           it != __instance->__selList.end(); ++it)
         {
           if (sel == *it)
             {
               __instance->__selList.erase(it);
-              sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(),
-                  __buffer);
-              pthread_mutex_unlock(&__instance->__selMutex);
               ILOG_DEBUG( ILX_APPBASE,
                   "SurfaceEventListener %p is removed.\n", sel);
-              return true;
+              ret = true;
+              break;
             }
         }
 
-      pthread_mutex_unlock(&__instance->__selMutex);
-      ILOG_ERROR( ILX_APPBASE,
-          "Cannot remove SurfaceEventListener, %p not found!\n", sel);
+      if (ret)
+        {
+          bool detach = true;
+          for (SurfaceListenerList::iterator it = __instance->__selList.begin();
+              it != __instance->__selList.end(); ++it)
+            {
+              if (source == ((SurfaceEventListener*) *it)->sourceSurface())
+                detach = false;
+            }
+          pthread_mutex_unlock(&__instance->__selMutex);
+
+          if (detach)
+            {
+              sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(),
+                  __buffer);
+              ILOG_DEBUG(ILX_APPBASE,
+                  " -> Surface[%p] is detached.\n", sel->sourceSurface());
+            }
+          return true;
+        }
+      else
+        {
+          pthread_mutex_unlock(&__instance->__selMutex);
+          return false;
+        }
     }
   return false;
 }
