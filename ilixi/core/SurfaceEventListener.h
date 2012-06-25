@@ -25,12 +25,14 @@
 #define ILIXI_SURFACELISTENER_H_
 
 #include "directfb.h"
+#include <stack>
+#include "core/Callback.h"
 
 namespace ilixi
 {
 
   //! Listens to incoming events from a surface.
-  class SurfaceEventListener
+  class SurfaceEventListener : public Functionoid
   {
     friend class AppBase;
 
@@ -94,9 +96,18 @@ namespace ilixi
     onSourceDestroyed(const DFBSurfaceEvent& event) = 0;
 
   private:
+    //! Callback for stack.
+    Callback _cb;
+    //! Stack of surface events waiting.
+    std::stack<DFBSurfaceEvent> _stack;
+
     //! Intercepts surface events of source surface.
     bool
     consumeSurfaceEvent(const DFBSurfaceEvent& event);
+
+    //! Functor of callback.
+    bool
+    funck();
   };
 
 } /* namespace ilixi */

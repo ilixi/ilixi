@@ -29,7 +29,7 @@ namespace ilixi
 {
 
   SurfaceEventListener::SurfaceEventListener() :
-      _surfaceID(0), _sourceSurface(NULL)
+      _surfaceID(0), _sourceSurface(NULL), _cb(this)
   {
   }
 
@@ -53,11 +53,13 @@ namespace ilixi
   SurfaceEventListener::attachSourceSurface()
   {
     AppBase::addSurfaceEventListener(this);
+    _cb.start();
   }
 
   void
   SurfaceEventListener::detachSourceSurface()
   {
+    _cb.stop();
     AppBase::removeSurfaceEventListener(this);
   }
 
@@ -69,10 +71,21 @@ namespace ilixi
         if (event.type == DSEVT_DESTROYED)
           onSourceDestroyed(event);
         else if (event.type == DSEVT_UPDATE)
-          onSourceUpdate(event);
+          _stack.push(event);
         return true;
       }
     return false;
+  }
+
+  bool
+  SurfaceEventListener::funck()
+  {
+    if (!_stack.empty())
+      {
+        onSourceUpdate(_stack.top());
+        _stack.pop();
+      }
+    return true;
   }
 
 } /* namespace ilixi */
