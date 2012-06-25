@@ -76,6 +76,11 @@ namespace ilixi
     _repeats = number;
   }
 
+  void
+  Timer::notify()
+  {
+  }
+
   bool
   Timer::funck()
   {
@@ -87,6 +92,7 @@ namespace ilixi
       {
         _lastTime += stepTime;
         ++_count;
+        notify();
         sigExec();
         return true;
       }

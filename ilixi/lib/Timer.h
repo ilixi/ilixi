@@ -82,6 +82,12 @@ namespace ilixi
     setRepeats(unsigned int number);
 
     /*!
+     * User function that gets executed.
+     */
+    virtual void
+    notify();
+
+    /*!
      * This signal is emitted when timer is fired.
      */
     sigc::signal<void> sigExec;
