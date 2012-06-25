@@ -167,7 +167,7 @@ void
 Surface::flip(const Rectangle& rect, DFBSurfaceFlipFlags flags)
 {
   DFBRegion r = rect.dfbRegion();
-  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_BLIT);
+  DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, flags);
   if (ret)
     ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
   else
