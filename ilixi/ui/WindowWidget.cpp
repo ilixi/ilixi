@@ -169,7 +169,7 @@ WindowWidget::paint(const PaintEvent& event)
                   && (AppBase::appOptions() & OptTripleAccelerated))
               surface()->flipStereo(evt.rect, evt.right, DSFLIP_ONSYNC);
               else
-              surface()->flipStereo(evt.rect, evt.right);
+              surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
 #else
               surface()->clip(evt.rect);
               if (_backgroundFlags & BGFFill)
@@ -196,7 +196,7 @@ WindowWidget::paint(const PaintEvent& event)
                   && (AppBase::appOptions() & OptTripleAccelerated))
                 surface()->flip(evt.rect, DSFLIP_ONSYNC);
               else
-                surface()->flip(evt.rect);
+                surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
 #endif
               ILOG_TRACE_W(ILX_WINDOWWIDGET);
             }
@@ -311,8 +311,8 @@ WindowWidget::showWindow()
         }
       else
         {
-          config.buffermode = DLBM_TRIPLE;
-          AppBase::setAppOption(OptTripleAccelerated);
+          config.buffermode = DLBM_BACKVIDEO;
+          //AppBase::setAppOption(OptTripleAccelerated);
         }
 
 #ifdef ILIXI_STEREO_OUTPUT
