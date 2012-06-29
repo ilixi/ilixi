@@ -281,7 +281,7 @@ namespace ilixi
         update(PaintEvent(lRect));
 #endif
       }
-    if (!_flipCount)
+//    if (!_flipCount)
       _flipCount = event.flip_count;
     sigSourceUpdated();
   }
