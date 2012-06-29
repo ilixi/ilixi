@@ -25,7 +25,7 @@
 #define ILIXI_SURFACELISTENER_H_
 
 #include "directfb.h"
-#include <stack>
+#include <queue>
 #include "core/Callback.h"
 
 namespace ilixi
@@ -99,7 +99,7 @@ namespace ilixi
     //! Callback for stack.
     Callback _cb;
     //! Stack of surface events waiting.
-    std::stack<DFBSurfaceEvent> _stack;
+    std::queue<DFBSurfaceEvent> _queue;
 
     //! Intercepts surface events of source surface.
     bool

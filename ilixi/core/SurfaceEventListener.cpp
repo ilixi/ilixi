@@ -71,7 +71,7 @@ namespace ilixi
         if (event.type == DSEVT_DESTROYED)
           onSourceDestroyed(event);
         else if (event.type == DSEVT_UPDATE)
-          _stack.push(event);
+          _queue.push(event);
         return true;
       }
     return false;
@@ -80,10 +80,10 @@ namespace ilixi
   bool
   SurfaceEventListener::funck()
   {
-    if (!_stack.empty())
+    if (!_queue.empty())
       {
-        onSourceUpdate(_stack.top());
-        _stack.pop();
+        onSourceUpdate(_queue.front());
+        _queue.pop();
       }
     return true;
   }
