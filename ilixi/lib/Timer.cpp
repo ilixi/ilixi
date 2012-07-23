@@ -23,10 +23,13 @@
 
 #include "lib/Timer.h"
 #include "core/Window.h"
+#include "core/Logger.h"
 #include <direct/clock.h>
 
 namespace ilixi
 {
+
+  D_DEBUG_DOMAIN( ILX_TIMER, "ilixi/lib/Timer", "Timer");
 
   Timer::Timer() :
       _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(this)
@@ -50,17 +53,20 @@ namespace ilixi
   }
 
   void
-  Timer::start(int msec)
+  Timer::start(int msec, unsigned int repeats)
   {
     _interval = msec;
     _count = 0;
-    _cb.start();
+    _repeats = repeats;
     _lastTime = direct_clock_get_abs_millis();
+    ILOG_DEBUG(ILX_TIMER, "Starting timer [CB: %p]\n", &_cb);
+    _cb.start();
   }
 
   void
   Timer::stop()
   {
+    ILOG_DEBUG(ILX_TIMER, "Stopping timer [CB: %p]\n", &_cb);
     _cb.stop();
   }
 
@@ -84,6 +90,7 @@ namespace ilixi
   bool
   Timer::funck()
   {
+    ILOG_TRACE(ILX_TIMER);
     if (_repeats && _repeats == _count)
       return false; // TODO should remove callback
 

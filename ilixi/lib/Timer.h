@@ -61,7 +61,7 @@ namespace ilixi
      * Starts timer and sets the interval.
      */
     void
-    start(int msec);
+    start(int msec, unsigned int repeats = 0);
 
     /*!
      * Stops timer.
