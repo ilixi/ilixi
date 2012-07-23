@@ -28,7 +28,6 @@
 #include "core/Thread.h"
 #include "ui/Label.h"
 #include "ui/ToolButton.h"
-#include "SDialog.h"
 
 using namespace ilixi;
 
@@ -65,10 +64,6 @@ public:
   void
   updateTime();
 
-protected:
-  virtual ReactionResult
-  maestroCB(IMaestro::MaestroMessage *msg, void *ctx);
-
 private:
   unsigned int _currentAppID;
   Label* _app;
@@ -80,16 +75,8 @@ private:
   ToolButton* _home;
   ToolButton* _shutdown;
 
-  SDialog* _sDialog;
-
-  void
-  compose();
-
-  void
-  handleDialog(int result);
-
-  void
-  showHome();
+  virtual void
+  compose(const PaintEvent& event);
 };
 
 #endif /* STATUSBAR_H_ */
