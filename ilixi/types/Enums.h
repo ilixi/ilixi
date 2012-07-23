@@ -280,7 +280,8 @@ namespace ilixi
     OptNone = 0x000, //!< Default application option.
     OptExclusive = 0x001, //!< Application will use layer exclusively.
     OptFullScreenUpdate = 0x002, //!< Windows will update whole surface each time.
-    OptTripleAccelerated = 0x004
+    OptTripleAccelerated = 0x004,
+    OptStatusBar = 0x100
   };
 }
 
