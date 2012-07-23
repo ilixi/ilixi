@@ -393,6 +393,12 @@ namespace ilixi
   }
 
   void
+  Widget::setGeometry(const Rectangle& rect)
+  {
+    setGeometry(rect.x(), rect.y(), rect.width(), rect.height());
+  }
+
+  void
   Widget::setMinimumSize(const Size &size)
   {
     _minSize = size;

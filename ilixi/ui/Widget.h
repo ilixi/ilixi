@@ -407,6 +407,13 @@ namespace ilixi
     setGeometry(int x, int y, int width, int height);
 
     /*!
+     * Sets widget's surface geometry.
+     * @param rect
+     */
+    void
+    setGeometry(const Rectangle& rect);
+
+    /*!
      * Sets widget's minimum size.
      *
      * Widget's size can not be smaller than this.
@@ -583,7 +590,7 @@ namespace ilixi
      *
      * @sa repaint()
      */
-    void
+    virtual void
     update();
 
     /*!
@@ -591,7 +598,7 @@ namespace ilixi
      *
      * @param event contains a rectangle to update.
      */
-    void
+    virtual void
     update(const PaintEvent& event);
 
     /*!
