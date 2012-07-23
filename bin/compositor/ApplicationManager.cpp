@@ -657,7 +657,7 @@ ApplicationManager::initApps()
             ILIXI_DATADIR"compositor/qt-qml.png", "GPL", "Andreas Shimokawa", 1,
             APP_QT, DEP_MOUSE);
 
-addApplication("WebKitDFB", "WebKitDFB", "",
+addApplication("WebKitDFB", "lite_WebKit", "",
         ILIXI_DATADIR"compositor/webkitdfb.png", "LGPLv3", "Andreas Shimokawa",
         1, APP_LITE, DEP_MOUSE);
 

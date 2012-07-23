@@ -97,6 +97,9 @@ namespace ilixi
     virtual DirectResult
     processRemoved(SaWManProcess *process);
 
+    /*!
+     * Called right before a window is created.
+     */
     virtual DirectResult
     windowPreconfig(SaWManWindowConfig *config);
 
