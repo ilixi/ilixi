@@ -56,6 +56,18 @@ namespace ilixi
     windowEventManager() const;
 
     /*!
+     * This method will queue a PaintEvent.
+     */
+    virtual void
+    update();
+
+    /*!
+     * This method will queue the PaintEvent.
+     */
+    virtual void
+    update(const PaintEvent& event);
+
+    /*!
      * This method executes update().
      */
     virtual void

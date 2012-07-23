@@ -30,463 +30,496 @@ using namespace ilixi;
 IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
 IDirectFBSurface* WindowWidget::_cursorImage = NULL;
 
-WindowWidget::WindowWidget(Widget* parent) :
-    Frame(parent), _window(NULL), _eventManager(NULL)
+WindowWidget::WindowWidget(Widget* parent)
+        : Frame(parent), _window(NULL), _eventManager(NULL)
 {
-  ILOG_DEBUG(ILX_WINDOWWIDGET, "WindowWidget\n");
-  setVisible(false);
-  pthread_mutex_init(&_updates._listLock, NULL);
-  sem_init(&_updates._updateReady, 0, 0);
-  sem_init(&_updates._paintReady, 0, 1);
+    ILOG_DEBUG(ILX_WINDOWWIDGET, "WindowWidget\n");
+    setVisible(false);
+    pthread_mutex_init(&_updates._listLock, NULL);
+    sem_init(&_updates._updateReady, 0, 0);
+    sem_init(&_updates._paintReady, 0, 1);
 
-  _surfaceDesc = WindowDescription;
-  setMargins(5, 5, 5, 5);
-  setNeighbours(this, this, this, this);
+    _surfaceDesc = WindowDescription;
+    setMargins(5, 5, 5, 5);
+    setNeighbours(this, this, this, this);
 
-  if (AppBase::appOptions() & OptExclusive)
+    if (AppBase::appOptions() & OptExclusive)
     {
-      if (AppBase::activeWindow())
+        if (AppBase::activeWindow())
         {
-          ILOG_ERROR( ILX_WINDOWWIDGET,
-              "Error cannot have multiple windows in exclusive mode!\n");
-          exit(1);
+            ILOG_ERROR( ILX_WINDOWWIDGET,
+                    "Error cannot have multiple windows in exclusive mode!\n");
+            exit(1);
         }
-    }
-  else
-    _window = new Window();
+    } else
+        _window = new Window();
 
-  _eventManager = new EventManager(this);
-  setRootWindow(this);
+    _eventManager = new EventManager(this);
+    setRootWindow(this);
 }
 
 WindowWidget::~WindowWidget()
 {
-  pthread_mutex_destroy(&_updates._listLock);
-  sem_destroy(&_updates._updateReady);
-  sem_destroy(&_updates._paintReady);
+    pthread_mutex_destroy(&_updates._listLock);
+    sem_destroy(&_updates._updateReady);
+    sem_destroy(&_updates._paintReady);
 
-  AppBase::removeWindow(this);
-  delete _eventManager;
-  delete _window;
-  if (AppBase::appOptions() & OptExclusive)
+    AppBase::removeWindow(this);
+    delete _eventManager;
+    delete _window;
+    if (AppBase::appOptions() & OptExclusive)
     {
-      if (_exclusiveSurface)
-        _exclusiveSurface->Release(_exclusiveSurface);
-      if (_cursorImage)
-        _cursorImage->Release(_cursorImage);
+        if (_exclusiveSurface)
+            _exclusiveSurface->Release(_exclusiveSurface);
+        if (_cursorImage)
+            _cursorImage->Release(_cursorImage);
     }
-  ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
 }
 
 EventManager* const
 WindowWidget::windowEventManager() const
 {
-  return _eventManager;
+    return _eventManager;
+}
+
+void
+WindowWidget::update()
+{
+    if (!(_state & InvisibleState))
+    {
+        pthread_mutex_lock(&_updates._listLock);
+        _updates._updateQueue.push_back(frameGeometry());
+#ifdef ILIXI_STEREO_OUTPUT
+        _updates._updateQueueRight.push_back(frameGeometry());
+#endif
+        pthread_mutex_unlock(&_updates._listLock);
+    }
+}
+
+void
+WindowWidget::update(const PaintEvent& event)
+{
+    if (!(_state & InvisibleState))
+    {
+        pthread_mutex_lock(&_updates._listLock);
+        _updates._updateQueue.push_back(event.rect);
+#ifdef ILIXI_STEREO_OUTPUT
+        _updates._updateQueueRight.push_back(event.right);
+#endif
+        pthread_mutex_unlock(&_updates._listLock);
+    }
 }
 
 void
 WindowWidget::doLayout()
 {
-  ILOG_TRACE_W(ILX_WINDOWWIDGET);
-  update();
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    update();
 }
 
 void
 WindowWidget::paint(const PaintEvent& event)
 {
-  if (visible())
+    if (visible())
     {
-      int ready;
-      sem_getvalue(&_updates._updateReady, &ready);
-      if (ready)
+        int ready;
+        sem_getvalue(&_updates._updateReady, &ready);
+        if (ready)
         {
-          sem_wait(&_updates._updateReady);
+            sem_wait(&_updates._updateReady);
 
-          updateSurface(event);
+            updateSurface(event);
 
 #ifdef ILIXI_STEREO_OUTPUT
-          PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
-              _frameGeometry.intersected(_updates._updateRegionRight));
+            PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
+                    _frameGeometry.intersected(_updates._updateRegionRight));
 #else
-          PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion));
+            PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion));
 #endif
-          if (evt.isValid())
+            if (evt.isValid())
             {
-              ILOG_TRACE_W(ILX_WINDOWWIDGET);
+                ILOG_TRACE_W(ILX_WINDOWWIDGET);
 
 #ifdef ILIXI_STEREO_OUTPUT
-              // Left eye
-              ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
-              evt.eye = PaintEvent::LeftEye;
-              surface()->setStereoEye(PaintEvent::LeftEye);
-              surface()->clip(evt.rect);
-              if (_backgroundFlags & BGFFill)
+                // Left eye
+                ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
+                evt.eye = PaintEvent::LeftEye;
+                surface()->setStereoEye(PaintEvent::LeftEye);
+                surface()->clip(evt.rect);
+                if (_backgroundFlags & BGFFill)
                 {
-                  surface()->clear(evt.rect);
-                  compose(evt);
+                    surface()->clear(evt.rect);
+                    compose(evt);
                 }
-              else if (_backgroundFlags & BGFClear)
-              surface()->clear(evt.rect);
-
-              paintChildren(evt);
-
-              if (AppBase::appOptions() & OptExclusive)
-                {
-                  _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
-                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                      DSBLIT_BLEND_ALPHACHANNEL);
-                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x + 10,
-                      AppBase::cursorPosition().y);
-                }
-
-              // Right eye
-              ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
-              evt.eye = PaintEvent::RightEye;
-              surface()->setStereoEye(PaintEvent::RightEye);
-              surface()->clip(evt.right);
-              if (_backgroundFlags & BGFFill)
-                {
-                  surface()->clear(evt.right);
-                  compose(evt);
-                }
-              else if (_backgroundFlags & BGFClear)
-              surface()->clear(evt.right);
-
-              paintChildren(evt);
-
-              if (AppBase::appOptions() & OptExclusive)
-                {
-                  _exclusiveSurface->SetStereoEye(_exclusiveSurface,
-                      DSSE_RIGHT);
-                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                      DSBLIT_BLEND_ALPHACHANNEL);
-                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x - 10,
-                      AppBase::cursorPosition().y);
-                }
-              if ((AppBase::appOptions() & OptExclusive)
-                  && (AppBase::appOptions() & OptTripleAccelerated))
-              surface()->flipStereo(evt.rect, evt.right, DSFLIP_ONSYNC);
-              else
-              surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
-#else
-              surface()->clip(evt.rect);
-              if (_backgroundFlags & BGFFill)
-                {
-                  surface()->clear(evt.rect);
-                  compose(evt);
-                }
-              else if (_backgroundFlags & BGFClear)
+                else if (_backgroundFlags & BGFClear)
                 surface()->clear(evt.rect);
 
-              paintChildren(evt);
+                paintChildren(evt);
 
-              if ((AppBase::appOptions() & OptExclusive))
+                if (AppBase::appOptions() & OptExclusive)
                 {
-                  _exclusiveSurface->SetStereoEye(_exclusiveSurface,
-                      DSSE_RIGHT);
-                  _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                      DSBLIT_BLEND_ALPHACHANNEL);
-                  _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                      AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                    _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
+                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                            DSBLIT_BLEND_ALPHACHANNEL);
+                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                            AppBase::cursorPosition().x + 10,
+                            AppBase::cursorPosition().y);
+                }
+
+                // Right eye
+                ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
+                evt.eye = PaintEvent::RightEye;
+                surface()->setStereoEye(PaintEvent::RightEye);
+                surface()->clip(evt.right);
+                if (_backgroundFlags & BGFFill)
+                {
+                    surface()->clear(evt.right);
+                    compose(evt);
+                }
+                else if (_backgroundFlags & BGFClear)
+                surface()->clear(evt.right);
+
+                paintChildren(evt);
+
+                if (AppBase::appOptions() & OptExclusive)
+                {
+                    _exclusiveSurface->SetStereoEye(_exclusiveSurface,
+                            DSSE_RIGHT);
+                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                            DSBLIT_BLEND_ALPHACHANNEL);
+                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
+                            AppBase::cursorPosition().x - 10,
+                            AppBase::cursorPosition().y);
+                }
+                if ((AppBase::appOptions() & OptExclusive)
+                        && (AppBase::appOptions() & OptTripleAccelerated))
+                surface()->flipStereo(evt.rect, evt.right, DSFLIP_ONSYNC);
+                else
+                surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
+#else
+                surface()->clip(evt.rect);
+                if (_backgroundFlags & BGFFill)
+                {
+                    surface()->clear(evt.rect);
+                    compose(evt);
+                } else if (_backgroundFlags & BGFClear)
+                    surface()->clear(evt.rect);
+
+                paintChildren(evt);
+
+                if ((AppBase::appOptions() & OptExclusive))
+                {
+                    _exclusiveSurface->SetStereoEye(_exclusiveSurface,
+                            DSSE_RIGHT);
+                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
+                            DSBLIT_BLEND_ALPHACHANNEL);
+                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage,
+                            NULL, AppBase::cursorPosition().x,
+                            AppBase::cursorPosition().y);
 
                 }
-              if ((AppBase::appOptions() & OptExclusive)
-                  && (AppBase::appOptions() & OptTripleAccelerated))
-                surface()->flip(evt.rect, DSFLIP_ONSYNC);
-              else
-                surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
+                if ((AppBase::appOptions() & OptExclusive)
+                        && (AppBase::appOptions() & OptTripleAccelerated))
+                    surface()->flip(evt.rect, DSFLIP_ONSYNC);
+                else
+                    surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
 #endif
-              ILOG_TRACE_W(ILX_WINDOWWIDGET);
+                ILOG_TRACE_W(ILX_WINDOWWIDGET);
             }
-          sem_post(&_updates._paintReady);
+            sem_post(&_updates._paintReady);
         }
-      else
-        {
-          pthread_mutex_lock(&_updates._listLock);
-          _updates._updateQueue.push_back(event.rect);
-#ifdef ILIXI_STEREO_OUTPUT
-          _updates._updateQueueRight.push_back(event.right);
-#endif
-          pthread_mutex_unlock(&_updates._listLock);
-        }
+//      else
+//        {
+//          pthread_mutex_lock(&_updates._listLock);
+//          _updates._updateQueue.push_back(event.rect);
+//#ifdef ILIXI_STEREO_OUTPUT
+//          _updates._updateQueueRight.push_back(event.right);
+//#endif
+//          pthread_mutex_unlock(&_updates._listLock);
+//        }
     }
 }
 
 void
 WindowWidget::repaint(const PaintEvent& event)
 {
-  if (visible())
+    if (visible())
     {
-      sem_wait(&_updates._paintReady);
-      _updates._updateRegion = event.rect;
+        sem_wait(&_updates._paintReady);
+        _updates._updateRegion = event.rect;
 #ifdef ILIXI_STEREO_OUTPUT
-      _updates._updateRegionRight = event.right;
+        _updates._updateRegionRight = event.right;
 #endif
-      sem_post(&_updates._updateReady);
-      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
+        sem_post(&_updates._updateReady);
+        paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
     }
 }
 
 void
 WindowWidget::showWindow()
 {
-  ILOG_TRACE_W(ILX_WINDOWWIDGET);
-  if (AppBase::appOptions() & OptExclusive)
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    if (AppBase::appOptions() & OptExclusive)
     {
-      // setup cursor
-      IDirectFBImageProvider* provider;
-      DFBSurfaceDescription desc;
-      if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-          ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
-        ILOG_THROW(ILX_WINDOWWIDGET,
-            "Error while creating cursor image provider!\n");
+        // setup cursor
+        IDirectFBImageProvider* provider;
+        DFBSurfaceDescription desc;
+        if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
+                ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
+            ILOG_THROW(ILX_WINDOWWIDGET,
+                    "Error while creating cursor image provider!\n");
 
-      provider->GetSurfaceDescription(provider, &desc);
-      desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
-          | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
-      desc.caps = DSCAPS_PREMULTIPLIED;
-      desc.pixelformat = DSPF_ARGB;
+        provider->GetSurfaceDescription(provider, &desc);
+        desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
+                | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+        desc.caps = DSCAPS_PREMULTIPLIED;
+        desc.pixelformat = DSPF_ARGB;
 
-      if (AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
-          &_cursorImage) != DFB_OK)
-        ILOG_THROW(ILX_WINDOWWIDGET, "Error while creating cursor surface!\n");
+        if (AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
+                &_cursorImage) != DFB_OK)
+            ILOG_THROW(ILX_WINDOWWIDGET,
+                    "Error while creating cursor surface!\n");
 
-      provider->RenderTo(provider, _cursorImage, NULL);
-      provider->Release(provider);
+        provider->RenderTo(provider, _cursorImage, NULL);
+        provider->Release(provider);
 
-      // setup screen
-      IDirectFBScreen* pScreen;
-      DFBScreenEncoderConfig sEncoderCfg;
-      DFBScreenEncoderDescription sEncoderDesc;
+        // setup screen
+        IDirectFBScreen* pScreen;
+        DFBScreenEncoderConfig sEncoderCfg;
+        DFBScreenEncoderDescription sEncoderDesc;
 
-      AppBase::__layer->GetScreen(AppBase::__layer, &pScreen);
-      sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD
-          | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS
-          | DSECONF_RESOLUTION | DSECONF_FRAMING);
+        AppBase::__layer->GetScreen(AppBase::__layer, &pScreen);
+        sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD
+                | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS
+                | DSECONF_RESOLUTION | DSECONF_FRAMING);
 
-      sEncoderCfg.tv_standard = DSETV_DIGITAL;
-      sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT
-          | DSOC_HDMI);
-      sEncoderCfg.scanmode = DSESM_PROGRESSIVE;
-      sEncoderCfg.resolution = DSOR_1280_720;
-      sEncoderCfg.frequency = DSEF_60HZ;
+        sEncoderCfg.tv_standard = DSETV_DIGITAL;
+        sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT
+                | DSOC_HDMI);
+        sEncoderCfg.scanmode = DSESM_PROGRESSIVE;
+        sEncoderCfg.resolution = DSOR_1280_720;
+        sEncoderCfg.frequency = DSEF_60HZ;
 
-      /* Find the most appropriate framing encoder configuration */
-      pScreen->GetEncoderDescriptions(pScreen, &sEncoderDesc);
+        /* Find the most appropriate framing encoder configuration */
+        pScreen->GetEncoderDescriptions(pScreen, &sEncoderDesc);
 
-      if (sEncoderDesc.all_framing & DSEPF_STEREO_FRAME_PACKING)
-        sEncoderCfg.framing = DSEPF_STEREO_FRAME_PACKING;
-      else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_FULL)
-        sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_FULL;
-      else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_HALF)
-        sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_HALF;
-      else if (sEncoderDesc.all_framing & DSEPF_STEREO_TOP_AND_BOTTOM)
-        sEncoderCfg.framing = DSEPF_STEREO_TOP_AND_BOTTOM;
-      else
-        sEncoderCfg.framing = DSEPF_MONO;
+        if (sEncoderDesc.all_framing & DSEPF_STEREO_FRAME_PACKING)
+            sEncoderCfg.framing = DSEPF_STEREO_FRAME_PACKING;
+        else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_FULL)
+            sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_FULL;
+        else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_HALF)
+            sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_HALF;
+        else if (sEncoderDesc.all_framing & DSEPF_STEREO_TOP_AND_BOTTOM)
+            sEncoderCfg.framing = DSEPF_STEREO_TOP_AND_BOTTOM;
+        else
+            sEncoderCfg.framing = DSEPF_MONO;
 
-      DFBResult err = pScreen->SetEncoderConfiguration(pScreen, 0,
-          &sEncoderCfg);
-      if (err == DFB_UNSUPPORTED)
+        DFBResult err = pScreen->SetEncoderConfiguration(pScreen, 0,
+                &sEncoderCfg);
+        if (err == DFB_UNSUPPORTED)
         {
-          sEncoderCfg.framing = DSEPF_MONO;
-          pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
+            sEncoderCfg.framing = DSEPF_MONO;
+            pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
         }
-      pScreen->Release(pScreen);
+        pScreen->Release(pScreen);
 
-      // setup layer
-      DFBGraphicsDeviceDescription deviceDesc;
-      AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
+        // setup layer
+        DFBGraphicsDeviceDescription deviceDesc;
+        AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
 
-      DFBDisplayLayerConfig config;
-      config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
-          | DLCONF_OPTIONS);
-      if (deviceDesc.acceleration_mask == DFXL_NONE)
+        DFBDisplayLayerConfig config;
+        config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
+                | DLCONF_OPTIONS);
+        if (deviceDesc.acceleration_mask == DFXL_NONE)
         {
-          config.buffermode = DLBM_BACKSYSTEM;
-          AppBase::unSetAppOption(OptFullScreenUpdate);
-          ILOG_DEBUG(ILX_WINDOWWIDGET, "Not using fullscreen updates\n");
-        }
-      else
+            config.buffermode = DLBM_BACKSYSTEM;
+            AppBase::unSetAppOption(OptFullScreenUpdate);
+            ILOG_DEBUG(ILX_WINDOWWIDGET, "Not using fullscreen updates\n");
+        } else
         {
-          config.buffermode = DLBM_BACKVIDEO;
-          //AppBase::setAppOption(OptTripleAccelerated);
+            config.buffermode = DLBM_BACKVIDEO;
+            //AppBase::setAppOption(OptTripleAccelerated);
         }
 
 #ifdef ILIXI_STEREO_OUTPUT
-      config.options = DLOP_STEREO;
+        config.options = DLOP_STEREO;
 #else
-      config.options = DLOP_NONE;
+        config.options = DLOP_NONE;
 #endif
 
-      if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
-          != DFB_OK)
+        if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
+                != DFB_OK)
         {
-          ILOG_WARNING(ILX_WINDOWWIDGET,
-              "Cannot set layer buffer mode to TRIPLE!\n");
-          AppBase::unSetAppOption(OptTripleAccelerated);
-          config.buffermode = DLBM_BACKVIDEO;
-          if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
-              != DFB_OK)
+            ILOG_WARNING(ILX_WINDOWWIDGET,
+                    "Cannot set layer buffer mode to TRIPLE!\n");
+            AppBase::unSetAppOption(OptTripleAccelerated);
+            config.buffermode = DLBM_BACKVIDEO;
+            if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
+                    != DFB_OK)
+                ILOG_THROW(ILX_WINDOWWIDGET,
+                        "Error while setting layer configuration!\n");
+        }
+
+        if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
+                != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
-                "Error while setting layer configuration!\n");
-        }
+                    "Error while getting layer surface!\n");
 
-      if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
-          != DFB_OK)
-        ILOG_THROW(ILX_WINDOWWIDGET, "Error while getting layer surface!\n");
+        int w, h;
+        _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
 
-      int w, h;
-      _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
-
-      AppBase::addWindow(this);
-      setSize(Size(w, h));
-      setRootWindow(this);
-    }
-  else
+        AppBase::addWindow(this);
+        setSize(Size(w, h));
+        setRootWindow(this);
+    } else
     {
-      if (_window->_dfbWindow)
-        return;
+        if (_window->_dfbWindow)
+            return;
 
-      if (_window->initDFBWindow(preferredSize()))
+        if (_window->initDFBWindow(preferredSize()))
         {
-          AppBase::addWindow(this);
-          setSize(_window->windowSize());
-          setRootWindow(this);
+            AppBase::addWindow(this);
+            setSize(_window->windowSize());
+            setRootWindow(this);
         }
     }
 
-  setVisible(true);
+    setVisible(true);
 
-  if (!_eventManager->focusedWidget())
-    _eventManager->selectNeighbour(Right);
+    if (!_eventManager->focusedWidget())
+        _eventManager->selectNeighbour(Right);
 
-  paint(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
-  updateWindow();
-  if (!(AppBase::appOptions() & OptExclusive))
-    _window->showWindow();
+    paint(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
+    updateWindow();
+    if (!(AppBase::appOptions() & OptExclusive))
+        _window->showWindow();
 
-  AppBase::setActiveWindow(this);
+    AppBase::setActiveWindow(this);
 }
 
 void
 WindowWidget::closeWindow()
 {
-  ILOG_TRACE_W(ILX_WINDOWWIDGET);
-  setVisible(false);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    setVisible(false);
 
-  if (!(AppBase::appOptions() & OptExclusive))
-    _window->hideWindow();
+    if (!(AppBase::appOptions() & OptExclusive))
+        _window->hideWindow();
 
-  _eventManager->setGrabbedWidget(NULL);
-  _eventManager->setExposedWidget(NULL);
+    _eventManager->setGrabbedWidget(NULL);
+    _eventManager->setExposedWidget(NULL);
 
-  AppBase::removeWindow(this);
+    AppBase::removeWindow(this);
 
-  invalidateSurface();
+    invalidateSurface();
 
-  if (!(AppBase::appOptions() & OptExclusive))
-    _window->releaseDFBWindow();
+    if (!(AppBase::appOptions() & OptExclusive))
+        _window->releaseDFBWindow();
 }
 
 bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
-  // handle all other events...
-  Widget* target = this;
+    // handle all other events...
+    Widget* target = this;
 //  Widget* grabbed = _eventManager->grabbedWidget();
 //  if (grabbed && grabbed->visible())
 //    target = grabbed;
 
-  switch (event.type)
+    switch (event.type)
     {
-  case DWET_CLOSE: // handle Close, can be signalled by viewport manager.
-    sigAbort();
-    return true;
+    case DWET_CLOSE: // handle Close, can be signalled by viewport manager.
+        sigAbort();
+        return true;
 
-  case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
-    _eventManager->setExposedWidget(NULL,
-        PointerEvent(PointerMotion, event.x, event.y));
-    _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerMotion, event.x, event.y));
-    return true;
+    case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
+        _eventManager->setExposedWidget(NULL,
+                PointerEvent(PointerMotion, event.x, event.y));
+        _eventManager->setGrabbedWidget(NULL,
+                PointerEvent(PointerMotion, event.x, event.y));
+        return true;
 
-  case DWET_BUTTONUP:
-    _eventManager->setGrabbedWidget(NULL,
-        PointerEvent(PointerButtonUp, event.x, event.y, 0,
-            (PointerButton) event.button, (PointerButtonMask) event.buttons));
-    return target->consumePointerEvent(
-        PointerEvent(PointerButtonUp, event.x, event.y, 0,
-            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+    case DWET_BUTTONUP:
+        _eventManager->setGrabbedWidget(NULL,
+                PointerEvent(PointerButtonUp, event.x, event.y, 0,
+                        (PointerButton) event.button,
+                        (PointerButtonMask) event.buttons));
+        return target->consumePointerEvent(
+                PointerEvent(PointerButtonUp, event.x, event.y, 0,
+                        (PointerButton) event.button,
+                        (PointerButtonMask) event.buttons));
 
-  case DWET_BUTTONDOWN:
-    return target->consumePointerEvent(
-        PointerEvent(PointerButtonDown, event.x, event.y, 0,
-            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+    case DWET_BUTTONDOWN:
+        return target->consumePointerEvent(
+                PointerEvent(PointerButtonDown, event.x, event.y, 0,
+                        (PointerButton) event.button,
+                        (PointerButtonMask) event.buttons));
 
-  case DWET_MOTION:
-    return target->consumePointerEvent(
-        PointerEvent(PointerMotion, event.x, event.y, event.step,
-            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+    case DWET_MOTION:
+        return target->consumePointerEvent(
+                PointerEvent(PointerMotion, event.x, event.y, event.step,
+                        (PointerButton) event.button,
+                        (PointerButtonMask) event.buttons));
 
-  case DWET_WHEEL:
-    ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
-    return target->consumePointerEvent(
-        PointerEvent(PointerWheel, event.x, event.y, event.step,
-            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+    case DWET_WHEEL:
+        ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
+        return target->consumePointerEvent(
+                PointerEvent(PointerWheel, event.x, event.y, event.step,
+                        (PointerButton) event.button,
+                        (PointerButtonMask) event.buttons));
 
-  case DWET_KEYUP:
-    if (_eventManager->focusedWidget())
-      return _eventManager->focusedWidget()->consumeKeyEvent(
-          KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers, event.locks));
-    return false;
+    case DWET_KEYUP:
+        if (_eventManager->focusedWidget())
+            return _eventManager->focusedWidget()->consumeKeyEvent(
+                    KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers,
+                            event.locks));
+        return false;
 
-  case DWET_KEYDOWN:
-    switch (event.key_symbol)
-      {
-
-    // TODO Remove ESCAPE and sigAbort() ?
-    case DIKS_ESCAPE:
-      sigAbort();
-      return true;
-
-    case DIKS_BACK:
-      sigAbort();
-      return true;
-
-    case DIKS_CURSOR_LEFT:
-      if (target == this)
+    case DWET_KEYDOWN:
+        switch (event.key_symbol)
         {
-          _eventManager->selectNeighbour(Left);
-          return true;
-        }
-      break;
 
-    case DIKS_CURSOR_RIGHT:
-      if (target == this)
-        {
-          _eventManager->selectNeighbour(Right);
-          return true;
-        }
-      break;
+        // TODO Remove ESCAPE and sigAbort() ?
+        case DIKS_ESCAPE:
+            sigAbort();
+            return true;
 
-    case DIKS_CURSOR_UP:
-      if (target == this)
-        {
-          _eventManager->selectNeighbour(Up);
-          return true;
-        }
-      break;
+        case DIKS_BACK:
+            sigAbort();
+            return true;
 
-    case DIKS_CURSOR_DOWN:
-      if (target == this)
-        {
-          _eventManager->selectNeighbour(Down);
-          return true;
-        }
-      break;
+        case DIKS_CURSOR_LEFT:
+            if (target == this)
+            {
+                _eventManager->selectNeighbour(Left);
+                return true;
+            }
+            break;
+
+        case DIKS_CURSOR_RIGHT:
+            if (target == this)
+            {
+                _eventManager->selectNeighbour(Right);
+                return true;
+            }
+            break;
+
+        case DIKS_CURSOR_UP:
+            if (target == this)
+            {
+                _eventManager->selectNeighbour(Up);
+                return true;
+            }
+            break;
+
+        case DIKS_CURSOR_DOWN:
+            if (target == this)
+            {
+                _eventManager->selectNeighbour(Down);
+                return true;
+            }
+            break;
 // TODO Grab using key input.
 //    case DIKS_OK:
 //    case DIKS_RETURN:
@@ -500,100 +533,101 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 //        }
 //      break;
 
-    case DIKS_TAB: // handle TAB release.
-      if (event.modifiers == DIMM_SHIFT)
+        case DIKS_TAB: // handle TAB release.
+            if (event.modifiers == DIMM_SHIFT)
 //        _eventManager->selectPrevious();
-        ILOG_DEBUG( ILX_WINDOWWIDGET,
-            "TAB %d\n", _eventManager->selectPrevious());
-      else
+                ILOG_DEBUG( ILX_WINDOWWIDGET,
+                        "TAB %d\n", _eventManager->selectPrevious());
+            else
 //        _eventManager->selectNext();
-        ILOG_DEBUG(ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectNext());
-      return true;
+                ILOG_DEBUG(ILX_WINDOWWIDGET,
+                        "TAB %d\n", _eventManager->selectNext());
+            return true;
 
-      } // end switch
+        } // end switch
 
 //    else if (_eventManager->grabbedWidget())
 //      return _eventManager->grabbedWidget()->consumeKeyEvent(
 //          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
 //              event.locks));
 
-    if (_eventManager->focusedWidget())
-      return _eventManager->focusedWidget()->consumeKeyEvent(
-          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
-              event.locks));
-    else
-      return false;
+        if (_eventManager->focusedWidget())
+            return _eventManager->focusedWidget()->consumeKeyEvent(
+                    KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
+                            event.locks));
+        else
+            return false;
 
-  default:
-    return false;
+    default:
+        return false;
     }
 }
 
 void
 WindowWidget::updateWindow()
 {
-  pthread_mutex_lock(&_updates._listLock);
-  int size = _updates._updateQueue.size();
-  if (size == 0)
+    pthread_mutex_lock(&_updates._listLock);
+    int size = _updates._updateQueue.size();
+    if (size == 0)
     {
-      pthread_mutex_unlock(&_updates._listLock);
-      return;
+        pthread_mutex_unlock(&_updates._listLock);
+        return;
     }
-  ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
 
-  Rectangle updateTemp = _updates._updateQueue[0];
-  if (size > 1)
+    Rectangle updateTemp = _updates._updateQueue[0];
+    if (size > 1)
+        for (int i = 1; i < size; ++i)
+            updateTemp = updateTemp.united(_updates._updateQueue[i]);
+
+    _updates._updateQueue.clear();
+
+#ifdef ILIXI_STEREO_OUTPUT
+    Rectangle updateTempRight = _updates._updateQueueRight[0];
+    if (size > 1)
     for (int i = 1; i < size; ++i)
-      updateTemp = updateTemp.united(_updates._updateQueue[i]);
+    updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
 
-  _updates._updateQueue.clear();
-
-#ifdef ILIXI_STEREO_OUTPUT
-  Rectangle updateTempRight = _updates._updateQueueRight[0];
-  if (size > 1)
-  for (int i = 1; i < size; ++i)
-  updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
-
-  _updates._updateQueueRight.clear();
+    _updates._updateQueueRight.clear();
 #endif
+    pthread_mutex_unlock(&_updates._listLock);
 
-  if (!updateTemp.isNull())
+    if (!updateTemp.isNull())
     {
-      sem_wait(&_updates._paintReady);
+        sem_wait(&_updates._paintReady);
 #ifdef ILIXI_STEREO_OUTPUT
-      if (AppBase::appOptions() & OptFullScreenUpdate)
+        if (AppBase::appOptions() & OptFullScreenUpdate)
         {
-          _updates._updateRegion = frameGeometry();
-          _updates._updateRegionRight = frameGeometry();
+            _updates._updateRegion = frameGeometry();
+            _updates._updateRegionRight = frameGeometry();
         }
-      else
+        else
         {
-          _updates._updateRegion = updateTemp;
-          _updates._updateRegionRight = updateTempRight;
+            _updates._updateRegion = updateTemp;
+            _updates._updateRegionRight = updateTempRight;
         }
 #else
-      if (AppBase::appOptions() & OptFullScreenUpdate)
-        _updates._updateRegion = frameGeometry();
-      else
-        _updates._updateRegion = updateTemp;
+        if (AppBase::appOptions() & OptFullScreenUpdate)
+            _updates._updateRegion = frameGeometry();
+        else
+            _updates._updateRegion = updateTemp;
 #endif
 
-      sem_post(&_updates._updateReady);
+        sem_post(&_updates._updateReady);
 #ifdef ILIXI_STEREO_OUTPUT
-      paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
+        paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
 #else
-      paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
+        paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
 #endif
     }
-  pthread_mutex_unlock(&_updates._listLock);
 }
 
 IDirectFBSurface*
 WindowWidget::windowSurface()
 {
-  if ((AppBase::appOptions() & OptExclusive))
-    return _exclusiveSurface;
-  else if (_window)
-    return _window->dfbSurface();
-  return NULL;
+    if ((AppBase::appOptions() & OptExclusive))
+        return _exclusiveSurface;
+    else if (_window)
+        return _window->dfbSurface();
+    return NULL;
 }
