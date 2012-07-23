@@ -97,6 +97,9 @@ namespace ilixi
     virtual DirectResult
     processRemoved(SaWManProcess *process);
 
+    virtual DirectResult
+    windowPreconfig(SaWManWindowConfig *config);
+
     /*!
      * Called when a window is added to stack.
      */
@@ -153,6 +156,9 @@ namespace ilixi
 
     friend DirectResult
     process_removed(void *context, SaWManProcess *process);
+
+    friend DirectResult
+    window_preconfig(void *context, SaWManWindowConfig *config);
 
     friend DirectResult
     window_added(void *context, SaWManWindowInfo *info);
