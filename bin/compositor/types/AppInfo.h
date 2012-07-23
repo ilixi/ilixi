@@ -30,10 +30,10 @@
 namespace ilixi
 {
 
-  typedef unsigned long AppID;
+typedef unsigned long AppID;
 
-  enum AppFlags
-  {
+enum AppFlags
+{
     APP_NONE = 0x000000, //!<
 
     // ui toolkits
@@ -58,11 +58,13 @@ namespace ilixi
 
     // constraints
     APP_ALLOW_MULTIPLE = 0x100000, //!<
-    APP_NEEDS_CLEAR = 0x200000
-  };
+    APP_NEEDS_CLEAR = 0x200000,
 
-  enum DependencyFlags
-  {
+    APP_STATUSBAR = 0x800000
+};
+
+enum DependencyFlags
+{
     DEP_NONE = 0x0000,
 
     // Requirements
@@ -71,12 +73,12 @@ namespace ilixi
     DEP_TOUCH = 0x0004, //!<
     DEP_MOUSE = 0x0008 //!<
 
-  // Recommended
-  };
+// Recommended
+};
 
-  class AppInfo
-  {
-  public:
+class AppInfo
+{
+public:
     AppInfo();
 
     ~AppInfo();
@@ -141,7 +143,7 @@ namespace ilixi
     void
     setVersion(int version);
 
-  private:
+private:
     AppID _appID;
     std::string _name;
     std::string _path;
@@ -155,7 +157,7 @@ namespace ilixi
     timeval _installTime;
 
     static unsigned int __appCounter;
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPINFO_H_ */
