@@ -32,15 +32,20 @@
 #include "core/Window.h"
 #include <list>
 #include <map>
+extern "C"
+{
+#include <fusiondale.h>
+}
 
 namespace ilixi
 {
-  class WindowWidget;
-  //! Base class for ilixi applications.
-  /*!
-   */
-  class AppBase
-  {
+class WindowWidget;
+
+//! Base class for ilixi applications.
+/*!
+ */
+class AppBase
+{
     friend class WindowWidget;
     friend class Window;
 
@@ -54,18 +59,20 @@ namespace ilixi
     friend class SurfaceEventListener;
     friend class SurfaceView;
     friend class Application;
+    friend class WebView;
+    friend class ComaComponent;
 
     /*!
      * This enum is used to specify the state of an application.
      */
     enum AppState
     {
-      APS_TERM = 0x0000001, //!< Application is about to terminate shortly.
-      APS_VISIBLE = 0x0000002, //!< Application has a visible window and has access to events.
-      APS_HIDDEN = 0x0000004, //!< Application has no window and has no access to events.
+        APS_TERM = 0x0000001, //!< Application is about to terminate shortly.
+        APS_VISIBLE = 0x0000002, //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004, //!< Application has no window and has no access to events.
     };
 
-  public:
+public:
     /*!
      * Constructor.
      */
@@ -89,7 +96,16 @@ namespace ilixi
     void
     setTitle(std::string title);
 
-  protected:
+    static bool
+    comaGetComponent(const char* name, IComaComponent** component);
+
+    static bool
+    comaGetLocal(unsigned int bytes, void** ret);
+
+    static bool
+    comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg);
+
+protected:
     /*!
      * User events are handled before other event types.
      */
@@ -126,6 +142,12 @@ namespace ilixi
     static IDirectFBDisplayLayer*
     getLayer();
 
+    /*!
+     * Returns Coma interface.
+     */
+    static IComa*
+    getComa();
+
     IDirectFBWindow*
     activeDFBWindow() const;
 
@@ -144,7 +166,7 @@ namespace ilixi
     void
     setLayerSize(int width, int height);
 
-  private:
+private:
     //! This property stores various options for application behaviour.
     AppOptions __options;
     //! Application title.
@@ -183,6 +205,9 @@ namespace ilixi
     static IDirectFBEventBuffer* __buffer;
     //! AppBase instance.
     static AppBase* __instance;
+
+    IFusionDale* _dale;
+    IComa* _coma;
 
     /*!
      * Initialise DirectFB. This method is executed
@@ -293,6 +318,6 @@ namespace ilixi
     void
     handleAxisMotion(const DFBInputEvent& event);
 
-  };
+};
 }
 #endif /* ILIXI_APPBASE_H_ */
