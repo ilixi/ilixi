@@ -439,7 +439,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG(ILX_COMPOSITOR, "CET_Remove (%d)\n", data->windowID);
                 data->instance->view()->removeWindow(data->windowID);
-                if (!(appInfo->appFlags() & APP_STATUSBAR))
+                if (data->instance->thumb())
                     data->instance->thumb()->removeWindow(data->windowID);
             }
             break;
@@ -450,7 +450,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
 
                 data->instance->view()->onWindowConfig(data->windowID,
                         data->reconfig);
-                if (!(appInfo->appFlags() & APP_STATUSBAR))
+                if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
                             data->reconfig);
 
@@ -467,7 +467,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         "CET_Restack (%d)\n", data->windowID);
                 data->instance->view()->onWindowConfig(data->windowID,
                         data->reconfig);
-                if (!(appInfo->appFlags() & APP_STATUSBAR))
+                if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
                             data->reconfig);
 
@@ -483,9 +483,8 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 _currentApp = NULL;
                 if (data->instance->view())
                     removeWidget(data->instance->view());
-                if (!(appInfo->appFlags() & APP_STATUSBAR))
-                    if (data->instance->thumb())
-                        _switcher->removeThumb(data->instance->thumb());
+                if (data->instance->thumb())
+                    _switcher->removeThumb(data->instance->thumb());
                 showLauncher(true);
             }
             break;
