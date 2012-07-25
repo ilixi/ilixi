@@ -71,6 +71,12 @@ namespace ilixi
     ~Font();
 
     /*!
+     * Returns IDirectFBFont interface for font.
+     */
+    IDirectFBFont*
+    dfbFont();
+
+    /*!
      * Returns distance from the baseline to the ascender line.
      *
      * Ascender usually specifies the height of capital letters.

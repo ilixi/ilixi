@@ -57,6 +57,14 @@ Font::~Font()
   ILOG_TRACE(ILX_FONT);
 }
 
+IDirectFBFont*
+Font::dfbFont()
+{
+  if (loadFont())
+    return _font;
+  return 0;
+}
+
 int
 Font::ascender()
 {
