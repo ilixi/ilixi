@@ -28,16 +28,16 @@
 
 namespace ilixi
 {
-  //! Creates a DirectFB window.
-  /*!
-   * Each application has at least one window and this class creates and maintains a list of DirectFB windows.
-   * Windows also store a list of child widgets using UIManager which helps to transfer input events.
-   */
-  class Window
-  {
+//! Creates a DirectFB window.
+/*!
+ * Each application has at least one window and this class creates and maintains a list of DirectFB windows.
+ * Windows also store a list of child widgets using UIManager which helps to transfer input events.
+ */
+class Window
+{
     friend class AppBase;
     friend class WindowWidget;
-  public:
+public:
 
     /*!
      * Creates a window with its own event manager.
@@ -80,7 +80,7 @@ namespace ilixi
     void
     hideWindow();
 
-  protected:
+protected:
     //! This property stores an interface to DirectFB window.
     IDirectFBWindow* _dfbWindow;
     //! This property stores an interface to window's surface.
@@ -97,7 +97,7 @@ namespace ilixi
      */
     void
     releaseDFBWindow();
-  };
+};
 
 }
 
