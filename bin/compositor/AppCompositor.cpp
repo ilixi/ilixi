@@ -162,13 +162,13 @@ namespace ilixi
                   {
                     if (reconfig->request.opacity == 1)
                       {
-                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> LowerToBottom\n");
                         lowerChildToBottom(view);
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> LowerToBottom\n");
                       }
                     else
                       {
-                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> RaiseToTop\n");
                         raiseChildToFront(view);
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> RaiseToTop\n");
                       }
                   }
               }

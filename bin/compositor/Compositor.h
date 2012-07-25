@@ -26,6 +26,7 @@
 
 #include <map>
 #include <directfb_windows.h>
+#include <lib/FPSCalculator.h>
 #include "ui/Application.h"
 #include "Launcher.h"
 #include "HomeButton.h"
@@ -34,16 +35,18 @@
 #include "AppView.h"
 #include "ApplicationManager.h"
 #include "Switcher.h"
-#include "lib/FPSCalculator.h"
+#include "component/PopupComponent.h"
 
 namespace ilixi
 {
 
-  class Compositor : public Application
-  {
+class Compositor : public Application
+{
     friend class ApplicationManager;
+    friend class PopupComponent;
+    friend class NotificationManager;
 
-  public:
+public:
     Compositor(int argc, char* argv[]);
 
     virtual
@@ -67,7 +70,14 @@ namespace ilixi
     void
     handleQuit();
 
-  private:
+protected:
+    void
+    addOverlay(DFBSurfaceID id);
+
+    void
+    addDialog(DFBSurfaceID id);
+
+private:
     ApplicationManager* _appMan;
     AppInstance* _currentApp;
 
@@ -80,33 +90,36 @@ namespace ilixi
     Label* _fpsLabel;
     FPSCalculator* _fps;
 
+    // components
+    PopupComponent* _popupComp;
+
     enum CompositorEventType
     {
-      CET_Add, //!< Window added
-      CET_Remove, //!< Window removed
-      CET_Config, //!< Window configured
-      CET_Focus, //!< Window focused
-      CET_Restack, //!< Window restack
-      CET_State, //!< Window state
-      CET_Quit //!< Application terminated
+        CET_Add, //!< Window added
+        CET_Remove, //!< Window removed
+        CET_Config, //!< Window configured
+        CET_Focus, //!< Window focused
+        CET_Restack, //!< Window restack
+        CET_State, //!< Window state
+        CET_Quit //!< Application terminated
     };
 
     struct CompositorEvent
     {
-      DFBEventClass clazz;
-      CompositorEventType type;
+        DFBEventClass clazz;
+        CompositorEventType type;
     };
 
     struct CompositorEventData
     {
-      CompositorEventData() :
-          instance(NULL), windowID(0), reconfig(0)
-      {
-      }
+        CompositorEventData()
+                : instance(NULL), windowID(0), reconfig(0)
+        {
+        }
 
-      AppInstance* instance;
-      DFBWindowID windowID;
-      SaWManWindowReconfig* reconfig;
+        AppInstance* instance;
+        DFBWindowID windowID;
+        SaWManWindowReconfig* reconfig;
     };
 
     void
@@ -126,11 +139,11 @@ namespace ilixi
 
     void
     configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-        const SaWManWindowInfo* info);
+            const SaWManWindowInfo* info);
 
     void
     restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
-        int order, DFBWindowID other);
+            int order, DFBWindowID other);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);
@@ -149,7 +162,7 @@ namespace ilixi
 
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
-  };
+};
 
 } /* namespace ilixi */
 #endif /* COMPOSITOR_H_ */

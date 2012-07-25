@@ -26,7 +26,9 @@
 
 #include "ui/SurfaceView.h"
 #include "types/AppInstance.h"
+extern "C" {
 #include <directfb_windows.h>
+}
 #include <vector>
 
 namespace ilixi
