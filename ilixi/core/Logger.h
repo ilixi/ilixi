@@ -109,6 +109,7 @@ namespace ilixi
 #define ILOG_WARNING( Domain, _fmt...)  D_LOG(Domain, WARNING, _fmt)
 #else // ILIXI_LOG_DEBUG_ENABLED = 0
 #define ILOG_TRACE(Domain)              do {} while(0)
+#define ILOG_TRACE_F(Domain)            do {} while(0)
 #define ILOG_TRACE_W(Domain)            do {} while(0)
 #define ILOG_DEBUG(_fmt...)             do {} while(0)
 #define ILOG_INFO(_fmt...)              do {} while(0)
@@ -119,6 +120,7 @@ namespace ilixi
 #define ILOG_FATAL(Domain, _fmt...)     D_LOG(Domain, FATAL, _fmt)
 #else // ILIXI_LOGGER_ENABLED = 0
 #define ILOG_TRACE(Domain)              do {} while(0)
+#define ILOG_TRACE_F(Domain)            do {} while(0)
 #define ILOG_TRACE_W(Domain)            do {} while(0)
 #define ILOG_DEBUG(_fmt...)             do {} while(0)
 #define ILOG_INFO(_fmt...)              do {} while(0)
