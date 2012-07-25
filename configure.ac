@@ -70,14 +70,15 @@ AC_FUNC_ERROR_AT_LINE
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.6.0
 SAWMAN_REQ_VERSION=1.6.0
+FUSIONDALE_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 
-AC_MSG_NOTICE([checking if dependencies are installed...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+AC_MSG_NOTICE([checking dependencies...])
+PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION fusiondale >= $FUSIONDALE_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
 
 ######################################################################
-# Conditionals
+# Options
 ######################################################################
 LOGGER_LEVEL="none"
 AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=no@:>@]), [LOGGER_LEVEL="up to error"])
@@ -148,6 +149,7 @@ AC_CONFIG_FILES([ \
 		bin/Makefile \
 		bin/statusbar/Makefile \
 		bin/statusbar/images/Makefile \
+		bin/soundmixer/Makefile \
 		bin/home/Makefile \
 		bin/gallery/Makefile \
 		bin/gallery/images/Makefile \
@@ -159,7 +161,7 @@ AC_CONFIG_FILES([ \
 		bin/compositor/Makefile \
 		bin/compositor/images/Makefile \
 		bin/carousel/Makefile \
-		ilixi-$VERSION.pc:ilixi.pc.in
+		ilixi.pc:ilixi.pc.in
 ])
 AC_OUTPUT
 
