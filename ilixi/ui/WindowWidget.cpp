@@ -33,7 +33,7 @@ IDirectFBSurface* WindowWidget::_cursorImage = NULL;
 WindowWidget::WindowWidget(Widget* parent)
         : Frame(parent), _window(NULL), _eventManager(NULL)
 {
-    ILOG_DEBUG(ILX_WINDOWWIDGET, "WindowWidget\n");
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
     pthread_mutex_init(&_updates._listLock, NULL);
     sem_init(&_updates._updateReady, 0, 0);
@@ -121,6 +121,7 @@ WindowWidget::doLayout()
 void
 WindowWidget::paint(const PaintEvent& event)
 {
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (visible())
     {
         int ready;
@@ -139,7 +140,6 @@ WindowWidget::paint(const PaintEvent& event)
 #endif
             if (evt.isValid())
             {
-                ILOG_TRACE_W(ILX_WINDOWWIDGET);
 
 #ifdef ILIXI_STEREO_OUTPUT
                 // Left eye
@@ -225,19 +225,9 @@ WindowWidget::paint(const PaintEvent& event)
                 else
                     surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
 #endif
-                ILOG_TRACE_W(ILX_WINDOWWIDGET);
             }
             sem_post(&_updates._paintReady);
         }
-//      else
-//        {
-//          pthread_mutex_lock(&_updates._listLock);
-//          _updates._updateQueue.push_back(event.rect);
-//#ifdef ILIXI_STEREO_OUTPUT
-//          _updates._updateQueueRight.push_back(event.right);
-//#endif
-//          pthread_mutex_unlock(&_updates._listLock);
-//        }
     }
 }
 
@@ -390,12 +380,13 @@ WindowWidget::showWindow()
     if (!_eventManager->focusedWidget())
         _eventManager->selectNeighbour(Right);
 
-    paint(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
+    update(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
     updateWindow();
     if (!(AppBase::appOptions() & OptExclusive))
         _window->showWindow();
 
     AppBase::setActiveWindow(this);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
 }
 
 void
@@ -614,6 +605,8 @@ WindowWidget::updateWindow()
 #endif
 
         sem_post(&_updates._updateReady);
+        ILOG_DEBUG(ILX_WINDOWWIDGET,
+                " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
 #ifdef ILIXI_STEREO_OUTPUT
         paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
 #else
