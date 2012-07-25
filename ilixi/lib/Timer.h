@@ -29,10 +29,10 @@
 
 namespace ilixi
 {
-  //! Provides timers with milliseconds intervals.
-  class Timer : public sigc::trackable, public Functionoid
-  {
-  public:
+//! Provides timers with milliseconds intervals.
+class Timer : public sigc::trackable, public Functionoid
+{
+public:
     /*!
      * Constructor.
      * By default, creates a timer with 500ms interval which will exec only once.
@@ -91,14 +91,14 @@ namespace ilixi
      * This signal is emitted when timer is fired.
      */
     sigc::signal<void> sigExec;
-  protected:
+protected:
     /*!
      * Callback functionoid which will actually fire timer.
      */
     bool
     funck();
 
-  private:
+private:
     //! Interval between consecutive executions.
     int _interval;
     //! Number of times to execute timer.
@@ -113,7 +113,7 @@ namespace ilixi
     // Callback uses step()
     friend bool
     timerCallback(void*);
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_TIMER_H_ */

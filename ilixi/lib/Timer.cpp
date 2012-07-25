@@ -24,86 +24,88 @@
 #include "lib/Timer.h"
 #include "core/Window.h"
 #include "core/Logger.h"
+extern "C"
+{
 #include <direct/clock.h>
+}
 
 namespace ilixi
 {
 
-  D_DEBUG_DOMAIN( ILX_TIMER, "ilixi/lib/Timer", "Timer");
+D_DEBUG_DOMAIN( ILX_TIMER, "ilixi/lib/Timer", "Timer");
 
-  Timer::Timer() :
-      _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(this)
-  {
-  }
+Timer::Timer()
+        : _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(this)
+{
+}
 
-  Timer::~Timer()
-  {
-  }
+Timer::~Timer()
+{
+}
 
-  int
-  Timer::interval() const
-  {
+int
+Timer::interval() const
+{
     return _interval;
-  }
+}
 
-  unsigned int
-  Timer::repeats() const
-  {
+unsigned int
+Timer::repeats() const
+{
     return _repeats;
-  }
+}
 
-  void
-  Timer::start(int msec, unsigned int repeats)
-  {
+void
+Timer::start(int msec, unsigned int repeats)
+{
     _interval = msec;
     _count = 0;
     _repeats = repeats;
     _lastTime = direct_clock_get_abs_millis();
-    ILOG_DEBUG(ILX_TIMER, "Starting timer [CB: %p]\n", &_cb);
+    ILOG_DEBUG(ILX_TIMER,
+            "Starting timer[%p] in %d msec...\n", &_cb, _interval);
     _cb.start();
-  }
+}
 
-  void
-  Timer::stop()
-  {
-    ILOG_DEBUG(ILX_TIMER, "Stopping timer [CB: %p]\n", &_cb);
+void
+Timer::stop()
+{
+    ILOG_DEBUG(ILX_TIMER, "Stopping timer [%p]...\n", &_cb);
     _cb.stop();
-  }
+}
 
-  void
-  Timer::setInterval(int msec)
-  {
+void
+Timer::setInterval(int msec)
+{
     _interval = msec;
-  }
+}
 
-  void
-  Timer::setRepeats(unsigned int number)
-  {
+void
+Timer::setRepeats(unsigned int number)
+{
     _repeats = number;
-  }
+}
 
-  void
-  Timer::notify()
-  {
-  }
+void
+Timer::notify()
+{
+}
 
-  bool
-  Timer::funck()
-  {
-    ILOG_TRACE(ILX_TIMER);
+bool
+Timer::funck()
+{
     if (_repeats && _repeats == _count)
-      return false; // TODO should remove callback
+        return false; // TODO should remove callback
 
     long long stepTime = direct_clock_get_abs_millis() - _lastTime;
     if (stepTime >= _interval)
-      {
+    {
         _lastTime += stepTime;
         ++_count;
         notify();
         sigExec();
-        return true;
-      }
-    return false;
-  }
+    }
+    return true;
+}
 
 } /* namespace ilixi */
