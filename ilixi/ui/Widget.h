@@ -35,17 +35,17 @@
 
 namespace ilixi
 {
-  class EventManager;
-  class WindowWidget;
-  class Window;
+class EventManager;
+class WindowWidget;
+class Window;
 
-  //! Base class for all GUI objects.
-  /*!
-   * The widget class is at the core of all UI elements. It creates a surface
-   * to paint itself, maintains a list of children widgets and receives input events.
-   */
-  class Widget : virtual public sigc::trackable
-  {
+//! Base class for all GUI objects.
+/*!
+ * The widget class is at the core of all UI elements. It creates a surface
+ * to paint itself, maintains a list of children widgets and receives input events.
+ */
+class Widget : virtual public sigc::trackable
+{
     friend class Application; // sets _stylist.
     friend class WindowWidget; // sets RootWindow.
     friend class EventManager;
@@ -56,7 +56,7 @@ namespace ilixi
     friend bool
     compareZ(Widget* first, Widget* second);
 
-  public:
+public:
     /*!
      * Constructor.
      *
@@ -339,6 +339,12 @@ namespace ilixi
     moveTo(const Point& point);
 
     /*!
+     * Moves widget's x and y coordinates by given amounts.
+     */
+    void
+    translate(int deltaX, int deltaY);
+
+    /*!
      * Sets the widget's surface x-coordinate (top-left) inside its parent.
      *
      * @param x coordinate for top-left point.
@@ -479,7 +485,7 @@ namespace ilixi
      */
     void
     setConstraints(WidgetResizeConstraint x = NoConstraint,
-        WidgetResizeConstraint y = NoConstraint);
+            WidgetResizeConstraint y = NoConstraint);
 
     /*!
      * Sets widget's state to enabled and calls update() if widget is disabled.
@@ -748,7 +754,7 @@ namespace ilixi
      */
     sigc::signal<void> sigGeometryUpdated;
 
-  protected:
+protected:
     /*!
      * This property holds widget's current state, e.g. Pressed or Exposed. It is set to DefaultState by default.
      */
@@ -983,7 +989,7 @@ namespace ilixi
     void
     setSurfaceGeometryModified();
 
-  private:
+private:
     //! This property stores the widget's opacity.
     u8 _opacity;
     //! This property stores the widget's parent.
@@ -1053,7 +1059,7 @@ namespace ilixi
      */
     void
     invalidateSurface();
-  };
+};
 }
 
 #endif /* ILIXI_WIDGET_H_ */
