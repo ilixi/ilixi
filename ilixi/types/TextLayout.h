@@ -30,21 +30,22 @@
 
 namespace ilixi
 {
-  //! Used for rendering multiple lines of text.
-  /*!
-   * TextLayout provides a simple way to render multiple lines of text
-   * inside a bounding rectangle.
-   */
-  class TextLayout
-  {
+//! Used for rendering multiple lines of text.
+/*!
+ * TextLayout provides a simple way to render multiple lines of text
+ * inside a bounding rectangle.
+ */
+class TextLayout
+{
     friend class Painter; // drawLayout
+    friend class Notify;
 
-  public:
+public:
     enum Alignment
     {
-      Left = DSTF_TOPLEFT, //!< left aligned
-      Center = DSTF_TOPCENTER, //!< horizontally centered
-      Right = DSTF_TOPRIGHT
+        Left = DSTF_TOPLEFT, //!< left aligned
+        Center = DSTF_TOPCENTER, //!< horizontally centered
+        Right = DSTF_TOPRIGHT
     //!< right aligned
     };
 
@@ -246,7 +247,7 @@ namespace ilixi
     int
     heightForWidth(int width, Font* font) const;
 
-  private:
+private:
     //! Flag is set to true if layout is modified.
     bool _modified;
     //! Flag is set to true if layout is single line.
@@ -260,22 +261,25 @@ namespace ilixi
 
     struct LayoutLine
     {
-      LayoutLine() :
-          offset(0), bytes(0), y(0), length(0), lineWidth(0)
-      {
-      }
+        LayoutLine()
+                : offset(0), bytes(0), y(0), length(0), lineWidth(0)
+        {
+        }
 
-      int offset; // offset from first character of line
-      int bytes; // number of bytes to render on line
-      int y; // top-left coordinate of line
-      int length; // number of characters on line
-      int lineWidth; // logical width of text on line
+        int offset; // offset from first character of line
+        int bytes; // number of bytes to render on line
+        int y; // top-left coordinate of line
+        int length; // number of characters on line
+        int lineWidth; // logical width of text on line
     };
 
     typedef std::list<LayoutLine> LineList;
     //! List of lines inside layout.
     LineList _lines;
-  };
+
+    void
+    drawTextLayout(IDirectFBSurface* surface, int x, int y);
+};
 
 }
 
