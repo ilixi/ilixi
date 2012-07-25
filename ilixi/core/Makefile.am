@@ -6,6 +6,7 @@ libilixi_core_la_CFLAGS		= 	$(AM_CFLAGS)
 libilixi_core_la_LIBADD 		= 	@DEPS_LIBS@
 libilixi_core_la_SOURCES 	= 	AppBase.cpp \
      						Callback.cpp \
+     						ComaComponent.cpp \
      						EventManager.cpp \
      						Logger.cpp \
      						SurfaceEventListener.cpp \
@@ -15,6 +16,7 @@ libilixi_core_la_SOURCES 	= 	AppBase.cpp \
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
 ilixi_include_HEADERS		=	AppBase.h \
      						Callback.h \
+     						ComaComponent.h \
      						EventManager.h \
      						Logger.h \
      						SurfaceEventListener.h \
