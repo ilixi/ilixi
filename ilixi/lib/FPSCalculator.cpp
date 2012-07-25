@@ -23,49 +23,52 @@
 
 #include "lib/FPSCalculator.h"
 #include <directfb.h>
+extern "C"
+{
 #include <direct/clock.h>
+}
 
 namespace ilixi
 {
 
-  FPSCalculator::FPSCalculator() :
-      _cb(this), _frames(0), _fps(0), _fpsTime(direct_clock_get_millis())
-  {
-  }
+FPSCalculator::FPSCalculator()
+        : _cb(this), _frames(0), _fps(0), _fpsTime(direct_clock_get_millis())
+{
+}
 
-  FPSCalculator::~FPSCalculator()
-  {
+FPSCalculator::~FPSCalculator()
+{
     _cb.stop();
-  }
+}
 
-  float
-  FPSCalculator::fps() const
-  {
+float
+FPSCalculator::fps() const
+{
     return _fps;
-  }
+}
 
-  const char*
-  FPSCalculator::fpsText()
-  {
+const char*
+FPSCalculator::fpsText()
+{
     snprintf(_fpsText, sizeof(_fpsText), "FPS: %.1f\0", _fps);
     return _fpsText;
-  }
+}
 
-  void
-  FPSCalculator::start()
-  {
+void
+FPSCalculator::start()
+{
     _cb.start();
-  }
+}
 
-  void
-  FPSCalculator::stop()
-  {
+void
+FPSCalculator::stop()
+{
     _cb.stop();
-  }
+}
 
-  bool
-  FPSCalculator::funck()
-  {
+bool
+FPSCalculator::funck()
+{
     long long diff;
     long long now = direct_clock_get_millis();
 
@@ -73,13 +76,13 @@ namespace ilixi
 
     diff = now - _fpsTime;
     if (diff >= 1000)
-      {
+    {
         _fps = _frames * 1000 / (float) (diff);
         _fpsTime = now;
         _frames = 0;
         sigUpdated(_fps);
-      }
+    }
     return true;
-  }
+}
 
 } /* namespace ilixi */

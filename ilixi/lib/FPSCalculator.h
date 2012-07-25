@@ -31,12 +31,12 @@
 namespace ilixi
 {
 
-  /*!
-   * Calculates FPS using given interval.
-   */
-  class FPSCalculator : public sigc::trackable, public Functionoid
-  {
-  public:
+/*!
+ * Calculates FPS using given interval.
+ */
+class FPSCalculator : public sigc::trackable, public Functionoid
+{
+public:
     /*!
      * Constructor.
      */
@@ -77,14 +77,14 @@ namespace ilixi
      */
     sigc::signal<void, float> sigUpdated;
 
-  protected:
+protected:
     /*!
      * Callback method which actually calculated FPS.
      */
     bool
     funck();
 
-  private:
+private:
     //! Callback for FPS calculation.
     Callback _cb;
     //! Number of frames since last calculation.
@@ -95,7 +95,7 @@ namespace ilixi
     long long _fpsTime;
     //! This field stores formatted FPS text.
     char _fpsText[20];
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_FPSCALC_H_ */
