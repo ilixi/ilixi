@@ -30,13 +30,16 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     _mute->sigClicked.connect(sigc::mem_fun(this, &SoundMixer::mute));
 
     addWidget(new Spacer(Vertical));
-//
-//    _volSlider->sigValueChanged.connect(
-//            sigc::mem_fun(_comp, &SoundComponent::setVolume));
+
+    _volSlider->sigValueChanged.connect(
+            sigc::mem_fun(this, &SoundMixer::changeVolume));
+
+    AppBase::comaGetComponent("SoundComponent", &_soundComponent);
 }
 
 SoundMixer::~SoundMixer()
 {
+    _soundComponent->Release(_soundComponent);
 }
 
 void
@@ -46,6 +49,18 @@ SoundMixer::mute()
             "Yusuf likes big parmak... Yusuf likes big parmak... Yusuf likes big parmak... Yusuf likes big parmak...");
     notify.setIcon(ILIXI_DATADIR"images/default.png");
     notify.show();
+}
+
+void
+SoundMixer::changeVolume(int volume)
+{
+    void *ptr;
+    int result;
+    comaGetLocal(sizeof(int), &ptr);
+    int* vol = (int*) ptr;
+    *vol = volume;
+
+    AppBase::comaCallComponent(_soundComponent, 0, (void*) vol);
 }
 
 } /* namespace ilixi */

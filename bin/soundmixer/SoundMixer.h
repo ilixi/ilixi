@@ -27,8 +27,12 @@ public:
     mute();
 
 private:
+    IComaComponent* _soundComponent;
     Slider* _volSlider;
     ToolButton* _mute;
+
+    void
+    changeVolume(int volume);
 };
 
 } /* namespace ilixi */
