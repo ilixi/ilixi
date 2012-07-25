@@ -29,13 +29,13 @@
 
 namespace ilixi
 {
-  //! Stores surface pixel data.
-  class Surface
-  {
+//! Stores surface pixel data.
+class Surface
+{
     friend class Widget; // so it can release if necessary.
     friend class Painter; // access to dfbSurface
 
-  public:
+public:
     /*!
      * Constructor.
      */
@@ -55,7 +55,8 @@ namespace ilixi
      */
 
     bool
-    createDFBSurface(int width, int height);
+    createDFBSurface(int width, int height, DFBSurfaceCapabilities caps =
+            DSCAPS_VIDEOONLY);
 
     /*!
      * Creates a new DFB sub-surface.
@@ -202,7 +203,7 @@ namespace ilixi
 #ifdef ILIXI_STEREO_OUTPUT
     bool
     createDFBSubSurfaceStereo(const Rectangle& geometry,
-        IDirectFBSurface* parent, int zIndex);
+            IDirectFBSurface* parent, int zIndex);
 
     void
     setStereoGeometry(const Rectangle& geometry, int zIndex);
@@ -223,7 +224,7 @@ namespace ilixi
     flipStereo(const Rectangle& left, const Rectangle& right);
 #endif
 
-  private:
+private:
     //! Interface to DFB surface.
     IDirectFBSurface* _dfbSurface;
     //! Interface to parent DFB surface.
@@ -241,6 +242,6 @@ namespace ilixi
      */
     void
     release();
-  };
+};
 }
 #endif /* ILIXI_SURFACE_H_ */
