@@ -30,70 +30,72 @@
 namespace ilixi
 {
 
-  SurfaceView::SurfaceView(Widget* parent) :
-      SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
-          NULL), _windowID(0), _flipCount(0), _state(SVS_NONE)
-  {
+SurfaceView::SurfaceView(Widget* parent)
+        : SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
+                NULL), _windowID(0), _flipCount(0), _state(SVS_NONE)
+{
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
     setInputMethod(KeyAndPointerInputTracking);
     sigGeometryUpdated.connect(
-        sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
+            sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
 #ifdef ILIXI_STEREO_OUTPUT
     _sourceStereo = false;
 #endif
-  }
+}
 
-  SurfaceView::~SurfaceView()
-  {
+SurfaceView::~SurfaceView()
+{
     detachSourceSurface();
     if (_sourceSurface)
-      _sourceSurface->Release(_sourceSurface);
+        _sourceSurface->Release(_sourceSurface);
     if (_sourceWindow)
-      _sourceWindow->Release(_sourceWindow);
-  }
+        _sourceWindow->Release(_sourceWindow);
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
+}
 
-  Size
-  SurfaceView::preferredSize() const
-  {
+Size
+SurfaceView::preferredSize() const
+{
     // FIXME default size for surface view.
     if (_sourceSurface)
-      {
+    {
         int width, height;
         _sourceSurface->GetSize(_sourceSurface, &width, &height);
         return Size(width, height);
-      }
+    }
     return Size(50, 50);
-  }
+}
 
-  IDirectFBWindow*
-  SurfaceView::dfbWindow() const
-  {
+IDirectFBWindow*
+SurfaceView::dfbWindow() const
+{
     return _sourceWindow;
-  }
+}
 
-  DFBWindowID
-  SurfaceView::dfbWindowID() const
-  {
+DFBWindowID
+SurfaceView::dfbWindowID() const
+{
     return _windowID;
-  }
+}
 
-  void
-  SurfaceView::setSourceFromSurfaceID(DFBSurfaceID id)
-  {
-    if (id)
-      {
+void
+SurfaceView::setSourceFromSurfaceID(DFBSurfaceID sid)
+{
+    if (sid)
+    {
+        ILOG_TRACE_W(ILX_SURFACEVIEW);
         detachSourceSurface();
 
-        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), id,
-            &_sourceSurface);
+        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), sid,
+                &_sourceSurface);
         if (ret)
-          {
+        {
             ILOG_ERROR( ILX_SURFACEVIEW,
-                "Error! GetSurface: %s", DirectFBErrorString(ret));
+                    "Error! GetSurface: %s\n", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _surfaceID = 0;
-          }
-        else
-          {
+        } else
+        {
             _sourceSurface->GetID(_sourceSurface, &_surfaceID);
 
 #ifdef ILIXI_STEREO_OUTPUT
@@ -104,15 +106,16 @@ namespace ilixi
 #endif
 
             attachSourceSurface();
-          }
-      }
-  }
+        }
+    }
+}
 
-  void
-  SurfaceView::setSourceFromSurface(IDirectFBSurface* source)
-  {
+void
+SurfaceView::setSourceFromSurface(IDirectFBSurface* source)
+{
     if (source)
-      {
+    {
+        ILOG_TRACE_W(ILX_SURFACEVIEW);
         detachSourceSurface();
 
         _sourceSurface = source;
@@ -126,27 +129,27 @@ namespace ilixi
 #endif
 
         attachSourceSurface();
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
-  {
+void
+SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
+{
     if (window)
-      {
+    {
+        ILOG_TRACE_W(ILX_SURFACEVIEW);
         detachSourceSurface();
 
         DFBResult ret = window->GetSurface(window, &_sourceSurface);
 
         if (ret)
-          {
+        {
             ILOG_ERROR( ILX_SURFACEVIEW,
-                "Error! GetSurface: %s", DirectFBErrorString(ret));
+                    "Error! GetSurface: %s", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _sourceWindow = NULL;
-          }
-        else
-          {
+        } else
+        {
             _sourceWindow = window;
             _sourceWindow->AddRef(_sourceWindow);
             _sourceWindow->GetID(_sourceWindow, &_windowID);
@@ -160,65 +163,66 @@ namespace ilixi
             _sourceStereo = true;
 #endif
             attachSourceSurface();
-          }
-      }
-  }
+        }
+    }
+}
 
-  void
-  SurfaceView::paint(const PaintEvent& event)
-  {
+void
+SurfaceView::paint(const PaintEvent& event)
+{
     if (visible())
-      {
+    {
         PaintEvent evt(this, event);
         if (evt.isValid())
-          {
+        {
             compose(evt);
             renderSource(evt);
             paintChildren(evt);
-          }
-      }
-  }
+        }
+    }
+}
 
-  float
-  SurfaceView::hScale() const
-  {
+float
+SurfaceView::hScale() const
+{
     return _hScale;
-  }
+}
 
-  float
-  SurfaceView::vScale() const
-  {
+float
+SurfaceView::vScale() const
+{
     return _vScale;
-  }
+}
 
-  void
-  SurfaceView::compose(const PaintEvent& event)
-  {
-  }
+void
+SurfaceView::compose(const PaintEvent& event)
+{
+}
 
-  void
-  SurfaceView::renderSource(const PaintEvent& event)
-  {
+void
+SurfaceView::renderSource(const PaintEvent& event)
+{
     if (_sourceSurface && _state == SVS_READY)
-      {
+    {
+        ILOG_TRACE_W(ILX_SURFACEVIEW);
 #ifdef ILIXI_STEREO_OUTPUT
         if (_flipCount && event.eye == PaintEvent::RightEye)
 #else
         if (_flipCount)
 #endif
-          {
+        {
             _sourceSurface->FrameAck(_sourceSurface, _flipCount);
             _flipCount = 0;
-          }
+        }
 
 #ifdef ILIXI_STEREO_OUTPUT
         if (_sourceStereo)
-          {
+        {
             if (event.eye == PaintEvent::LeftEye)
             _sourceSurface->SetStereoEye(_sourceSurface, DSSE_LEFT);
             else
             _sourceSurface->SetStereoEye(_sourceSurface, DSSE_RIGHT);
-          }
+        }
 #endif
 
         IDirectFBSurface* dfbSurface = surface()->dfbSurface();
@@ -226,97 +230,96 @@ namespace ilixi
         dfbSurface->SetClip(dfbSurface, &rs);
 
         if (opacity() == 255)
-          {
+        {
             DFBSurfacePixelFormat fmt;
             _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
             if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
-              dfbSurface->SetBlittingFlags(dfbSurface,
-                  DSBLIT_BLEND_ALPHACHANNEL);
+                dfbSurface->SetBlittingFlags(dfbSurface,
+                        DSBLIT_BLEND_ALPHACHANNEL);
             else
-              dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
-          }
-        else
-          {
+                dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
+        } else
+        {
             dfbSurface->SetBlittingFlags(dfbSurface,
-                (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
-                    | DSBLIT_BLEND_COLORALPHA));
+                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
+                            | DSBLIT_BLEND_COLORALPHA));
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, opacity());
-          }
+        }
 
         if (hScale() == 1 && vScale() == 1)
-          dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, 0, 0);
+            dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, 0, 0);
         else
-          {
-            DFBRectangle rect =
-              { 0, 0, width(), height() };
+        {
+            DFBRectangle rect = { 0, 0, width(), height() };
             dfbSurface->StretchBlit(dfbSurface, _sourceSurface, NULL, &rect);
-          }
-      }
-  }
+        }
+    }
+}
 
-  void
-  SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
-  {
+void
+SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
+{
     if (_state != SVS_READY)
-      {
+    {
         sigSourceReady();
         _state = SVS_READY;
-      }
+    }
 
     if (visible())
-      {
+    {
         Rectangle lRect = mapFromSurface(
-            Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(),
-                (event.update.x2 - event.update.x1) / hScale() + 1,
-                (event.update.y2 - event.update.y1) / vScale() + 1));
+                Rectangle(event.update.x1 / hScale(),
+                        event.update.y1 / vScale(),
+                        (event.update.x2 - event.update.x1) / hScale() + 1,
+                        (event.update.y2 - event.update.y1) / vScale() + 1));
 
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(
-            Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
-                (event.update_right.x2 - event.update_right.x1) / hScale() + 1,
-                (event.update_right.y2 - event.update_right.y1) / vScale() + 1));
+                Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
+                        (event.update_right.x2 - event.update_right.x1) / hScale() + 1,
+                        (event.update_right.y2 - event.update_right.y1) / vScale() + 1));
 
         update(PaintEvent(lRect, rRect));
 #else
         update(PaintEvent(lRect));
 #endif
-      }
+    }
 //    if (!_flipCount)
-      _flipCount = event.flip_count;
+    _flipCount = event.flip_count;
     sigSourceUpdated();
-  }
+}
 
-  void
-  SurfaceView::onSourceDestroyed(const DFBSurfaceEvent& event)
-  {
+void
+SurfaceView::onSourceDestroyed(const DFBSurfaceEvent& event)
+{
     if (_sourceSurface)
-      _sourceSurface->Release(_sourceSurface);
+        _sourceSurface->Release(_sourceSurface);
     if (_sourceWindow)
-      _sourceWindow->Release(_sourceWindow);
+        _sourceWindow->Release(_sourceWindow);
     _sourceSurface = NULL;
     _sourceWindow = NULL;
     _surfaceID = 0;
     _state = SVS_NONE;
     sigSourceDestroyed();
-  }
+}
 
-  void
-  SurfaceView::onSVGeomUpdate()
-  {
+void
+SurfaceView::onSVGeomUpdate()
+{
     if (_sourceSurface)
-      {
+    {
         int w, h;
         _sourceSurface->GetSize(_sourceSurface, &w, &h);
         _hScale = (float) (0.0 + w) / width();
         _vScale = (float) (0.0 + h) / height();
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::keyDownEvent(const KeyEvent& keyEvent)
-  {
+void
+SurfaceView::keyDownEvent(const KeyEvent& keyEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_KEYDOWN;
@@ -328,14 +331,14 @@ namespace ilixi
         event.locks = keyEvent.lockState;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::keyUpEvent(const KeyEvent& keyEvent)
-  {
+void
+SurfaceView::keyUpEvent(const KeyEvent& keyEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_KEYUP;
@@ -347,14 +350,14 @@ namespace ilixi
         event.locks = keyEvent.lockState;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_BUTTONDOWN;
@@ -368,20 +371,20 @@ namespace ilixi
         event.cy = pointerEvent.y * vScale();
 
         ILOG_INFO( ILX_SURFACEVIEW,
-            "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+                "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_BUTTONUP;
@@ -395,20 +398,20 @@ namespace ilixi
         event.cy = pointerEvent.y * vScale();
 
         ILOG_INFO( ILX_SURFACEVIEW,
-            "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+                "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_MOTION;
@@ -428,14 +431,14 @@ namespace ilixi
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_WHEEL;
@@ -452,14 +455,14 @@ namespace ilixi
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::focusInEvent()
-  {
+void
+SurfaceView::focusInEvent()
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.flags = DWEF_NONE;
@@ -467,14 +470,14 @@ namespace ilixi
         event.window_id = _windowID;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::focusOutEvent()
-  {
+void
+SurfaceView::focusOutEvent()
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.flags = DWEF_NONE;
@@ -482,14 +485,14 @@ namespace ilixi
         event.window_id = _windowID;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::enterEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::enterEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_ENTER;
@@ -503,20 +506,20 @@ namespace ilixi
         event.cy = pointerEvent.y * vScale();
 
         ILOG_INFO( ILX_SURFACEVIEW,
-            "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+                "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
-  void
-  SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
-  {
+void
+SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
+{
     if (_sourceWindow)
-      {
+    {
         DFBWindowEvent event;
 
         event.type = DWET_LEAVE;
@@ -530,13 +533,13 @@ namespace ilixi
         event.cy = pointerEvent.y * vScale();
 
         ILOG_INFO( ILX_SURFACEVIEW,
-            "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
+                "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
         _sourceWindow->SendEvent(_sourceWindow, &event);
-      }
-  }
+    }
+}
 
 } /* namespace ilixi */

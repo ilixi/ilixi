@@ -29,16 +29,16 @@
 
 namespace ilixi
 {
-  //! Renders any DFBSurface onto itself.
-  /*!
-   * This widget can be used to render the contents of a DFBSurface
-   * directly onto itself.
-   *
-   * \warning Does not support sub-surfaces at the moment.
-   */
-  class SurfaceView : public SurfaceEventListener, public Widget
-  {
-  public:
+//! Renders any DFBSurface onto itself.
+/*!
+ * This widget can be used to render the contents of a DFBSurface
+ * directly onto itself.
+ *
+ * \warning Does not support sub-surfaces at the moment.
+ */
+class SurfaceView : public SurfaceEventListener, public Widget
+{
+public:
     /*!
      * Constructor
      */
@@ -104,7 +104,7 @@ namespace ilixi
      */
     sigc::signal<void> sigSourceDestroyed;
 
-  protected:
+protected:
     /*!
      * Scale ratio in horizontal direction.
      */
@@ -129,10 +129,10 @@ namespace ilixi
     virtual void
     renderSource(const PaintEvent& event);
 
-  private:
-    enum SurfaceViewState {
-      SVS_NONE,
-      SVS_READY
+private:
+    enum SurfaceViewState
+    {
+        SVS_NONE, SVS_READY
     };
     //! This property stores the scale ratio in horizontal direction.
     double _hScale;
@@ -190,7 +190,7 @@ namespace ilixi
     virtual void
     leaveEvent(const PointerEvent& pointerEvent);
 
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_SURFACEVIEW_H_ */
