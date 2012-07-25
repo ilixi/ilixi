@@ -48,10 +48,10 @@ namespace ilixi
     {
     }
 
+    KeyEventType eventType;
     DFBInputDeviceKeySymbol keySymbol;
     DFBInputDeviceModifierMask modifierMask;
     DFBInputDeviceLockState lockState;
-    KeyEventType eventType;
   };
 
   enum PointerEventType
