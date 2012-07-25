@@ -32,6 +32,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						component/Notification.cpp \
 						component/NotificationManager.h \
 						component/NotificationManager.cpp \
+						component/SoundComponent.h \
+						component/SoundComponent.cpp \
 						switcher/CarouselSwitcher.h \
 						switcher/CarouselSwitcher.cpp \
 						switcher/HorizontalSwitcher.h \

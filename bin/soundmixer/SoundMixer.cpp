@@ -30,16 +30,13 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     _mute->sigClicked.connect(sigc::mem_fun(this, &SoundMixer::mute));
 
     addWidget(new Spacer(Vertical));
-
-    _comp = new SoundComponent();
-
-    _volSlider->sigValueChanged.connect(
-            sigc::mem_fun(_comp, &SoundComponent::setVolume));
+//
+//    _volSlider->sigValueChanged.connect(
+//            sigc::mem_fun(_comp, &SoundComponent::setVolume));
 }
 
 SoundMixer::~SoundMixer()
 {
-    delete _comp;
 }
 
 void

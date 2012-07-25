@@ -11,7 +11,6 @@
 #include <ui/Application.h>
 #include <ui/Slider.h>
 #include <ui/ToolButton.h>
-#include "SoundComponent.h"
 
 namespace ilixi
 {
@@ -28,7 +27,6 @@ public:
     mute();
 
 private:
-    SoundComponent* _comp;
     Slider* _volSlider;
     ToolButton* _mute;
 };

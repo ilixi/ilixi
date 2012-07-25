@@ -41,6 +41,7 @@ Compositor::Compositor(int argc, char* argv[])
                 NULL), _quitButton(NULL), _fpsLabel(NULL), _fps(NULL)
 {
     _appMan = new ApplicationManager(this);
+    _soundComp = new SoundComponent();
     _popupComp = new PopupComponent(this);
 
     setTitle("Compositor");
@@ -106,6 +107,8 @@ Compositor::Compositor(int argc, char* argv[])
 Compositor::~Compositor()
 {
     delete _fps;
+    delete _popupComp;
+    delete _soundComp;
     delete _appMan;
     ILOG_TRACE_W(ILX_COMPOSITOR);
 }

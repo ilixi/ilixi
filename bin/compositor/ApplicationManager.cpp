@@ -642,6 +642,11 @@ ApplicationManager::initApps()
             ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
             "Andreas Shimokawa", 1, APP_ILIXI, DEP_MOUSE);
 
+    addApplication("SoundMixer", "ilixi_mixer", "--fd:remote=%1",
+            ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
+            "Andreas Shimokawa", 1, (AppFlags) (APP_ILIXI | APP_NEEDS_CLEAR),
+            DEP_MOUSE);
+
     // others
     addApplication("Video Player", "dfbtest_video",
             ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",

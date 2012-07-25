@@ -36,6 +36,7 @@
 #include "ApplicationManager.h"
 #include "Switcher.h"
 #include "component/PopupComponent.h"
+#include "component/SoundComponent.h"
 
 namespace ilixi
 {
@@ -91,6 +92,7 @@ private:
     FPSCalculator* _fps;
 
     // components
+    SoundComponent* _soundComp;
     PopupComponent* _popupComp;
 
     enum CompositorEventType
