@@ -29,17 +29,17 @@
 
 namespace ilixi
 {
-  //! Base class for animations.
-  /*!
-   * This class implements basic animation functionality.
-   */
-  class Animation : public sigc::trackable, public Functionoid
-  {
-  public:
+//! Base class for animations.
+/*!
+ * This class implements basic animation functionality.
+ */
+class Animation : public sigc::trackable, public Functionoid
+{
+public:
 
     enum AnimationState
     {
-      Running, Paused, Stopped
+        Running, Paused, Stopped
     };
 
     /*!
@@ -160,7 +160,7 @@ namespace ilixi
      */
     sigc::signal<int> sigLoopChanged;
 
-  protected:
+protected:
     //! Sets current time of animation.
     void
     setCurrentTime(int ms = 0);
@@ -177,7 +177,7 @@ namespace ilixi
     virtual void
     step(long ms)=0;
 
-  private:
+private:
     //! Current state of animation.
     AnimationState _state;
 
@@ -205,7 +205,7 @@ namespace ilixi
     // Callback uses animate()
     friend bool
     animationCallback(void*);
-  };
+};
 
 }
 
