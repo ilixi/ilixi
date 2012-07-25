@@ -36,47 +36,52 @@ class StatusBar;
 class DateThread : public Thread
 {
 public:
-  DateThread(StatusBar* parent);
+    DateThread(StatusBar* parent);
 
-  ~DateThread();
+    ~DateThread();
 
-  int
-  run();
+    int
+    run();
 
 private:
-  StatusBar* _parent;
+    StatusBar* _parent;
 };
 
 class StatusBar : public Application
 {
 public:
-  StatusBar(int argc, char* argv[]);
+    StatusBar(int argc, char* argv[]);
 
-  virtual
-  ~StatusBar();
+    virtual
+    ~StatusBar();
 
-  virtual void
-  onHide();
+    virtual void
+    onHide();
 
-  virtual void
-  onShow();
+    virtual void
+    onShow();
 
-  void
-  updateTime();
+    void
+    updateTime();
 
 private:
-  unsigned int _currentAppID;
-  Label* _app;
-  Label* _time;
-  Label* _date;
+    unsigned int _currentAppID;
+    Label* _app;
+    Label* _time;
+    Label* _date;
+    Label* _volume;
 
-  DateThread* _dateThread;
+    DateThread* _dateThread;
+    ToolButton* _home;
+    ToolButton* _shutdown;
 
-  ToolButton* _home;
-  ToolButton* _shutdown;
+    IComaComponent* _soundComponent;
 
-  virtual void
-  compose(const PaintEvent& event);
+    virtual void
+    compose(const PaintEvent& event);
+
+    friend void
+    volumeListener(void* ctx, void* arg);
 };
 
 #endif /* STATUSBAR_H_ */

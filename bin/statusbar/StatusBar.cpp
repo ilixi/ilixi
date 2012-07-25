@@ -22,12 +22,14 @@
  */
 
 #include "StatusBar.h"
-#include "ui/HBoxLayout.h"
-#include "ui/VBoxLayout.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/HBoxLayout.h>
+#include <ui/VBoxLayout.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 #include <sigc++/sigc++.h>
 #include <string.h>
+
+D_DEBUG_DOMAIN( ILX_STATUSBAR, "ilixi/StatusBar", "StatusBar");
 
 const char* days[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
@@ -57,6 +59,16 @@ DateThread::run()
 
 //*********************************************************
 
+void
+volumeListener(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    char volText[3];
+    sprintf(volText, "%d", *((int*) arg));
+    bar->_volume->setText(volText);
+    ILOG_DEBUG(ILX_STATUSBAR, "Volume %d\n", *((int*) arg));
+}
+
 StatusBar::StatusBar(int argc, char* argv[])
         : Application(&argc, &argv, OptStatusBar), _dateThread(NULL)
 {
@@ -72,6 +84,12 @@ StatusBar::StatusBar(int argc, char* argv[])
     _app->setXConstraint(ExpandingConstraint);
     _app->setFont(new Font(ILIXI_DATADIR"fonts/decker.ttf", 36));
     addWidget(_app);
+
+    _volume = new Label("  0  ");
+    _volume->setXConstraint(ExpandingConstraint);
+    _volume->setLayoutAlignment(TextLayout::Left);
+    _volume->setFont(new Font(ILIXI_DATADIR"fonts/decker.ttf", 36));
+    addWidget(_volume);
 
     _time = new Label("00:00:00");
     _date = new Label("Fri 18 Nove");
@@ -96,12 +114,15 @@ void
 StatusBar::onHide()
 {
     _dateThread->cancel();
+    _soundComponent->Release(_soundComponent);
 }
 
 void
 StatusBar::onShow()
 {
     _dateThread->start();
+    comaGetComponent("SoundComponent", &_soundComponent);
+    _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
 }
 
 void
