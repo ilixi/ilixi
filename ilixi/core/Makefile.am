@@ -10,7 +10,6 @@ libilixi_core_la_SOURCES 	= 	AppBase.cpp \
      						EventManager.cpp \
      						Logger.cpp \
      						SurfaceEventListener.cpp \
-     						Thread.cpp \
      						Window.cpp
 						
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
@@ -20,5 +19,4 @@ ilixi_include_HEADERS		=	AppBase.h \
      						EventManager.h \
      						Logger.h \
      						SurfaceEventListener.h \
-     						Thread.h \
      						Window.h

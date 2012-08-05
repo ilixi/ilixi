@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,17 +24,17 @@
 #ifndef ILIXI_LINEINPUT_H_
 #define ILIXI_LINEINPUT_H_
 
-#include "ui/TextBase.h"
-#include "ui/BorderBase.h"
-#include "lib/Timer.h"
+#include <ui/TextBase.h>
+#include <lib/Timer.h>
 
 namespace ilixi
 {
 
-  //! Single line text input
-  class LineInput : public Widget, public TextBase, public BorderBase
-  {
-  public:
+//! Single line text input
+class LineInput : public Widget, public TextBase
+{
+    friend class Stylist;
+public:
     /*!
      * Constructor.
      *
@@ -68,6 +68,12 @@ namespace ilixi
     setMaxLength(int maxLen);
 
     /*!
+     * Clears text.
+     */
+    void
+    clear();
+
+    /*!
      * This signal is emitted once cursor is moved.
      * First param is old position, second is new position.
      */
@@ -78,7 +84,7 @@ namespace ilixi
      */
     sigc::signal<void> sigSelectionChanged;
 
-  private:
+private:
     //! Cursor display flag.
     bool _cursorOn;
     //! Selection active flag.
@@ -150,7 +156,7 @@ namespace ilixi
 
     virtual Font*
     defaultFont() const;
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_LINEINPUT_H_ */

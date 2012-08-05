@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -29,14 +29,14 @@
 
 namespace ilixi
 {
-  //! Create and maintain threads.
-  /*!
-   * This class is used for creating a thread within the program which executes
-   * a user defined method.
-   */
-  class Thread : public sigc::trackable
-  {
-  public:
+//! Create and maintain threads.
+/*!
+ * This class is used for creating a thread within the program which executes
+ * a user defined method.
+ */
+class Thread : public sigc::trackable
+{
+public:
     /*!
      * Constructor.
      */
@@ -104,7 +104,7 @@ namespace ilixi
     //! This signal is emitted when the thread terminates by calling cancel.
     sigc::signal<void> sigTerminated;
 
-  private:
+private:
     //! This property specifies whether thread is running.
     bool _running;
     //! This property stores the exit code.
@@ -123,7 +123,7 @@ namespace ilixi
     //! Starts executeRun() for the thread.
     static void*
     wrapper(void* arg);
-  };
+};
 }
 
 #endif /* ILIXI_THREAD_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -25,11 +25,11 @@
 #define ILIXI_APPBASE_H_
 
 #include <string>
-#include "types/Enums.h"
-#include "core/EventManager.h"
-#include "core/SurfaceEventListener.h"
-#include "core/Callback.h"
-#include "core/Window.h"
+#include <types/Enums.h>
+#include <core/EventManager.h>
+#include <core/SurfaceEventListener.h>
+#include <core/Callback.h>
+#include <core/Window.h>
 #include <list>
 #include <map>
 extern "C"
@@ -54,6 +54,7 @@ class AppBase
     friend class Video;
     friend class Surface;
     friend class Font;
+    friend class FontCache;
     friend class Callback;
     friend class Widget;
     friend class SurfaceEventListener;
@@ -103,7 +104,8 @@ public:
     comaGetLocal(unsigned int bytes, void** ret);
 
     static bool
-    comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg);
+    comaCallComponent(IComaComponent* component, ComaMethodID method,
+                      void* arg);
 
 protected:
     /*!

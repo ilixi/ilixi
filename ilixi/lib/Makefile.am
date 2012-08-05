@@ -10,9 +10,11 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							FileSystem.cpp \
 							FPSCalculator.cpp \
 							Notify.cpp \
+							Thread.cpp \
+							Timer.cpp \
 							Tween.cpp \
 							TweenAnimation.cpp \
-							Timer.cpp
+							Util.cpp
 
 ilixi_includedir		= 	$(includedir)/$(PACKAGE)-$(VERSION)/lib
 ilixi_include_HEADERS	=	Animation.h \
@@ -21,7 +23,9 @@ ilixi_include_HEADERS	=	Animation.h \
 							FileSystem.h \
 							FPSCalculator.h \
 							Notify.h \
+							Thread.h \
+							Timer.h \
 							Tween.h \
 							TweenAnimation.h \
-							Timer.h
+							Util.h
 							

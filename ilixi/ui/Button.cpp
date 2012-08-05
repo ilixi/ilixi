@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,170 +21,142 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/Button.h"
-#include "core/Logger.h"
+#include <ui/Button.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-Button::Button(const std::string& text, Widget* parent) :
-    Widget(parent), TextBase(text, this), _buttonFlag(None), _icon(NULL)
+namespace ilixi
 {
-  setInputMethod(KeyAndPointerInput);
-  ILOG_TRACE_W(ILX_BUTTON);
+
+D_DEBUG_DOMAIN( ILX_BUTTON, "ilixi/ui/Button", "Button");
+
+Button::Button(const std::string& text, Widget* parent)
+        : Widget(parent),
+          TextBase(text, this),
+          _buttonFlag(None)
+{
+    setInputMethod(KeyAndPointerInput);
+    ILOG_TRACE_W(ILX_BUTTON);
 }
 
 Button::~Button()
 {
-  ILOG_TRACE_W(ILX_BUTTON);
+    ILOG_TRACE_W(ILX_BUTTON);
 }
 
 bool
 Button::checkable() const
 {
-  return (_buttonFlag & Checkable);
+    return (_buttonFlag & Checkable);
 }
 
 bool
 Button::checked() const
 {
-  return (_buttonFlag & Checked);
+    return (_buttonFlag & Checked);
 }
 
 void
 Button::click(unsigned int ms)
 {
-  if (ms)
+    if (ms)
     {
-      _state = (WidgetState) (_state ^ PressedState);
-      repaint();
-      usleep(ms * 1000);
-      _state = (WidgetState) (_state ^ PressedState);
+        _state = (WidgetState) (_state ^ PressedState);
+        repaint();
+        usleep(ms * 1000);
+        _state = (WidgetState) (_state ^ PressedState);
     }
-  sigClicked();
-  toggleChecked();
-}
-
-const Icon*
-Button::icon() const
-{
-  return _icon;
+    sigClicked();
+    toggleChecked();
 }
 
 void
 Button::toggleChecked()
 {
-  if (checkable())
+    if (checkable())
     {
-      if (checked())
-        setChecked(false);
-      else
-        setChecked(true);
-      sigCheckChanged(checked());
+        if (checked())
+            setChecked(false);
+        else
+            setChecked(true);
+        sigCheckChanged(checked());
     }
-  update();
+    update();
 }
 
 void
 Button::setCheckable(bool checkable)
 {
-  if (checkable)
-    _buttonFlag = (ButtonFlags) (_buttonFlag | Checkable);
-  else
-    _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checkable);
+    if (checkable)
+        _buttonFlag = (ButtonFlags) (_buttonFlag | Checkable);
+    else
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checkable);
 }
 
 void
 Button::setChecked(bool checked)
 {
-  if (checked)
-    _buttonFlag = (ButtonFlags) (_buttonFlag | Checked);
-  else
-    _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checked);
-  update();
-}
-
-void
-Button::setIcon(Icon* icon)
-{
-  removeChild(_icon);
-  _icon = icon;
-  addChild(_icon);
-}
-
-void
-Button::setIcon(const std::string& iconPath, const Size& size)
-{
-  removeChild(_icon);
-  _icon = new Icon(iconPath, this);
-  setIconSize(size);
-  addChild(_icon);
-}
-
-void
-Button::setIconSize(const Size& size)
-{
-  if (_icon)
-    {
-      if (size.isValid())
-        _icon->setSize(size);
-      else
-        _icon->setSize(_icon->preferredSize());
-    }
+    if (checked)
+        _buttonFlag = (ButtonFlags) (_buttonFlag | Checked);
+    else
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checked);
+    update();
 }
 
 void
 Button::keyUpEvent(const KeyEvent& event)
 {
-  if (event.keySymbol == DIKS_SPACE || event.keySymbol == DIKS_OK)
-    click(100);
+    if (event.keySymbol == DIKS_SPACE || event.keySymbol == DIKS_OK)
+        click(100);
 }
 
 void
 Button::pointerButtonDownEvent(const PointerEvent& event)
 {
-  _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
-  sigPressed();
-  update();
+    _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
+    sigPressed();
+    update();
 }
 
 void
 Button::pointerButtonUpEvent(const PointerEvent& event)
 {
-  sigReleased();
-  if (_buttonFlag & PressedDown)
+    sigReleased();
+    if (_buttonFlag & PressedDown)
     {
-      sigClicked();
-      toggleChecked();
-      _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
+        sigClicked();
+        toggleChecked();
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
     }
 }
 
 void
 Button::enterEvent(const PointerEvent& event)
 {
-  update();
+    update();
 }
 
 void
 Button::leaveEvent(const PointerEvent& event)
 {
-  update();
+    update();
 }
 
 void
 Button::focusInEvent()
 {
-  update();
+    update();
 }
 
 void
 Button::focusOutEvent()
 {
-  update();
+    update();
 }
 
 Font*
 Button::defaultFont() const
 {
-  return stylist()->defaultFont(StyleHint::ButtonFont);
+    return stylist()->defaultFont(StyleHint::ButtonFont);
 }
+
+} /* namespace ilixi */

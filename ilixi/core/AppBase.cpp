@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,13 +21,17 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/AppBase.h"
-#include "ui/WindowWidget.h"
-#include "core/Logger.h"
+#include <core/AppBase.h>
+#include <ui/WindowWidget.h>
+#include <core/Logger.h>
 #include <algorithm>
 
 using namespace std;
-using namespace ilixi;
+
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
 
 IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
@@ -35,8 +39,10 @@ IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
-        : __options(options), __title(""), __state(APS_HIDDEN), __activeWindow(
-                NULL)
+        : __options(options),
+          __title(""),
+          __state(APS_HIDDEN),
+          __activeWindow(NULL)
 {
     if (__instance)
         ILOG_THROW(ILX_APPBASE, "Cannot allow more than one instance!\n");
@@ -77,36 +83,49 @@ AppBase::setTitle(std::string title)
 bool
 AppBase::comaGetComponent(const char* name, IComaComponent** component)
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-    if (__instance->_coma->GetComponent(__instance->_coma, name, 7000,
-            component) != DR_OK)
-        return false;
-    return true;
+    if (__instance->__options & OptDale)
+    {
+        ILOG_TRACE_F(ILX_APPBASE);
+        if (__instance->_coma->GetComponent(__instance->_coma, name, 7000,
+                                            component) != DR_OK)
+            return false;
+        return true;
+    }
+    return false;
 }
 
 bool
 AppBase::comaGetLocal(unsigned int bytes, void** ret)
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-    if (__instance->_coma->GetLocal(__instance->_coma, bytes, ret) != DR_OK)
+    if (__instance->__options & OptDale)
     {
-        ILOG_ERROR( ILX_APPBASE, "%s( %u ) failed!\n", __FUNCTION__, bytes);
-        return false;
+        ILOG_TRACE_F(ILX_APPBASE);
+        if (__instance->_coma->GetLocal(__instance->_coma, bytes, ret) != DR_OK)
+        {
+            ILOG_ERROR( ILX_APPBASE, "%s( %u ) failed!\n", __FUNCTION__, bytes);
+            return false;
+        }
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool
 AppBase::comaCallComponent(IComaComponent* component, ComaMethodID method,
-        void* arg)
+                           void* arg)
 {
-    int ret_val;
-    if (component->Call(component, method, arg, &ret_val) != DR_OK)
+    if (__instance->__options & OptDale)
     {
-        ILOG_ERROR( ILX_APPBASE, "%s( %lu ) failed!\n", __FUNCTION__, method);
-        return false;
+        int ret_val;
+        if (component->Call(component, method, arg, &ret_val) != DR_OK)
+        {
+            ILOG_ERROR( ILX_APPBASE,
+                       "%s( %lu ) failed!\n", __FUNCTION__, method);
+            return false;
+        }
+        return true;
     }
-    return true;
+    return false;
 }
 
 void
@@ -157,29 +176,32 @@ AppBase::initDFB(int* argc, char*** argv)
         if (__options & OptExclusive)
         {
             if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE,
-                    &__buffer) != DFB_OK)
+                                              &__buffer) != DFB_OK)
                 ILOG_THROW(ILX_APPBASE,
-                        "Error while creating input event buffer!\n");
+                           "Error while creating input event buffer!\n");
         } else if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
             ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
 
         ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
 
-        if (FusionDaleInit(argc, argv) != DR_OK)
-            ILOG_THROW(ILX_APPBASE, "FusionDaleInit() failed!\n");
+        if (__options & OptDale)
+        {
+            if (FusionDaleInit(argc, argv) != DR_OK)
+                ILOG_THROW(ILX_APPBASE, "FusionDaleInit() failed!\n");
 
-        if (FusionDaleCreate(&_dale) != DR_OK)
-            ILOG_THROW(ILX_APPBASE, "FusionDaleCreate() failed!\n");
+            if (FusionDaleCreate(&_dale) != DR_OK)
+                ILOG_THROW(ILX_APPBASE, "FusionDaleCreate() failed!\n");
 
-        if (_dale->EnterComa(_dale, "ilixi", &_coma) != DR_OK)
-            ILOG_THROW(ILX_APPBASE,
-                    "IFusionDale::EnterComa('ilixi') failed!\n");
+            if (_dale->EnterComa(_dale, "ilixi", &_coma) != DR_OK)
+                ILOG_THROW(ILX_APPBASE,
+                           "IFusionDale::EnterComa('ilixi') failed!\n");
 
-        ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
+            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
+        }
 
     } else
         ILOG_WARNING(ILX_APPBASE,
-                "DirectFB interfaces are already initialised.\n");
+                     "DirectFB interfaces are already initialised.\n");
 }
 
 void
@@ -187,10 +209,15 @@ AppBase::releaseDFB()
 {
     if (__dfb)
     {
-        ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale interfaces...\n");
-        _coma->Release(_coma);
-        _dale->Release(_dale);
-        ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
+        if (__options & OptDale)
+        {
+            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale interfaces...\n");
+            _coma->Release(_coma);
+            _coma = NULL;
+            _dale->Release(_dale);
+            _dale = NULL;
+            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
+        }
 
         ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
 
@@ -278,7 +305,8 @@ AppBase::addCallback(Callback* cb)
         pthread_mutex_lock(&__instance->__cbMutex);
 
         CallbackList::iterator it = std::find(__instance->__callbacks.begin(),
-                __instance->__callbacks.end(), cb);
+                                              __instance->__callbacks.end(),
+                                              cb);
         if (cb == *it)
         {
             pthread_mutex_unlock(&__instance->__cbMutex);
@@ -329,7 +357,7 @@ AppBase::runCallbacks()
         if (!((Callback*) *it)->_funck->funck())
         {
             ILOG_DEBUG( ILX_APPBASE,
-                    "Callback %p is removed.\n", ((Callback*) *it));
+                       "Callback %p is removed.\n", ((Callback*) *it));
             it = __callbacks.erase(it);
         } else
             ++it;
@@ -355,7 +383,7 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         {
             pthread_mutex_unlock(&__instance->__selMutex);
             ILOG_ERROR( ILX_APPBASE,
-                    "SurfaceEventListener %p already added!\n", sel);
+                       "SurfaceEventListener %p already added!\n", sel);
             return false;
         }
 
@@ -374,9 +402,9 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         {
             sel->sourceSurface()->MakeClient(sel->sourceSurface());
             sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(),
-                    __buffer);
+                                                    __buffer);
             ILOG_DEBUG(ILX_APPBASE,
-                    " -> Surface[%p] is attached.\n", sel->sourceSurface());
+                       " -> Surface[%p] is attached.\n", sel->sourceSurface());
         }
 
         __instance->__selList.push_back(sel);
@@ -403,7 +431,7 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
             {
                 __instance->__selList.erase(it);
                 ILOG_DEBUG( ILX_APPBASE,
-                        "SurfaceEventListener %p is removed.\n", sel);
+                           "SurfaceEventListener %p is removed.\n", sel);
                 ret = true;
                 break;
             }
@@ -424,8 +452,9 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
             if (detach)
             {
                 sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(),
-                        __buffer);
-                ILOG_DEBUG(ILX_APPBASE,
+                                                        __buffer);
+                ILOG_DEBUG(
+                        ILX_APPBASE,
                         " -> Surface[%p] is detached.\n", sel->sourceSurface());
             }
             return true;
@@ -493,7 +522,8 @@ AppBase::addWindow(WindowWidget* window)
         pthread_mutex_lock(&__instance->__windowMutex);
 
         WindowList::iterator it = std::find(__instance->__windowList.begin(),
-                __instance->__windowList.end(), window);
+                                            __instance->__windowList.end(),
+                                            window);
         if (window == *it)
         {
             pthread_mutex_unlock(&__instance->__windowMutex);
@@ -525,14 +555,14 @@ AppBase::removeWindow(WindowWidget* window)
 
                 pthread_mutex_unlock(&__instance->__windowMutex);
                 ILOG_DEBUG(ILX_APPBASE,
-                        "WindowWidget %p is removed.\n", window);
+                           "WindowWidget %p is removed.\n", window);
                 __instance->setActiveWindow(__instance->__windowList.back());
                 return true;
             }
         }
         pthread_mutex_unlock(&__instance->__windowMutex);
         ILOG_DEBUG( ILX_APPBASE,
-                "Cannot remove WindowWidget, %p not found!\n", window);
+                   "Cannot remove WindowWidget, %p not found!\n", window);
     }
     return false;
 }
@@ -576,12 +606,12 @@ AppBase::handleEvents()
 
             case DIET_BUTTONPRESS:
                 handleButtonInputEvent((const DFBInputEvent&) event,
-                        DWET_BUTTONDOWN);
+                                       DWET_BUTTONDOWN);
                 break;
 
             case DIET_BUTTONRELEASE:
                 handleButtonInputEvent((const DFBInputEvent&) event,
-                        DWET_BUTTONUP);
+                                       DWET_BUTTONUP);
                 break;
 
             case DIET_AXISMOTION:
@@ -628,20 +658,21 @@ AppBase::attachDFBWindow(Window* window)
         DFBResult ret;
 
         ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow,
-                __buffer);
+                                                    __buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPBASE,
+            ILOG_ERROR(
+                    ILX_APPBASE,
                     "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
         ret = window->_dfbWindow->RequestFocus(window->_dfbWindow);
         if (ret != DFB_OK)
             ILOG_ERROR( ILX_APPBASE,
-                    "RequestFocus error: %s! \n", DirectFBErrorString(ret));
+                       "RequestFocus error: %s! \n", DirectFBErrorString(ret));
 
         ret = __buffer->Reset(__buffer);
         if (ret != DFB_OK)
             ILOG_ERROR( ILX_APPBASE,
-                    "Buffer reset error: %s!\n", DirectFBErrorString(ret));
+                       "Buffer reset error: %s!\n", DirectFBErrorString(ret));
 
         ILOG_DEBUG(ILX_APPBASE, "Window %p is attached.\n", window);
     }
@@ -655,15 +686,16 @@ AppBase::detachDFBWindow(Window* window)
         DFBResult ret;
 
         ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow,
-                __buffer);
+                                                    __buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPBASE,
+            ILOG_ERROR(
+                    ILX_APPBASE,
                     "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
         ret = __buffer->Reset(__buffer);
         if (ret != DFB_OK)
             ILOG_ERROR(ILX_APPBASE,
-                    "Buffer reset error: %s", DirectFBErrorString(ret));
+                       "Buffer reset error: %s", DirectFBErrorString(ret));
 
         ILOG_DEBUG(ILX_APPBASE, "Window %p is detached.\n", window);
     }
@@ -671,7 +703,7 @@ AppBase::detachDFBWindow(Window* window)
 
 void
 AppBase::handleKeyInputEvent(const DFBInputEvent& event,
-        DFBWindowEventType type)
+                             DFBWindowEventType type)
 {
     DFBEvent we;
     we.clazz = DFEC_WINDOW;
@@ -692,7 +724,7 @@ AppBase::handleKeyInputEvent(const DFBInputEvent& event,
 
 void
 AppBase::handleButtonInputEvent(const DFBInputEvent& event,
-        DFBWindowEventType type)
+                                DFBWindowEventType type)
 {
     DFBEvent we;
     we.clazz = DFEC_WINDOW;
@@ -753,9 +785,9 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
     if (we.window.type == DWET_MOTION)
     {
         Rectangle cold(__instance->__cursorOld.x, __instance->__cursorOld.y, 32,
-                32);
+                       32);
         Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
-                32);
+                       32);
         activeWindow()->update(PaintEvent(cnew.united(cold), 10));
     }
 
@@ -774,3 +806,4 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
     __buffer->PostEvent(__buffer, &we);
 }
 
+} /* namespace ilixi */

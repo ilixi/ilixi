@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,23 +24,23 @@
 #ifndef ILIXI_BUTTON_H_
 #define ILIXI_BUTTON_H_
 
-#include "ui/TextBase.h"
-#include "ui/Icon.h"
+#include <ui/TextBase.h>
+#include <ui/Icon.h>
 
 namespace ilixi
 {
 
-  class Button : public Widget, public TextBase
-  {
-  public:
+class Button : public Widget, public TextBase
+{
+public:
     enum ButtonFlags
     {
-      None = 0x000, //!< Default button state
-      Checkable = 0x002, //!< Button is checkable
-      Checked = 0x004, //!< A checkable button is checked
-      Partial = 0x008, //!< Partially checked.
-      Tristate = 0x010, //! Whether widget has three states, e.g. checkbox.
-      PressedDown = 0x020
+        None = 0x000, //!< Default button state
+        Checkable = 0x002, //!< Button is checkable
+        Checked = 0x004, //!< A checkable button is checked
+        Partial = 0x008, //!< Partially checked.
+        Tristate = 0x010, //! Whether widget has three states, e.g. checkbox.
+        PressedDown = 0x020
     //!< Pointer button is down on button
     };
 
@@ -76,12 +76,6 @@ namespace ilixi
     click(unsigned int ms = 0);
 
     /*!
-     * Returns button icon, if any.
-     */
-    const Icon*
-    icon() const;
-
-    /*!
      * Changes button's checked state.
      */
     virtual void
@@ -98,27 +92,6 @@ namespace ilixi
      */
     void
     setChecked(bool checked = true);
-
-    /*!
-     * Sets button icon.
-     */
-    void
-    setIcon(Icon* icon);
-
-    /*!
-     * Sets button icon by automatically creating an icon.
-     *
-     * @param path to an image file.
-     * @param size in pixels.
-     */
-    void
-    setIcon(const std::string& path, const Size& size = Size());
-
-    /*!
-     * Sets the size of button icon.
-     */
-    void
-    setIconSize(const Size& size);
 
     /*!
      * This signal is emitted when button is pressed and then released.
@@ -144,11 +117,9 @@ namespace ilixi
      */
     sigc::signal<void, bool> sigCheckChanged;
 
-  protected:
+protected:
     //! This property holds button's flags.
     ButtonFlags _buttonFlag;
-    //! This property holds button's icon.
-    Icon* _icon;
 
     /*!
      * If key is SPACE then click.
@@ -192,11 +163,11 @@ namespace ilixi
     virtual void
     focusOutEvent();
 
-  private:
+private:
 
     virtual Font*
     defaultFont() const;
-  };
+};
 
 }
 

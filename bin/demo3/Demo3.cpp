@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -22,85 +22,99 @@
  */
 
 #include "Demo3.h"
-#include "LineInput.h"
-#include "ui/VBoxLayout.h"
-#include "ui/Label.h"
-#include "ui/Spacer.h"
-#include "ui/CheckBox.h"
-#include "ui/RadioButton.h"
-#include "ui/ComboBox.h"
-#include "graphics/Painter.h"
+
+#include <ui/GridLayout.h>
+#include <ui/HBoxLayout.h>
+#include <ui/VBoxLayout.h>
+#include <ui/Spacer.h>
+#include <ilixiGUI.h>
+#include <graphics/Painter.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
 using namespace ilixi;
 
-Demo3::Demo3(int argc, char* argv[]) :
-    Application(&argc, &argv)
+Demo3::Demo3(int argc, char* argv[])
+        : Application(&argc, &argv)
 {
-  setTitle("Forms Demo");
-  setBackgroundFilled(true);
-  setLayout(new VBoxLayout());
+    setTitle("Forms Demo");
+    setBackgroundFilled(true);
+    setLayout(new VBoxLayout());
 
-  Label *lipLabel = new Label("LineInput:");
-  addWidget(lipLabel);
+//    addWidget(new Spacer(Vertical));
 
-  LineInput *lip = new LineInput("Line input has some text...");
-  lip->setMaximumSize(120, 100);
+    GroupBox* frame = new GroupBox("Test");
+    addWidget(frame);
+
+    //    GridLayout* grid = new GridLayout(4, 4);
+    VBoxLayout* grid = new VBoxLayout();
+    frame->setLayout(grid);
+
+    CheckBox* cb1 = new CheckBox("Check 1");
+    frame->addWidget(cb1);
+
+    CheckBox* cb2 = new CheckBox("Check 2");
+    cb2->setTriState(true);
+    frame->addWidget(cb2);
+
+    RadioButton* rb1 = new RadioButton("Radio 1");
+    frame->addWidget(rb1);
+
+    RadioButton* rb2 = new RadioButton("Radio 1");
+    frame->addWidget(rb2);
+
+    ProgressBar* bar1 = new ProgressBar();
+    bar1->setValue(5);
+    frame->addWidget(bar1);
+
+    Slider* slider1 = new Slider();
+    slider1->sigValueChanged.connect(
+            sigc::mem_fun(bar1, &ProgressBar::setValue));
+    frame->addWidget(slider1);
+
+    Label *lipLabel = new Label("LineInput:");
+    frame->addWidget(lipLabel);
+
+    LineInput *lip = new LineInput("Line input has some text...");
+//    lip->setMaximumSize(120, 100);
 //  lip->setMaxLength(15);
-  addWidget(lip);
+    frame->addWidget(lip);
 
-  CheckBox* cb1 = new CheckBox("Check 1");
-  addWidget(cb1);
+    PushButton* pb1 = new PushButton("PushButton 1");
+    frame->addWidget(pb1);
 
-  CheckBox* cb2 = new CheckBox("Check 2");
-  cb2->setTriState(true);
-  addWidget(cb2);
+    PushButton* pb2 = new PushButton("PushButton 1");
+    frame->addWidget(pb2);
 
-  RadioButton* rb1 = new RadioButton("Radio 1");
-  addWidget(rb1);
+    ToolButton* tb = new ToolButton("ToolButton");
+    tb->setToolButtonStyle(ToolButton::TextOnly);
+    addWidget(tb);
 
-  RadioButton* rb2 = new RadioButton("Radio 1");
-  addWidget(rb2);
+//    ComboBox::StringList list;
+//
+//    char str[5];
+//    for (int i = 2005; i > 1900; --i)
+//    {
+//        sprintf(str, "%d", i);
+//        list.push_back(str);
+//    }
+//
+//    ComboBox* co1 = new ComboBox("Select your date of birth:");
+//    co1->addItems(list);
+//    frame->addWidget(co1);
 
-  ComboBox::StringList list;
-
-  char str[5];
-  for (int i = 2005; i > 1900; --i)
-    {
-      sprintf(str, "%d", i);
-      list.push_back(str);
-    }
-
-  ComboBox* co1 = new ComboBox("Select your date of birth:");
-  co1->addItems(list);
-  addWidget(co1);
-
-  addWidget(new Spacer(Vertical));
+//    addWidget(new Spacer(Vertical));
 }
 
 Demo3::~Demo3()
 {
 }
 
-void
-Demo3::compose(const PaintEvent& event)
-{
-  Painter p(this);
-  p.begin(event);
-
-  p.setBrush(Color(128, 128, 128));
-
-  p.fillRectangle(0, 0, width(), height());
-
-  p.end();
-}
-
 int
 main(int argc, char* argv[])
 {
-  Demo3 app(argc, argv);
-  app.exec();
-  return 0;
+    Demo3 app(argc, argv);
+    app.exec();
+    return 0;
 }

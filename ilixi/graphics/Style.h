@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,13 +24,16 @@
 #ifndef ILIXI_STYLE_H_
 #define ILIXI_STYLE_H_
 
-#include "types/Image.h"
-#include "types/Font.h"
-
+#include <types/Image.h>
+#include <types/Font.h>
+#include <types/Rectangle.h>
+#include <libxml/tree.h>
 namespace ilixi
 {
-  struct Style
-  {
+
+class Style
+{
+public:
     /*!
      * Initialise to default.
      */
@@ -40,9 +43,6 @@ namespace ilixi
      * Destructor.
      */
     ~Style();
-
-    void
-    release();
 
     /*!
      * Initialise style from an XML file.
@@ -63,104 +63,96 @@ namespace ilixi
     Font* _inputFont;
     //! Font for rendering title text.
     Font* _titleFont;
+
     //--------------------------------------------------------------
-    // Images
+    // Icons
     //--------------------------------------------------------------
-    //! Plus sign image.
-    Image* _plusSign;
-    //! Minus sign image.
-    Image* _minusSign;
-    //! ScrollBar grid image.
-    Image* _grid;
+    Image* _icons;
+    Rectangle plus;
+    Rectangle minus;
+    Rectangle check;
+    Rectangle tri_check;
+    Rectangle radioOff;
+    Rectangle radioOn;
 
-    //! Arrow image used in buttons for up.
-    Image* _arrowUp;
-    //! Arrow image used in buttons for down.
-    Image* _arrowDown;
-    //! Arrow image used in buttons for left.
-    Image* _arrowLeft;
-    //! Arrow image used in buttons for right.
-    Image* _arrowRight;
-
-    //! CheckBox not selected image.
-    Image* _checkEmpty;
-    //! CheckBox partially selected image.
-    Image* _checkPartial;
-    //! CheckBox selected state image.
-    Image* _checkFull;
-
-    //! Critical icon.
-    Image* _critical;
-    //! Information icon.
-    Image* _info;
-    //! Question icon.
-    Image* _question;
-    //! Warning icon.
-    Image* _warning;
     //--------------------------------------------------------------
-    // Hints
+    // Pack
     //--------------------------------------------------------------
-    //! This property specifies the button radius.
-    int _buttonRadius;
-    //! This property specifies the space between icon and text.
-    int _buttonOffset;
-    //! This property specifies the width of tool button indicators.
-    int _buttonIndicator;
-    //! This property specifies  the default size for buttons.
-    Size _buttonSize;
+    Image* _pack;
 
-    //! This property specifies the check box radius.
-    int _checkboxRadius;
-    //! This property specifies the space between icon and text.
-    int _checkboxOffset;
-    //! This property specifies the default size for check box.
-    Size _checkboxSize;
+    struct r3
+    {
+        Rectangle l;
+        Rectangle m;
+        Rectangle r;
+    };
 
-    //! This property specifies the combo box frame radius.
-    int _comboboxRadius;
-    //! This property specifies the combo box button width.
-    int _comboboxButtonWidth;
+    struct r9
+    {
+        Rectangle tl;
+        Rectangle tm;
+        Rectangle tr;
+        Rectangle l;
+        Rectangle m;
+        Rectangle r;
+        Rectangle bl;
+        Rectangle bm;
+        Rectangle br;
+    };
 
-    //! This property specifies the default frame border radius.
-    int _frameRadius;
+    struct threesInput
+    {
+        r3 def;
+        r3 pre;
+        r3 exp;
+        r3 dis;
+        r3 foc;
+    } pb, li;
 
-    //! This property specidies the default icon size.
-    Size _iconSize;
+    struct onesInput
+    {
+        Rectangle def;
+        Rectangle pre;
+        Rectangle exp;
+        Rectangle dis;
+        Rectangle foc;
+    } cb, rb, slI;
 
-    //! This property specifies progress bar frame radius.
-    int _progressbarRadius;
-    //! This property specifies the default size for progress bar.
-    Size _progressbarSize;
+    struct ninesInput
+    {
+        r9 def;
+        r9 pre;
+        r9 exp;
+        r9 dis;
+        r9 foc;
+    } tb;
 
-    //! This property specifies the space between icon and text.
-    int _radiobuttonOffset;
-    //! This property specifies the default size for radio button.
-    Size _radiobuttonSize;
+    struct threesView
+    {
+        r3 def;
+        r3 dis;
+    } pr, prI, sl;
 
-    //! This property specifies the slider frame radius.
-    int _sliderRadius;
-    //! This property specifies the default size for slider.
-    Size _sliderSize;
+    struct ninesView
+    {
+        r9 def;
+        r9 dis;
+    } fr, tab;
 
-    //! This property specifies the scroll bar frame radius.
-    int _scrollbarRadius;
-    //! This property specifies the default size for scroll bar.
-    Size _scrollbarSize;
+protected:
+    void
+    getRectangle(xmlNodePtr node, Rectangle& r);
 
-    //! This property specifies the offset for buttons.
-    int _tabPanelButtonOffset;
-    //! This property specifies the default size for panel.
-    Size _tabPanelSize;
-    //! This property specifies the default size for tab panel buttons.
-    Size _tabPanelButtonSize;
+    void
+    get3Rectangle(xmlNodePtr node, r3& r);
 
-    //! This property specifies the frame text input frame radius.
-    int _textInputRadius;
+    void
+    get9Rectangle(xmlNodePtr node, r9& r);
 
-    //! This property specifies the default height for a toolbar.
-    int _toolbarHeight;
-
-  };
+private:
+    void
+    release();
+};
 
 }
 

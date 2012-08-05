@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,45 +21,47 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/Spacer.h"
+#include <ui/Spacer.h>
 
 namespace ilixi
 {
 
-  Spacer::Spacer(Orientation orientation, Widget* parent) :
-    Widget(parent)
-  {
+D_DEBUG_DOMAIN( ILX_SPACER, "ilixi/ui/Spacer", "Spacer");
+
+Spacer::Spacer(Orientation orientation, Widget* parent)
+        : Widget(parent)
+{
     setOrientation(orientation);
-  }
+}
 
-  Spacer::~Spacer()
-  {
-  }
+Spacer::~Spacer()
+{
+}
 
-  Size
-  Spacer::preferredSize() const
-  {
+Size
+Spacer::preferredSize() const
+{
     return Size(1, 1);
-  }
+}
 
-  void
-  Spacer::setOrientation(Orientation orientation)
-  {
+void
+Spacer::setOrientation(Orientation orientation)
+{
     if (orientation == Horizontal)
-      setConstraints(ExpandingConstraint, FixedConstraint);
+        setConstraints(ExpandingConstraint, FixedConstraint);
     else
-      setConstraints(FixedConstraint, ExpandingConstraint);
-  }
+        setConstraints(FixedConstraint, ExpandingConstraint);
+}
 
-  void
-  Spacer::paint(const PaintEvent& event)
-  {
+void
+Spacer::paint(const PaintEvent& event)
+{
     // no surface is allocated.
-  }
+}
 
-  void
-  Spacer::compose(const PaintEvent& event)
-  {
-  }
+void
+Spacer::compose(const PaintEvent& event)
+{
+}
 
 }

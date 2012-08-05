@@ -1,120 +1,321 @@
 <?xml version="1.0"?>
-<!DOCTYPE style SYSTEM "style.dtd">
+<!DOCTYPE style SYSTEM "style2.dtd">
 <style>
-	<fonts path="fonts/">
+	<fonts>
 		<buttonFont>
-			<file>decker.ttf</file>
+			<file>decker</file>
 			<size>16</size>			
+			<fontStyle>bold</fontStyle>
 		</buttonFont>
 
 		<defaultFont>
-			<file>decker.ttf</file>
+			<file>Armata-Regular</file>
 			<size>14</size>
 		</defaultFont>
 
 		<inputFont>
-			<file>decker.ttf</file>
-			<size>14</size>			
+			<file>Armata-Regular</file>
+			<size>14</size>
 		</inputFont>
 
 		<titleFont>
-			<file>JuraBook.ttf</file>
+			<file>Armata-Regular</file>
 			<size>18</size>
 			<fontStyle>italic</fontStyle>
 		</titleFont>
 	</fonts>
 
-	<hints>
-		<button>
-			<width>100</width>
-			<height>20</height>
-			<radius>6</radius>
-			<offset>5</offset>
-			<indicator>10</indicator>
-		</button>
+	<icons resource="/images/ui-icons.png">
+		<plus x="0" y="0" w="12" h="34"/>
+		<minus x="0" y="0" w="12" h="34"/>
+		<check x="91" y="33" w="16" h="16"/>
+		<tri-check x="109" y="36" w="16" h="16"/>
+		<radioOff x="87" y="55" w="10" h="10"/>
+		<radioOn x="98" y="55" w="10" h="10"/>
+	</icons>
+	
+	<pack resource="/images/ui-pack.png">
+		<PushButton>
+			<default>
+				<left x="0" y="0" w="12" h="34"/>
+				<mid x="12" y="0" w="2" h="34"/>
+				<right x="14" y="0" w="14" h="34"/>
+			</default>
 
-		<checkbox>
-			<width>20</width>
-			<height>20</height>
-			<radius>4</radius>
-			<offset>5</offset>
-		</checkbox>
+			<disabled>
+				<left x="84" y="0" w="12" h="34"/>
+				<mid x="96" y="0" w="2" h="34"/>
+				<right x="98" y="0" w="14" h="34"/>
+			</disabled>
 
-		<combobox>
-			<width>20</width>
-			<radius>4</radius>
-		</combobox>
+			<pressed>
+				<left x="28" y="0" w="12" h="34"/>
+				<mid x="40" y="0" w="2" h="34"/>
+				<right x="42" y="0" w="14" h="34"/>
+			</pressed>
 
-		<frame>
-			<radius>6</radius>
-		</frame>
+			<exposed>
+				<left x="56" y="0" w="12" h="34"/>
+				<mid x="68" y="0" w="2" h="34"/>
+				<right x="70" y="0" w="14" h="34"/>
+			</exposed>
 
-		<icon>
-			<width>48</width>
-			<height>48</height>
-		</icon>
+			<focused>
+				<left x="112" y="0" w="12" h="34"/>
+				<mid x="124" y="0" w="2" h="34"/>
+				<right x="126" y="0" w="14" h="34"/>
+			</focused>
+		</PushButton>
 
-		<progressbar>
-			<width>100</width>
-			<height>16</height>
-			<radius>4</radius>
-		</progressbar>
+		<CheckBox>
+			<default>
+				<left x="0" y="34" w="17" h="18"/>
+			</default>
 
-		<radiobutton>
-			<width>20</width>
-			<height>20</height>
-			<offset>5</offset>
-		</radiobutton>
+			<disabled>
+				<left x="70" y="34" w="17" h="18"/>
+			</disabled>
 
-		<slider>
-			<width>100</width>
-			<height>20</height>
-			<radius>2</radius>
-		</slider>
+			<pressed>
+				<left x="17" y="34" w="17" h="18"/>
+			</pressed>
 
-		<scrollbar>
-			<width>100</width>
-			<height>20</height>
-			<radius>2</radius>
-		</scrollbar>
+			<exposed>
+				<left x="34" y="34" w="17" h="18"/>
+			</exposed>
 
-		<tabpanel>
-			<width>100</width>
-			<height>40</height>
-			<offset>4</offset>
-		</tabpanel>
+			<focused>
+				<left x="52" y="34" w="17" h="18"/>
+			</focused>
+		</CheckBox>
 
-		<tabbutton>
-			<width>100</width>
-			<height>20</height>
-		</tabbutton>
+		<RadioButton>
+			<default>
+				<left x="0" y="52" w="17" h="18"/>
+			</default>
 
-		<textinput>
-			<radius>6</radius>
-		</textinput>
+			<disabled>
+				<left x="70" y="52" w="17" h="18"/>
+			</disabled>
 
-		<toolbar>
-			<height>40</height>
-		</toolbar>
-	</hints>
+			<pressed>
+				<left x="17" y="52" w="17" h="18"/>
+			</pressed>
 
-	<images path="images/">
-		<plus>plus.png</plus>
-		<minus>minus.png</minus>
-		<grid>grid.png</grid>
+			<exposed>
+				<left x="34" y="52" w="17" h="18"/>
+			</exposed>
 
-		<critical>critical.png</critical>
-		<information>info.png</information>
-		<question>question.png</question>
-		<warning>warning.png</warning>
+			<focused>
+				<left x="52" y="52" w="17" h="18"/>
+			</focused>
+		</RadioButton>
 
-		<up>arrowUp.png</up>
-		<down>arrowDown.png</down>
-		<left>arrowLeft.png</left>
-		<right>arrowRight.png</right>
+		<ProgressBar>
+			<default>
+				<left x="0" y="70" w="5" h="8"/>
+				<mid x="5" y="70" w="2" h="8"/>
+				<right x="7" y="70" w="5" h="8"/>
+			</default>
 
-		<empty>checkEmpty.png</empty>
-		<partial>checkPartial.png</partial>
-		<full>checkFull.png</full>
-	</images>
+			<disabled>
+				<left x="26" y="70" w="5" h="8"/>
+				<mid x="31" y="70" w="2" h="8"/>
+				<right x="33" y="0" w="5" h="8"/>
+			</disabled>
+
+			<indicator>
+				<default>
+					<left x="13" y="70" w="5" h="8"/>
+					<mid x="18" y="70" w="2" h="8"/>
+					<right x="20" y="70" w="5" h="8"/>
+				</default>
+
+				<disabled>
+					<left x="39" y="70" w="5" h="8"/>
+					<mid x="44" y="70" w="2" h="8"/>
+					<right x="46" y="70" w="5" h="8"/>
+				</disabled>
+			</indicator>
+		</ProgressBar>
+
+		<Slider>
+			<default>
+				<left x="0" y="78" w="10" h="16"/>
+				<mid x="10" y="78" w="2" h="16"/>
+				<right x="12" y="78" w="10" h="16"/>
+			</default>
+
+			<disabled>
+				<left x="24" y="78" w="10" h="16"/>
+				<mid x="34" y="78" w="2" h="16"/>
+				<right x="36" y="78" w="10" h="16"/>
+			</disabled>
+
+			<indicator>
+				<default>
+					<left x="48" y="79" w="14" h="14"/>
+				</default>
+
+				<disabled>
+					<left x="108" y="79" w="14" h="14"/>
+				</disabled>
+
+				<pressed>
+					<left x="63" y="79" w="14" h="14"/>
+				</pressed>
+
+				<exposed>
+					<left x="78" y="79" w="14" h="14"/>
+				</exposed>
+
+				<focused>
+					<left x="93" y="79" w="14" h="14"/>
+				</focused>
+			</indicator>
+		</Slider>
+
+		<Frame>
+			<default>
+				<top-left x="127" y="74" w="16" h="16"/> 
+				<top-mid x="143" y="74" w="2" h="16"/>
+				<top-right x="145" y="74" w="16" h="16"/>
+				<left x="127" y="90" w="16" h="2"/>
+				<mid x="143" y="90" w="2" h="2"/>
+				<right x="145" y="90" w="16" h="2"/>
+				<bottom-left x="127" y="92" w="16" h="16"/>
+				<bottom-mid x="143" y="92" w="2" h="16"/>
+				<bottom-right x="145" y="92" w="16" h="16"/>
+			</default>
+			<disabled>
+				<top-left x="127" y="74" w="16" h="16"/> 
+				<top-mid x="143" y="74" w="2" h="16"/>
+				<top-right x="145" y="74" w="16" h="16"/>
+				<left x="127" y="90" w="16" h="2"/>
+				<mid x="143" y="90" w="2" h="2"/>
+				<right x="145" y="90" w="16" h="2"/>
+				<bottom-left x="127" y="92" w="16" h="16"/>
+				<bottom-mid x="143" y="92" w="2" h="16"/>
+				<bottom-right x="145" y="92" w="16" h="16"/>
+			</disabled>
+		</Frame>
+
+		<LineInput>
+			<default>
+				<left x="0" y="111" w="14" h="28"/>
+				<mid x="14" y="111" w="2" h="28"/>
+				<right x="16" y="111" w="14" h="28"/>
+			</default>
+
+			<disabled>
+				<left x="97" y="111" w="14" h="28"/>
+				<mid x="111" y="111" w="2" h="28"/>
+				<right x="113" y="111" w="14" h="28"/>
+			</disabled>
+
+			<pressed>
+				<left x="65" y="111" w="14" h="28"/>
+				<mid x="79" y="111" w="2" h="28"/>
+				<right x="81" y="111" w="14" h="28"/>
+			</pressed>
+
+			<exposed>
+				<left x="33" y="111" w="14" h="28"/>
+				<mid x="47" y="111" w="2" h="28"/>
+				<right x="49" y="111" w="14" h="28"/>
+			</exposed>
+
+			<focused>
+				<left x="129" y="111" w="15" h="28"/>
+				<mid x="144" y="111" w="2" h="28"/>
+				<right x="146" y="111" w="15" h="28"/>
+			</focused>
+		</LineInput>
+
+		<Tab>
+			<default>
+				<top-left x="129" y="38" w="16" h="16"/> 
+				<top-mid x="144" y="38" w="2" h="16"/>
+				<top-right x="146" y="38" w="16" h="16"/>
+				<left x="129" y="52" w="16" h="2"/>
+				<mid x="144" y="52" w="2" h="2"/>
+				<right x="146" y="52" w="16" h="2"/>
+				<bottom-left x="129" y="54" w="16" h="16"/>
+				<bottom-mid x="144" y="54" w="2" h="16"/>
+				<bottom-right x="146" y="54" w="16" h="16"/>
+			</default>
+			<disabled>
+				<top-left x="129" y="38" w="16" h="16"/> 
+				<top-mid x="144" y="38" w="2" h="16"/>
+				<top-right x="146" y="38" w="16" h="16"/>
+				<left x="129" y="52" w="16" h="2"/>
+				<mid x="144" y="52" w="2" h="2"/>
+				<right x="146" y="52" w="16" h="2"/>
+				<bottom-left x="129" y="54" w="16" h="16"/>
+				<bottom-mid x="144" y="54" w="2" h="16"/>
+				<bottom-right x="146" y="54" w="16" h="16"/>
+			</disabled>
+		</Tab>
+
+		<ToolButton>
+			<default>
+				<top-left x="0" y="94" w="7" h="7"/> 
+				<top-mid x="7" y="94" w="1" h="7"/>
+				<top-right x="8" y="94" w="9" h="7"/>
+				<left x="0" y="101" w="7" h="1"/>
+				<mid x="7" y="101" w="1" h="1"/>
+				<right x="8" y="101" w="9" h="1"/>
+				<bottom-left x="0" y="102" w="7" h="9"/>
+				<bottom-mid x="7" y="102" w="1" h="9"/>
+				<bottom-right x="8" y="102" w="9" h="9"/>
+			</default>
+			<disabled>
+				<top-left x="80" y="94" w="7" h="7"/> 
+				<top-mid x="87" y="94" w="1" h="7"/>
+				<top-right x="88" y="94" w="9" h="7"/>
+				<left x="80" y="101" w="7" h="1"/>
+				<mid x="87" y="101" w="1" h="1"/>
+				<right x="88" y="101" w="9" h="1"/>
+				<bottom-left x="80" y="102" w="7" h="9"/>
+				<bottom-mid x="87" y="102" w="1" h="9"/>
+				<bottom-right x="88" y="102" w="9" h="9"/>
+			</disabled>
+
+			<pressed>
+				<top-left x="20" y="94" w="7" h="7"/> 
+				<top-mid x="27" y="94" w="1" h="7"/>
+				<top-right x="28" y="94" w="9" h="7"/>
+				<left x="20" y="101" w="7" h="1"/>
+				<mid x="27" y="101" w="1" h="1"/>
+				<right x="28" y="101" w="9" h="1"/>
+				<bottom-left x="20" y="102" w="7" h="9"/>
+				<bottom-mid x="27" y="102" w="1" h="9"/>
+				<bottom-right x="28" y="102" w="9" h="9"/>
+			</pressed>
+
+			<exposed>
+				<top-left x="40" y="94" w="7" h="7"/> 
+				<top-mid x="47" y="94" w="1" h="7"/>
+				<top-right x="48" y="94" w="9" h="7"/>
+				<left x="40" y="101" w="7" h="1"/>
+				<mid x="47" y="101" w="1" h="1"/>
+				<right x="48" y="101" w="9" h="1"/>
+				<bottom-left x="40" y="102" w="7" h="9"/>
+				<bottom-mid x="47" y="102" w="1" h="9"/>
+				<bottom-right x="48" y="102" w="9" h="9"/>
+			</exposed>
+
+			<focused>
+				<top-left x="60" y="94" w="7" h="7"/> 
+				<top-mid x="67" y="94" w="1" h="7"/>
+				<top-right x="68" y="94" w="9" h="7"/>
+				<left x="60" y="101" w="7" h="1"/>
+				<mid x="67" y="101" w="1" h="1"/>
+				<right x="68" y="101" w="9" h="1"/>
+				<bottom-left x="60" y="102" w="7" h="9"/>
+				<bottom-mid x="67" y="102" w="1" h="9"/>
+				<bottom-right x="68" y="102" w="9" h="9"/>
+			</focused>
+		</ToolButton>
+	</pack>
 </style>

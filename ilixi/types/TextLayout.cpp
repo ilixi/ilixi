@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,25 +21,37 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "TextLayout.h"
-#include "core/Logger.h"
+#include <TextLayout.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_TEXTLAYOUT, "ilixi/types/TextLayout", "TextLayout");
 
 TextLayout::TextLayout()
-        : _modified(true), _singleLine(false), _text(""), _alignment(Left)
+        : _modified(true),
+          _singleLine(false),
+          _text(""),
+          _alignment(Left)
 {
 }
 
 TextLayout::TextLayout(const std::string& text)
-        : _modified(true), _singleLine(false), _text(text), _alignment(Left)
+        : _modified(true),
+          _singleLine(false),
+          _text(text),
+          _alignment(Left)
 {
 }
 
 TextLayout::TextLayout(const TextLayout& layout)
-        : _modified(true), _singleLine(layout._singleLine), _text(layout._text), _alignment(
-                layout._alignment), _bounds(layout._bounds), _lines(
-                layout._lines)
+        : _modified(true),
+          _singleLine(layout._singleLine),
+          _text(layout._text),
+          _alignment(layout._alignment),
+          _bounds(layout._bounds),
+          _lines(layout._lines)
 {
 }
 
@@ -87,6 +99,12 @@ bool
 TextLayout::singleLine() const
 {
     return _singleLine;
+}
+
+bool
+TextLayout::isEmpty() const
+{
+    return _text.empty();
 }
 
 std::string
@@ -175,7 +193,10 @@ TextLayout::insert(int pos, char c)
 void
 TextLayout::insert(int pos, const std::string& str)
 {
-    _text.insert(pos, str);
+    if (_text.empty())
+        _text = str;
+    else
+        _text.insert(pos, str);
     _modified = true;
 }
 
@@ -237,6 +258,8 @@ TextLayout::setHeight(int height)
 void
 TextLayout::setBounds(int x, int y, int w, int h)
 {
+    ILOG_TRACE(ILX_TEXTLAYOUT);
+    ILOG_DEBUG(ILX_TEXTLAYOUT, " -> (%d, %d, %d, %d)\n", x, y, w, h);
     _bounds.setRectangle(x, y, w, h);
     _modified = true;
 }
@@ -258,6 +281,12 @@ void
 TextLayout::setText(const std::string& text)
 {
     _text = text;
+    _modified = true;
+}
+
+void
+TextLayout::setModified()
+{
     _modified = true;
 }
 
@@ -288,7 +317,7 @@ TextLayout::doLayout(Font* font)
             l.offset = text - start;
 
             font->stringBreak(text, -1, _bounds.width(), &l.lineWidth,
-                    &l.length, &next);
+                              &l.length, &next);
             l.bytes = next - text;
             _lines.push_back(l);
 
@@ -338,8 +367,10 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y)
     for (TextLayout::LineList::const_iterator it = _lines.begin();
             it != _lines.end(); ++it)
         surface->DrawString(surface,
-                text + ((TextLayout::LayoutLine) *it).offset,
-                ((TextLayout::LayoutLine) *it).bytes, x,
-                y + ((TextLayout::LayoutLine) *it).y,
-                (DFBSurfaceTextFlags) _alignment);
+                            text + ((TextLayout::LayoutLine) *it).offset,
+                            ((TextLayout::LayoutLine) *it).bytes, x,
+                            y + ((TextLayout::LayoutLine) *it).y,
+                            (DFBSurfaceTextFlags) _alignment);
 }
+
+} /* namespace ilixi */

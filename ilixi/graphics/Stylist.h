@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,52 +24,24 @@
 #ifndef ILIXI_STYLIST_H_
 #define ILIXI_STYLIST_H_
 
-#include "types/Rectangle.h"
-#include "types/Enums.h"
-#include "types/Image.h"
-#include "types/Font.h"
-#include "graphics/Palette.h"
-#include "graphics/Style.h"
-#include <libxml/tree.h>
+#include <graphics/StylistBase.h>
 
 namespace ilixi
 {
-  class TweenAnimation;
-  class Painter;
-  class Widget;
-  // Forward declarations for the rest of standard UI elements.
-  class Application;
-  class Dialog;
-  class BorderBase;
-  class Label;
-  class Icon;
-  class CheckBox;
-  class PushButton;
-  class RadioButton;
-  class Slider;
-  class ToolButton;
-  class ComboBox;
 
-  //! Draws standard widgets.
-  /*!
-   * This class parses a stylesheet and stores palette, images, fonts and various hints.
-   * You should override drawing methods in your implementations.
-   */
-  class Stylist
-  {
+//! Draws standard widgets.
+/*!
+ * This class parses a stylesheet and stores palette, images, fonts and various hints.
+ * You should override drawing methods in your implementations.
+ */
+class Stylist : public StylistBase
+{
     friend class Application;
     friend class Image;
-  public:
 
-    enum StyledAnimation
-    {
-      ExposeIn, ExposeOut, FocusIn, FocusOut
-    };
-
+public:
     /*!
      * Constructor.
-     *
-     * @param styleSheet path to a valid style file.
      */
     Stylist();
 
@@ -78,48 +50,6 @@ namespace ilixi
      */
     virtual
     ~Stylist();
-
-    /*!
-     * Sets the palette using a file.
-     * Returns true if successful.
-     *
-     * @param palette path to a valid palette file.
-     */
-    bool
-    setPaletteFromFile(const char* palette);
-
-    /*!
-     * Sets the images/hints/fonts using a file.
-     * Returns true if successful.
-     *
-     * @param style path to a valid style file.
-     */
-    bool
-    setStyleFromFile(const char* style);
-
-    /*!
-     * Returns the default size for given type.
-     */
-    virtual Size
-    defaultSize(StyleHint::Size size) const;
-
-    /*!
-     * Returns the default parameter value for given type.
-     */
-    int
-    defaultParameter(StyleHint::Parameter parameter) const;
-
-    /*!
-     * Returns the default font for given type.
-     */
-    Font*
-    defaultFont(StyleHint::Font font = StyleHint::DefaultFont) const;
-
-    /*!
-     * Returns the default icon for given type.
-     */
-    Image*
-    defaultIcon(StyleHint::DefaultIcon icon) const;
 
     /*!
      * Draws application frame.
@@ -137,7 +67,7 @@ namespace ilixi
      * Draws a frame.
      */
     virtual void
-    drawFrame(Painter* painter, BorderBase* frame);
+    drawFrame(Painter* painter, Frame* frame);
 
     /*!
      * Draws a label.
@@ -158,6 +88,18 @@ namespace ilixi
     drawCheckBox(Painter* painter, CheckBox* checkbox);
 
     /*!
+     * Draws a line input.
+     */
+    virtual void
+    drawLineInput(Painter* painter, LineInput* input);
+
+    /*!
+     * Draws a groupbox.
+     */
+    virtual void
+    drawGroupBox(Painter* painter, GroupBox* box);
+
+    /*!
      * Draws a pushbutton.
      */
     virtual void
@@ -170,10 +112,28 @@ namespace ilixi
     drawRadioButton(Painter* painter, RadioButton* button);
 
     /*!
+     * Draws a progressbar.
+     */
+    virtual void
+    drawProgressBar(Painter* painter, ProgressBar* bar);
+
+    /*!
      * Draws a slider.
      */
     virtual void
     drawSlider(Painter* painter, Slider* slider);
+
+    /*!
+     * Draws a tab panel button.
+     */
+    virtual void
+    drawTabPanelButton(Painter* painter, TabPanelButton* button);
+
+    /*!
+     * Draws a tab panel.
+     */
+    virtual void
+    drawTabPanel(Painter* painter, TabPanel* panel);
 
     /*!
      * Draws a toolbutton.
@@ -187,37 +147,19 @@ namespace ilixi
     virtual void
     drawComboBox(Painter* painter, ComboBox* combo);
 
-    void
-    animate(StyledAnimation type, Widget* target);
-
-  protected:
-    //! This property stores the palette.
-    Palette _palette;
-    //! This property stores the style items.
-    Style _style;
-    //! This property specifies the width of borders around widgets.
-    int _borderWidth;
-
-    struct AnimatedElement
-    {
-      TweenAnimation* in;
-      TweenAnimation* out;
-      Widget* targetIn;
-      Widget* targetOut;
-    };
-
-    AnimatedElement _focus;
-
-  private:
-    //! "Image not found" image.
-    static Image* _noImage;
-
     virtual void
-    initAnimations();
+    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners =
+                      AllCorners);
+
+protected:
+    virtual void
+    draw9Frame(Painter* painter, int x, int y, int w, int h,
+               const Style::r9& rect, Corners corners = AllCorners);
 
     void
-    runAnimation(StyledAnimation type);
-  };
+    drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect);
+
+};
 }
 
 #endif /* ILIXI_STYLIST_H_ */

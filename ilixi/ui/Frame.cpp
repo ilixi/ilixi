@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,118 +21,114 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/Frame.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/Frame.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-Frame::Frame(Widget* parent) :
-    ContainerBase(parent), BorderBase(this), _backgroundFlags(BGFAll)
+namespace ilixi
 {
-  setBorderWidth(1);
-  setBorderStyle(StyledBorder);
-  setConstraints(NoConstraint, MinimumExpandingConstraint);
+
+D_DEBUG_DOMAIN( ILX_FRAME, "ilixi/ui/Frame", "Frame");
+
+Frame::Frame(Widget* parent)
+        : ContainerBase(parent),
+          _margin(0)
+{
+    setConstraints(NoConstraint, MinimumExpandingConstraint);
 }
 
 Frame::~Frame()
 {
-  ILOG_TRACE_W(ILX_FRAME);
+    ILOG_TRACE_W(ILX_FRAME);
 }
 
 int
 Frame::heightForWidth(int width) const
 {
-  return _layout->heightForWidth(
-      width - (_canvasTopLeft.x() + _margin.hSum() + 2 * borderOffset()))
-      + _canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth();
+    return _layout->heightForWidth(
+            width - _margin.hSum()
+                    - stylist()->defaultParameter(StyleHint::FrameOffsetLR))
+            + _margin.vSum()
+            + stylist()->defaultParameter(StyleHint::FrameOffsetLR);
 }
 
 Size
 Frame::preferredSize() const
 {
-  Size s = _layout->preferredSize();
-  return Size(
-      s.width() + _canvasTopLeft.x() + _margin.hSum() + 2 * borderOffset(),
-      s.height() + _canvasTopLeft.y() + _margin.vSum() + 2 * borderWidth());
-}
-
-bool
-Frame::backgroundFilled() const
-{
-  return _backgroundFlags & BGFFill;
-}
-
-Margin
-Frame::margin() const
-{
-  return _margin;
-}
-
-void
-Frame::setBackgroundFilled(bool fill)
-{
-  _backgroundFlags |= BGFAll;
-}
-
-void
-Frame::setCanvasPosition(const Point& topLeft)
-{
-  _canvasTopLeft = topLeft;
-  doLayout();
-}
-
-void
-Frame::setMargins(int top, int bottom, int left, int right)
-{
-  _margin.setMargins(top, bottom, left, right);
-  doLayout();
-}
-
-void
-Frame::setMargin(const Margin& margin)
-{
-  _margin = margin;
-  doLayout();
-}
-
-void
-Frame::updateContainerGeometry()
-{
-  ILOG_TRACE_W(ILX_FRAME);
-  _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
-}
-
-void
-Frame::compose(const PaintEvent& event)
-{
-  ILOG_TRACE_W(ILX_FRAME);
-  Painter painter(this);
-  painter.begin(event);
-  stylist()->drawFrame(&painter, this);
-  painter.end();
+    Size s = _layout->preferredSize();
+    return Size(
+            s.width() + +_margin.hSum()
+                    + stylist()->defaultParameter(StyleHint::FrameOffsetLR),
+            s.height() + _margin.vSum()
+                    + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
 }
 
 int
 Frame::canvasX() const
 {
-  return _canvasTopLeft.x() + _margin.left() + borderOffset();
+    return _margin.left()
+            + stylist()->defaultParameter(StyleHint::FrameOffsetLeft);
 }
 
 int
 Frame::canvasY() const
 {
-  return _canvasTopLeft.y() + _margin.top() + borderWidth();
+    return _margin.top()
+            + stylist()->defaultParameter(StyleHint::FrameOffsetRight);
 }
 
 int
 Frame::canvasHeight() const
 {
-  return height() - (_canvasTopLeft.y() + _margin.vSum()) - 2 * borderWidth();
+    return height() - _margin.vSum()
+            - stylist()->defaultParameter(StyleHint::FrameOffsetTB);
 }
 
 int
 Frame::canvasWidth() const
 {
-  return width() - (_canvasTopLeft.x() + _margin.hSum()) - 2 * borderOffset();
+    return width() - _margin.hSum()
+            - stylist()->defaultParameter(StyleHint::FrameOffsetLR);
 }
+
+Margin
+Frame::margin() const
+{
+    return _margin;
+}
+
+void
+Frame::setMargins(int top, int bottom, int left, int right)
+{
+    _margin.setMargins(top, bottom, left, right);
+    doLayout();
+}
+
+void
+Frame::setMargin(const Margin& margin)
+{
+    _margin = margin;
+    doLayout();
+}
+
+void
+Frame::updateLayoutGeometry()
+{
+    ILOG_TRACE_W(ILX_FRAME);
+    ILOG_DEBUG(
+            ILX_FRAME,
+            " -> R(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
+    _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
+}
+
+void
+Frame::compose(const PaintEvent& event)
+{
+    ILOG_TRACE_W(ILX_FRAME);
+    Painter painter(this);
+    painter.begin(event);
+    stylist()->drawFrame(&painter, this);
+    painter.end();
+}
+
+} /* namespace ilixi */

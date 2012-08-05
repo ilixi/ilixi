@@ -129,6 +129,8 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 CXXFLAGS="$CFLAGS"
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
+AC_DEFINE_UNQUOTED([FONTDIR], ["$prefix/share/$PACKAGE-$VERSION/fonts/"], [ilixi font directory])
+AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
 ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -138,6 +140,7 @@ AC_CONFIG_FILES([ \
 		data/Makefile \
 		data/fonts/Makefile \
 		data/images/Makefile \
+		data/apps/Makefile \
 		doc/Makefile \
 		doc/resources/Makefile \
 		ilixi/Makefile \
@@ -161,6 +164,7 @@ AC_CONFIG_FILES([ \
 		bin/compositor/Makefile \
 		bin/compositor/images/Makefile \
 		bin/carousel/Makefile \
+		bin/osk/Makefile \
 		ilixi.pc:ilixi.pc.in
 ])
 AC_OUTPUT

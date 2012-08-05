@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,112 +21,101 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/RadioButton.h"
-#include "graphics/Painter.h"
+#include <ui/RadioButton.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-RadioButton::RadioButton(const std::string& text, Widget* parent) :
-    Button(text, parent)
+namespace ilixi
 {
-  _layout.setSingleLine(true);
-  setCheckable(true);
-  setConstraints(NoConstraint, MinimumConstraint);
-  sigCheckChanged.connect(sigc::mem_fun(this, &RadioButton::informGroup));
+
+D_DEBUG_DOMAIN( ILX_RADIOBUTTON, "ilixi/ui/RadioButton", "RadioButton");
+
+RadioButton::RadioButton(const std::string& text, Widget* parent)
+        : Button(text, parent),
+          _group(NULL)
+{
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
+    _layout.setSingleLine(true);
+    setCheckable(true);
+    setConstraints(NoConstraint, FixedConstraint);
+    sigCheckChanged.connect(sigc::mem_fun(this, &RadioButton::informGroup));
 }
 
 RadioButton::~RadioButton()
 {
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
 }
 
 int
 RadioButton::heightForWidth(int width) const
 {
-  int w = stylist()->defaultParameter(StyleHint::RadioOffset)
-      + stylist()->defaultParameter(StyleHint::RadioWidth);
-  int h = stylist()->defaultParameter(StyleHint::RadioHeight);
+    int w = stylist()->defaultParameter(StyleHint::RadioWidth);
+    int h = stylist()->defaultParameter(StyleHint::RadioHeight);
 
-  if (icon())
-    {
-      w += stylist()->defaultParameter(StyleHint::RadioOffset)
-          + icon()->width();
-      h = std::max(icon()->height(), h);
-    }
-
-  return std::max(textLayoutHeightForWidth(width - w), h);
+    return std::max(textLayoutHeightForWidth(width - w), h);
 }
 
 Size
 RadioButton::preferredSize() const
 {
-  int w = stylist()->defaultParameter(StyleHint::RadioOffset)
-      + stylist()->defaultParameter(StyleHint::RadioWidth);
-  int h = stylist()->defaultParameter(StyleHint::RadioHeight);
+    int w = stylist()->defaultParameter(StyleHint::RadioWidth);
+    int h = stylist()->defaultParameter(StyleHint::RadioHeight);
 
-  if (icon())
+    if (!text().empty())
     {
-      w += stylist()->defaultParameter(StyleHint::RadioOffset)
-          + icon()->width();
-      h = std::max(icon()->height(), h);
+        Size s = textExtents();
+        w += stylist()->defaultParameter(StyleHint::ButtonOffset) + s.width();
+        h = std::max(s.height(), h);
     }
-
-  if (!text().empty())
-    {
-      Size s = textExtents();
-      w += stylist()->defaultParameter(StyleHint::RadioOffset) + s.width();
-      h = std::max(s.height(), h);
-    }
-  return Size(w, h);
+    return Size(w, h);
 }
 
 void
 RadioButton::setGroup(RadioGroup* group)
 {
-  _group = group;
+    _group = group;
 }
 
 void
 RadioButton::toggleChecked()
 {
-  if (!checked())
+    if (!checked())
     {
-      setChecked();
-      sigCheckChanged(true);
+        setChecked();
+        sigCheckChanged(true);
     }
-  update();
+    update();
 }
 
 void
 RadioButton::informGroup(bool checked)
 {
-  _group->select(this);
+    if (_group)
+        _group->select(this);
 }
 
 void
 RadioButton::compose(const PaintEvent& event)
 {
-  Painter p(this);
-  p.begin(event);
-  stylist()->drawRadioButton(&p, this);
-  p.end();
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawRadioButton(&p, this);
+    p.end();
 }
 
 void
 RadioButton::updateTextBaseGeometry()
 {
-  int x = 2 * stylist()->defaultParameter(StyleHint::RadioOffset)
-      + stylist()->defaultParameter(StyleHint::RadioWidth);
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
+    int x = stylist()->defaultParameter(StyleHint::ButtonOffset)
+            + stylist()->defaultParameter(StyleHint::RadioWidth);
 
-  if (icon())
-    {
-      _icon->moveTo(x, (height() - icon()->height()) / 2);
-      x += stylist()->defaultParameter(StyleHint::RadioOffset)
-          + icon()->width();
-    }
+    int th = textLayoutHeightForWidth(width() - x);
+    int y = (height() - th) / 2;
 
-  int th = textLayoutHeightForWidth(width() - x);
-  int y = (height() - th) / 2;
-
-  _layout.setBounds(x, y, width() - x, height());
-  _layout.doLayout(font());
+    _layout.setBounds(x, y, width() - x, height());
+    _layout.doLayout(font());
 }
+
+} /* namespace ilixi */

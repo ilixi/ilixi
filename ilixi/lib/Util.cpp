@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,22 +21,20 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_S9STYLIST_H_
-#define ILIXI_S9STYLIST_H_
-
-#include "graphics/Stylist.h"
+#include <lib/Util.h>
 
 namespace ilixi
 {
 
-  class S9Stylist
-  {
-  public:
-    S9Stylist();
+unsigned int
+Hash(const std::string& str)
+{
+    unsigned int hash = 5381;
 
-    virtual
-    ~S9Stylist();
-  };
+    for (std::size_t i = 0; i < str.length(); i++)
+        hash = ((hash << 5) + hash) + str[i];
+
+    return hash;
+}
 
 } /* namespace ilixi */
-#endif /* ILIXI_S9STYLIST_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,276 +21,297 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Font.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
+#include <types/Font.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
+#include <types/FontCache.h>
+#include <sstream>
 
-using namespace ilixi;
-
-Font::Font() :
-    _modified(true), _ref(0), _fileName(""), _font(NULL)
+namespace ilixi
 {
-  ILOG_TRACE(ILX_FONT);
+
+D_DEBUG_DOMAIN( ILX_FONT, "ilixi/types/Font", "Font");
+
+Font::Font()
+        : _modified(true),
+          _font(NULL),
+          _size(12),
+          _attr(DFFA_NONE),
+          _name("decker"),
+          _ref(1)
+{
+    ILOG_TRACE(ILX_FONT);
 }
 
-Font::Font(const std::string& file, int size) :
-    _modified(true), _ref(0), _fileName(file), _font(NULL)
+Font::Font(const std::string& name, int size)
+        : _modified(true),
+          _font(NULL),
+          _size(size),
+          _attr(DFFA_NONE),
+          _name(name),
+          _ref(1)
 {
-  // Fixme is height absolutely necessary here?
-  _desc.flags = DFDESC_HEIGHT;
-  _desc.height = size;
-  ILOG_TRACE(ILX_FONT);
+    ILOG_TRACE(ILX_FONT);
+    ILOG_DEBUG(ILX_FONT, " -> name: %s, size: %d\n", _name.c_str(), _size);
 }
 
-Font::Font(const Font& font) :
-    _modified(true), _ref(0), _fileName(font._fileName), _font(font._font), _desc(
-        font._desc)
+Font::Font(const Font& font)
+        : _modified(true),
+          _font(font._font),
+          _size(font._size),
+          _attr(font._attr),
+          _name(font._name),
+          _ref(1)
 {
-  if (_font)
-    _font->AddRef(_font);
-  ILOG_TRACE(ILX_FONT);
+    if (_font)
+        _font->AddRef(_font);
+    ILOG_TRACE(ILX_FONT);
+    ILOG_DEBUG(ILX_FONT,
+               " -> copied name: %s, size: %d\n", _name.c_str(), _size);
 }
 
 Font::~Font()
 {
-  release();
-  ILOG_TRACE(ILX_FONT);
+    release();
+    ILOG_TRACE(ILX_FONT);
 }
 
 IDirectFBFont*
 Font::dfbFont()
 {
-  if (loadFont())
-    return _font;
-  return 0;
+    if (loadFont())
+        return _font;
+    return 0;
 }
 
 int
 Font::ascender()
 {
-  if (!loadFont())
-    return 0;
+    if (!loadFont())
+        return 0;
 
-  int ascender;
-  _font->GetAscender(_font, &ascender);
-  return ascender;
+    int ascender;
+    _font->GetAscender(_font, &ascender);
+    return ascender;
 }
 
 int
 Font::descender()
 {
-  if (!loadFont())
-    return 0;
+    if (!loadFont())
+        return 0;
 
-  int descender;
-  _font->GetDescender(_font, &descender);
-  return descender;
+    int descender;
+    _font->GetDescender(_font, &descender);
+    return descender;
 }
 
 int
 Font::leading()
 {
-  if (!loadFont())
-    return 0;
+    if (!loadFont())
+        return 0;
 
-  int height;
-  _font->GetHeight(_font, &height);
-  return height;
+    int height;
+    _font->GetHeight(_font, &height);
+    return height;
 }
 
 Size
-Font::extents(const std::string& text, int offset)
+Font::extents(const std::string& text, int bytes)
 {
-  if (!loadFont())
-    return Size();
-
-  DFBRectangle rect;
-  _font->GetStringExtents(_font, text.c_str(), offset, &rect, NULL);
-  return Size(rect.w, rect.h);
+    if (!loadFont())
+        return Size();
+    ILOG_TRACE(ILX_FONT);
+    DFBRectangle rect;
+    _font->GetStringExtents(_font, text.c_str(), bytes, &rect, NULL);
+    ILOG_DEBUG(
+            ILX_FONT,
+            " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
+    return Size(rect.w, rect.h);
 }
 
 Size
 Font::glyphExtents(unsigned int c)
 {
-  if (!loadFont())
-    return Size();
+    if (!loadFont())
+        return Size();
 
-  DFBRectangle r;
-  _font->GetGlyphExtents(_font, c, &r, NULL);
-  return Size(r.w, r.h);
+    DFBRectangle r;
+    _font->GetGlyphExtents(_font, c, &r, NULL);
+    return Size(r.w, r.h);
 }
 
 int
 Font::glyphAdvance(unsigned int c)
 {
-  if (!loadFont())
-    return 0;
+    if (!loadFont())
+        return 0;
 
-  int r;
-  _font->GetGlyphExtents(_font, c, NULL, &r);
-  return r;
+    int r;
+    _font->GetGlyphExtents(_font, c, NULL, &r);
+    return r;
 }
 
 void
 Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth,
-    int* length, const char** nextLine)
+                  int* length, const char** nextLine)
 {
-  if (!loadFont())
-    return;
+    if (!loadFont())
+        return;
 
-  DFBResult ret = _font->GetStringBreak(_font, text, offset, maxWidth,
-      lineWidth, length, nextLine);
-  if (ret)
+    DFBResult ret = _font->GetStringBreak(_font, text, offset, maxWidth,
+                                          lineWidth, length, nextLine);
+    if (ret)
     {
-      ILOG_ERROR(ILX_FONT, "Error while getting string breaks!\n");
-      *lineWidth = 0;
-      *length = 0;
-      *nextLine = NULL;
+        ILOG_ERROR(ILX_FONT, "Error while getting string breaks!\n");
+        *lineWidth = 0;
+        *length = 0;
+        *nextLine = NULL;
     }
 }
 
 int
 Font::textWidth(const std::string& text, int offset)
 {
-  if (!loadFont())
-    return 0;
+    if (!loadFont())
+        return 0;
 
-  int width;
-  _font->GetStringWidth(_font, text.c_str(), offset, &width);
-  return width;
+    int width;
+    _font->GetStringWidth(_font, text.c_str(), offset, &width);
+    return width;
 }
 
 int
 Font::size() const
 {
-  return _desc.height;
+    return _size;
 }
 
 Font::Style
 Font::style() const
 {
-  return (Style) _desc.attributes;
+    return (Style) _attr;
 }
 
 void
 Font::setEncoding(DFBTextEncodingID encoding)
 {
-  if (!loadFont())
-    return;
+    if (!loadFont())
+        return;
 
-  _font->SetEncoding(_font, encoding);
+    _font->SetEncoding(_font, encoding);
 }
 
 void
 Font::setSize(int size)
 {
-  _desc.flags = (DFBFontDescriptionFlags) (_desc.flags | DFDESC_HEIGHT);
-  _desc.height = size;
-  _modified = true;
+    _size = size;
+    _modified = true;
 }
 
 void
 Font::setStyle(Style style)
 {
-  _desc.flags = (DFBFontDescriptionFlags) (_desc.flags | DFDESC_ATTRIBUTES);
-  _desc.attributes = (DFBFontAttributes) style;
-  _modified = true;
-}
-
-void
-Font::setAttributes(DFBFontAttributes attr)
-{
-  _desc.flags = (DFBFontDescriptionFlags) (_desc.flags | DFDESC_ATTRIBUTES);
-  _desc.attributes = (DFBFontAttributes) attr;
-  _modified = true;
+    _attr = (DFBFontAttributes) (_attr | style);
+    _modified = true;
 }
 
 Font&
 Font::operator=(const Font& font)
 {
-  if (this != &font)
+    if (this != &font)
     {
-      _fileName = font._fileName;
-      _desc = font._desc;
-      if (font._font)
+        _name = font._name;
+        _size = font._size;
+        _attr = font._attr;
+        if (font._font)
         {
-          _font = font._font;
-          _font->AddRef(_font);
-          _modified = false;
-        }
-      else
-        _modified = true;
+            _font = font._font;
+            _font->AddRef(_font);
+            _modified = false;
+        } else
+            _modified = true;
     }
-  return *this;
+    return *this;
 }
 
 bool
 Font::operator==(const Font &font)
 {
-  return ((_fileName == font._fileName) && (_desc.flags == font._desc.flags)
-      && (_desc.height == font._desc.height)
-      && (_desc.attributes == font._desc.attributes) && (_font == font._font));
+    return ((_name == font._name) && (_size == font._size)
+            && (_attr == font._attr) && (_font == font._font));
 }
 
 bool
 Font::operator!=(const Font &font)
 {
-  return !(*this == font);
+    return !(*this == font);
+}
+
+std::string
+Font::toString() const
+{
+    std::stringstream ss;
+    ss << "Name: " << _name << " Size: " << _size << " Attr: " << _attr;
+    return ss.str();
 }
 
 bool
 Font::applyFont(IDirectFBSurface* surface)
 {
-  if (!loadFont())
-    return false;
+    if (!loadFont())
+        return false;
 
-  DFBResult ret = surface->SetFont(surface, _font);
-  if (ret)
+    ILOG_TRACE(ILX_FONT);
+    ILOG_DEBUG(ILX_FONT, " -> Font: %p\n", _font);
+    DFBResult ret = surface->SetFont(surface, _font);
+    if (ret)
     {
-      ILOG_ERROR(ILX_FONT, "Error while setting font!\n");
-      return false;
+        ILOG_ERROR(ILX_FONT, "Error while setting font!\n");
+        return false;
     }
 
-  return true;
+    return true;
 }
 
 bool
 Font::loadFont()
 {
-  if (_modified)
+    if (_modified)
     {
-      release();
-
-      if (_fileName == "")
-        {
-          ILOG_ERROR(ILX_FONT, "Font filename is invalid.\n");
-          return false;
-        }
-
-      DFBResult ret = AppBase::getDFB()->CreateFont(AppBase::getDFB(),
-          _fileName.c_str(), &_desc, &_font);
-      if (ret)
-        {
-          ILOG_ERROR( ILX_FONT,
-              "Error while creating font %s!\n", _fileName.c_str());
-          return false;
-        }
-
-      ILOG_DEBUG( ILX_FONT,
-          "Font [%s:%p] is created.\n", _fileName.c_str(), _font);
-      _modified = false;
+        release();
+        ILOG_TRACE(ILX_FONT);
+        _font = FontCache::Instance()->getEntry(_name.c_str(), _size, _attr);
+        ILOG_DEBUG(ILX_FONT, " -> Font: %p\n", _font);
+        _modified = false;
     }
 
-  return true;
+    return true;
 }
 
 void
 Font::release()
 {
-  if (_font)
+    if (_font)
     {
-      if (_font->Release(_font) != DR_OK)
-        ILOG_ERROR(ILX_FONT, "Error while releasing font!\n");
-      _font = NULL;
+        ILOG_TRACE(ILX_FONT);
+        FontCache::Instance()->releaseEntry(_name.c_str(), _size, _attr);
+        _font = NULL;
     }
 }
+
+void
+Font::addRef()
+{
+    _ref++;
+}
+
+void
+Font::relRef()
+{
+    if (!--_ref)
+        delete this;
+}
+
+} /* namespace ilixi */

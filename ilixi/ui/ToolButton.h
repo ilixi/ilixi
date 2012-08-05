@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,24 +24,24 @@
 #ifndef ILIXI_TOOLBUTTON_H_
 #define ILIXI_TOOLBUTTON_H_
 
-#include "ui/Button.h"
+#include <ui/Button.h>
 
 namespace ilixi
 {
-  //! A tool button with text label and icon.
-  class ToolButton : public Button
-  {
-  public:
+//! A tool button with text label and icon.
+class ToolButton : public Button
+{
+public:
     /*!
      * This enum controls toolbutton's drawing style.
      */
     enum ToolButtonStyle
     {
-      IconOnly, //!< Only icon is drawn.
-      TextOnly, //!< Only text is drawn.
-      IconBeforeText, //!< Icon is placed before text.
-      IconBelowText,//!< Icon is placed below text and centered.
-      IconAboveText
+        IconOnly, //!< Only icon is drawn.
+        TextOnly, //!< Only text is drawn.
+        IconBeforeText, //!< Icon is placed before text.
+        IconBelowText, //!< Icon is placed below text and centered.
+        IconAboveText
     //!< Icon is placed above text and centered.
     };
 
@@ -62,10 +62,16 @@ namespace ilixi
     preferredSize() const;
 
     /*!
+     * Returns button icon, if any.
+     */
+    const Icon*
+    icon() const;
+
+    /*!
      * Returns tool button's style.
      */
     ToolButtonStyle
-    getToolButtonStyle() const;
+    toolButtonStyle() const;
 
     /*!
      * Set tool button's style.
@@ -74,9 +80,32 @@ namespace ilixi
     void
     setToolButtonStyle(ToolButtonStyle style);
 
-  private:
+    /*!
+     * Sets button icon.
+     */
+    void
+    setIcon(Icon* icon);
+
+    /*!
+     * Sets button icon by automatically creating an icon.
+     *
+     * @param path to an image file.
+     * @param size in pixels.
+     */
+    void
+    setIcon(const std::string& path, const Size& size = Size(48, 48));
+
+    /*!
+     * Sets the size of button icon.
+     */
+    void
+    setIconSize(const Size& size);
+
+private:
     //    ! This property holds tool button's style.
     ToolButtonStyle _toolButtonStyle;
+    //! This property holds button's icon.
+    Icon* _icon;
 
     /*!
      * Paints ToolButton on its surface using current designer.
@@ -87,7 +116,7 @@ namespace ilixi
 
     virtual void
     updateTextBaseGeometry();
-  };
+};
 }
 
 #endif /* ILIXI_TOOLBUTTON_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -25,8 +25,8 @@
 #define TEXTLAYOUT_H_
 
 #include <list>
-#include "types/Font.h"
-#include "types/Rectangle.h"
+#include <types/Font.h>
+#include <types/Rectangle.h>
 
 namespace ilixi
 {
@@ -111,6 +111,12 @@ public:
      */
     bool
     singleLine() const;
+
+    /*!
+     * Returns true if layout text is empty.
+     */
+    bool
+    isEmpty() const;
 
     /*!
      * Returns text inside layout.
@@ -236,6 +242,12 @@ public:
     setText(const std::string& text);
 
     /*!
+     * Sets the modified flag.
+     */
+    void
+    setModified();
+
+    /*!
      * Lays out text inside bounding rectangle using given font.
      */
     void
@@ -262,7 +274,11 @@ private:
     struct LayoutLine
     {
         LayoutLine()
-                : offset(0), bytes(0), y(0), length(0), lineWidth(0)
+                : offset(0),
+                  bytes(0),
+                  y(0),
+                  length(0),
+                  lineWidth(0)
         {
         }
 

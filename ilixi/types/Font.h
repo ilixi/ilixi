@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,28 +26,27 @@
 
 #include <string>
 #include <directfb.h>
-#include "types/Size.h"
+#include <types/Size.h>
 
 namespace ilixi
 {
-  //! Specifies a font for drawing text.
-  /*!
-   * This class enables to set and query attributes of a font. It also
-   * provides measurement information for laying out text.
-   */
-  class Font
-  {
+//! Specifies a font for drawing text.
+/*!
+ * This class enables to set and query attributes of a font. It also
+ * provides measurement information for laying out text.
+ */
+class Font
+{
     friend class Painter; // applyFont
     friend class TextBase;
 
-  public:
+public:
     //! Specifies style for font.
     enum Style
     {
-      Plain = 0x00000000, //!< Normal style
-      Italic = 0x00000200, //!< Italic style
-      Bold = 0x00000800
-    //!< Bold style
+        Plain = 0x00000000, //!< Normal style
+        Bold = 0x00000800,  //!< Bold style
+        Italic = 0x00000200 //!< Italic style
     };
 
     /*!
@@ -56,9 +55,9 @@ namespace ilixi
     Font();
 
     /*!
-     * Creates a new font from a file.
+     * Creates a new font.
      */
-    Font(const std::string& file, int size = 12);
+    Font(const std::string& name, int size = 12);
 
     /*!
      * Copy constructor.
@@ -111,10 +110,10 @@ namespace ilixi
      *
      * An invalid size is returned if font can not be loaded.
      *
-     * @param offset number of bytes to use, -1 for whole string.
+     * @param bytes number of bytes to use, -1 for whole string.
      */
     Size
-    extents(const std::string& text, int offset = -1);
+    extents(const std::string& text, int bytes = -1);
 
     /*!
      * Returns the dimension of a glyph specified by its character code.
@@ -141,7 +140,7 @@ namespace ilixi
      */
     void
     stringBreak(const char* text, int offset, int maxWidth, int* lineWidth,
-        int* length, const char** nextLine);
+                int* length, const char** nextLine);
 
     /*!
      * Returns the logical width of text in pixels.
@@ -186,13 +185,6 @@ namespace ilixi
     setStyle(Style style);
 
     /*!
-     * Sets attributes for font, e.g. monochrome, vertical.
-     * \warning old attributes will be overwritten.
-     */
-    void
-    setAttributes(DFBFontAttributes attr);
-
-    /*!
      * Assigns f to this font and returns a reference to it.
      */
     Font&
@@ -210,17 +202,25 @@ namespace ilixi
     bool
     operator!=(const Font &f);
 
-  private:
+    /*!
+     * Returns a string for this font.
+     */
+    std::string
+    toString() const;
+
+private:
     //! Flag is set to true if font is modified.
     bool _modified;
-    //! Reference counter.
-    unsigned int _ref;
-    //! Filename for font.
-    std::string _fileName;
     //! DirectFB font interface.
     IDirectFBFont* _font;
-    //! DirectFB font description.
-    DFBFontDescription _desc;
+    //! Font size.
+    int _size;
+    //! Font attributes.
+    DFBFontAttributes _attr;
+    //! Font name.
+    std::string _name;
+    //! Reference counter;
+    unsigned int _ref;
 
     //! Applies font to surface.
     bool
@@ -233,7 +233,13 @@ namespace ilixi
     //! Release DirectFB font interface.
     void
     release();
-  };
+
+    void
+    addRef();
+
+    void
+    relRef();
+};
 }
 
 #endif /* ILIXI_FONT_H_ */

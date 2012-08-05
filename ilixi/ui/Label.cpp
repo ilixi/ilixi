@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,77 +21,80 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/Label.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/Label.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-Label::Label(std::string text, Widget* parent) :
-    Widget(parent), BorderBase(this), TextBase(text, this), _margin(0)
+namespace ilixi
 {
-  setConstraints(NoConstraint, MinimumConstraint);
-  ILOG_TRACE_W(ILX_LABEL);
+
+D_DEBUG_DOMAIN( ILX_LABEL, "ilixi/ui/Label", "Label");
+
+Label::Label(std::string text, Widget* parent)
+        : Widget(parent),
+          TextBase(text, this),
+          _margin(0)
+{
+    setConstraints(NoConstraint, MinimumConstraint);
+    ILOG_TRACE_W(ILX_LABEL);
 }
 
-Label::Label(const Label& label) :
-    BorderBase(label), TextBase(label), _margin(label._margin)
+Label::Label(const Label& label)
+        : TextBase(label),
+          _margin(label._margin)
 {
-  ILOG_TRACE_W(ILX_LABEL);
+    ILOG_TRACE_W(ILX_LABEL);
 }
 
 Label::~Label()
 {
-  ILOG_TRACE_W(ILX_LABEL);
+    ILOG_TRACE_W(ILX_LABEL);
 }
 
 int
 Label::heightForWidth(int width) const
 {
-  ILOG_TRACE_W(ILX_LABEL);
-  return textLayoutHeightForWidth(width - (2 * borderOffset() + _margin.hSum()))
-      + 2 * borderWidth() + _margin.vSum();
+    ILOG_TRACE_W(ILX_LABEL);
+    return textLayoutHeightForWidth(width - _margin.hSum()) + _margin.vSum();
 }
 
 Size
 Label::preferredSize() const
 {
-  ILOG_TRACE_W(ILX_LABEL);
-  Size s = textExtents();
-  return Size(2 * borderOffset() + s.width() + _margin.hSum(),
-      2 * borderWidth() + s.height() + _margin.vSum());
+    ILOG_TRACE_W(ILX_LABEL);
+    Size s = textExtents();
+    return Size(s.width() + _margin.hSum(), +s.height() + _margin.vSum());
 }
 
 Margin
 Label::margin() const
 {
-  return _margin;
+    return _margin;
 }
 
 void
 Label::setMargin(const Margin& margin)
 {
-  _margin = margin;
+    _margin = margin;
 }
 
 void
 Label::compose(const PaintEvent& event)
 {
-  ILOG_TRACE_W(ILX_LABEL);
-  Painter p(this);
-  p.begin(event);
-  stylist()->drawFrame(&p, this);
-  stylist()->drawLabel(&p, this);
-  p.end();
+    ILOG_TRACE_W(ILX_LABEL);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawLabel(&p, this);
+    p.end();
 }
 
 void
 Label::updateTextBaseGeometry()
 {
-  ILOG_TRACE_W(ILX_LABEL);
-  _layout.setBounds(_margin.right() + borderOffset(),
-      _margin.top() + borderWidth(),
-      width() - (2 * borderOffset() + _margin.hSum()),
-      height() - (2 * borderWidth() + _margin.vSum()));
-  _layout.doLayout(font());
+    ILOG_TRACE_W(ILX_LABEL);
+    _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(),
+                      height() - _margin.vSum());
+    _layout.doLayout(font());
 }
+
+} /* namespace ilixi */

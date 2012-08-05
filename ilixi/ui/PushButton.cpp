@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,97 +21,84 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/PushButton.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/PushButton.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-PushButton::PushButton(const std::string& text, Widget* parent) :
-    Button(text, parent)
+namespace ilixi
 {
-  ILOG_TRACE_W(ILX_PUSHBUTTON);
-  setConstraints(MinimumConstraint, FixedConstraint);
-  _layout.setSingleLine(true);
+
+D_DEBUG_DOMAIN( ILX_PUSHBUTTON, "ilixi/ui/PushButton", "PushButton");
+
+PushButton::PushButton(const std::string& text, Widget* parent)
+        : Button(text, parent)
+{
+    ILOG_TRACE_W(ILX_PUSHBUTTON);
+    setConstraints(MinimumConstraint, FixedConstraint);
+    _layout.setSingleLine(true);
+    _layout.setAlignment(TextLayout::Center);
 }
 
 PushButton::~PushButton()
 {
-  ILOG_TRACE_W(ILX_PUSHBUTTON);
+    ILOG_TRACE_W(ILX_PUSHBUTTON);
 }
 
 Size
 PushButton::preferredSize() const
 {
-  ILOG_TRACE_W(ILX_PUSHBUTTON);
-  if (text().empty() && !icon())
-    return stylist()->defaultSize(StyleHint::PushButton);
+    ILOG_TRACE_W(ILX_PUSHBUTTON);
 
-  int border = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
-      stylist()->defaultParameter(StyleHint::ButtonRadius));
+    if (text().empty())
+        return stylist()->defaultSize(StyleHint::PushButton);
 
-  int w = 2 * border;
-  int h = 0;
+    int w = stylist()->defaultParameter(StyleHint::PushButtonCorners);
 
-  if (icon())
+    if (!text().empty())
     {
-      w += icon()->width()
-          + stylist()->defaultParameter(StyleHint::ButtonOffset);
-      h += icon()->height() + 2; // 2px for button pressed state
+        Size s = textExtents();
+        w += s.width();
     }
-
-  if (!text().empty())
-    {
-      Size s = textExtents();
-      w += s.width();
-      h = std::max(s.height(), h)
-          + 2 * stylist()->defaultParameter(StyleHint::BorderWidth);
-    }
-  return Size(w, h);
+    return Size(w, stylist()->defaultParameter(StyleHint::PushButtonHeight));
 }
 
 void
 PushButton::focusInEvent()
 {
-  stylist()->animate(Stylist::FocusIn, this);
+//  stylist()->animate(Stylist::FocusIn, this);
+    update();
 }
 
 void
 PushButton::focusOutEvent()
 {
-  stylist()->animate(Stylist::FocusOut, this);
+//  stylist()->animate(Stylist::FocusOut, this);
+    update();
 }
 
 void
 PushButton::compose(const PaintEvent& event)
 {
-  ILOG_TRACE_W(ILX_PUSHBUTTON);
-  Painter p(this);
-  p.begin(event);
-  stylist()->drawPushButton(&p, this);
-  p.end();
+    ILOG_TRACE_W(ILX_PUSHBUTTON);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawPushButton(&p, this);
+    p.end();
 }
 
 void
 PushButton::updateTextBaseGeometry()
 {
-  ILOG_TRACE(ILX_PUSHBUTTON);
-  int border = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
-      stylist()->defaultParameter(StyleHint::ButtonRadius));
+    ILOG_TRACE(ILX_PUSHBUTTON);
 
-  int x = border;
-  int textHeight = textExtents().height();
-  int y = (height() - textHeight) / 2;
-  int w = 2 * border;
+    int textHeight = textExtents().height();
+    int y = (height() - textHeight) / 2;
 
-  if (icon())
-    {
-      _icon->moveTo(x, (height() - icon()->height()) / 2);
-      x += icon()->width()
-          + stylist()->defaultParameter(StyleHint::ButtonOffset);
-      w = x + border;
-    }
-
-  _layout.setBounds(x, y, width() - w, textHeight);
-  _layout.doLayout(font());
+    _layout.setBounds(
+            width() / 2, y,
+            width() - stylist()->defaultParameter(StyleHint::PushButtonCorners),
+            textHeight);
+    _layout.doLayout(font());
 }
+
+} /* namespace ilixi */

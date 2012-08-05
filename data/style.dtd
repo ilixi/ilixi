@@ -1,7 +1,6 @@
-<!ELEMENT style (fonts, hints, images)>
+<!ELEMENT style (fonts, icons, pack)>
 
 <!ELEMENT fonts (buttonFont, defaultFont, inputFont, titleFont) >
-<!ATTLIST fonts path CDATA #REQUIRED>
 	<!ELEMENT buttonFont (file, size, fontStyle*)>
 	<!ELEMENT defaultFont (file, size, fontStyle*)>
 	<!ELEMENT inputFont (file, size, fontStyle*)>
@@ -10,41 +9,116 @@
 		<!ELEMENT size (#PCDATA)>
 		<!ELEMENT fontStyle (#PCDATA)>
 
-<!ELEMENT hints (button, checkbox, combobox, frame, icon, progressbar, radiobutton, slider, scrollbar, tabpanel, tabbutton, textinput, toolbar)>
-	<!ELEMENT button (width, height, radius, offset, indicator)>
-	<!ELEMENT checkbox (width, height, radius, offset)>
-	<!ELEMENT combobox (width, radius)>
-	<!ELEMENT frame (radius)>
-	<!ELEMENT icon (width, height)>
-	<!ELEMENT progressbar (width, height, radius)>
-	<!ELEMENT radiobutton (width, height, offset)>
-	<!ELEMENT slider (width, height, radius)>
-	<!ELEMENT scrollbar (width, height, radius)>
-	<!ELEMENT tabpanel (width, height, offset)>
-	<!ELEMENT tabbutton (width, height)>
-	<!ELEMENT textinput (radius)>
-	<!ELEMENT toolbar (height)>
-		<!ELEMENT width (#PCDATA)>
-		<!ELEMENT height (#PCDATA)>
-		<!ELEMENT radius (#PCDATA)>
-		<!ELEMENT offset (#PCDATA)>
-		<!ELEMENT indicator (#PCDATA)>
+<!ELEMENT icons (plus, minus, check, tri-check, radioOff, radioOn)>
+<!ATTLIST icons resource CDATA #REQUIRED>
+	<!ELEMENT plus EMPTY>
+	<!ATTLIST plus x CDATA #REQUIRED>
+	<!ATTLIST plus y CDATA #REQUIRED>
+	<!ATTLIST plus w CDATA #REQUIRED>
+	<!ATTLIST plus h CDATA #REQUIRED>
 
-<!ELEMENT images (plus, minus, grid, critical, information, question, warning, up, down, left, right, empty, partial, full)>
-<!ATTLIST images path CDATA #REQUIRED>
-	<!ELEMENT plus (#PCDATA)>
-	<!ELEMENT minus (#PCDATA)>
-	<!ELEMENT grid (#PCDATA)>
-	<!ELEMENT critical (#PCDATA)>
-	<!ELEMENT information (#PCDATA)>
-	<!ELEMENT question (#PCDATA)>
-	<!ELEMENT warning (#PCDATA)>
-	<!ELEMENT up (#PCDATA)>
-	<!ELEMENT down (#PCDATA)>
-	<!ELEMENT left (#PCDATA)>
-	<!ELEMENT right (#PCDATA)>
-	<!ELEMENT empty (#PCDATA)>
-	<!ELEMENT partial (#PCDATA)>
-	<!ELEMENT full (#PCDATA)>
+	<!ELEMENT minus EMPTY>
+	<!ATTLIST minus x CDATA #REQUIRED>
+	<!ATTLIST minus y CDATA #REQUIRED>
+	<!ATTLIST minus w CDATA #REQUIRED>
+	<!ATTLIST minus h CDATA #REQUIRED>
+
+	<!ELEMENT check EMPTY>
+	<!ATTLIST check x CDATA #REQUIRED>
+	<!ATTLIST check y CDATA #REQUIRED>
+	<!ATTLIST check w CDATA #REQUIRED>
+	<!ATTLIST check h CDATA #REQUIRED>
+
+	<!ELEMENT tri-check EMPTY>
+	<!ATTLIST tri-check x CDATA #REQUIRED>
+	<!ATTLIST tri-check y CDATA #REQUIRED>
+	<!ATTLIST tri-check w CDATA #REQUIRED>
+	<!ATTLIST tri-check h CDATA #REQUIRED>
+
+	<!ELEMENT radioOff EMPTY>
+	<!ATTLIST radioOff x CDATA #REQUIRED>
+	<!ATTLIST radioOff y CDATA #REQUIRED>
+	<!ATTLIST radioOff w CDATA #REQUIRED>
+	<!ATTLIST radioOff h CDATA #REQUIRED>
+
+	<!ELEMENT radioOn EMPTY>
+	<!ATTLIST radioOn x CDATA #REQUIRED>
+	<!ATTLIST radioOn y CDATA #REQUIRED>
+	<!ATTLIST radioOn w CDATA #REQUIRED>
+	<!ATTLIST radioOn h CDATA #REQUIRED>
+
+<!ELEMENT pack (PushButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, LineInput, Tab, ToolButton)>
+<!ATTLIST pack resource CDATA #REQUIRED>
+
+	<!ELEMENT PushButton (default, disabled, pressed, exposed, focused)>
+	<!ELEMENT CheckBox (default, disabled, pressed, exposed, focused)>
+	<!ELEMENT RadioButton (default, disabled, pressed, exposed, focused)>
+	<!ELEMENT ProgressBar (default, disabled, indicator)>
+	<!ELEMENT Slider (default, disabled, indicator)>
+	<!ELEMENT Frame (default, disabled)>
+	<!ELEMENT Tab (default, disabled)>
+	<!ELEMENT LineInput (default, disabled, pressed, exposed, focused)>
+	<!ELEMENT ToolButton (default, disabled, pressed, exposed, focused)>
+	<!ELEMENT indicator (default, disabled, pressed?, exposed?, focused?)>
+
+	<!ELEMENT default 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+	<!ELEMENT pressed 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+	<!ELEMENT exposed 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+	<!ELEMENT disabled 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+	<!ELEMENT focused 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+
+	<!ELEMENT left EMPTY>
+	<!ATTLIST left x CDATA #REQUIRED>
+	<!ATTLIST left y CDATA #REQUIRED>
+	<!ATTLIST left w CDATA #REQUIRED>
+	<!ATTLIST left h CDATA #REQUIRED>
+
+	<!ELEMENT mid EMPTY>
+	<!ATTLIST mid x CDATA #REQUIRED>
+	<!ATTLIST mid y CDATA #REQUIRED>
+	<!ATTLIST mid w CDATA #REQUIRED>
+	<!ATTLIST mid h CDATA #REQUIRED>
+
+	<!ELEMENT right EMPTY>
+	<!ATTLIST right x CDATA #REQUIRED>
+	<!ATTLIST right y CDATA #REQUIRED>
+	<!ATTLIST right w CDATA #REQUIRED>
+	<!ATTLIST right h CDATA #REQUIRED>
 
 
+	<!ELEMENT top-left EMPTY>
+	<!ATTLIST top-left x CDATA #REQUIRED>
+	<!ATTLIST top-left y CDATA #REQUIRED>
+	<!ATTLIST top-left w CDATA #REQUIRED>
+	<!ATTLIST top-left h CDATA #REQUIRED>
+
+	<!ELEMENT top-mid EMPTY>
+	<!ATTLIST top-mid x CDATA #REQUIRED>
+	<!ATTLIST top-mid y CDATA #REQUIRED>
+	<!ATTLIST top-mid w CDATA #REQUIRED>
+	<!ATTLIST top-mid h CDATA #REQUIRED>
+
+	<!ELEMENT top-right EMPTY>
+	<!ATTLIST top-right x CDATA #REQUIRED>
+	<!ATTLIST top-right y CDATA #REQUIRED>
+	<!ATTLIST top-right w CDATA #REQUIRED>
+	<!ATTLIST top-right h CDATA #REQUIRED>
+
+
+	<!ELEMENT bottom-left EMPTY>
+	<!ATTLIST bottom-left x CDATA #REQUIRED>
+	<!ATTLIST bottom-left y CDATA #REQUIRED>
+	<!ATTLIST bottom-left w CDATA #REQUIRED>
+	<!ATTLIST bottom-left h CDATA #REQUIRED>
+
+	<!ELEMENT bottom-mid EMPTY>
+	<!ATTLIST bottom-mid x CDATA #REQUIRED>
+	<!ATTLIST bottom-mid y CDATA #REQUIRED>
+	<!ATTLIST bottom-mid w CDATA #REQUIRED>
+	<!ATTLIST bottom-mid h CDATA #REQUIRED>
+
+	<!ELEMENT bottom-right EMPTY>
+	<!ATTLIST bottom-right x CDATA #REQUIRED>
+	<!ATTLIST bottom-right y CDATA #REQUIRED>
+	<!ATTLIST bottom-right w CDATA #REQUIRED>
+	<!ATTLIST bottom-right h CDATA #REQUIRED>

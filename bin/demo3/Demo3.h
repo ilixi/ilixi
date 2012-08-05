@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -33,9 +33,6 @@ public:
 
   virtual
   ~Demo3();
-
-  void
-  compose(const ilixi::PaintEvent& event);
 };
 
 #endif /* ILIXI_DEMO3_H_ */

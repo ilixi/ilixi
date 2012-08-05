@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,203 +21,33 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "graphics/Stylist.h"
-#include "graphics/Painter.h"
-#include "lib/TweenAnimation.h"
-#include "ilixiGUI.h"
+#include <graphics/Stylist.h>
+#include <graphics/Palette.h>
+#include <graphics/Style.h>
+#include <graphics/Painter.h>
+#include <ilixiGUI.h>
 #include <string.h>
-#include "sigc++/bind.h"
-
 #include "core/Logger.h"
 
-using namespace ilixi;
+namespace ilixi
+{
 
-Image* Stylist::_noImage = NULL;
+D_DEBUG_DOMAIN( ILX_STYLIST, "ilixi/graphics/Stylist", "Stylist");
 
 Stylist::Stylist()
+        : StylistBase()
 {
-  _borderWidth = 1;
-  _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
-  setPaletteFromFile(ILIXI_DATADIR"def_palette.xml");
-  setStyleFromFile(ILIXI_DATADIR"def_style.xml");
-  initAnimations();
+    _borderWidth = 1;
+    _palette = new Palette();
+    _style = new Style();
+    setPaletteFromFile(ILIXI_DATADIR"def_palette.xml");
+    setStyleFromFile(ILIXI_DATADIR"def_style2.xml");
 }
 
 Stylist::~Stylist()
 {
-  delete _focus.in;
-  delete _focus.out;
-  delete _noImage;
-}
-
-bool
-Stylist::setPaletteFromFile(const char* palette)
-{
-  return _palette.parsePalette(palette);
-}
-
-bool
-Stylist::setStyleFromFile(const char* style)
-{
-  return _style.parseStyle(style);
-}
-
-Size
-Stylist::defaultSize(StyleHint::Size size) const
-{
-  switch (size)
-    {
-  case StyleHint::Icon:
-    return _style._iconSize;
-  case StyleHint::PushButton:
-    return _style._buttonSize;
-  case StyleHint::CheckBox:
-    return _style._checkboxSize;
-  case StyleHint::RadioButton:
-    return _style._radiobuttonSize;
-  case StyleHint::ProgressBar:
-    return _style._progressbarSize;
-  case StyleHint::Slider:
-    return _style._sliderSize;
-  case StyleHint::ScrollBarButton:
-    return Size(_style._scrollbarSize.height(), _style._scrollbarSize.height());
-  case StyleHint::ScrollBar:
-    return _style._scrollbarSize;
-  case StyleHint::TabPanel:
-    return _style._tabPanelSize;
-  case StyleHint::TabPanelButton:
-    return _style._tabPanelButtonSize;
-  case StyleHint::TabPanelButtonIcon:
-    return Size(
-        _style._tabPanelButtonSize.height() - _style._tabPanelButtonOffset,
-        _style._tabPanelButtonSize.height() - _style._tabPanelButtonOffset);
-
-  default:
-    return Size();
-    }
-}
-
-int
-Stylist::defaultParameter(StyleHint::Parameter parameter) const
-{
-  switch (parameter)
-    {
-  case StyleHint::BorderWidth:
-    return _borderWidth;
-
-  case StyleHint::FrameBorderRadius:
-    return _style._frameRadius;
-
-  case StyleHint::TextInputRadius:
-    return _style._textInputRadius;
-
-  case StyleHint::ButtonHeight:
-    return _style._buttonSize.height();
-  case StyleHint::ButtonWidth:
-    return _style._buttonSize.width();
-  case StyleHint::ButtonOffset:
-    return _style._buttonOffset;
-  case StyleHint::ButtonRadius:
-    return _style._buttonRadius;
-  case StyleHint::ButtonIndicator:
-    return _style._buttonIndicator;
-
-  case StyleHint::RadioHeight:
-    return _style._radiobuttonSize.height();
-  case StyleHint::RadioWidth:
-    return _style._radiobuttonSize.width();
-  case StyleHint::RadioOffset:
-    return _style._radiobuttonOffset;
-
-  case StyleHint::CheckBoxHeight:
-    return _style._checkboxSize.height();
-  case StyleHint::CheckBoxWidth:
-    return _style._checkboxSize.width();
-  case StyleHint::CheckBoxOffset:
-    return _style._checkboxOffset;
-  case StyleHint::CheckBoxRadius:
-    return _style._checkboxRadius;
-
-  case StyleHint::ComboBoxRadius:
-    return _style._comboboxRadius;
-  case StyleHint::ComboBoxButtonWidth:
-    return _style._comboboxButtonWidth;
-
-  case StyleHint::ProgressBarHeight:
-    return _style._progressbarSize.height();
-  case StyleHint::ProgressBarWidth:
-    return _style._progressbarSize.width();
-  case StyleHint::ProgressBarRadius:
-    return _style._progressbarRadius;
-
-  case StyleHint::SliderHeight:
-    return _style._sliderSize.height();
-  case StyleHint::SliderWidth:
-    return _style._sliderSize.width();
-  case StyleHint::SliderRadius:
-    return _style._sliderRadius;
-
-  case StyleHint::ScrollBarHeight:
-    return _style._scrollbarSize.height();
-  case StyleHint::ScrollBarWidth:
-    return _style._scrollbarSize.width();
-  case StyleHint::ScrollBarRadius:
-    return _style._scrollbarRadius;
-
-  case StyleHint::ScrollBarButtonHeight:
-    return _style._scrollbarSize.height();
-  case StyleHint::ScrollBarButtonWidth:
-    return _style._scrollbarSize.height();
-
-  case StyleHint::TabPanelHeight:
-    return _style._tabPanelSize.height();
-  case StyleHint::TabPanelWidth:
-    return _style._tabPanelSize.width();
-  case StyleHint::TabPanelButtonWidth:
-    return _style._tabPanelButtonSize.width();
-  case StyleHint::TabPanelButtonHeight:
-    return _style._tabPanelButtonSize.height();
-  case StyleHint::TabPanelOffset:
-    return _style._tabPanelButtonOffset;
-
-  case StyleHint::ToolBarHeight:
-    return _style._toolbarHeight;
-
-  default:
-    return -1;
-    }
-}
-
-Font*
-Stylist::defaultFont(StyleHint::Font font) const
-{
-  switch (font)
-    {
-  case StyleHint::ButtonFont:
-    return _style._buttonFont;
-  case StyleHint::TitleFont:
-    return _style._titleFont;
-  case StyleHint::InputFont:
-    return _style._inputFont;
-  default:
-    return _style._defaultFont;
-    }
-}
-
-Image*
-Stylist::defaultIcon(StyleHint::DefaultIcon icon) const
-{
-  switch (icon)
-    {
-  case StyleHint::Information:
-    return _style._info;
-  case StyleHint::Question:
-    return _style._question;
-  case StyleHint::Warning:
-    return _style._warning;
-  case StyleHint::Critical:
-    return _style._critical;
-    }
+    delete _palette;
+    delete _style;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -225,325 +55,631 @@ Stylist::defaultIcon(StyleHint::DefaultIcon icon) const
 //////////////////////////////////////////////////////////////////////////
 
 void
-Stylist::drawAppFrame(Painter* painter, Application* app)
+Stylist::drawAppFrame(Painter* p, Application* app)
 {
-  if (app->background())
-    painter->drawImage(app->background(), 0, 0, app->width(), app->height());
-  else
+    if (app->background())
+        p->drawImage(app->background(), 0, 0, app->width(), app->height());
+    else
     {
-      painter->setBrush(_palette.bgBottom);
-      painter->fillRectangle(0, 0, app->width(), app->height());
+        p->setBrush(_palette->bgBottom);
+        p->fillRectangle(0, 0, app->width(), app->height());
     }
 }
 
 void
-Stylist::drawDialog(Painter* painter, Dialog* dialog)
+Stylist::drawDialog(Painter* p, Dialog* dialog)
 {
-  int titleHeight = dialog->titleSize().height();
+//    int titleHeight = dialog->titleSize().height();
+//
+    // draw frame
+    drawFrame(p, dialog);
 
-  // draw frame
-  painter->setBrush(_palette.bgBottom);
-  painter->fillRectangle(0, 0, dialog->width(), dialog->height());
+    // draw title
+    if (dialog->state() & DisabledState)
+        p->setBrush(_palette->textDisabled);
+    else
+        p->setBrush(_palette->text);
 
-  painter->setPen(_palette._default.borderBottom);
-  painter->drawRectangle(0, 0, dialog->width(), dialog->height());
-
-  // draw title
-  if (dialog->state() & DisabledState)
-    painter->setBrush(_palette.textDisabled);
-  else
-    painter->setBrush(_palette.text);
-
-  painter->setFont(*_style._titleFont);
-  painter->drawText(dialog->title(), _style._frameRadius, 1);
+    p->setFont(*_style->_titleFont);
+    p->drawText(dialog->title(), defaultParameter(StyleHint::FrameOffsetLeft),
+                defaultParameter(StyleHint::FrameOffsetTop));
 }
 
 void
-Stylist::drawFrame(Painter* painter, BorderBase* frame)
+Stylist::drawFrame(Painter* p, Frame* frame)
 {
-  // TODO complete drawing for all border styles.
-  if (frame->borderStyle() == NoBorder)
-    return;
-  painter->setPen(_palette.getGroup(frame->_owner->state()).borderBottom);
-  painter->drawRectangle(0, 0, frame->_owner->width(), frame->_owner->height());
+    const WidgetState state = frame->state();
+
+    // Frame
+    if (state & DisabledState)
+        draw9Frame(p, 0, 0, frame->width(), frame->height(), _style->fr.dis);
+    else
+        draw9Frame(p, 0, 0, frame->width(), frame->height(), _style->fr.def);
 }
 
 void
-Stylist::drawLabel(Painter* painter, Label* label)
+Stylist::drawLabel(Painter* p, Label* label)
 {
-  if (label->state() & DisabledState)
-    painter->setBrush(_palette.textDisabled);
-  else
-    painter->setBrush(_palette.text);
+    if (label->state() & DisabledState)
+        p->setBrush(_palette->textDisabled);
+    else
+        p->setBrush(_palette->text);
 
-  painter->setFont(*label->font());
-  painter->drawLayout(label->layout());
+    p->setFont(*label->font());
+    p->drawLayout(label->layout());
 }
 
 void
-Stylist::drawIcon(Painter* painter, Icon* icon)
+Stylist::drawIcon(Painter* p, Icon* icon)
 {
-  if (icon->parent() && (icon->parent()->state() & PressedState))
+    if (icon->parent() && (icon->parent()->state() & PressedState))
     {
-      painter->setBrush(Color(128, 128, 128));
-      painter->drawImage(icon->image(), 0, 0,
-          (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
-    }
-  else
-    painter->drawImage(icon->image(),
-        Rectangle(0, 0, icon->width(), icon->height()));
+        p->setBrush(Color(128, 128, 128));
+        p->drawImage(
+                icon->image(),
+                0,
+                0,
+                (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE
+                        | DSBLIT_BLEND_ALPHACHANNEL));
+    } else
+        p->drawImage(icon->image(),
+                     Rectangle(0, 0, icon->width(), icon->height()));
 }
 
 void
-Stylist::drawCheckBox(Painter* painter, CheckBox* checkbox)
+Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
 {
-  const WidgetState state = checkbox->state();
+    const WidgetState state = checkbox->state();
 
-  Rectangle r(_style._checkboxOffset, 0, _style._checkboxSize.width(),
-      _style._checkboxSize.height());
+    // Frame
+    if (state & DisabledState)
+        p->blitImage(_style->_pack, _style->cb.dis, 0, 0);
+    else if ((state & PressedState)
+            || (checkbox->checkable() && checkbox->checked()))
+        p->blitImage(_style->_pack, _style->cb.pre, 0, 0);
+    else if (state & ExposedState)
+        p->blitImage(_style->_pack, _style->cb.exp, 0, 0);
+    else
+        p->blitImage(_style->_pack, _style->cb.def, 0, 0);
 
-  // Draw frame
-  if (checkbox->checkable() && (checkbox->checked() || checkbox->partial()))
-    painter->setBrush(_palette._pressed.bgBottom);
-  else
-    painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(r);
+    if (state & FocusedState)
+        p->blitImage(_style->_pack, _style->cb.foc, 0, 0);
 
-  // Draw frame border
-  if (state & FocusedState)
-    painter->setPen(_palette.focusBottom);
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(r);
+    // Indicator
+    if (checkbox->checked())
+        p->blitImage(_style->_pack, _style->check, 2, -2);
+    else if (checkbox->partial())
+        p->blitImage(_style->_pack, _style->tri_check, 0, 0);
 
-  // draw checkbox state
-  if (checkbox->checked())
-    painter->drawImage(_style._checkFull, r);
-  else if (checkbox->partial())
-    painter->drawImage(_style._checkPartial, r);
-  else
-    painter->drawImage(_style._checkEmpty, r);
-
-  // draw text
-  if (!checkbox->text().empty())
+    // Text
+    if (!checkbox->text().empty())
     {
-      painter->setBrush(_palette.getGroup(state).text);
-      painter->drawLayout(checkbox->layout());
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(checkbox->layout());
     }
 }
 
 void
-Stylist::drawPushButton(Painter* painter, PushButton* button)
+Stylist::drawLineInput(Painter* p, LineInput* input)
 {
-  const WidgetState state = button->state();
+    const WidgetState state = input->state();
 
-  // Draw frame
-  if (button->checkable() && button->checked())
-    painter->setBrush(_palette._pressed.bgBottom);
-  else
-    painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(0, 0, button->width(), button->height());
-
-  if (state & FocusedState)
+    // Frame
+    if (state & DisabledState)
     {
-      Color c = _palette.focusBottom;
-      painter->setPen(c);
+        p->blitImage(_style->_pack, _style->li.dis.l, 0, 0);
+        p->setClip(
+                _style->li.dis.l.width(),
+                0,
+                input->width() - _style->li.dis.l.width()
+                        - _style->li.dis.r.width(),
+                input->height());
+        p->tileImage(_style->_pack, 0, 0, _style->li.dis.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->li.dis.r,
+                     input->width() - _style->li.dis.r.width(), 0);
+    } else if (state & PressedState)
+    {
+        p->blitImage(_style->_pack, _style->li.pre.l, 0, 0);
+        p->setClip(
+                _style->li.pre.l.width(),
+                0,
+                input->width() - _style->li.pre.l.width()
+                        - _style->li.pre.r.width(),
+                input->height());
+        p->tileImage(_style->_pack, 0, 0, _style->li.pre.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->li.pre.r,
+                     input->width() - _style->li.pre.r.width(), 0);
+    } else if (state & ExposedState)
+    {
+        p->blitImage(_style->_pack, _style->li.exp.l, 0, 0);
+        p->setClip(
+                _style->li.exp.l.width(),
+                0,
+                input->width() - _style->li.exp.l.width()
+                        - _style->li.exp.r.width(),
+                input->height());
+        p->tileImage(_style->_pack, 0, 0, _style->li.exp.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->li.exp.r,
+                     input->width() - _style->li.exp.r.width(), 0);
+    } else
+    {
+        p->blitImage(_style->_pack, _style->li.def.l, 0, 0);
+        p->setClip(
+                _style->li.def.l.width(),
+                0,
+                input->width() - _style->li.def.l.width()
+                        - _style->li.def.r.width(),
+                input->height());
+        p->tileImage(_style->_pack, 0, 0, _style->li.def.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->li.def.r,
+                     input->width() - _style->li.def.r.width(), 0);
     }
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(0, 0, button->width(), button->height());
 
-  // Draw button text
-  if (!button->text().empty())
+    if (state & FocusedState)
     {
-      painter->setBrush(_palette.getGroup(state).text);
-      painter->drawLayout(button->layout());
+        p->blitImage(_style->_pack, _style->li.foc.l, 0, 0);
+        p->setClip(
+                _style->li.foc.l.width(),
+                0,
+                input->width() - _style->li.foc.l.width()
+                        - _style->li.foc.r.width(),
+                input->height());
+        p->tileImage(_style->_pack, 0, 0, _style->li.foc.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->li.foc.r,
+                     input->width() - _style->li.foc.r.width(), 0);
+    }
+
+    p->setBrush(Color(0, 0, 0));
+    p->setClip(
+            _style->li.def.l.width(),
+            3,
+            input->width() - _style->li.def.l.width()
+                    - _style->li.def.r.width(),
+            input->height() - 6);
+    p->drawLayout(input->layout());
+    p->resetClip();
+
+    if (input->_cursorOn)
+    {
+        p->setBrush(Color(0, 0, 255));
+        p->fillRectangle(input->_cursor);
     }
 }
 
 void
-Stylist::drawRadioButton(Painter* painter, RadioButton* button)
+Stylist::drawGroupBox(Painter* p, GroupBox* box)
 {
-  const WidgetState state = button->state();
+    const WidgetState state = box->state();
 
-  Rectangle r(_style._radiobuttonOffset, 0, _style._radiobuttonSize.width(),
-      _style._radiobuttonSize.height());
+    int tabHeight = box->titleSize().height();
 
-  // frame
-  if (button->checkable() && button->checked())
-    painter->setBrush(_palette._pressed.bgBottom);
-  else
-    painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(r);
+    // Frame
+    drawTabFrame(p, 30, 0, box->titleSize().width(), tabHeight,
+                 _style->tab.def);
+    draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight,
+               _style->fr.def);
+}
 
-  // frame border
-  if (state & FocusedState)
-    painter->setPen(_palette.focusBottom);
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(r);
+void
+Stylist::drawPushButton(Painter* p, PushButton* button)
+{
+    const WidgetState state = button->state();
 
-  // selection indicator
-  painter->setPen(_palette.getGroup(state).borderBottom);
-  if (button->checked())
-    painter->setBrush(_palette.focusTop);
-  else
-    painter->setBrush(_palette.getGroup(state).borderMid);
-  painter->fillRectangle(_style._radiobuttonOffset + 4, 4,
-      _style._radiobuttonSize.width() - 8,
-      _style._radiobuttonSize.height() - 8);
-
-  // layout
-  if (!button->text().empty())
+    // Frame
+    if (state & DisabledState)
     {
-      painter->setBrush(_palette.getGroup(state).text);
-      painter->drawLayout(button->layout());
+        p->blitImage(_style->_pack, _style->pb.dis.l, 0, 0);
+        p->setClip(
+                _style->pb.dis.l.width(),
+                0,
+                button->width() - _style->pb.dis.l.width()
+                        - _style->pb.dis.r.width(),
+                button->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pb.dis.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pb.dis.r,
+                     button->width() - _style->pb.dis.r.width(), 0);
+    } else if ((state & PressedState)
+            || (button->checkable() && button->checked()))
+    {
+        p->blitImage(_style->_pack, _style->pb.pre.l, 0, 0);
+        p->setClip(
+                _style->pb.pre.l.width(),
+                0,
+                button->width() - _style->pb.pre.l.width()
+                        - _style->pb.pre.r.width(),
+                button->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pb.pre.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pb.pre.r,
+                     button->width() - _style->pb.pre.r.width(), 0);
+    } else if (state & ExposedState)
+    {
+        p->blitImage(_style->_pack, _style->pb.exp.l, 0, 0);
+        p->setClip(
+                _style->pb.exp.l.width(),
+                0,
+                button->width() - _style->pb.exp.l.width()
+                        - _style->pb.exp.r.width(),
+                button->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pb.exp.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pb.exp.r,
+                     button->width() - _style->pb.exp.r.width(), 0);
+    } else
+    {
+        p->blitImage(_style->_pack, _style->pb.def.l, 0, 0);
+        p->setClip(
+                _style->pb.def.l.width(),
+                0,
+                button->width() - _style->pb.def.l.width()
+                        - _style->pb.def.r.width(),
+                button->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pb.def.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pb.def.r,
+                     button->width() - _style->pb.def.r.width(), 0);
+    }
+
+    if (state & FocusedState)
+    {
+        p->blitImage(_style->_pack, _style->pb.foc.l, 0, 0);
+        p->setClip(
+                _style->pb.foc.l.width(),
+                0,
+                button->width() - _style->pb.foc.l.width()
+                        - _style->pb.foc.r.width(),
+                button->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pb.foc.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pb.foc.r,
+                     button->width() - _style->pb.foc.r.width(), 0);
+    }
+
+    // Text
+    if (!button->text().empty())
+    {
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout());
     }
 }
 
 void
-Stylist::drawSlider(Painter* painter, Slider* slider)
+Stylist::drawRadioButton(Painter* p, RadioButton* button)
 {
-  const WidgetState state = slider->state();
+    const WidgetState state = button->state();
 
-  // frame
-  painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(0, 0, slider->width(), slider->height());
-  painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(0, 0, slider->width(), slider->height());
+    // Frame
+    if (state & DisabledState)
+        p->blitImage(_style->_pack, _style->rb.dis, 0, 0);
+    else if (state & PressedState)
+        p->blitImage(_style->_pack, _style->rb.pre, 0, 0);
+    else if (state & ExposedState)
+        p->blitImage(_style->_pack, _style->rb.exp, 0, 0);
+    else
+        p->blitImage(_style->_pack, _style->rb.def, 0, 0);
 
-  // indicator
+    if (state & FocusedState)
+        p->blitImage(_style->_pack, _style->rb.foc, 0, 0);
 
-  painter->fillRectangle(slider->_indicator.x(), slider->_indicator.y(),
-      slider->_indicator.width(), slider->_indicator.height());
-  if (state & FocusedState)
-    painter->setPen(_palette.focusBottom);
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(slider->_indicator.x(), slider->_indicator.y(),
-      slider->_indicator.width(), slider->_indicator.height());
+    // Indicator
+    if (button->checked())
+        p->blitImage(_style->_pack, _style->radioOn, 3, 3);
+    else
+        p->blitImage(_style->_pack, _style->radioOff, 3, 3);
+
+    // Text
+    if (!button->text().empty())
+    {
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout());
+    }
+}
+
+void
+Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
+{
+    const WidgetState state = bar->state();
+
+    // Frame
+    if (state & DisabledState)
+    {
+        p->blitImage(_style->_pack, _style->pr.dis.l, 0, 0);
+        p->setClip(
+                _style->pr.dis.l.width(),
+                0,
+                bar->width() - _style->pr.dis.l.width()
+                        - _style->pr.dis.r.width(),
+                bar->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pr.dis.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pr.dis.r,
+                     bar->width() - _style->pr.dis.r.width(), 0);
+    } else
+    {
+        p->blitImage(_style->_pack, _style->pr.def.l, 0, 0);
+        p->setClip(
+                _style->pr.def.l.width(),
+                0,
+                bar->width() - _style->pr.def.l.width()
+                        - _style->pr.def.r.width(),
+                bar->height());
+        p->tileImage(_style->_pack, 0, 0, _style->pr.def.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->pr.def.r,
+                     bar->width() - _style->pr.def.r.width(), 0);
+    }
+
+    // Indicator
+    if (bar->value())
+    {
+        int fillWidth = bar->width() * bar->value() / bar->range();
+        if (state & DisabledState)
+        {
+            p->blitImage(_style->_pack, _style->prI.dis.l, 0, 0);
+            p->setClip(
+                    _style->prI.dis.l.width(),
+                    0,
+                    fillWidth - _style->prI.dis.l.width()
+                            - _style->prI.dis.r.width(),
+                    bar->height());
+            p->tileImage(_style->_pack, 0, 0, _style->prI.dis.m);
+            p->resetClip();
+            p->blitImage(_style->_pack, _style->prI.dis.r,
+                         fillWidth - _style->prI.dis.r.width(), 0);
+        } else
+        {
+            p->blitImage(_style->_pack, _style->prI.def.l, 0, 0);
+            p->setClip(
+                    _style->prI.def.l.width(),
+                    0,
+                    fillWidth - _style->pr.def.l.width()
+                            - _style->prI.def.r.width(),
+                    bar->height());
+            p->tileImage(_style->_pack, 0, 0, _style->prI.def.m);
+            p->resetClip();
+            p->blitImage(_style->_pack, _style->prI.def.r,
+                         fillWidth - _style->prI.def.r.width(), 0);
+        }
+    }
+}
+
+void
+Stylist::drawSlider(Painter* p, Slider* bar)
+{
+    const WidgetState state = bar->state();
+    {
+        p->blitImage(_style->_pack, _style->sl.def.l, 0, 0);
+        p->setClip(
+                _style->sl.def.l.width(),
+                0,
+                bar->width() - _style->sl.def.l.width()
+                        - _style->sl.def.r.width(),
+                bar->height());
+        p->tileImage(_style->_pack, 0, 0, _style->sl.def.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->sl.def.r,
+                     bar->width() - _style->sl.def.r.width(), 0);
+    }
+
+    // Frame
+    if (bar->value())
+    {
+        int fillWidth = bar->value() * bar->width() / bar->range();
+        p->blitImage(_style->_pack, _style->sl.dis.l, 0, 0);
+        p->setClip(
+                _style->sl.dis.l.width(), 0,
+                fillWidth - _style->sl.dis.l.width() - _style->sl.dis.r.width(),
+                bar->height());
+        p->tileImage(_style->_pack, 0, 0, _style->sl.dis.m);
+        p->resetClip();
+        p->blitImage(_style->_pack, _style->sl.dis.r,
+                     fillWidth - _style->sl.dis.r.width(), 0);
+    }
+
+    // Indicator
+    if (state & DisabledState)
+        p->blitImage(_style->_pack, _style->slI.dis, bar->_indicator.x(), 0);
+    else if (state & PressedState)
+        p->blitImage(_style->_pack, _style->slI.pre, bar->_indicator.x(), 0);
+    else if (state & ExposedState)
+        p->blitImage(_style->_pack, _style->slI.exp, bar->_indicator.x(), 0);
+    else
+        p->blitImage(_style->_pack, _style->slI.def, bar->_indicator.x(), 0);
+    if (state & FocusedState)
+        p->blitImage(_style->_pack, _style->slI.foc, bar->_indicator.x(), 0);
 
 }
 
 void
-Stylist::drawToolButton(Painter* painter, ToolButton* button)
+Stylist::drawTabPanelButton(Painter* painter, TabPanelButton* button)
 {
-  const WidgetState state = button->state();
 
-  // Draw frame
-  painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(0, 0, button->width(), button->height());
+}
 
-  if (state & FocusedState)
-    painter->setPen(_palette.focusBottom);
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(0, 0, button->width(), button->height());
+void
+Stylist::drawTabPanel(Painter* painter, TabPanel* panel)
+{
 
-  // Draw check indicator
-  ToolButton::ToolButtonStyle buttonStyle = button->getToolButtonStyle();
-  if (button->checkable())
+}
+
+void
+Stylist::drawToolButton(Painter* p, ToolButton* button)
+{
+    const WidgetState state = button->state();
+
+    // Frame
+    if (state & DisabledState)
+        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.dis);
+    else if (state & PressedState)
+        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.pre);
+    else if (state & ExposedState)
+        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.exp);
+    else
+        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.def);
+
+    if (state & FocusedState)
+        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.foc);
+
+    // Draw check indicator
+    ToolButton::ToolButtonStyle buttonStyle = button->toolButtonStyle();
+    if (button->checkable())
     {
-      bool horizontal = false;
-      if ((buttonStyle == ToolButton::IconBelowText)
-          || (buttonStyle == ToolButton::IconAboveText))
-        horizontal = true;
-      const WidgetState state = button->state();
-      int y;
-      if (horizontal)
-        y = button->height() - _borderWidth - _style._buttonIndicator;
-      else
-        y = _borderWidth;
+        int wIndicator = defaultParameter(StyleHint::ToolButtonIndicator);
+        bool horizontal = false;
+        if ((buttonStyle == ToolButton::IconBelowText)
+                || (buttonStyle == ToolButton::IconAboveText))
+            horizontal = true;
+        const WidgetState state = button->state();
+        int y;
+        if (horizontal)
+            y = button->height() - _borderWidth - wIndicator;
+        else
+            y = _borderWidth;
 
-      if (button->checked())
-        painter->setBrush(_palette.getGroup(state).fillBottom);
-      else
-        painter->setBrush(Color(0, 0, 0, 0.2));
+        if (button->checked())
+            p->setBrush(_palette->getGroup(state).fillBottom);
+        else
+            p->setBrush(_palette->getGroup(state).bgBottom);
 
-      // draw indicator
-      if (horizontal)
-        painter->fillRectangle(2, y, button->width() - 4,
-            _style._buttonIndicator);
-      else
-        painter->fillRectangle(2, _borderWidth, _style._buttonIndicator,
-            button->height() - 2);
+        // draw indicator
+        if (horizontal)
+            p->fillRectangle(2, y, button->width() - 4, wIndicator);
+        else
+            p->fillRectangle(2, _borderWidth, wIndicator, button->height() - 2);
     }
 
-  // Draw button text
-  if (buttonStyle != ToolButton::IconOnly && !button->text().empty())
+    // Draw button text
+    if (buttonStyle != ToolButton::IconOnly && !button->text().empty())
     {
-      painter->setBrush(_palette.getGroup(state).text);
-      painter->drawLayout(button->layout());
+        ILOG_DEBUG(ILX_STYLIST, " -> text: %s\n", button->text().c_str());
+        p->setFont(*button->font());
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout());
     }
 }
 
 void
 Stylist::drawComboBox(Painter* painter, ComboBox* combo)
 {
-  const WidgetState state = combo->state();
-
-  // draw frame
-  painter->setBrush(_palette.getGroup(state).base);
-  painter->fillRectangle(0, 0, combo->width(), combo->height());
-  if (state & FocusedState)
-    painter->setPen(_palette.focusBottom);
-  else
-    painter->setPen(_palette.getGroup(state).borderBottom);
-  painter->drawRectangle(0, 0, combo->width(), combo->height());
-
-  // draw button
-  int x = combo->width() - _style._comboboxButtonWidth - 1;
-  painter->setBrush(_palette.getGroup(state).bgBottom);
-  painter->fillRectangle(x, 1, _style._comboboxButtonWidth,
-      combo->height() - 2);
-  painter->drawImage(_style._arrowDown, x, 0, _style._comboboxButtonWidth,
-      combo->height());
-
-  painter->setBrush(_palette.getGroup(state).baseText);
-  painter->drawLayout(combo->layout());
+//    const WidgetState state = combo->state();
+//
+//    // draw frame
+//    painter->setBrush(_palette->getGroup(state).base);
+//    painter->fillRectangle(0, 0, combo->width(), combo->height());
+//    if (state & FocusedState)
+//        painter->setPen(_palette->focusBottom);
+//    else
+//        painter->setPen(_palette->getGroup(state).borderBottom);
+//    painter->drawRectangle(0, 0, combo->width(), combo->height());
+//
+//    // draw button
+//    int x = combo->width() - _style->_comboboxButtonWidth - 1;
+//    painter->setBrush(_palette->getGroup(state).bgBottom);
+//    painter->fillRectangle(x, 1, _style->_comboboxButtonWidth,
+//            combo->height() - 2);
+//    painter->drawImage(_style->_arrowDown, x, 0, _style->_comboboxButtonWidth,
+//            combo->height());
+//
+//    painter->setBrush(_palette->getGroup(state).baseText);
+//    painter->drawLayout(combo->layout());
 }
 
 void
-Stylist::animate(StyledAnimation type, Widget* target)
+Stylist::drawFrame(Painter* painter, int x, int y, int w, int h,
+                   Corners corners)
 {
-  switch (type)
-    {
-  case FocusIn:
-    _focus.targetIn = target;
-    _focus.in->start();
-    break;
-  case FocusOut:
-    _focus.targetOut = target;
-    _focus.out->start();
-    break;
-  default:
-    break;
-    }
+    draw9Frame(painter, x, y, w, h, _style->fr.def, corners);
 }
 
 void
-Stylist::initAnimations()
+Stylist::draw9Frame(Painter* p, int x, int y, int w, int h,
+                    const Style::r9& rect, Corners corners)
 {
-  _focus.in = new TweenAnimation();
-  _focus.in->setDuration(500);
-  _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-  _focus.in->sigExec.connect(
-      sigc::bind<Stylist::StyledAnimation>(
-          sigc::mem_fun(this, &Stylist::runAnimation), FocusIn));
+    int midWidth = w - rect.tl.width() - rect.tr.width();
+    int midHeight = h - rect.bl.height() - rect.tl.height();
+    int by = y + h - rect.bl.height();
 
-  _focus.out = new TweenAnimation();
-  _focus.out->setDuration(250);
-  _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
-  _focus.out->sigExec.connect(
-      sigc::bind<Stylist::StyledAnimation>(
-          sigc::mem_fun(this, &Stylist::runAnimation), FocusOut));
+//    if (corners & TopLeft)
+//    {
+//        // top
+//        p->blitImage(_style->_pack, rect.tl, x, y);
+//        p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
+//        p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
+//        p->resetClip();
+//        p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
+//    }
+
+    // top
+    p->blitImage(_style->_pack, rect.tl, x, y);
+    p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
+    p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
+    p->resetClip();
+    p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
+
+    // left
+    p->setClip(x, y + rect.tl.height(), rect.tm.height(), midHeight);
+    p->tileImage(_style->_pack, x, y + rect.tl.height(), rect.l);
+    p->resetClip();
+
+    // right
+    p->setClip(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(),
+               midHeight);
+    p->tileImage(_style->_pack, x + w - rect.tr.width(), y + rect.tl.height(),
+                 rect.r);
+    p->resetClip();
+
+    // mid
+    p->setClip(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight);
+    p->tileImage(_style->_pack, x + rect.l.width(), y + rect.tl.height(),
+                 rect.m);
+    p->resetClip();
+
+    // bottom
+    p->blitImage(_style->_pack, rect.bl, x, by);
+    p->setClip(x + rect.bl.width(), by, midWidth, rect.bm.height());
+    p->tileImage(_style->_pack, x + rect.bl.width(), by, rect.bm);
+    p->resetClip();
+    p->blitImage(_style->_pack, rect.br, x + w - rect.br.width(), by);
 }
 
 void
-Stylist::runAnimation(StyledAnimation type)
+Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h,
+                      const Style::r9& rect)
 {
-  if (type == FocusIn)
-    _focus.targetIn->repaint();
-  else if (type == FocusOut)
-    _focus.targetOut->repaint();
+    int midWidth = w - rect.tl.width() - rect.tr.width();
+    int midHeight = h - rect.tl.height();
+    int by = y + h - rect.bl.height();
+
+    // top
+    p->blitImage(_style->_pack, rect.tl, x, y);
+    p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
+    p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
+    p->resetClip();
+    p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
+
+    // left
+    p->setClip(x, y + rect.tl.height(), rect.tm.height(), midHeight);
+    p->tileImage(_style->_pack, x, y + rect.tl.height(), rect.l);
+    p->resetClip();
+
+    // right
+    p->setClip(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(),
+               midHeight);
+    p->tileImage(_style->_pack, x + w - rect.tr.width(), y + rect.tl.height(),
+                 rect.r);
+    p->resetClip();
+
+    // mid
+    p->setClip(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight);
+    p->tileImage(_style->_pack, x + rect.l.width(), y + rect.tl.height(),
+                 rect.m);
+    p->resetClip();
 }
+
+} /* namespace ilixi */

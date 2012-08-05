@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,401 +21,504 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "graphics/Style.h"
-#include "core/Logger.h"
+#include <graphics/Style.h>
+#include <core/Logger.h>
 #include <libxml/parser.h>
-#include <libxml/tree.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-Style::Style() :
-    _buttonFont(NULL), _defaultFont(NULL), _inputFont(NULL), _titleFont(NULL), _plusSign(
-        NULL), _minusSign(NULL), _grid(NULL), _arrowUp(NULL), _arrowDown(NULL), _arrowLeft(
-        NULL), _arrowRight(NULL), _checkEmpty(NULL), _checkPartial(NULL), _checkFull(
-        NULL), _critical(NULL), _info(NULL), _question(NULL), _warning(NULL)
+D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
+
+Style::Style()
+        : _buttonFont(NULL),
+          _defaultFont(NULL),
+          _inputFont(NULL),
+          _titleFont(NULL),
+          _icons(NULL),
+          _pack(NULL)
 {
 }
 
 Style::~Style()
 {
-  release();
+    release();
 }
 
 void
 Style::release()
 {
-  // clear fonts
-  delete _buttonFont;
-  delete _defaultFont;
-  delete _inputFont;
-  delete _titleFont;
+    // clear fonts
+    delete _buttonFont;
+    delete _defaultFont;
+    delete _inputFont;
+    delete _titleFont;
 
-  // clear images
-  delete _plusSign;
-  delete _minusSign;
-  delete _grid;
-
-  delete _arrowUp;
-  delete _arrowDown;
-  delete _arrowLeft;
-  delete _arrowRight;
-
-  delete _checkEmpty;
-  delete _checkFull;
-  delete _checkPartial;
-
-  delete _info;
-  delete _warning;
-  delete _critical;
-  delete _question;
+    // clear images
+    delete _icons;
+    delete _pack;
 }
 
 bool
 Style::parseStyle(const char* style)
 {
-  xmlParserCtxtPtr ctxt;
-  xmlDocPtr doc;
+    ILOG_DEBUG(ILX_STYLE, "Parsing style file: %s\n", style);
+    xmlParserCtxtPtr ctxt;
+    xmlDocPtr doc;
 
-  ctxt = xmlNewParserCtxt();
-  if (ctxt == NULL)
+    ctxt = xmlNewParserCtxt();
+    if (ctxt == NULL)
     {
-      ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
-      return false;
+        ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
+        return false;
     }
 
-  doc = xmlCtxtReadFile(ctxt, style, NULL,
-      XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
-          | XML_PARSE_NOBLANKS);
+    doc = xmlCtxtReadFile(
+            ctxt,
+            style,
+            NULL,
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
+                    | XML_PARSE_NOBLANKS);
 
-  if (doc == NULL)
+    if (doc == NULL)
     {
-      xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
-      return false;
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
+        return false;
     }
 
-  if (ctxt->valid == 0)
+    if (ctxt->valid == 0)
     {
-      xmlFreeDoc(doc);
-      xmlFreeParserCtxt(ctxt);
-      ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
-      return false;
+        xmlFreeDoc(doc);
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
+        return false;
     }
 
-  release();
+    release();
 
-  xmlNodePtr root = xmlDocGetRootElement(doc);
-  xmlNodePtr group = root->xmlChildrenNode;
-  xmlNodePtr element;
+    xmlNodePtr root = xmlDocGetRootElement(doc);
+    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr element;
 
-  while (group != NULL)
+    while (group != NULL)
     {
-      element = group->children;
-      if (xmlStrcmp(group->name, (xmlChar*) "fonts") == 0)
+        element = group->children;
+        if (xmlStrcmp(group->name, (xmlChar*) "fonts") == 0)
         {
-          xmlChar* fPath = xmlGetProp(group, (xmlChar*) "path");
-          std::string path = ILIXI_DATADIR"" + std::string((char*) fPath);
-
-          while (element != NULL)
+            while (element != NULL)
             {
-              xmlChar* fileC = xmlNodeGetContent(element->children);
-              xmlChar* sizeC = xmlNodeGetContent(element->children->next);
-              xmlChar* styleC = xmlNodeGetContent(
-                  element->children->next->next);
+                xmlChar* fileC = xmlNodeGetContent(element->children);
+                xmlChar* sizeC = xmlNodeGetContent(element->children->next);
+                xmlChar* styleC = xmlNodeGetContent(
+                        element->children->next->next);
 
-              Font::Style fontStyle = Font::Plain;
-              if (styleC)
+                Font::Style fontStyle = Font::Plain;
+                if (styleC)
                 {
-                  if (xmlStrcmp(styleC, (xmlChar *) "italic") == 0)
-                    fontStyle = Font::Italic;
-                  else if (xmlStrcmp(styleC, (xmlChar *) "bold") == 0)
-                    fontStyle = Font::Bold;
+                    if (xmlStrcmp(styleC, (xmlChar *) "italic") == 0)
+                        fontStyle = Font::Italic;
+                    else if (xmlStrcmp(styleC, (xmlChar *) "bold") == 0)
+                        fontStyle = Font::Bold;
                 }
 
-              if (xmlStrcmp(element->name, (xmlChar*) "defaultFont") == 0)
+                ILOG_DEBUG(ILX_STYLE, " Parsing %s...\n", element->name);
+
+                if (xmlStrcmp(element->name, (xmlChar*) "defaultFont") == 0)
                 {
-                  _defaultFont = new Font(path + (char*) fileC);
-                  _defaultFont->setSize(atoi((char*) sizeC));
-                  _defaultFont->setStyle(fontStyle);
-                }
-              else if (xmlStrcmp(element->name, (xmlChar*) "buttonFont") == 0)
+                    _defaultFont = new Font((char*) fileC, atoi((char*) sizeC));
+                    _defaultFont->setStyle(fontStyle);
+                    _defaultFont->dfbFont();
+                } else if (xmlStrcmp(element->name, (xmlChar*) "buttonFont")
+                        == 0)
                 {
-                  _buttonFont = new Font(path + (char*) fileC);
-                  _buttonFont->setSize(atoi((char*) sizeC));
-                  _buttonFont->setStyle(fontStyle);
+                    _buttonFont = new Font((char*) fileC, atoi((char*) sizeC));
+                    _buttonFont->setStyle(fontStyle);
+                    _buttonFont->dfbFont();
                 }
 
-              else if (xmlStrcmp(element->name, (xmlChar*) "inputFont") == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "inputFont") == 0)
                 {
-                  _inputFont = new Font(path + (char*) fileC);
-                  _inputFont->setSize(atoi((char*) sizeC));
-                  _inputFont->setStyle(fontStyle);
+                    _inputFont = new Font((char*) fileC, atoi((char*) sizeC));
+                    _inputFont->setStyle(fontStyle);
+                    _inputFont->dfbFont();
                 }
 
-              else if (xmlStrcmp(element->name, (xmlChar*) "titleFont") == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "titleFont") == 0)
                 {
-                  _titleFont = new Font(path + (char*) fileC);
-                  _titleFont->setSize(atoi((char*) sizeC));
-                  _titleFont->setStyle(fontStyle);
+                    _titleFont = new Font((char*) fileC, atoi((char*) sizeC));
+                    _titleFont->setStyle(fontStyle);
+                    _titleFont->dfbFont();
                 }
 
-              xmlFree(fileC);
-              xmlFree(sizeC);
-              element = element->next;
+                xmlFree(fileC);
+                xmlFree(sizeC);
+                element = element->next;
             } // end while(element)
+            ILOG_DEBUG(ILX_STYLE, "Parsed fonts.\n");
         } // end fonts
 
-      else if (xmlStrcmp(group->name, (xmlChar*) "hints") == 0)
+        else if (xmlStrcmp(group->name, (xmlChar*) "icons") == 0)
         {
-          while (element != NULL)
+            ILOG_DEBUG(ILX_STYLE, "Parsing icons...\n");
+            xmlChar* iPath = xmlGetProp(group, (xmlChar*) "resource");
+            std::string path = ILIXI_DATADIR"" + std::string((char*) iPath);
+
+            _icons = new Image(path);
+            while (element != NULL)
             {
-              if (xmlStrcmp(element->name, (xmlChar*) "button") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* radius = xmlNodeGetContent(
-                      element->children->next->next);
-                  xmlChar* offset = xmlNodeGetContent(
-                      element->children->next->next->next);
-                  xmlChar* indicator = xmlNodeGetContent(
-                      element->children->next->next->next->next);
+                ILOG_DEBUG(ILX_STYLE, " Parsing %s...\n", element->name);
+                if (xmlStrcmp(element->name, (xmlChar*) "plus") == 0)
+                    getRectangle(element, plus);
 
-                  _buttonSize = Size(atoi((char*) width), atoi((char*) height));
-                  _buttonRadius = atoi((char*) radius);
-                  _buttonOffset = atoi((char*) offset);
-                  _buttonIndicator = atoi((char*) indicator);
+                else if (xmlStrcmp(element->name, (xmlChar*) "minus") == 0)
+                    getRectangle(element, minus);
 
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(radius);
-                  xmlFree(offset);
-                  xmlFree(indicator);
-                }
+                else if (xmlStrcmp(element->name, (xmlChar*) "check") == 0)
+                    getRectangle(element, check);
 
-              else if (xmlStrcmp(element->name, (xmlChar*) "checkbox") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* radius = xmlNodeGetContent(
-                      element->children->next->next);
-                  xmlChar* offset = xmlNodeGetContent(
-                      element->children->next->next->next);
+                else if (xmlStrcmp(element->name, (xmlChar*) "tri-check") == 0)
+                    getRectangle(element, tri_check);
 
-                  _checkboxSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-                  _checkboxRadius = atoi((char*) radius);
-                  _checkboxOffset = atoi((char*) offset);
+                else if (xmlStrcmp(element->name, (xmlChar*) "radioOff") == 0)
+                    getRectangle(element, radioOff);
 
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(radius);
-                  xmlFree(offset);
-                }
+                else if (xmlStrcmp(element->name, (xmlChar*) "radioOn") == 0)
+                    getRectangle(element, radioOn);
 
-              else if (xmlStrcmp(element->name, (xmlChar*) "combobox") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* radius = xmlNodeGetContent(element->children->next);
-
-                  _comboboxRadius = atoi((char*) radius);
-                  _comboboxButtonWidth = atoi((char*) width);
-
-                  xmlFree(width);
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "frame") == 0)
-                {
-                  xmlChar* radius = xmlNodeGetContent(element->children);
-
-                  _frameRadius = atoi((char*) radius);
-
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "icon") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-
-                  _iconSize = Size(atoi((char*) width), atoi((char*) height));
-
-                  xmlFree(width);
-                  xmlFree(height);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "progressbar") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* radius = xmlNodeGetContent(
-                      element->children->next->next);
-
-                  _progressbarSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-                  _progressbarRadius = atoi((char*) radius);
-
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "radiobutton") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* offset = xmlNodeGetContent(
-                      element->children->next->next);
-
-                  _radiobuttonSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-                  _radiobuttonOffset = atoi((char*) offset);
-
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(offset);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "slider") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* radius = xmlNodeGetContent(
-                      element->children->next->next);
-
-                  _sliderSize = Size(atoi((char*) width), atoi((char*) height));
-                  _sliderRadius = atoi((char*) radius);
-
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "scrollbar") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* radius = xmlNodeGetContent(
-                      element->children->next->next);
-
-                  _scrollbarSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-                  _scrollbarRadius = atoi((char*) radius);
-
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "tabpanel") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-                  xmlChar* offset = xmlNodeGetContent(
-                      element->children->next->next);
-
-                  _tabPanelSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-
-                  _tabPanelButtonOffset = atoi((char*) offset);
-
-                  xmlFree(width);
-                  xmlFree(height);
-                  xmlFree(offset);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "tabbutton") == 0)
-                {
-                  xmlChar* width = xmlNodeGetContent(element->children);
-                  xmlChar* height = xmlNodeGetContent(element->children->next);
-
-                  _tabPanelButtonSize = Size(atoi((char*) width),
-                      atoi((char*) height));
-
-                  xmlFree(width);
-                  xmlFree(height);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "textinput") == 0)
-                {
-                  xmlChar* radius = xmlNodeGetContent(element->children);
-
-                  _textInputRadius = atoi((char*) radius);
-
-                  xmlFree(radius);
-                }
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "toolbar") == 0)
-                {
-                  xmlChar* height = xmlNodeGetContent(element->children);
-
-                  _toolbarHeight = atoi((char*) height);
-
-                  xmlFree(height);
-                }
-
-              element = element->next;
+                element = element->next;
             } // end while(element)
-        } // end hints
 
-      else if (xmlStrcmp(group->name, (xmlChar*) "images") == 0)
-        {
-          xmlChar* iPath = xmlGetProp(group, (xmlChar*) "path");
-          std::string path = ILIXI_DATADIR"" + std::string((char*) iPath);
-
-          while (element != NULL)
-            {
-              xmlChar* img = xmlNodeGetContent(element);
-              //              path.append(;
-
-              if (xmlStrcmp(element->name, (xmlChar*) "plus") == 0)
-                _plusSign = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "minus") == 0)
-                _minusSign = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "grid") == 0)
-                _grid = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "critical") == 0)
-                _critical = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "information") == 0)
-                _info = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "question") == 0)
-                _question = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "warning") == 0)
-                _warning = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "up") == 0)
-                _arrowUp = new Image(path + (char*) img, _iconSize);
-              else if (xmlStrcmp(element->name, (xmlChar*) "down") == 0)
-                _arrowDown = new Image(path + (char*) img, _iconSize);
-              else if (xmlStrcmp(element->name, (xmlChar*) "left") == 0)
-                _arrowLeft = new Image(path + (char*) img, _iconSize);
-              else if (xmlStrcmp(element->name, (xmlChar*) "right") == 0)
-                _arrowRight = new Image(path + (char*) img, _iconSize);
-
-              else if (xmlStrcmp(element->name, (xmlChar*) "empty") == 0)
-                _checkEmpty = new Image(path + (char*) img, _iconSize);
-              else if (xmlStrcmp(element->name, (xmlChar*) "partial") == 0)
-                _checkPartial = new Image(path + (char*) img, _iconSize);
-              else if (xmlStrcmp(element->name, (xmlChar*) "full") == 0)
-                _checkFull = new Image(path + (char*) img, _iconSize);
-
-              xmlFree(img);
-              element = element->next;
-            } // end while(element)
-          xmlFree(iPath);
+            xmlFree(iPath);
         } // end images
 
-      group = group->next;
+        else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
+        {
+            ILOG_DEBUG(ILX_STYLE, "Parsed pack...\n");
+            xmlChar* iPath = xmlGetProp(group, (xmlChar*) "resource");
+            std::string path = ILIXI_DATADIR"" + std::string((char*) iPath);
+
+            _pack = new Image(path);
+
+            xmlNodePtr state;
+            while (element != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, " Parsing %s...\n", element->name);
+                if (xmlStrcmp(element->name, (xmlChar*) "PushButton") == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get3Rectangle(state->children, pb.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get3Rectangle(state->children, pb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
+                                == 0)
+                            get3Rectangle(state->children, pb.pre);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
+                                == 0)
+                            get3Rectangle(state->children, pb.exp);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
+                                == 0)
+                            get3Rectangle(state->children, pb.foc);
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "CheckBox") == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            getRectangle(state->children, cb.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            getRectangle(state->children, cb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
+                                == 0)
+                            getRectangle(state->children, cb.pre);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
+                                == 0)
+                            getRectangle(state->children, cb.exp);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
+                                == 0)
+                            getRectangle(state->children, cb.foc);
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "RadioButton")
+                        == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            getRectangle(state->children, rb.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            getRectangle(state->children, rb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
+                                == 0)
+                            getRectangle(state->children, rb.pre);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
+                                == 0)
+                            getRectangle(state->children, rb.exp);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
+                                == 0)
+                            getRectangle(state->children, rb.foc);
+
+                        state = state->next;
+                    }
+                }
+
+                else if (xmlStrcmp(element->name, (xmlChar*) "ProgressBar")
+                        == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get3Rectangle(state->children, pr.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get3Rectangle(state->children, pr.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "indicator")
+                                == 0)
+                        {
+                            xmlNodePtr iState = state->children;
+                            while (iState != NULL)
+                            {
+                                if (xmlStrcmp(iState->name,
+                                              (xmlChar*) "default") == 0)
+                                    get3Rectangle(iState->children, prI.def);
+
+                                else if (xmlStrcmp(state->name,
+                                                   (xmlChar*) "disabled") == 0)
+                                    get3Rectangle(iState->children, prI.dis);
+
+                                iState = iState->next;
+                            }
+                        }
+
+                        state = state->next;
+                    }
+                }
+
+                else if (xmlStrcmp(element->name, (xmlChar*) "Slider") == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get3Rectangle(state->children, sl.def);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get3Rectangle(state->children, sl.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "indicator")
+                                == 0)
+                        {
+                            xmlNodePtr iState = state->children;
+                            while (iState != NULL)
+                            {
+
+                                if (xmlStrcmp(iState->name,
+                                              (xmlChar*) "default") == 0)
+                                    getRectangle(iState->children, slI.def);
+
+                                else if (xmlStrcmp(iState->name,
+                                                   (xmlChar*) "disabled") == 0)
+                                    getRectangle(iState->children, slI.dis);
+                                else if (xmlStrcmp(iState->name,
+                                                   (xmlChar*) "pressed") == 0)
+                                    getRectangle(iState->children, slI.pre);
+
+                                else if (xmlStrcmp(iState->name,
+                                                   (xmlChar*) "exposed") == 0)
+                                    getRectangle(iState->children, slI.exp);
+
+                                else if (xmlStrcmp(iState->name,
+                                                   (xmlChar*) "focused") == 0)
+                                    getRectangle(iState->children, slI.foc);
+
+                                iState = iState->next;
+                            }
+                        }
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "Frame") == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get9Rectangle(state->children, fr.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get9Rectangle(state->children, fr.dis);
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "LineInput")
+                        == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get3Rectangle(state->children, li.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get3Rectangle(state->children, li.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
+                                == 0)
+                            get3Rectangle(state->children, li.pre);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
+                                == 0)
+                            get3Rectangle(state->children, li.exp);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
+                                == 0)
+                            get3Rectangle(state->children, li.foc);
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "Tab") == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get9Rectangle(state->children, tab.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get9Rectangle(state->children, tab.dis);
+
+                        state = state->next;
+                    }
+                } else if (xmlStrcmp(element->name, (xmlChar*) "ToolButton")
+                        == 0)
+                {
+                    state = element->children;
+                    while (state != NULL)
+                    {
+                        ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                            get9Rectangle(state->children, tb.def);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
+                                == 0)
+                            get9Rectangle(state->children, tb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
+                                == 0)
+                            get9Rectangle(state->children, tb.pre);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
+                                == 0)
+                            get9Rectangle(state->children, tb.exp);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
+                                == 0)
+                            get9Rectangle(state->children, tb.foc);
+
+                        state = state->next;
+                    }
+                }
+
+                element = element->next;
+            } // end while(element)
+
+            xmlFree(iPath);
+        } // end images
+
+        group = group->next;
     } // end while(group)
 
-  xmlFreeDoc(doc);
-  xmlFreeParserCtxt(ctxt);
-  ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
-  return true;
+    xmlFreeDoc(doc);
+    xmlFreeParserCtxt(ctxt);
+    ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
+    return true;
 }
+
+void
+Style::getRectangle(xmlNodePtr node, Rectangle& r)
+{
+    xmlChar* x = xmlGetProp(node, (xmlChar*) "x");
+    xmlChar* y = xmlGetProp(node, (xmlChar*) "y");
+    xmlChar* w = xmlGetProp(node, (xmlChar*) "w");
+    xmlChar* h = xmlGetProp(node, (xmlChar*) "h");
+
+    r.setRectangle(atoi((char*) x), atoi((char*) y), atoi((char*) w),
+                   atoi((char*) h));
+    ILOG_DEBUG(
+            ILX_STYLE,
+            "   Rectangle(%d, %d, %d, %d)\n", r.x(), r.y(), r.width(), r.height());
+    xmlFree(x);
+    xmlFree(y);
+    xmlFree(w);
+    xmlFree(h);
+}
+
+void
+Style::get3Rectangle(xmlNodePtr node, r3& r)
+{
+    getRectangle(node, r.l);
+    getRectangle(node->next, r.m);
+    getRectangle(node->next->next, r.r);
+}
+
+void
+Style::get9Rectangle(xmlNodePtr node, r9& r)
+{
+    getRectangle(node, r.tl);
+    getRectangle(node->next, r.tm);
+    getRectangle(node->next->next, r.tr);
+    getRectangle(node->next->next->next, r.l);
+    getRectangle(node->next->next->next->next, r.m);
+    getRectangle(node->next->next->next->next->next, r.r);
+    getRectangle(node->next->next->next->next->next->next, r.bl);
+    getRectangle(node->next->next->next->next->next->next->next, r.bm);
+    getRectangle(node->next->next->next->next->next->next->next->next, r.br);
+}
+
+} /* namespace ilixi */

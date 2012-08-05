@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,17 +21,23 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "WindowWidget.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
+#include <ui/WindowWidget.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
 
 IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
 IDirectFBSurface* WindowWidget::_cursorImage = NULL;
 
 WindowWidget::WindowWidget(Widget* parent)
-        : Frame(parent), _window(NULL), _eventManager(NULL)
+        : Frame(parent),
+          _backgroundFlags(BGFAll),
+          _window(NULL),
+          _eventManager(NULL)
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
@@ -47,7 +53,8 @@ WindowWidget::WindowWidget(Widget* parent)
     {
         if (AppBase::activeWindow())
         {
-            ILOG_ERROR( ILX_WINDOWWIDGET,
+            ILOG_ERROR(
+                    ILX_WINDOWWIDGET,
                     "Error cannot have multiple windows in exclusive mode!\n");
             exit(1);
         }
@@ -75,6 +82,12 @@ WindowWidget::~WindowWidget()
             _cursorImage->Release(_cursorImage);
     }
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
+}
+
+bool
+WindowWidget::backgroundFilled() const
+{
+    return _backgroundFlags & BGFFill;
 }
 
 EventManager* const
@@ -211,12 +224,12 @@ WindowWidget::paint(const PaintEvent& event)
                 if ((AppBase::appOptions() & OptExclusive))
                 {
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface,
-                            DSSE_RIGHT);
-                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                            DSBLIT_BLEND_ALPHACHANNEL);
+                                                    DSSE_RIGHT);
+                    _exclusiveSurface->SetBlittingFlags(
+                            _exclusiveSurface, DSBLIT_BLEND_ALPHACHANNEL);
                     _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage,
-                            NULL, AppBase::cursorPosition().x,
-                            AppBase::cursorPosition().y);
+                                            NULL, AppBase::cursorPosition().x,
+                                            AppBase::cursorPosition().y);
 
                 }
                 if ((AppBase::appOptions() & OptExclusive)
@@ -247,6 +260,12 @@ WindowWidget::repaint(const PaintEvent& event)
 }
 
 void
+WindowWidget::setBackgroundFilled(bool fill)
+{
+    _backgroundFlags |= BGFAll;
+}
+
+void
 WindowWidget::showWindow()
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
@@ -255,10 +274,11 @@ WindowWidget::showWindow()
         // setup cursor
         IDirectFBImageProvider* provider;
         DFBSurfaceDescription desc;
-        if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-                ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
+        if (AppBase::getDFB()->CreateImageProvider(
+                AppBase::getDFB(), ILIXI_DATADIR"images/pointer.png", &provider)
+                != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
-                    "Error while creating cursor image provider!\n");
+                       "Error while creating cursor image provider!\n");
 
         provider->GetSurfaceDescription(provider, &desc);
         desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
@@ -267,9 +287,9 @@ WindowWidget::showWindow()
         desc.pixelformat = DSPF_ARGB;
 
         if (AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
-                &_cursorImage) != DFB_OK)
+                                             &_cursorImage) != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
-                    "Error while creating cursor surface!\n");
+                       "Error while creating cursor surface!\n");
 
         provider->RenderTo(provider, _cursorImage, NULL);
         provider->Release(provider);
@@ -306,7 +326,7 @@ WindowWidget::showWindow()
             sEncoderCfg.framing = DSEPF_MONO;
 
         DFBResult err = pScreen->SetEncoderConfiguration(pScreen, 0,
-                &sEncoderCfg);
+                                                         &sEncoderCfg);
         if (err == DFB_UNSUPPORTED)
         {
             sEncoderCfg.framing = DSEPF_MONO;
@@ -342,19 +362,19 @@ WindowWidget::showWindow()
                 != DFB_OK)
         {
             ILOG_WARNING(ILX_WINDOWWIDGET,
-                    "Cannot set layer buffer mode to TRIPLE!\n");
+                         "Cannot set layer buffer mode to TRIPLE!\n");
             AppBase::unSetAppOption(OptTripleAccelerated);
             config.buffermode = DLBM_BACKVIDEO;
             if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
                     != DFB_OK)
                 ILOG_THROW(ILX_WINDOWWIDGET,
-                        "Error while setting layer configuration!\n");
+                           "Error while setting layer configuration!\n");
         }
 
         if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
                 != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
-                    "Error while getting layer surface!\n");
+                       "Error while getting layer surface!\n");
 
         int w, h;
         _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
@@ -380,7 +400,8 @@ WindowWidget::showWindow()
     if (!_eventManager->focusedWidget())
         _eventManager->selectNeighbour(Right);
 
-    update(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
+    update(PaintEvent(Rectangle(0, 0, width(), height()),
+                      PaintEvent::BothEyes));
     updateWindow();
     if (!(AppBase::appOptions() & OptExclusive))
         _window->showWindow();
@@ -425,46 +446,47 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return true;
 
     case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
-        _eventManager->setExposedWidget(NULL,
-                PointerEvent(PointerMotion, event.x, event.y));
-        _eventManager->setGrabbedWidget(NULL,
-                PointerEvent(PointerMotion, event.x, event.y));
+        _eventManager->setExposedWidget(
+                NULL, PointerEvent(PointerMotion, event.x, event.y));
+        _eventManager->setGrabbedWidget(
+                NULL, PointerEvent(PointerMotion, event.x, event.y));
         return true;
 
     case DWET_BUTTONUP:
-        _eventManager->setGrabbedWidget(NULL,
+        _eventManager->setGrabbedWidget(
+                NULL,
                 PointerEvent(PointerButtonUp, event.x, event.y, 0,
-                        (PointerButton) event.button,
-                        (PointerButtonMask) event.buttons));
+                             (PointerButton) event.button,
+                             (PointerButtonMask) event.buttons));
         return target->consumePointerEvent(
                 PointerEvent(PointerButtonUp, event.x, event.y, 0,
-                        (PointerButton) event.button,
-                        (PointerButtonMask) event.buttons));
+                             (PointerButton) event.button,
+                             (PointerButtonMask) event.buttons));
 
     case DWET_BUTTONDOWN:
         return target->consumePointerEvent(
                 PointerEvent(PointerButtonDown, event.x, event.y, 0,
-                        (PointerButton) event.button,
-                        (PointerButtonMask) event.buttons));
+                             (PointerButton) event.button,
+                             (PointerButtonMask) event.buttons));
 
     case DWET_MOTION:
         return target->consumePointerEvent(
                 PointerEvent(PointerMotion, event.x, event.y, event.step,
-                        (PointerButton) event.button,
-                        (PointerButtonMask) event.buttons));
+                             (PointerButton) event.button,
+                             (PointerButtonMask) event.buttons));
 
     case DWET_WHEEL:
         ILOG_DEBUG(ILX_WINDOWWIDGET, "DWET_WHEEL: %d \n", event.step);
         return target->consumePointerEvent(
                 PointerEvent(PointerWheel, event.x, event.y, event.step,
-                        (PointerButton) event.button,
-                        (PointerButtonMask) event.buttons));
+                             (PointerButton) event.button,
+                             (PointerButtonMask) event.buttons));
 
     case DWET_KEYUP:
         if (_eventManager->focusedWidget())
             return _eventManager->focusedWidget()->consumeKeyEvent(
                     KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers,
-                            event.locks));
+                             event.locks));
         return false;
 
     case DWET_KEYDOWN:
@@ -528,11 +550,11 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
             if (event.modifiers == DIMM_SHIFT)
 //        _eventManager->selectPrevious();
                 ILOG_DEBUG( ILX_WINDOWWIDGET,
-                        "TAB %d\n", _eventManager->selectPrevious());
+                           "TAB %d\n", _eventManager->selectPrevious());
             else
 //        _eventManager->selectNext();
                 ILOG_DEBUG(ILX_WINDOWWIDGET,
-                        "TAB %d\n", _eventManager->selectNext());
+                           "TAB %d\n", _eventManager->selectNext());
             return true;
 
         } // end switch
@@ -545,7 +567,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         if (_eventManager->focusedWidget())
             return _eventManager->focusedWidget()->consumeKeyEvent(
                     KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
-                            event.locks));
+                             event.locks));
         else
             return false;
 
@@ -605,7 +627,8 @@ WindowWidget::updateWindow()
 #endif
 
         sem_post(&_updates._updateReady);
-        ILOG_DEBUG(ILX_WINDOWWIDGET,
+        ILOG_DEBUG(
+                ILX_WINDOWWIDGET,
                 " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
 #ifdef ILIXI_STEREO_OUTPUT
         paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
@@ -624,3 +647,5 @@ WindowWidget::windowSurface()
         return _window->dfbSurface();
     return NULL;
 }
+
+} /* namespace ilixi */

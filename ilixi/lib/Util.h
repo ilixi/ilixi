@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,17 +21,19 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "S9Stylist.h"
+#ifndef ILIXI_UTIL_H_
+#define ILIXI_UTIL_H_
+
+#include <string>
 
 namespace ilixi
 {
 
-  S9Stylist::S9Stylist()
-  {
-  }
-
-  S9Stylist::~S9Stylist()
-  {
-  }
+/*!
+ * An algorithm produced by Professor Daniel J. Bernstein.
+ */
+unsigned int
+Hash(const std::string& str);
 
 } /* namespace ilixi */
+#endif /* ILIXI_UTIL_H_ */

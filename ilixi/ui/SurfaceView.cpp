@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,18 +21,26 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/SurfaceView.h"
-#include "core/AppBase.h"
-#include "ui/WindowWidget.h"
-#include "core/Logger.h"
+#include <ui/SurfaceView.h>
+#include <core/AppBase.h>
+#include <ui/WindowWidget.h>
+#include <core/Logger.h>
 #include <sys/time.h>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
+
 SurfaceView::SurfaceView(Widget* parent)
-        : SurfaceEventListener(), Widget(parent), _hScale(1), _vScale(1), _sourceWindow(
-                NULL), _windowID(0), _flipCount(0), _state(SVS_NONE)
+        : SurfaceEventListener(),
+          Widget(parent),
+          _hScale(1),
+          _vScale(1),
+          _sourceWindow(NULL),
+          _windowID(0),
+          _flipCount(0),
+          _state(SVS_NONE)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
     setInputMethod(KeyAndPointerInputTracking);
@@ -87,11 +95,11 @@ SurfaceView::setSourceFromSurfaceID(DFBSurfaceID sid)
         detachSourceSurface();
 
         DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), sid,
-                &_sourceSurface);
+                                                      &_sourceSurface);
         if (ret)
         {
             ILOG_ERROR( ILX_SURFACEVIEW,
-                    "Error! GetSurface: %s\n", DirectFBErrorString(ret));
+                       "Error! GetSurface: %s\n", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _surfaceID = 0;
         } else
@@ -145,7 +153,7 @@ SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
         if (ret)
         {
             ILOG_ERROR( ILX_SURFACEVIEW,
-                    "Error! GetSurface: %s", DirectFBErrorString(ret));
+                       "Error! GetSurface: %s", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _sourceWindow = NULL;
         } else
@@ -235,12 +243,13 @@ SurfaceView::renderSource(const PaintEvent& event)
             _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
             if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
                 dfbSurface->SetBlittingFlags(dfbSurface,
-                        DSBLIT_BLEND_ALPHACHANNEL);
+                                             DSBLIT_BLEND_ALPHACHANNEL);
             else
                 dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
         } else
         {
-            dfbSurface->SetBlittingFlags(dfbSurface,
+            dfbSurface->SetBlittingFlags(
+                    dfbSurface,
                     (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
                             | DSBLIT_BLEND_COLORALPHA));
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, opacity());
@@ -269,9 +278,9 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     {
         Rectangle lRect = mapFromSurface(
                 Rectangle(event.update.x1 / hScale(),
-                        event.update.y1 / vScale(),
-                        (event.update.x2 - event.update.x1) / hScale() + 1,
-                        (event.update.y2 - event.update.y1) / vScale() + 1));
+                          event.update.y1 / vScale(),
+                          (event.update.x2 - event.update.x1) / hScale() + 1,
+                          (event.update.y2 - event.update.y1) / vScale() + 1));
 
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(
@@ -370,9 +379,6 @@ SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO( ILX_SURFACEVIEW,
-                "Down E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
-
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
@@ -397,9 +403,6 @@ SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO( ILX_SURFACEVIEW,
-                "Up E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
-
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
@@ -423,9 +426,6 @@ SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
-
-//        ILOG_INFO(ILX_SURFACEVIEW,
-//            "Motion E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -505,9 +505,6 @@ SurfaceView::enterEvent(const PointerEvent& pointerEvent)
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
 
-        ILOG_INFO( ILX_SURFACEVIEW,
-                "Enter E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
-
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
 
@@ -531,9 +528,6 @@ SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
-
-        ILOG_INFO( ILX_SURFACEVIEW,
-                "Leave E(%d,%d) A(%d,%d) C(%d,%d)\n", pointerEvent.x, pointerEvent.y, event.x, event.y, event.cx, event.cy);
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,147 +21,131 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/CheckBox.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/CheckBox.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-CheckBox::CheckBox(const std::string& text, Widget* parent) :
-    Button(text, parent)
+namespace ilixi
 {
-  _layout.setSingleLine(true);
-  setCheckable(true);
-  setConstraints(NoConstraint, MinimumConstraint);
+
+D_DEBUG_DOMAIN( ILX_CHECKBOX, "ilixi/ui/CheckBox", "CheckBox");
+
+CheckBox::CheckBox(const std::string& text, Widget* parent)
+        : Button(text, parent)
+{
+    _layout.setSingleLine(true);
+    setCheckable(true);
+    setConstraints(NoConstraint, FixedConstraint);
+    ILOG_TRACE_W(ILX_CHECKBOX);
 }
 
 CheckBox::~CheckBox()
 {
+    ILOG_TRACE_W(ILX_CHECKBOX);
 }
 
 int
 CheckBox::heightForWidth(int width) const
 {
-  int w = stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-      + stylist()->defaultParameter(StyleHint::CheckBoxWidth);
-  int h = stylist()->defaultParameter(StyleHint::CheckBoxHeight);
+    ILOG_TRACE_W(ILX_CHECKBOX);
+    int w = stylist()->defaultParameter(StyleHint::CheckBoxWidth);
+    int h = stylist()->defaultParameter(StyleHint::CheckBoxHeight);
 
-  if (icon())
-    {
-      w += stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-          + icon()->width();
-      h = std::max(icon()->height(), h);
-    }
-
-  return std::max(textLayoutHeightForWidth(width - w), h);
+    return std::max(textLayoutHeightForWidth(width - w), h);
 }
 
 Size
 CheckBox::preferredSize() const
 {
-  int w = stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-      + stylist()->defaultParameter(StyleHint::CheckBoxWidth);
-  int h = stylist()->defaultParameter(StyleHint::CheckBoxHeight);
+    ILOG_TRACE_W(ILX_CHECKBOX);
+    int w = stylist()->defaultParameter(StyleHint::CheckBoxWidth);
+    int h = stylist()->defaultParameter(StyleHint::CheckBoxHeight);
 
-  if (icon())
+    if (!text().empty())
     {
-      w += stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-          + icon()->width();
-      h = std::max(icon()->height(), h);
+        Size s = textExtents();
+        w += stylist()->defaultParameter(StyleHint::ButtonOffset) + s.width();
+        h = std::max(s.height(), h);
     }
-
-  if (!text().empty())
-    {
-      Size s = textExtents();
-      w += stylist()->defaultParameter(StyleHint::CheckBoxOffset) + s.width();
-      h = std::max(s.height(), h);
-    }
-  return Size(w, h);
+    return Size(w, h);
 }
 
 bool
 CheckBox::partial() const
 {
-  return (_buttonFlag & Partial);
+    return (_buttonFlag & Partial);
 }
 
 void
 CheckBox::toggleChecked()
 {
-  if (checkable())
+    if (checkable())
     {
-      if (_buttonFlag & Tristate)
+        if (_buttonFlag & Tristate)
         {
-          if (checked())
+            if (checked())
             {
-              setChecked(false);
-              _buttonFlag = (ButtonFlags) (_buttonFlag | Partial);
-              sigCheckStateChanged(Partial);
+                setChecked(false);
+                _buttonFlag = (ButtonFlags) (_buttonFlag | Partial);
+                sigCheckStateChanged(Partial);
+            } else if (partial())
+            {
+                _buttonFlag = (ButtonFlags) (_buttonFlag & ~Partial);
+                sigCheckStateChanged(Unchecked);
+            } else
+            {
+                setChecked(true);
+                sigCheckStateChanged(Checked);
             }
-          else if (partial())
+        } else
+        {
+            if (checked())
             {
-              _buttonFlag = (ButtonFlags) (_buttonFlag & ~Partial);
-              sigCheckStateChanged(Unchecked);
-            }
-          else
+                setChecked(false);
+                sigCheckChanged(false);
+                sigCheckStateChanged(Unchecked);
+            } else
             {
-              setChecked(true);
-              sigCheckStateChanged(Checked);
+                setChecked(true);
+                sigCheckChanged(true);
+                sigCheckStateChanged(Checked);
             }
         }
-      else
-        {
-          if (checked())
-            {
-              setChecked(false);
-              sigCheckChanged(false);
-              sigCheckStateChanged(Unchecked);
-            }
-          else
-            {
-              setChecked(true);
-              sigCheckChanged(true);
-              sigCheckStateChanged(Checked);
-            }
-        }
-      update();
+        update();
     }
 }
 
 void
 CheckBox::setTriState(bool triState)
 {
-  if (triState)
-    _buttonFlag = (ButtonFlags) (_buttonFlag | Tristate);
-  else
-    _buttonFlag = (ButtonFlags) (_buttonFlag & ~Tristate);
+    if (triState)
+        _buttonFlag = (ButtonFlags) (_buttonFlag | Tristate);
+    else
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~Tristate);
 }
 
 void
 CheckBox::compose(const PaintEvent& event)
 {
-  Painter p(this);
-  p.begin(event);
-  stylist()->drawCheckBox(&p, this);
-  p.end();
+    ILOG_TRACE_W(ILX_CHECKBOX);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawCheckBox(&p, this);
+    p.end();
 }
 
 void
 CheckBox::updateTextBaseGeometry()
 {
-  int x = 2 * stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-      + stylist()->defaultParameter(StyleHint::CheckBoxWidth);
+    ILOG_TRACE_W(ILX_CHECKBOX);
+    int x = stylist()->defaultParameter(StyleHint::ButtonOffset)
+            + stylist()->defaultParameter(StyleHint::CheckBoxWidth);
 
-  if (icon())
-    {
-      _icon->moveTo(x, (height() - icon()->height()) / 2);
-      x += stylist()->defaultParameter(StyleHint::CheckBoxOffset)
-          + icon()->width();
-    }
+    int th = textLayoutHeightForWidth(width() - x);
+    int y = (height() - th) / 2;
 
-  int th = textLayoutHeightForWidth(width() - x);
-  int y = (height() - th) / 2;
-
-  _layout.setBounds(x, y, width() - x, height());
-  _layout.doLayout(font());
+    _layout.setBounds(x, y, width() - x, height());
+    _layout.doLayout(font());
 }
+
+} /* namespace ilixi */

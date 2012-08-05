@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,204 +21,243 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/ToolButton.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <ui/ToolButton.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-ToolButton::ToolButton(std::string text, Widget* parent) :
-    Button(text, parent), _toolButtonStyle(IconBeforeText)
+namespace ilixi
 {
-  setConstraints(FixedConstraint, FixedConstraint);
-  _layout.setSingleLine(true);
+
+D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
+
+ToolButton::ToolButton(std::string text, Widget* parent)
+        : Button(text, parent),
+          _toolButtonStyle(IconBeforeText),
+          _icon(NULL)
+{
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    setConstraints(FixedConstraint, FixedConstraint);
+    _layout.setSingleLine(true);
+    _layout.setAlignment(TextLayout::Center);
 }
 
 ToolButton::~ToolButton()
 {
-  ILOG_DEBUG(ILX_TOOLBUTTON, "~ToolButton %p\n", this);
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
 }
 
 Size
 ToolButton::preferredSize() const
 {
-  Size defaultSize = stylist()->defaultSize(StyleHint::PushButton);
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    if (text().empty() && !icon())
+        return stylist()->defaultSize(StyleHint::PushButton);
 
-  if (text().empty() && !icon())
-    return defaultSize;
+    int w = stylist()->defaultParameter(StyleHint::ToolButtonLR);
+    int h = stylist()->defaultParameter(StyleHint::ToolButtonTB);
 
-  int hBorder = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
-      stylist()->defaultParameter(StyleHint::ButtonRadius));
-  int vBorder = stylist()->defaultParameter(StyleHint::BorderWidth);
-
-  int w = 2 * hBorder;
-  int h = 2 * vBorder;
-
-  if (checkable())
+    if (checkable())
     {
-      if ((_toolButtonStyle == IconBelowText)
-          || (_toolButtonStyle == IconAboveText))
-        h += stylist()->defaultParameter(StyleHint::ButtonIndicator)
-            + stylist()->defaultParameter(StyleHint::ButtonOffset);
-      else
-        w = hBorder + vBorder
-            + stylist()->defaultParameter(StyleHint::ButtonIndicator)
-            + stylist()->defaultParameter(StyleHint::ButtonOffset);
+        if ((_toolButtonStyle == IconBelowText)
+                || (_toolButtonStyle == IconAboveText))
+            h += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
+                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+        else
+            w += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
+                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
     }
 
-  if (_toolButtonStyle == TextOnly)
+    if (_toolButtonStyle == TextOnly)
     {
-      Size s = textExtents();
-      if (s.isValid())
-        return Size(w + s.width(), h + s.height());
-      return defaultSize;
+        Size s = textExtents();
+        if (s.isValid())
+            return Size(w + s.width(), h + s.height());
+        return stylist()->defaultSize(StyleHint::PushButton);
     }
 
-  // calculate image size
-  int imgW = 0;
-  int imgH = 0;
-  if (icon())
+    // calculate image size
+    int imgW = 0;
+    int imgH = 0;
+    if (_icon)
     {
-      imgW = icon()->width();
-      imgH = icon()->height() + 2; // 1px for button down movement
+        imgW = _icon->width();
+        imgH = _icon->height() + 2; // 1px for button down movement
     }
 
-  if (_toolButtonStyle == IconOnly)
+    if (_toolButtonStyle == IconOnly)
     {
-      if (imgW)
-        return Size(w + imgW, h + imgH);
-      return defaultSize;
-    }
-  else
+        if (imgW)
+            return Size(w + imgW, h + imgH);
+        return stylist()->defaultSize(StyleHint::PushButton);
+    } else
     {
-      Size s = textExtents();
-      if (s.isValid() && imgW)
+        Size s = textExtents();
+        if (s.isValid() && imgW)
         {
-          if (_toolButtonStyle == IconBeforeText)
+            if (_toolButtonStyle == IconBeforeText)
             {
-              w += imgW + stylist()->defaultParameter(StyleHint::ButtonOffset)
-                  + s.width();
-              h += std::max(s.height(), imgH);
-              return Size(w, h);
-            }
-          else
+                w += imgW + stylist()->defaultParameter(StyleHint::ButtonOffset)
+                        + s.width();
+                h += std::max(s.height(), imgH);
+                return Size(w, h);
+            } else
             {
-              // IconBelowText or IconAboveText
-              w += std::max(imgW, s.width());
-              h += imgH + s.height()
-                  + stylist()->defaultParameter(StyleHint::ButtonOffset);
-              return Size(w, h);
+                // IconBelowText or IconAboveText
+                w += std::max(imgW, s.width());
+                h += imgH //+ s.height()
+                + stylist()->defaultParameter(StyleHint::ButtonOffset);
+                return Size(w, h);
             }
-        }
-      else if (imgW)
-        return Size(w + imgW, h + imgH);
-      else
-        return Size(w + s.width(), h + s.height());
+        } else if (imgW)
+            return Size(w + imgW, h + imgH);
+        else
+            return Size(w + s.width(), h + s.height());
     }
 }
 
-ToolButton::ToolButtonStyle
-ToolButton::getToolButtonStyle() const
+const Icon*
+ToolButton::icon() const
 {
-  return _toolButtonStyle;
+    return _icon;
+}
+
+ToolButton::ToolButtonStyle
+ToolButton::toolButtonStyle() const
+{
+    return _toolButtonStyle;
 }
 
 void
 ToolButton::setToolButtonStyle(ToolButtonStyle style)
 {
-  _toolButtonStyle = style;
+    _toolButtonStyle = style;
+}
+
+void
+ToolButton::setIcon(Icon* icon)
+{
+    removeChild(_icon);
+    _icon = icon;
+    addChild(_icon);
+}
+
+void
+ToolButton::setIcon(const std::string& iconPath, const Size& size)
+{
+    removeChild(_icon);
+    _icon = new Icon(iconPath, this);
+    setIconSize(size);
+    addChild(_icon);
+}
+
+void
+ToolButton::setIconSize(const Size& size)
+{
+    if (_icon)
+    {
+        if (size.isValid())
+            _icon->setSize(size);
+        else
+            _icon->setSize(_icon->preferredSize());
+    }
 }
 
 void
 ToolButton::compose(const PaintEvent& event)
 {
-  Painter p(this);
-  p.begin(event);
-  stylist()->drawToolButton(&p, this);
-  p.end();
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawToolButton(&p, this);
+    p.end();
 }
 
 void
 ToolButton::updateTextBaseGeometry()
 {
-  // Fixme align icon vertically.
-  int textHeight = textExtents().height();
-  int iconW = 0;
-  int iconH = 0;
-  int hBorder = std::max(stylist()->defaultParameter(StyleHint::BorderWidth),
-      stylist()->defaultParameter(StyleHint::ButtonRadius));
-  int vBorder = stylist()->defaultParameter(StyleHint::BorderWidth);
-  int wUsed = 2 * hBorder;
-  int x = hBorder;
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    ILOG_DEBUG(ILX_TOOLBUTTON, " -> Size(%d, %d)\n", width(), height());
+    // Fixme align icon vertically.
+    int textHeight = textExtents().height();
+    int iconW = 0;
+    int iconH = 0;
+    int wUsed = stylist()->defaultParameter(StyleHint::ToolButtonLR);
+    int x = 0; //stylist()->defaultParameter(StyleHint::ToolButtonLeft);
 
-  if (checkable())
+    if (checkable())
     {
-      if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly)
-          || (_toolButtonStyle == IconBeforeText))
+        if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly)
+                || (_toolButtonStyle == IconBeforeText))
         {
-          x = vBorder + stylist()->defaultParameter(StyleHint::ButtonIndicator)
-              + stylist()->defaultParameter(StyleHint::ButtonOffset);
-          wUsed = x + hBorder;
+            x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
+                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+            wUsed = x;
         }
     }
 
-  if (icon())
+    if (_icon)
     {
-      iconW = icon()->width();
-      iconH = icon()->height() + 1;
+        iconW = _icon->width();
+        iconH = _icon->height() + 1;
     }
 
-  if (_toolButtonStyle == TextOnly)
+    if (_toolButtonStyle == TextOnly)
     {
-      _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed,
-          textHeight);
-      return;
+        int y = (height() - textHeight) / 2;
+        ILOG_DEBUG(ILX_TOOLBUTTON, " -> TextOnly\n");
+        _layout.setBounds(width() / 2, y, width(), textHeight);
     }
 
-  else if (_toolButtonStyle == IconOnly)
+    else if (_toolButtonStyle == IconOnly)
     {
-      _icon->moveTo(x + (width() - (iconW + wUsed)) / 2,
-          (height() - iconH) / 2 + 1);
-      _layout.setBounds(0, 0, 0, 0);
-      return;
+        _icon->moveTo((width() - iconW) / 2, (height() - iconH) / 2 + 1);
+        _layout.setBounds(0, 0, 0, 0);
+        return;
     }
 
-  else if (_toolButtonStyle == IconBeforeText)
+    else if (_toolButtonStyle == IconBeforeText)
     {
-      if (iconW)
+        if (iconW)
         {
-          _icon->moveTo(x, vBorder + 1);
-          x += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
-          wUsed += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
-        }
-      _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed,
-          textHeight);
-    }
-  else if (_toolButtonStyle == IconBelowText)
-    {
-      Size s = textExtents();
-      x = (width() - wUsed - s.width()) / 2;
-      _layout.setBounds(x, vBorder, width() - wUsed, textHeight);
-      if (iconW)
-        {
-          _icon->moveTo((width() - iconW) / 2,
-              vBorder + textHeight + 1
-                  + stylist()->defaultParameter(StyleHint::ButtonOffset));
-        }
-    }
-  else //  IconAboveText
-    {
-      int y = vBorder;
-      if (iconW)
-        {
-          _icon->moveTo((width() - iconW) / 2, y + 1);
-          y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset) + 1;
+            _icon->moveTo(
+                    x,
+                    stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
+            x += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
+            wUsed += iconW
+                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
         }
 
-      Size s = textExtents();
-      x = (width() - s.width()) / 2;
+        _layout.setBounds(x + width() / 2, (height() - textHeight) / 2, width(),
+                          textHeight);
 
-      _layout.setBounds(x, y, width() - x, textHeight);
+    } else if (_toolButtonStyle == IconBelowText)
+    {
+        _layout.setBounds(width() / 2,
+                          stylist()->defaultParameter(StyleHint::ToolButtonTop),
+                          width(), textHeight);
+        if (iconW)
+        {
+            _icon->moveTo(
+                    (width() - iconW) / 2,
+                    stylist()->defaultParameter(StyleHint::ToolButtonTop)
+                            + textHeight + 1
+                            + stylist()->defaultParameter(
+                                    StyleHint::ButtonOffset));
+        }
+    } else //  IconAboveText
+    {
+        int y = stylist()->defaultParameter(StyleHint::ToolButtonTop);
+
+        if (iconW)
+        {
+            _icon->moveTo((width() - iconW) / 2, y + 1);
+            y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset)
+                    + 1;
+        }
+
+        _layout.setBounds(width() / 2, y, width(), textHeight);
     }
-  _layout.doLayout(font());
+    _layout.doLayout(font());
 }
+
+} /* namespace ilixi */

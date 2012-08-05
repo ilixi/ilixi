@@ -7,7 +7,7 @@
       <application>
             <bgBottom>
                   <color alpha="155">
-                        <hex>000000</hex>
+                        <hex>666666</hex>
                   </color>
             </bgBottom>
             <bgMid>
@@ -37,7 +37,7 @@
             </focusTop>
             <text>
                   <color>
-                        <hex>FFFFFF</hex>
+                        <hex>333333</hex>
                   </color>
             </text>
             <textDisabled>
@@ -114,7 +114,7 @@
             </fillTop>
             <text>
                   <color>
-                        <hex>FFFFFF</hex>
+                        <hex>333333</hex>
                   </color>
             </text>
       </default>
@@ -258,7 +258,7 @@
             </fillTop>
             <text>
                   <color>
-                        <hex>FFFFFF</hex>
+                        <hex>333333</hex>
                   </color>
             </text>
       </exposed>
@@ -330,7 +330,7 @@
             </fillTop>
             <text>
                   <color>
-                        <hex>F0F0F0</hex>
+                        <hex>000000</hex>
                   </color>
             </text>
       </pressed>

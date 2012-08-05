@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,20 +24,20 @@
 #ifndef ILIXI_WINDOWWIDGET_H_
 #define ILIXI_WINDOWWIDGET_H_
 
-#include "core/Window.h"
-#include "core/EventManager.h"
-#include "ui/Frame.h"
+#include <core/Window.h>
+#include <core/EventManager.h>
+#include <ui/Frame.h>
 #include <semaphore.h>
 #include <vector>
 
 namespace ilixi
 {
-  //! Base class for windowed widgets.
-  class WindowWidget : public Frame
-  {
+//! Base class for windowed widgets.
+class WindowWidget : public Frame
+{
     friend class Widget;
     friend class AppBase;
-  public:
+public:
     /*!
      * Constructor.
      */
@@ -48,6 +48,12 @@ namespace ilixi
      */
     virtual
     ~WindowWidget();
+
+    /*!
+     * Returns true if window widget paints its background.
+     */
+    bool
+    backgroundFilled() const;
 
     /*!
      * Returns and interface to the focus manager.
@@ -88,7 +94,21 @@ namespace ilixi
     virtual void
     repaint(const PaintEvent& event);
 
-  protected:
+    /*!
+     * Sets whether window widget paints its background.
+     */
+    void
+    setBackgroundFilled(bool fill);
+
+protected:
+    enum BackgroundFlags
+    {
+        BGFNone = 0x000, BGFClear = 0x001, BGFFill = 0x002, BGFAll = 0x003
+    };
+
+    //! This flag specifies whether frame fills its background.
+    char _backgroundFlags;
+
     /*!
      * Makes this widget and its window visible.
      */
@@ -118,7 +138,7 @@ namespace ilixi
      */
     sigc::signal<void> sigAbort;
 
-  private:
+private:
     //! This property stores the managed window.
     Window* _window;
     //! This property stores the event manager for this window.
@@ -130,15 +150,15 @@ namespace ilixi
     //! Stores window's dirty regions and a region for update.
     struct
     {
-      pthread_mutex_t _listLock;
-      sem_t _updateReady;
-      sem_t _paintReady;
-      Rectangle _updateRegion;
+        pthread_mutex_t _listLock;
+        sem_t _updateReady;
+        sem_t _paintReady;
+        Rectangle _updateRegion;
 #ifdef ILIXI_STEREO_OUTPUT
-      Rectangle _updateRegionRight;
-      std::vector<Rectangle> _updateQueueRight;
+        Rectangle _updateRegionRight;
+        std::vector<Rectangle> _updateQueueRight;
 #endif
-      std::vector<Rectangle> _updateQueue;
+        std::vector<Rectangle> _updateQueue;
     } _updates;
 
     static IDirectFBSurface* _exclusiveSurface;
@@ -153,7 +173,7 @@ namespace ilixi
 
     IDirectFBSurface*
     windowSurface();
-  };
+};
 
 }
 
