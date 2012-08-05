@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,13 +26,13 @@
 
 namespace ilixi
 {
-  //! Defines a point using integer precision.
-  /*!
-   * Points are defined by an x and a y coordinate.
-   */
-  class Point
-  {
-  public:
+//! Defines a point using integer precision.
+/*!
+ * Points are defined by an x and a y coordinate.
+ */
+class Point
+{
+public:
     /*!
      * Creates a new Point at (0, 0).
      */
@@ -124,23 +124,23 @@ namespace ilixi
     bool
     operator!=(const Point &p) const;
 
-  private:
+private:
     //! This property stores the x coordinate.
     int _x;
     //! This property stores the y coordinate.
     int _y;
-  };
+};
 
-  inline int
-  Point::x() const
-  {
+inline int
+Point::x() const
+{
     return _x;
-  }
+}
 
-  inline int
-  Point::y() const
-  {
+inline int
+Point::y() const
+{
     return _y;
-  }
+}
 }
 #endif /* ILIXI_POINT_H_ */

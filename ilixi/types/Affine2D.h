@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -29,9 +29,9 @@
 namespace ilixi
 {
 
-  class Affine2D
-  {
-  public:
+class Affine2D
+{
+public:
     /*!
      * Constructor, creates identity matrix.
      *
@@ -49,7 +49,7 @@ namespace ilixi
      *  0   0   1
      */
     Affine2D(double m11, double m12, double m13, double m21, double m22,
-        double m23);
+             double m23);
 
     /*!
      * Copy constructor.
@@ -126,13 +126,13 @@ namespace ilixi
     Affine2D
     operator ~() const;
 
-  private:
+private:
     double _m[6];
 
     //! Matrix multiplication.
     Affine2D&
     multiply(const Affine2D& other);
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_AFFINE2D_H_ */

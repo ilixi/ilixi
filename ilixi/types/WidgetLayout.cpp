@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,18 +21,21 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/WidgetLayout.h"
-#include "core/Logger.h"
+#include <types/WidgetLayout.h>
+#include <core/Logger.h>
 #include <algorithm>
 
-using namespace ilixi;
+namespace ilixi
+{
 
 // TODO Utilise or remove WidgetLayout!
 
 D_DEBUG_DOMAIN( ILX_WIDGETLAYOUT, "ilixi/types/WidgetLayout", "WidgetLayout");
 
-WidgetLayout::WidgetLayout(Widget* parent) :
-    _parent(parent), _modified(true), _spacing(5)
+WidgetLayout::WidgetLayout(Widget* parent)
+        : _parent(parent),
+          _modified(true),
+          _spacing(5)
 {
 }
 
@@ -47,148 +50,151 @@ WidgetLayout::~WidgetLayout()
 int
 WidgetLayout::heightForWidth(int width)
 {
-  return -1;
+    return -1;
 }
 
 Size
 WidgetLayout::preferredSize()
 {
-  ElementList list;
-  createCache(&list);
+    ElementList list;
+    createCache(&list);
 
-  Rectangle r;
-  for (ElementList::const_iterator it = list.begin(); it != list.end(); ++it)
+    Rectangle r;
+    for (ElementList::const_iterator it = list.begin(); it != list.end(); ++it)
     {
-      Rectangle rTemp;
-      rTemp.setTopLeft(it->widget->position());
-      rTemp.setSize(it->size);
-      r.united(rTemp);
+        Rectangle rTemp;
+        rTemp.setTopLeft(it->widget->position());
+        rTemp.setSize(it->size);
+        r.united(rTemp);
     }
 
-  return r.size();
+    return r.size();
 }
 
 Rectangle
 WidgetLayout::bounds() const
 {
-  return _bounds;
+    return _bounds;
 }
 
 unsigned int
 WidgetLayout::spacing() const
 {
-  return _spacing;
+    return _spacing;
 }
 
 void
 WidgetLayout::setBounds(const Rectangle& rect)
 {
-  _bounds = rect;
-  _modified = true;
+    _bounds = rect;
+    _modified = true;
 }
 
 void
 WidgetLayout::setBounds(int x, int y, int w, int h)
 {
-  _bounds.setRectangle(x, y, w, h);
-  _modified = true;
+    _bounds.setRectangle(x, y, w, h);
+    _modified = true;
 }
 
 void
 WidgetLayout::setSpacing(unsigned int spacing)
 {
-  _spacing = spacing;
-  _modified = true;
+    _spacing = spacing;
+    _modified = true;
 }
 
 void
 WidgetLayout::setParent(Widget* parent)
 {
-  _parent = parent;
+    _parent = parent;
 }
 
 bool
 WidgetLayout::addWidget(Widget* widget)
 {
-  if (!widget)
-    return false;
+    if (!widget)
+        return false;
 
-  Widget::WidgetListConstIterator it = std::find(_widgets.begin(),
-      _widgets.end(), widget);
-  if (widget == *it)
+    Widget::WidgetListConstIterator it = std::find(_widgets.begin(),
+                                                   _widgets.end(), widget);
+    if (widget == *it)
     {
-      ILOG_WARNING(ILX_WIDGETLAYOUT, "Cannot add duplicate widget %p!", widget);
-      return false;
+        ILOG_WARNING(ILX_WIDGETLAYOUT,
+                     "Cannot add duplicate widget %p!", widget);
+        return false;
     }
 
-  _widgets.push_back(widget);
-  return true;
+    _widgets.push_back(widget);
+    return true;
 }
 
 bool
 WidgetLayout::removeWidget(Widget* widget)
 {
-  if (!widget)
-    return false;
+    if (!widget)
+        return false;
 
-  Widget::WidgetListIterator it = std::find(_widgets.begin(), _widgets.end(),
-      widget);
-  if (widget == *it)
+    Widget::WidgetListIterator it = std::find(_widgets.begin(), _widgets.end(),
+                                              widget);
+    if (widget == *it)
     {
-      _widgets.erase(it);
-      return true;
+        _widgets.erase(it);
+        return true;
     }
-  return false;
+    return false;
 }
 
 void
 WidgetLayout::invalidate()
 {
-  _modified = true;
+    _modified = true;
 }
 
 void
 WidgetLayout::tile()
 {
-  if (!_modified)
-    return;
+    if (!_modified)
+        return;
 
-  // createCache if necessary
-  // modify geometry according to constraints
-  // assign neighbours
-  _modified = false;
+    // createCache if necessary
+    // modify geometry according to constraints
+    // assign neighbours
+    _modified = false;
 }
 
 void
 WidgetLayout::createCache(ElementList* cache)
 {
-  cache->clear();
-  CacheElement e;
-  for (Widget::WidgetListConstIterator it = _widgets.begin();
-      it != _widgets.end(); ++it)
+    cache->clear();
+    CacheElement e;
+    for (Widget::WidgetListConstIterator it = _widgets.begin();
+            it != _widgets.end(); ++it)
     {
-      e.widget = ((Widget*) *it);
-      if (e.widget->visible()
-          && (e.widget->xConstraint() != IgnoredConstraint
-              || e.widget->yConstraint() != IgnoredConstraint))
+        e.widget = ((Widget*) *it);
+        if (e.widget->visible()
+                && (e.widget->xConstraint() != IgnoredConstraint
+                        || e.widget->yConstraint() != IgnoredConstraint))
         {
-          e.size = e.widget->preferredSize();
+            e.size = e.widget->preferredSize();
 
-          // handle min-max width (min has priority)
-          if (e.size.width() < e.widget->minWidth())
-            e.size.setWidth(e.widget->minWidth());
-          else if (e.widget->maxWidth() > 0
-              && e.size.width() > e.widget->maxWidth())
-            e.size.setWidth(e.widget->maxWidth());
+            // handle min-max width (min has priority)
+            if (e.size.width() < e.widget->minWidth())
+                e.size.setWidth(e.widget->minWidth());
+            else if (e.widget->maxWidth() > 0
+                    && e.size.width() > e.widget->maxWidth())
+                e.size.setWidth(e.widget->maxWidth());
 
-          // handle min-max height (min has priority)
-          if (e.size.height() < e.widget->minHeight())
-            e.size.setHeight(e.widget->minHeight());
-          else if (e.widget->maxHeight() > 0
-              && e.size.height() > e.widget->maxHeight())
-            e.size.setHeight(e.widget->maxHeight());
+            // handle min-max height (min has priority)
+            if (e.size.height() < e.widget->minHeight())
+                e.size.setHeight(e.widget->minHeight());
+            else if (e.widget->maxHeight() > 0
+                    && e.size.height() > e.widget->maxHeight())
+                e.size.setHeight(e.widget->maxHeight());
 
-          cache->push_back(e);
+            cache->push_back(e);
         }
     }
 }
+
+} /* namespace ilixi */

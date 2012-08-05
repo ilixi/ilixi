@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -27,30 +27,30 @@
 namespace ilixi
 {
 
-  class Tween
-  {
+class Tween
+{
     friend class TweenAnimation;
 
-  public:
+public:
 
     enum Transition
     {
-      LINEAR,
-      SINE,
-      QUINT,
-      QUART,
-      QUAD,
-      EXPO,
-      ELASTIC,
-      CUBIC,
-      CIRCLE,
-      BOUNCE,
-      BACK
+        LINEAR,
+        SINE,
+        QUINT,
+        QUART,
+        QUAD,
+        EXPO,
+        ELASTIC,
+        CUBIC,
+        CIRCLE,
+        BOUNCE,
+        BACK
     };
 
     enum Equation
     {
-      EASE_IN, EASE_OUT, EASE_IN_OUT
+        EASE_IN, EASE_OUT, EASE_IN_OUT
     };
 
     /*!
@@ -63,7 +63,7 @@ namespace ilixi
      * @param endValue
      */
     Tween(Transition transition, Equation equation, float initialValue = 0,
-        float endValue = 1);
+          float endValue = 1);
 
     /*!
      * Copy constructor.
@@ -130,7 +130,7 @@ namespace ilixi
     void
     setEndValue(float endValue);
 
-  private:
+private:
     //! This property stores transition.
     Transition _transition;
     //! This property stores equation.
@@ -145,13 +145,13 @@ namespace ilixi
     //! Updates using transition and equation.
     void
     runEase(float time, float duration);
-  };
+};
 
-  inline float
-  Tween::value() const
-  {
+inline float
+Tween::value() const
+{
     return _value;
-  }
+}
 
 }
 #endif /* ILIXI_TWEEN_H_ */

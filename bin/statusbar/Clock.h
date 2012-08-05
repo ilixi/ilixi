@@ -21,39 +21,43 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Demo4.h"
-#include "VKMenu.h"
-#include "ui/PushButton.h"
-#include "ui/HBoxLayout.h"
-#include "ui/VBoxLayout.h"
-#include "ui/Spacer.h"
-#include <sigc++/bind.h>
+#ifndef CLOCK_H_
+#define CLOCK_H_
 
-using namespace ilixi;
+#include <ui/Label.h>
+#include <lib/Timer.h>
+#include <ui/VBoxLayout.h>
 
-Demo4::Demo4(int argc, char* argv[]) :
-    Application(&argc, &argv)
+namespace ilixi
 {
-  setTitle("Demo4");
-  setMargin(0);
-//  setBackgroundFilled(false);
-//  setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
-  setLayout(new VBoxLayout());
 
-  addWidget(new Spacer(Vertical));
-
-  VKMenu* menu = new VKMenu();
-  addWidget(menu);
-}
-
-Demo4::~Demo4()
+class Clock : public Widget
 {
-}
+public:
+    Clock(Widget* parent = 0);
 
-int
-main(int argc, char* argv[])
-{
-  Demo4 app(argc, argv);
-  app.exec();
-  return 0;
-}
+    virtual
+    ~Clock();
+
+    virtual Size
+    preferredSize() const;
+
+protected:
+    virtual void
+    compose(const PaintEvent& event);
+
+    void
+    updateTime();
+
+private:
+    Label* _time;
+    Label* _date;
+    Timer* _timer;
+    VBoxLayout* _box;
+
+    void
+    onClockGeomUpdate();
+};
+
+} /* namespace ilixi */
+#endif /* CLOCK_H_ */

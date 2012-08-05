@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,25 +24,25 @@
 #ifndef ILIXI_DIALOG_H_
 #define ILIXI_DIALOG_H_
 
-#include "core/Window.h"
-#include "ui/Frame.h"
-#include "ui/HBoxLayout.h"
-#include "ui/WindowWidget.h"
+#include <core/Window.h>
+#include <ui/Frame.h>
+#include <ui/HBoxLayout.h>
+#include <ui/WindowWidget.h>
 
 namespace ilixi
 {
-  class Dialog : public WindowWidget
-  {
-  public:
+class Dialog : public WindowWidget
+{
+public:
     //! This enum designates the buttons shown on the dialog.
     enum ButtonOption
     {
-      NoButtonOption, //!< No buttons.
-      OKButtonOption, //!< OK button for accept().
-      CancelButtonOption, //!< Cancel button for reject().
-      OKCancelButtonOption, //! OK and Cancel buttons for accept() and reject() respectively.
-      YesNoButtonOption, //!< Yes and No buttons for accept() and reject() respectively.
-      YesNoCancelButtonOption
+        NoButtonOption, //!< No buttons.
+        OKButtonOption, //!< OK button for accept().
+        CancelButtonOption, //!< Cancel button for reject().
+        OKCancelButtonOption, //! OK and Cancel buttons for accept() and reject() respectively.
+        YesNoButtonOption, //!< Yes and No buttons for accept() and reject() respectively.
+        YesNoCancelButtonOption
     //!< Yes (for accept), No (for reject) and Cancel (for finish(-1)) buttons.
     };
 
@@ -52,7 +52,7 @@ namespace ilixi
      * @param parent
      */
     Dialog(const std::string& title, ButtonOption option = OKButtonOption,
-        Widget* parent = 0);
+           Widget* parent = 0);
 
     /*!
      * Destructor.
@@ -145,7 +145,7 @@ namespace ilixi
      */
     sigc::signal<void, int> sigFinished;
 
-  protected:
+protected:
     //! This layout is placed under the dialog and usually contains buttons.
     LayoutBase* _buttonLayout;
     //! This property stores the dialog's result.
@@ -155,7 +155,7 @@ namespace ilixi
     //! This property stores the dimensions of the title bar text.
     Size _titleSize;
 
-  private:
+private:
     /*!
      * Returns Dialog's canvas y-coordinate including the top margin.
      */
@@ -175,7 +175,7 @@ namespace ilixi
     //! Positions button layout if any.
     void
     updateButtonLayoutGeometry();
-  };
+};
 }
 
 #endif /* ILIXI_DIALOG_H_ */

@@ -1,13 +1,29 @@
 /*
- * Notify.cpp
- *
- *  Created on: Jul 25, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Notify.h"
-#include "core/AppBase.h"
-#include "ui/Widget.h"
+#include <lib/Notify.h>
+#include <core/AppBase.h>
+#include <ui/Widget.h>
 
 namespace ilixi
 {
@@ -15,7 +31,9 @@ namespace ilixi
 const int NotificationWidth = 300;
 
 Notify::Notify(const std::string& title, const std::string& text)
-        : _title(), _text(), _icon("")
+        : _title(),
+          _text(),
+          _icon("")
 {
     _title.setText(title);
     _text.setText(text);
@@ -74,18 +92,18 @@ Notify::show()
 
     textFont = style->defaultFont(StyleHint::DefaultFont);
     textHeight = _text.heightForWidth(NotificationWidth - (icon ? 101 : 0),
-            textFont);
+                                      textFont);
     textDFBFont = textFont->dfbFont();
     _text.setBounds(0, 0, NotificationWidth, textHeight);
 
     Surface* notifySurface = new Surface();
     notifySurface->createDFBSurface(NotificationWidth,
-            std::max(96, titleHeight) + textHeight);
+                                    std::max(96, titleHeight) + textHeight);
     IDirectFBSurface* surface = notifySurface->dfbSurface();
     surface->AllowAccess(surface, "*");
-    surface->SetColor(surface, 255, 255, 255, 255);
-    surface->FillRectangle(surface, 0, 0, NotificationWidth,
-            std::max(96, titleHeight) + textHeight);
+//    surface->SetColor(surface, 255, 255, 255, 255);
+//    surface->FillRectangle(surface, 0, 0, NotificationWidth,
+//                           std::max(96, titleHeight) + textHeight);
 
     surface->SetColor(surface, 0, 0, 0, 255);
     // draw title

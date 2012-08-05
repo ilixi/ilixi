@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,71 +21,73 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/SurfaceEventListener.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
+#include <core/SurfaceEventListener.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
-  SurfaceEventListener::SurfaceEventListener() :
-      _surfaceID(0), _sourceSurface(NULL), _cb(this)
-  {
-  }
+SurfaceEventListener::SurfaceEventListener()
+        : _surfaceID(0),
+          _sourceSurface(NULL),
+          _cb(this)
+{
+}
 
-  SurfaceEventListener::~SurfaceEventListener()
-  {
-  }
+SurfaceEventListener::~SurfaceEventListener()
+{
+}
 
-  DFBSurfaceID
-  SurfaceEventListener::sourceID() const
-  {
+DFBSurfaceID
+SurfaceEventListener::sourceID() const
+{
     return _surfaceID;
-  }
+}
 
-  IDirectFBSurface*
-  SurfaceEventListener::sourceSurface() const
-  {
+IDirectFBSurface*
+SurfaceEventListener::sourceSurface() const
+{
     return _sourceSurface;
-  }
+}
 
-  void
-  SurfaceEventListener::attachSourceSurface()
-  {
+void
+SurfaceEventListener::attachSourceSurface()
+{
     AppBase::addSurfaceEventListener(this);
     _cb.start();
-  }
+}
 
-  void
-  SurfaceEventListener::detachSourceSurface()
-  {
+void
+SurfaceEventListener::detachSourceSurface()
+{
     _cb.stop();
     AppBase::removeSurfaceEventListener(this);
-  }
+}
 
-  bool
-  SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
-  {
+bool
+SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
+{
     if (event.surface_id == _surfaceID)
-      {
+    {
         if (event.type == DSEVT_DESTROYED)
-          onSourceDestroyed(event);
+            onSourceDestroyed(event);
         else if (event.type == DSEVT_UPDATE)
-          _queue.push(event);
+            _queue.push(event);
         return true;
-      }
+    }
     return false;
-  }
+}
 
-  bool
-  SurfaceEventListener::funck()
-  {
+bool
+SurfaceEventListener::funck()
+{
     if (!_queue.empty())
-      {
+    {
         onSourceUpdate(_queue.front());
         _queue.pop();
-      }
+    }
     return true;
-  }
+}
 
 } /* namespace ilixi */

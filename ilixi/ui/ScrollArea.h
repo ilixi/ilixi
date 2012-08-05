@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,35 +24,35 @@
 #ifndef ILIXI_SCROLLAREA_H_
 #define ILIXI_SCROLLAREA_H_
 
-#include "ui/Widget.h"
+#include <ui/Widget.h>
 #include <queue>
 
 namespace ilixi
 {
-  class Tween;
+class Tween;
 
-  //! A scroll area.
-  /*!
-   * This class provides a way to scroll over a large content using pointer.
-   * By default, smooth scrolling is off.
-   */
-  class ScrollArea : public Widget
-  {
-  public:
+//! A scroll area.
+/*!
+ * This class provides a way to scroll over a large content using pointer.
+ * By default, smooth scrolling is off.
+ */
+class ScrollArea : public Widget
+{
+public:
     //! These options control the functionality of ScrollArea.
     enum ScrollAreaOptions
     {
-      HorizontalAuto = 0x001, //!< Makes horizontal thumb visible automatically.
-      HorizontalAlways = 0x002, //!< Makes horizontal thumb always visible.
-      HorizontalScroll = 0x004, //!< Whether horizontal scrolling is enabled.
-      VerticalAuto = 0x008, //!< Makes vertical thumb visible automatically.
-      VerticalAlways = 0x010, //!< Makes vertical thumb always visible automatically.
-      VerticalScroll = 0x020, //!< Whether vertical scrolling is enabled .
-      SmoothScrolling = 0x040, //!< Content has its own surface.
-      TargetedScroll = 0x080, //!< Alters scrolling mode, used for scrolling to desired coordinates.
-      DrawFrame = 0x100, //!< Draws frame around scroll area
-      DrawHorizontalThumb = 0x200, //!< Flag controlling drawing of horizontal thumb
-      DrawVerticalThumb = 0x400 //!< Flag controlling drawing of vertical thumb
+        HorizontalAuto = 0x001, //!< Makes horizontal thumb visible automatically.
+        HorizontalAlways = 0x002, //!< Makes horizontal thumb always visible.
+        HorizontalScroll = 0x004, //!< Whether horizontal scrolling is enabled.
+        VerticalAuto = 0x008, //!< Makes vertical thumb visible automatically.
+        VerticalAlways = 0x010, //!< Makes vertical thumb always visible automatically.
+        VerticalScroll = 0x020, //!< Whether vertical scrolling is enabled .
+        SmoothScrolling = 0x040, //!< Content has its own surface.
+        TargetedScroll = 0x080, //!< Alters scrolling mode, used for scrolling to desired coordinates.
+        DrawFrame = 0x100, //!< Draws frame around scroll area
+        DrawHorizontalThumb = 0x200, //!< Flag controlling drawing of horizontal thumb
+        DrawVerticalThumb = 0x400 //!< Flag controlling drawing of vertical thumb
     };
 
     /*!
@@ -125,7 +125,7 @@ namespace ilixi
     virtual void
     doLayout();
 
-  protected:
+protected:
     /*!
      * Gets ready for scrolling.
      */
@@ -155,7 +155,7 @@ namespace ilixi
      */
     virtual void
     compose(const PaintEvent& event);
-  private:
+private:
     //! This property stores the options for ScrollArea.
     u8 _options;
     //! This is the content of scroll area.
@@ -199,7 +199,7 @@ namespace ilixi
     //! Updates position of content.
     void
     updateScrollArea(int step);
-  };
+};
 
 }
 

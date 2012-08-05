@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,7 +21,7 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/Logger.h"
+#include <core/Logger.h>
 #ifdef ILIXI_LOGGER_ENABLED
 #include <cstdarg>
 #include <syslog.h>
@@ -33,27 +33,27 @@ void
 ilixi::ilixi_log_init(char* ident, int facility)
 {
 #ifdef ILIXI_LOG_DEBUG_ENABLED
-  setlogmask(LOG_UPTO(LOG_NOTICE));
+    setlogmask(LOG_UPTO(LOG_NOTICE));
 #endif
-  if (facility)
-    openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, facility);
-  else
-    openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, LOG_USER);
+    if (facility)
+        openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, facility);
+    else
+        openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, LOG_USER);
 }
 
 void
 ilixi::ilixi_log_close()
 {
-  closelog();
+    closelog();
 }
 
 void
 ilixi::ilixi_log(int level, const char* message, ...)
 {
-  va_list args;
-  va_start(args, message);
-  vsyslog(level, message, args);
-  va_end(args);
+    va_list args;
+    va_start(args, message);
+    vsyslog(level, message, args);
+    va_end(args);
 }
 
 #endif

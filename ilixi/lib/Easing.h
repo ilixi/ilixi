@@ -3,7 +3,7 @@
 
  The equations are originally written by Robert Penner <info@robertpenner.com>.
  Later implemented in C++ by Jesus Gollonet <jesus@jesusgollonet.com>,
-                             Tarik Sekmen <tarik@ilixi.org>.
+ Tarik Sekmen <tarik@ilixi.org>.
 
  Open source under the BSD License.
 
@@ -39,140 +39,140 @@
 namespace ilixi
 {
 
-  namespace Ease
-  {
-    namespace Back
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Ease
+{
+namespace Back
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Bounce
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Bounce
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Circle
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Circle
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Cubic
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Cubic
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Elastic
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Elastic
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Expo
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Expo
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Quad
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Quad
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Quart
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Quart
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Quint
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Quint
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Sine
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Sine
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
+float
+easeInOut(float t, float b, float c, float d);
+}
 
-    namespace Linear
-    {
-      float
-      easeIn(float t, float b, float c, float d);
+namespace Linear
+{
+float
+easeIn(float t, float b, float c, float d);
 
-      float
-      easeOut(float t, float b, float c, float d);
+float
+easeOut(float t, float b, float c, float d);
 
-      float
-      easeInOut(float t, float b, float c, float d);
-    }
-  }
+float
+easeInOut(float t, float b, float c, float d);
+}
+}
 }
 
 #endif /* ILIXI_EASING_H_ */

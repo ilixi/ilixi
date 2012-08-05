@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,37 +24,37 @@
 #ifndef ILIXI_PAINTER_H_
 #define ILIXI_PAINTER_H_
 
-#include "ui/Widget.h"
-#include "types/Brush.h"
-#include "types/Pen.h"
-#include "types/Font.h"
-#include "types/Image.h"
-#include "types/Affine2D.h"
+#include <ui/Widget.h>
+#include <types/Brush.h>
+#include <types/Pen.h>
+#include <types/Font.h>
+#include <types/Image.h>
+#include <types/Affine2D.h>
 
 namespace ilixi
 {
-  class TextLayout;
+class TextLayout;
 
-  //! Draws primitive shapes and renders text.
-  /*!
-   * Painter paints on a widget's surface using its pen and brush. It is also used
-   * for drawing text.
-   *
-   * For example, following code will draw a rectangle on widget's surface using default pen:
-   * \code
-   * void
-   * MyWidget::compose(const Rectangle& rect)
-   * {
-   *    Painter painter(this);        // Painter should use this widget's surface.
-   *    painter.begin(rect);
-   *    painter.drawRectangle(0, 0, 10, 10);
-   *    painter.end();
-   * }
-   * \endcode
-   */
-  class Painter
-  {
-  public:
+//! Draws primitive shapes and renders text.
+/*!
+ * Painter paints on a widget's surface using its pen and brush. It is also used
+ * for drawing text.
+ *
+ * For example, following code will draw a rectangle on widget's surface using default pen:
+ * \code
+ * void
+ * MyWidget::compose(const Rectangle& rect)
+ * {
+ *    Painter painter(this);        // Painter should use this widget's surface.
+ *    painter.begin(rect);
+ *    painter.drawRectangle(0, 0, 10, 10);
+ *    painter.end();
+ * }
+ * \endcode
+ */
+class Painter
+{
+public:
     /*!
      * Constructor creates a new painter instance for the given widget.
      * Upon creation default pen and font are applied to cairo and pango layouts
@@ -211,7 +211,7 @@ namespace ilixi
      */
     void
     drawImage(Image* image, int x, int y, int w, int h,
-        const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Streches image inside given rectangle.
@@ -219,7 +219,7 @@ namespace ilixi
      */
     void
     drawImage(Image* image, const Rectangle& rect,
-        const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
@@ -227,7 +227,7 @@ namespace ilixi
      */
     void
     drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
-        DSBLIT_BLEND_ALPHACHANNEL);
+                      DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
@@ -235,10 +235,17 @@ namespace ilixi
      */
     void
     drawImage(Image* image, const Point& point,
-        const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
     tileImage(Image* image, int x, int y);
+
+    void
+    tileImage(Image* image, int x, int y, const Rectangle& source);
+
+    void
+    blitImage(Image* image, const Rectangle& source, int x, int y,
+              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Sets the clip rectangle using given values.
@@ -307,15 +314,15 @@ namespace ilixi
     void
     setAffine2D(const Affine2D& affine2D);
 
-  private:
+private:
     enum PainterFlags
     {
-      None = 0x000, //!< Initial state
-      Active = 0x001, //!< Painter is activated by begin()
-      BrushActive = 0x002,
-      FontModified = 0x004,
-      Clipped = 0x008,
-      Transformed = 0x010
+        None = 0x000, //!< Initial state
+        Active = 0x001, //!< Painter is activated by begin()
+        BrushActive = 0x002,
+        FontModified = 0x004,
+        Clipped = 0x008,
+        Transformed = 0x010
     };
 
     //! This property holds Painter's current widget.
@@ -345,7 +352,7 @@ namespace ilixi
     //! Apply pen to content if it is modified.
     void
     applyPen();
-  };
+};
 }
 
 #endif /* ILIXI_PAINTER_H_ */

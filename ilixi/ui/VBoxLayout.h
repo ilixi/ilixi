@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,19 +24,19 @@
 #ifndef ILIXI_VBOXLAYOUT_H_
 #define ILIXI_VBOXLAYOUT_H_
 
-#include "ui/LayoutBase.h"
+#include <ui/LayoutBase.h>
 
 namespace ilixi
 {
-  //! Vertical box layout
-  /*!
-   * In this layout widgets are aligned vertically on a single line.
-   *
-   * Widgets with ignored constraints on y axis are ignored by this layout.
-   */
-  class VBoxLayout : public LayoutBase
-  {
-  public:
+//! Vertical box layout
+/*!
+ * In this layout widgets are aligned vertically on a single line.
+ *
+ * Widgets with ignored constraints on y axis are ignored by this layout.
+ */
+class VBoxLayout : public LayoutBase
+{
+public:
     /*!
      * Constructor.
      */
@@ -78,10 +78,10 @@ namespace ilixi
     void
     tile();
 
-  private:
+private:
     //! This property defines how widgets are placed on x axis.
     Alignment::Horizontal _alignment;
-  };
+};
 
 }
 

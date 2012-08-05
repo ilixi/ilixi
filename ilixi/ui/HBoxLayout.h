@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,19 +24,19 @@
 #ifndef ILIXI_HBOXLAYOUT_H_
 #define ILIXI_HBOXLAYOUT_H_
 
-#include "ui/LayoutBase.h"
+#include <ui/LayoutBase.h>
 
 namespace ilixi
 {
-  //! Horizontal box layout.
-  /*!
-   * In this layout widgets are aligned horizontally on a single line.
-   *
-   * Widgets with ignored constraints on x axis are ignored by this layout.
-   */
-  class HBoxLayout : public LayoutBase
-  {
-  public:
+//! Horizontal box layout.
+/*!
+ * In this layout widgets are aligned horizontally on a single line.
+ *
+ * Widgets with ignored constraints on x axis are ignored by this layout.
+ */
+class HBoxLayout : public LayoutBase
+{
+public:
     /*!
      * Constructor.
      */
@@ -77,10 +77,10 @@ namespace ilixi
     void
     tile();
 
-  private:
+private:
     //! This property defines how widgets are placed on y axis.
     Alignment::Vertical _alignment;
-  };
+};
 }
 
 #endif /* ILIXI_HBOXLAYOUT_H_ */

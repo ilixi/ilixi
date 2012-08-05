@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_PALETTE_H_
 #define ILIXI_PALETTE_H_
 
-#include "types/Enums.h"
-#include "types/Color.h"
+#include <types/Enums.h>
+#include <types/Color.h>
 
 namespace ilixi
 {
-  //! Group of colours for widget states.
-  struct ColorGroup
-  {
+//! Group of colours for widget states.
+struct ColorGroup
+{
     //! Initialise members to default colours.
     ColorGroup();
 
@@ -40,14 +40,14 @@ namespace ilixi
 
     //! Initialise members using given colours.
     ColorGroup(Color base, Color baseAlt, Color backgroundTop,
-        Color backgrounMid, Color backgrounBottom, Color borderTop,
-        Color borderMid, Color borderBottom, Color text);
+               Color backgrounMid, Color backgrounBottom, Color borderTop,
+               Color borderMid, Color borderBottom, Color text);
 
     //! Set all colours.
     void
     setColors(Color base, Color baseAlt, Color backgroundTop,
-        Color backgrounMid, Color backgrounBottom, Color borderTop,
-        Color borderMid, Color borderBottom, Color text);
+              Color backgrounMid, Color backgrounBottom, Color borderTop,
+              Color borderMid, Color borderBottom, Color text);
 
     //! Base colour; use as the background colour of an input widget or row colour inside a list widget.
     Color base;
@@ -81,18 +81,18 @@ namespace ilixi
 
     //! Text colour; use for drawing text or symbols inside a widget.
     Color text;
-  };
+};
 
-  //! Stores colours for drawing.
-  /*!
-   * A palette is a collection of colors which are used by a Stylist
-   * during drawing widgets in various states.
-   *
-   * All fields are made public for ease of access and speed.
-   */
-  struct Palette
-  {
-  public:
+//! Stores colours for drawing.
+/*!
+ * A palette is a collection of colors which are used by a Stylist
+ * during drawing widgets in various states.
+ *
+ * All fields are made public for ease of access and speed.
+ */
+struct Palette
+{
+public:
     /*!
      * Initialise to default.
      */
@@ -140,7 +140,7 @@ namespace ilixi
     //! Disabled state.
     ColorGroup _disabled;
 
-  };
+};
 }
 
 #endif /* ILIXI_PALETTE_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,7 +24,7 @@
 #ifndef ILIXI_WINDOW_H_
 #define ILIXI_WINDOW_H_
 
-#include "types/Size.h"
+#include <types/Size.h>
 
 namespace ilixi
 {

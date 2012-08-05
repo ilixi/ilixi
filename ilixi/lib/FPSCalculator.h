@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,7 +24,7 @@
 #ifndef ILIXI_FPSCALC_H_
 #define ILIXI_FPSCALC_H_
 
-#include "core/Callback.h"
+#include <core/Callback.h>
 #include <sigc++/signal.h>
 #include <string>
 

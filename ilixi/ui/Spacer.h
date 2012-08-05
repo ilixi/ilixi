@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_SPACER_H_
 #define ILIXI_SPACER_H_
 
-#include "ui/Widget.h"
+#include <ui/Widget.h>
 
 namespace ilixi
 {
 
-  class Spacer : public Widget
-  {
-  public:
+class Spacer : public Widget
+{
+public:
     Spacer(Orientation orientation = Horizontal, Widget* parent = 0);
 
     ~Spacer();
@@ -45,12 +45,12 @@ namespace ilixi
     virtual void
     paint(const PaintEvent& event);
 
-  private:
+private:
     Orientation _orientation;
 
     virtual void
     compose(const PaintEvent& event);
-  };
+};
 
 }
 

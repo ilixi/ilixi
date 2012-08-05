@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,15 +24,15 @@
 #ifndef ILIXI_RADIOBUTTON_H_
 #define ILIXI_RADIOBUTTON_H_
 
-#include "ui/Button.h"
-#include "types/RadioGroup.h"
+#include <ui/Button.h>
+#include <types/RadioGroup.h>
 
 namespace ilixi
 {
 
-  class RadioButton : public Button
-  {
-  public:
+class RadioButton : public Button
+{
+public:
     RadioButton(const std::string& text, Widget* parent = 0);
 
     virtual
@@ -50,7 +50,7 @@ namespace ilixi
     virtual void
     toggleChecked();
 
-  private:
+private:
     RadioGroup* _group;
 
     void
@@ -61,7 +61,7 @@ namespace ilixi
 
     virtual void
     updateTextBaseGeometry();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_RADIOBUTTON_H_ */

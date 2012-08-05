@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_WIDGET_H_
 #define ILIXI_WIDGET_H_
 
-#include "graphics/Surface.h"
-#include "types/Enums.h"
-#include "graphics/Stylist.h"
-#include "types/Event.h"
+#include <graphics/Stylist.h>
+#include <graphics/Surface.h>
+#include <ilixiConfig.h>
 #include <list>
-#include <string>
 #include <sigc++/signal.h>
-#include "ilixiConfig.h"
+#include <string>
+#include <types/Enums.h>
+#include <types/Event.h>
 
 namespace ilixi
 {
@@ -485,7 +485,7 @@ public:
      */
     void
     setConstraints(WidgetResizeConstraint x = NoConstraint,
-            WidgetResizeConstraint y = NoConstraint);
+                   WidgetResizeConstraint y = NoConstraint);
 
     /*!
      * Sets widget's state to enabled and calls update() if widget is disabled.

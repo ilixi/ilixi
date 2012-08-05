@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,16 +24,15 @@
 #ifndef ILIXI_LABEL_H_
 #define ILIXI_LABEL_H_
 
-#include "ui/BorderBase.h"
-#include "ui/TextBase.h"
-#include "types/Margin.h"
+#include <ui/TextBase.h>
+#include <types/Margin.h>
 
 namespace ilixi
 {
-  //! A simple text label with optional border
-  class Label : public Widget, public BorderBase, public TextBase
-  {
-  public:
+//! A simple text label with optional border
+class Label : public Widget, public TextBase
+{
+public:
     /*!
      * Constructor.
      *
@@ -71,7 +70,7 @@ namespace ilixi
     void
     setMargin(const Margin& margin);
 
-  protected:
+protected:
     //! This property holds the margin around text.
     Margin _margin;
 
@@ -84,7 +83,7 @@ namespace ilixi
     //! Sets text layout geometry of label.
     virtual void
     updateTextBaseGeometry();
-  };
+};
 }
 
 #endif /* ILIXI_LABEL_H_ */

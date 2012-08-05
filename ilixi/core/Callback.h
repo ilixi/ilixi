@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -27,26 +27,26 @@
 namespace ilixi
 {
 
-  class Functionoid
-  {
-  public:
+class Functionoid
+{
+public:
     virtual bool
     funck() = 0;
 
     virtual
     ~Functionoid() = 0;
-  };
+};
 
-  inline
-  Functionoid::~Functionoid()
-  {
-  }
+inline
+Functionoid::~Functionoid()
+{
+}
 
-  class Callback
-  {
+class Callback
+{
     friend class AppBase;
 
-  public:
+public:
     Callback(Functionoid* funck);
 
     virtual
@@ -58,9 +58,9 @@ namespace ilixi
     void
     stop();
 
-  private:
+private:
     Functionoid* _funck;
-  };
+};
 }
 
 #endif /* ILIXI_CALLBACK_H_ */

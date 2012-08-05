@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,13 +21,14 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/RadioGroup.h"
-#include "ui/RadioButton.h"
+#include <types/RadioGroup.h>
+#include <ui/RadioButton.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-RadioGroup::RadioGroup() :
-    _selected(0)
+RadioGroup::RadioGroup()
+        : _selected(0)
 {
 }
 
@@ -38,34 +39,36 @@ RadioGroup::~RadioGroup()
 RadioButton*
 RadioGroup::selected() const
 {
-  return _selected;
+    return _selected;
 }
 
 void
 RadioGroup::add(RadioButton* radio)
 {
-  if (!_selected)
+    if (!_selected)
     {
-      _selected = radio;
-      _selected->setChecked(true);
+        _selected = radio;
+        _selected->setChecked(true);
     }
-  radio->setGroup(this);
+    radio->setGroup(this);
 }
 
 void
 RadioGroup::remove(RadioButton* radio)
 {
-  if (_selected == radio)
-    _selected = NULL;
-  radio->setGroup(NULL);
+    if (_selected == radio)
+        _selected = NULL;
+    radio->setGroup(NULL);
 }
 
 void
 RadioGroup::select(RadioButton* radio)
 {
-  if (_selected && _selected != radio)
+    if (_selected && _selected != radio)
     {
-      _selected->setChecked(false);
-      _selected = radio;
+        _selected->setChecked(false);
+        _selected = radio;
     }
 }
+
+} /* namespace ilixi */

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,22 +21,26 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Size.h"
+#include <types/Size.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-Size::Size() :
-  _width(-1), _height(-1)
+Size::Size()
+        : _width(-1),
+          _height(-1)
 {
 }
 
-Size::Size(const Size& size) :
-  _width(size._width), _height(size._height)
+Size::Size(const Size& size)
+        : _width(size._width),
+          _height(size._height)
 {
 }
 
-Size::Size(int width, int height) :
-  _width(width), _height(height)
+Size::Size(int width, int height)
+        : _width(width),
+          _height(height)
 {
 }
 
@@ -47,58 +51,59 @@ Size::~Size()
 bool
 Size::isValid() const
 {
-  if (_width <= 0 || _height <= 0)
-    return false;
-  return true;
+    if (_width <= 0 || _height <= 0)
+        return false;
+    return true;
 }
 
 void
 Size::transpose()
 {
-  int temp = _width;
-  _width = _height;
-  _height = temp;
+    int temp = _width;
+    _width = _height;
+    _height = temp;
 }
 
 void
 Size::setHeight(int height)
 {
-  _height = height;
+    _height = height;
 }
 
 void
 Size::setWidth(int width)
 {
-  _width = width;
+    _width = width;
 }
 
 Size&
 Size::operator=(const Size &size)
 {
-  if (this != &size)
+    if (this != &size)
     {
-      _width = size._width;
-      _height = size._height;
+        _width = size._width;
+        _height = size._height;
     }
-  return *this;
+    return *this;
 }
 
 bool
 Size::operator==(const Size &size) const
 {
-  return ((_width == size._width) && (_height == size._height));
+    return ((_width == size._width) && (_height == size._height));
 }
 
 bool
 Size::operator!=(const Size &size) const
 {
-  return !(*this == size);
+    return !(*this == size);
 }
 
 DFBDimension
 Size::dfbDimension() const
 {
-  DFBDimension s =
-    { width(), height() };
-  return s;
+    DFBDimension s = { width(), height() };
+    return s;
 }
+
+} /* namespace ilixi */

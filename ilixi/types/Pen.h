@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,20 +24,20 @@
 #ifndef ILIXI_PEN_H_
 #define ILIXI_PEN_H_
 
-#include "types/Color.h"
+#include <types/Color.h>
 
 namespace ilixi
 {
-  //! Defines color for drawing outlines of primitive shapes.
-  /*!
-   * Pen is used by painter during drawing.
-   *
-   * By default, a pen only applies a solid color.
-   */
-  class Pen
-  {
+//! Defines color for drawing outlines of primitive shapes.
+/*!
+ * Pen is used by painter during drawing.
+ *
+ * By default, a pen only applies a solid color.
+ */
+class Pen
+{
     friend class Painter; // applyPen()
-  public:
+public:
     /*!
      * Creates an opaque black pen.
      */
@@ -76,7 +76,7 @@ namespace ilixi
     Pen&
     operator=(const Pen &pen);
 
-  private:
+private:
     //! Flag is set to true if pen is modified.
     bool _modified;
     //! This property holds current pen color.
@@ -85,7 +85,7 @@ namespace ilixi
     //! Applies pen to surface.
     bool
     applyPen(IDirectFBSurface* surface);
-  };
+};
 }
 
 #endif /* ILIXI_PEN_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,19 +24,19 @@
 #ifndef ILIXI_CONTAINERBASE_H_
 #define ILIXI_CONTAINERBASE_H_
 
-#include "ui/LayoutBase.h"
+#include <ui/LayoutBase.h>
 
 namespace ilixi
 {
-  //! An abstract base class for widgets which store and maintain various child widgets.
-  /*!
-   * Containers are used to store widgets and align them using a Layout.
-   */
-  class ContainerBase : public Widget
-  {
+//! An abstract base class for widgets which store and maintain various child widgets.
+/*!
+ * Containers are used to store widgets and align them using a Layout.
+ */
+class ContainerBase : public Widget
+{
     friend class Application;
     friend class Dialog;
-  public:
+public:
     /*!
      * Constructor.
      *
@@ -148,7 +148,7 @@ namespace ilixi
     bool
     raiseWidget(Widget* widget);
 
-  protected:
+protected:
     //! This is the container's current layout.
     LayoutBase* _layout;
 
@@ -159,14 +159,14 @@ namespace ilixi
      * If your implementation needs specific position or dimension for layout, you should reimplement this method.
      */
     virtual void
-    updateContainerGeometry();
+    updateLayoutGeometry();
 
     /*!
      * Redirects the incoming pointer events to layout.
      */
     virtual bool
     consumePointerEvent(const PointerEvent& pointerEvent);
-  };
+};
 }
 
 #endif /* ILIXI_CONTAINERBASE_H_ */

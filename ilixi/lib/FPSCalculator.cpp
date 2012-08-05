@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,7 +21,7 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/FPSCalculator.h"
+#include <lib/FPSCalculator.h>
 #include <directfb.h>
 extern "C"
 {
@@ -32,7 +32,10 @@ namespace ilixi
 {
 
 FPSCalculator::FPSCalculator()
-        : _cb(this), _frames(0), _fps(0), _fpsTime(direct_clock_get_millis())
+        : _cb(this),
+          _frames(0),
+          _fps(0),
+          _fpsTime(direct_clock_get_millis())
 {
 }
 

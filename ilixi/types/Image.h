@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,22 +24,22 @@
 #ifndef ILIXI_IMAGE_H_
 #define ILIXI_IMAGE_H_
 
-#include "directfb.h"
+#include <directfb.h>
 #include <string>
-#include "types/Size.h"
+#include <types/Size.h>
 
 namespace ilixi
 {
-  //! Static images.
-  /*!
-   * This class is used to load images using DFBImageProvider interface. Surface data of all images is
-   * permanently stored in system memory and it has premultiplied alpha flag set in its surface description.
-   *
-   * Note that images are loaded before accessing their surface using getDFBSurface() method for the first time.
-   */
-  class Image
-  {
-  public:
+//! Static images.
+/*!
+ * This class is used to load images using DFBImageProvider interface. Surface data of all images is
+ * permanently stored in system memory and it has premultiplied alpha flag set in its surface description.
+ *
+ * Note that images are loaded before accessing their surface using getDFBSurface() method for the first time.
+ */
+class Image
+{
+public:
     /*!
      * Creates an empty image so you can later set an image path.
      *
@@ -125,7 +125,7 @@ namespace ilixi
     void
     setSize(const Size& size);
 
-  private:
+private:
     //! This property stores the pointer to DirectFB surface.
     IDirectFBSurface* _dfbSurface;
     //! This property stores the image path.
@@ -146,7 +146,7 @@ namespace ilixi
      */
     bool
     loadImage();
-  };
+};
 }
 
 #endif /* ILIXI_IMAGE_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,20 +24,20 @@
 #ifndef ILIXI_CHECKBOX_H_
 #define ILIXI_CHECKBOX_H_
 
-#include "ui/Button.h"
+#include <ui/Button.h>
 
 namespace ilixi
 {
 
-  class CheckBox : public Button
-  {
-  public:
+class CheckBox : public Button
+{
+public:
 
     enum CheckState
     {
-      Checked, //!< Checked
-      Partial, //!< Partial
-      Unchecked //!< Unchecked
+        Checked, //!< Checked
+        Partial, //!< Partial
+        Unchecked //!< Unchecked
     };
 
     /*!
@@ -85,7 +85,7 @@ namespace ilixi
      */
     sigc::signal<void, CheckState> sigCheckStateChanged;
 
-  private:
+private:
     /*!
      * Paints Checkbox on its surface using current designer.
      * @param rect Clipped rectangle to paint.
@@ -95,7 +95,7 @@ namespace ilixi
 
     virtual void
     updateTextBaseGeometry();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_CHECKBOX_H_ */

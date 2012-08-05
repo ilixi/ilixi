@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,21 +24,21 @@
 #ifndef ILIXI_LAYOUT_H_
 #define ILIXI_LAYOUT_H_
 
-#include "types/Margin.h"
-#include "ui/Widget.h"
-#include "types/RadioGroup.h"
+#include <types/Margin.h>
+#include <ui/Widget.h>
+#include <types/RadioGroup.h>
 
 namespace ilixi
 {
-  //! This base class provides an absolute layout.
-  /*!
-   * Each container stores its child widgets inside a layout. A layout's responsibility
-   * is to set the geometry of child widgets and arrange them inside its canvas.
-   */
-  class LayoutBase : public Widget
-  {
+//! This base class provides an absolute layout.
+/*!
+ * Each container stores its child widgets inside a layout. A layout's responsibility
+ * is to set the geometry of child widgets and arrange them inside its canvas.
+ */
+class LayoutBase : public Widget
+{
     friend class ContainerBase;
-  public:
+public:
     /*!
      * Constructor.
      */
@@ -110,35 +110,27 @@ namespace ilixi
     virtual void
     doLayout();
 
-    /*!
-     * Tiles if modified and paints children.
-     */
-    virtual void
-    paint(const PaintEvent& event);
-
-  protected:
+protected:
     //! This flag specifies whether layout is modified since latest tiling operation.
     bool _modified;
     //! This property holds spacing between widgets inside the layout.
     unsigned int _spacing;
-
+    RadioGroup* _group;
     struct LayoutElement
     {
-      Widget* widget;
-      Size size;
+        Widget* widget;
+        Size size;
     };
 
     typedef std::list<LayoutElement> ElementList;
 
     /*!
-     * Does nothing.
+     * Tiles layout if modified.
      */
     void
     compose(const PaintEvent& event);
 
-  private:
-    RadioGroup* _group;
-
+private:
     /*!
      * If pointer event occurs over widget handle it and return true.
      *
@@ -147,7 +139,7 @@ namespace ilixi
      */
     bool
     consumePointerEvent(const PointerEvent& pointerEvent);
-  };
+};
 
 }
 #endif /* ILIXI_LAYOUT_H_ */

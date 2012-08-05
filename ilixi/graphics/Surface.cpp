@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,11 +21,14 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "graphics/Surface.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
+#include <graphics/Surface.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_SURFACE, "ilixi/graphics/Surface", "Surface");
 
 #ifdef ILIXI_STEREO_OUTPUT
 Surface::Surface() :
@@ -37,7 +40,8 @@ _dfbSurface(NULL), _parentSurface(NULL), _rightSurface(NULL), _eye(
 }
 #else
 Surface::Surface()
-        : _dfbSurface(NULL), _parentSurface(NULL)
+        : _dfbSurface(NULL),
+          _parentSurface(NULL)
 {
     pthread_mutex_init(&_surfaceLock, NULL);
     ILOG_TRACE(ILX_SURFACE);
@@ -64,15 +68,16 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
     desc.caps = caps;
     desc.hints = DSHF_FONT;
     DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
-            &_dfbSurface);
+                                                     &_dfbSurface);
     if (ret)
     {
         ILOG_ERROR( ILX_SURFACE,
-                "Cannot create surface: %s\n", DirectFBErrorString(ret));
+                   "Cannot create surface: %s\n", DirectFBErrorString(ret));
         return false;
     }
     _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
-    ILOG_DEBUG(ILX_SURFACE,
+    ILOG_DEBUG(
+            ILX_SURFACE,
             "[%p] %s(width %d, height %d)\n", this, __FUNCTION__, width, height);
     ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p\n", _dfbSurface);
     return true;
@@ -80,27 +85,29 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
 
 bool
 Surface::createDFBSubSurface(const Rectangle& geometry,
-        IDirectFBSurface* parent)
+                             IDirectFBSurface* parent)
 {
     release();
     DFBRectangle r = geometry.dfbRect();
     _parentSurface = parent;
     DFBResult ret = _parentSurface->GetSubSurface(_parentSurface, &r,
-            &_dfbSurface);
+                                                  &_dfbSurface);
     if (ret)
     {
         ILOG_ERROR( ILX_SURFACE,
-                "Cannot get sub-surface: %s", DirectFBErrorString(ret));
+                   "Cannot get sub-surface: %s", DirectFBErrorString(ret));
         return false;
     }
     ret = _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
     if (ret)
     {
-        ILOG_ERROR( ILX_SURFACE,
+        ILOG_ERROR(
+                ILX_SURFACE,
                 "Cannot set blitting flags of sub-surface: %s", DirectFBErrorString(ret));
         return false;
     }
-    ILOG_DEBUG(ILX_SURFACE,
+    ILOG_DEBUG(
+            ILX_SURFACE,
             "[%p] %s(x %d, y %d, w %d, h %d, parent %p)\n", this, __FUNCTION__, geometry.x(), geometry.y(), geometry.width(), geometry.height(), parent);
     ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p\n", _dfbSurface);
     return true;
@@ -133,7 +140,7 @@ void
 Surface::setGeometry(const Rectangle& geometry)
 {
     setGeometry(geometry.x(), geometry.y(), geometry.width(),
-            geometry.height());
+                geometry.height());
 }
 
 void
@@ -143,13 +150,13 @@ Surface::setGeometry(int x, int y, int width, int height)
     if (_parentSurface)
     {
         DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface,
-                &r);
+                                                    &r);
         if (ret)
             ILOG_ERROR( ILX_SURFACE,
-                    "Cannot set geometry: %s\n", DirectFBErrorString(ret));
+                       "Cannot set geometry: %s\n", DirectFBErrorString(ret));
     } else
         ILOG_ERROR( ILX_SURFACE,
-                "No Parent Surface, need to create surface again!\n");
+                   "Cannot set geometry without a parent surface!\n");
 }
 
 void
@@ -170,7 +177,8 @@ Surface::flip(const Rectangle& rect, DFBSurfaceFlipFlags flags)
     if (ret)
         ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
     else
-        ILOG_DEBUG(ILX_SURFACE,
+        ILOG_DEBUG(
+                ILX_SURFACE,
                 "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
 }
 
@@ -210,8 +218,9 @@ Surface::clear(const Rectangle& rect)
     _dfbSurface->SetDrawingFlags(_dfbSurface, DSDRAW_NOFX);
     _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, 0);
     _dfbSurface->FillRectangle(_dfbSurface, rect.x(), rect.y(), rect.width(),
-            rect.height());
-    ILOG_DEBUG( ILX_SURFACE,
+                               rect.height());
+    ILOG_DEBUG(
+            ILX_SURFACE,
             "Clear left (%d, %d, %d, %d)\n", rect.x(), rect.y(), rect.width(), rect.height());
 #ifdef ILIXI_STEREO_OUTPUT
 }
@@ -238,7 +247,8 @@ Surface::clip(const Rectangle& rect)
     int x, y;
     _dfbSurface->GetPosition(_dfbSurface, &x, &y);
     _dfbSurface->SetClip(_dfbSurface, &r);
-    ILOG_DEBUG(ILX_SURFACE,
+    ILOG_DEBUG(
+            ILX_SURFACE,
             "[%p] %s at (%d, %d) left Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, x, y, rect.x(), rect.y(), rect.width(), rect.height());
 #ifdef ILIXI_STEREO_OUTPUT
 }
@@ -275,9 +285,10 @@ Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
         DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, &r, x, y);
         if (ret)
             ILOG_ERROR(ILX_SURFACE,
-                    "Blit error: %s\n", DirectFBErrorString(ret));
+                       "Blit error: %s\n", DirectFBErrorString(ret));
         else
-            ILOG_DEBUG(ILX_SURFACE,
+            ILOG_DEBUG(
+                    ILX_SURFACE,
                     "[%p] %s Rect(%d, %d, %d, %d) P(%d, %d)\n", this, __FUNCTION__, crop.x(), crop.y(), crop.width(), crop.height(), x, y);
     }
 }
@@ -290,10 +301,10 @@ Surface::blit(IDirectFBSurface* source, int x, int y)
         DFBResult ret = _dfbSurface->Blit(_dfbSurface, source, NULL, x, y);
         if (ret)
             ILOG_ERROR(ILX_SURFACE,
-                    "Blit error: %s\n", DirectFBErrorString(ret));
+                       "Blit error: %s\n", DirectFBErrorString(ret));
         else
             ILOG_DEBUG(ILX_SURFACE,
-                    "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
+                       "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
     }
 }
 
@@ -310,13 +321,13 @@ Surface::blit(Surface* source, int x, int y)
     if (source)
     {
         DFBResult ret = _dfbSurface->Blit(_dfbSurface, source->dfbSurface(),
-                NULL, x, y);
+                                          NULL, x, y);
         if (ret)
             ILOG_ERROR(ILX_SURFACE,
-                    "Blit error: %s\n", DirectFBErrorString(ret));
+                       "Blit error: %s\n", DirectFBErrorString(ret));
         else
             ILOG_DEBUG(ILX_SURFACE,
-                    "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
+                       "[%p] %s P(%d, %d)\n", this, __FUNCTION__, x, y);
     }
 }
 
@@ -325,7 +336,8 @@ Surface::setOpacity(u8 opacity)
 {
     if (_dfbSurface && opacity != 255)
     {
-        _dfbSurface->SetBlittingFlags(_dfbSurface,
+        _dfbSurface->SetBlittingFlags(
+                _dfbSurface,
                 (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
                         | DSBLIT_BLEND_COLORALPHA));
         _dfbSurface->SetColor(_dfbSurface, 0, 0, 0, opacity);
@@ -458,3 +470,5 @@ Surface::release()
     }
     unlock();
 }
+
+} /* namespace ilixi */

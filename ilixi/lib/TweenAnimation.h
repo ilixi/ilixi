@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,15 +24,15 @@
 #ifndef ILIXI_TWEENANIMATION_H_
 #define ILIXI_TWEENANIMATION_H_
 
-#include "lib/Animation.h"
-#include "lib/Tween.h"
+#include <lib/Animation.h>
+#include <lib/Tween.h>
 #include <list>
 
 namespace ilixi
 {
-  class TweenAnimation : public Animation
-  {
-  public:
+class TweenAnimation : public Animation
+{
+public:
     /*!
      * Creates a new tween animation.
      */
@@ -49,7 +49,7 @@ namespace ilixi
      */
     void
     addTween(Tween::Transition transition, Tween::Equation equation,
-        float initialValue = 0, float endValue = 1);
+             float initialValue = 0, float endValue = 1);
 
     /*!
      * Adds the tween.
@@ -59,18 +59,18 @@ namespace ilixi
     void
     addTween(Tween* tween);
 
-  protected:
+protected:
     virtual void
     step(long ms);
 
-  private:
+private:
     typedef std::list<Tween*> TweenList;
     //! List of tweens.
     TweenList _tweens;
 
     void
     finishTweens();
-  };
+};
 
 }
 

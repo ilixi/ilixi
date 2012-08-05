@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,15 +21,16 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Event.h"
-#include "ui/Widget.h"
+#include <types/Event.h>
+#include <ui/Widget.h>
 
 namespace ilixi
 {
+
 #ifdef ILIXI_STEREO_OUTPUT
-  PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt) :
-      right(), rect(), eye(evt.eye)
-  {
+PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt) :
+right(), rect(), eye(evt.eye)
+{
     widget->updateSurface(evt);
     Rectangle lt = widget->frameGeometry();
     lt.translate(widget->z(), 0);
@@ -37,13 +38,15 @@ namespace ilixi
     rt.translate(-widget->z(), 0);
     rect = lt.intersected(evt.rect);
     right = rt.intersected(evt.right);
-  }
-#else
-  PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt) :
-  rect(), eye(evt.eye)
-    {
-      widget->updateSurface(evt);
-      rect = widget->frameGeometry().intersected(evt.rect);
-    }
-#endif
 }
+#else
+PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt)
+        : rect(),
+          eye(evt.eye)
+{
+    widget->updateSurface(evt);
+    rect = widget->frameGeometry().intersected(evt.rect);
+}
+#endif
+
+} /* namespace ilixi */

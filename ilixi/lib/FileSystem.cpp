@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,128 +21,146 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FileSystem.h"
+#include <lib/FileSystem.h>
 #include <libgen.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "core/Logger.h"
+#include <dirent.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
-  namespace FileSystem
-  {
-    bool
-    fileExists(const std::string& path)
-    {
-      if (access(path.c_str(), F_OK) != 0)
+
+D_DEBUG_DOMAIN( ILX_FILESYSTEM, "ilixi/lib/FileSystem", "FileSystem");
+
+namespace FileSystem
+{
+
+bool
+fileExists(const std::string& path)
+{
+    if (access(path.c_str(), F_OK) != 0)
         return false;
-      return true;
-    }
+    return true;
+}
 
-    bool
-    dirExists(const std::string& path)
-    {
-      const char *myDir = dirname(const_cast<char*>(path.c_str()));
-      struct stat myStat;
-      if ((stat(myDir, &myStat) == 0)
-          && (((myStat.st_mode) & S_IFMT) == S_IFDIR))
+bool
+dirExists(const std::string& path)
+{
+    const char *myDir = dirname(const_cast<char*>(path.c_str()));
+    struct stat myStat;
+    if ((stat(myDir, &myStat) == 0) && (((myStat.st_mode) & S_IFMT) == S_IFDIR))
         return true;
-      return false;
-    }
+    return false;
+}
 
-    bool
-    renameFile(const std::string& oldName, const std::string& newName)
-    {
-      if (rename(oldName.c_str(), newName.c_str()) == 0)
+bool
+renameFile(const std::string& oldName, const std::string& newName)
+{
+    if (rename(oldName.c_str(), newName.c_str()) == 0)
         return true;
-      return false;
-    }
+    return false;
+}
 
-    bool
-    deleteFile(const std::string& path)
-    {
-      if (unlink(path.c_str()) == 0)
+bool
+deleteFile(const std::string& path)
+{
+    if (unlink(path.c_str()) == 0)
         return true;
-      return false;
-    }
+    return false;
+}
 
-    bool
-    deleteDirectory(const std::string& path)
-    {
-      if (rmdir(path.c_str()) == 0)
+bool
+deleteDirectory(const std::string& path)
+{
+    if (rmdir(path.c_str()) == 0)
         return true;
-      return false;
-    }
+    return false;
+}
 
-    long long
-    getFileSize(const std::string& path)
-    {
-      struct stat filestatus;
-      if (stat(path.c_str(), &filestatus) == 0)
+long long
+getFileSize(const std::string& path)
+{
+    struct stat filestatus;
+    if (stat(path.c_str(), &filestatus) == 0)
         return filestatus.st_size;
-      return 0;
-    }
+    return 0;
+}
 
-    time_t
-    getModificationTime(const std::string& path)
-    {
-      struct stat filestatus;
-      if (stat(path.c_str(), &filestatus) == 0)
+time_t
+getModificationTime(const std::string& path)
+{
+    struct stat filestatus;
+    if (stat(path.c_str(), &filestatus) == 0)
         return filestatus.st_mtime;
-      time_t t;
-      return t;
-    }
+    time_t t;
+    return t;
+}
 
-    std::string
-    homeDirectory()
+std::string
+homeDirectory()
+{
+    const char *home = getenv("HOME");
+    if (!home)
     {
-      const char *home = getenv("HOME");
-      if (!home)
-        {
-          home = getenv("TMPDIR");
-          if (!home)
+        home = getenv("TMPDIR");
+        if (!home)
             home = "/tmp";
-        }
-      return std::string(home);
+    }
+    return std::string(home);
+}
+
+std::string
+directoryName(const std::string& path)
+{
+    return std::string(dirname(const_cast<char*>(path.c_str())));
+}
+
+std::string
+fileName(const std::string& path)
+{
+    return std::string(basename(const_cast<char*>(path.c_str())));
+}
+
+std::vector<std::string>
+listDirectory(const std::string& path)
+{
+    std::vector<std::string> entries;
+
+    DIR *dp = NULL;
+    struct dirent *dirp = NULL;
+    if ((dp = opendir(path.c_str())) == NULL)
+    {
+        ILOG_ERROR(ILX_FILESYSTEM, "Error opening %s\n", path.c_str());
+        return entries;
     }
 
-    std::string
-    directoryName(const std::string& path)
-    {
-      return std::string(dirname(const_cast<char*>(path.c_str())));
-    }
+    while ((dirp = readdir(dp)) != NULL)
+        entries.push_back(std::string(dirp->d_name));
+    closedir(dp);
 
-    std::string
-    fileName(const std::string& path)
-    {
-      return std::string(basename(const_cast<char*>(path.c_str())));
-    }
+    return entries;
+}
 
-    std::vector<std::string>
-    listDirectory(const std::string& path)
-    {
-      std::vector<std::string> entries;
-      return entries;
-    }
+FILE*
+temporaryFile(const std::string& prefix)
+{
+    char buffer[L_tmpnam];
+    tmpnam(buffer);
+    FILE * pFile;
+    pFile = tmpfile();
+    return pFile;
+}
 
-    FILE*
-    temporaryFile(const std::string& prefix)
-    {
-      char buffer[L_tmpnam];
-      tmpnam(buffer);
-      FILE * pFile;
-      pFile = tmpfile();
-      return pFile;
-    }
+void
+closeFile(FILE* handle)
+{
+    fclose(handle);
+}
 
-    void
-    closeFile(FILE* handle)
-    {
-      fclose(handle);
-    }
-  }
+} /* namespace FileSystem */
 
 } /* namespace ilixi */

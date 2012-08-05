@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -29,60 +29,60 @@
 
 namespace ilixi
 {
-  //! 32-bit color with transparency.
-  /*!
-   * Colors are defined by rgba components. Each component can store a value between 0 and 255.
-   *
-   */
-  class Color
-  {
+//! 32-bit color with transparency.
+/*!
+ * Colors are defined by rgba components. Each component can store a value between 0 and 255.
+ *
+ */
+class Color
+{
     //! Hue-Saturation-Value representation
     struct HSV
     {
-      float hue; //!< Hue in degrees [0, 360)
-      float saturation; //!< Lightness [0, 1]
-      float value; //!< Lightness [0, 1]
+        float hue; //!< Hue in degrees [0, 360)
+        float saturation; //!< Lightness [0, 1]
+        float value; //!< Lightness [0, 1]
 
-      /*!
-       * Set values to 0.
-       */
-      HSV();
+        /*!
+         * Set values to 0.
+         */
+        HSV();
 
-      /*!
-       * Create HSV from values.
-       */
-      HSV(float hue, float saturation, float value);
+        /*!
+         * Create HSV from values.
+         */
+        HSV(float hue, float saturation, float value);
 
-      /*!
-       * Create HSV from color.
-       */
-      HSV(const Color& color);
+        /*!
+         * Create HSV from color.
+         */
+        HSV(const Color& color);
     };
 
     //! Hue-Saturation-Lightness representation
     struct HSL
     {
-      float hue; //!< Hue in degrees [0, 360)
-      float saturation; //!< Saturation [0, 1]
-      float lightness; //!< Lightness [0, 1]
+        float hue; //!< Hue in degrees [0, 360)
+        float saturation; //!< Saturation [0, 1]
+        float lightness; //!< Lightness [0, 1]
 
-      /*!
-       * Set values to 0.
-       */
-      HSL();
+        /*!
+         * Set values to 0.
+         */
+        HSL();
 
-      /*!
-       * Set HSL from values.
-       */
-      HSL(float hue, float saturation, float lightness);
+        /*!
+         * Set HSL from values.
+         */
+        HSL(float hue, float saturation, float lightness);
 
-      /*!
-       * Set HSL from color.
-       */
-      HSL(const Color& color);
+        /*!
+         * Set HSL from color.
+         */
+        HSL(const Color& color);
     };
 
-  public:
+public:
     /*!
      * Creates an opaque black color.
      */
@@ -254,7 +254,7 @@ namespace ilixi
     DFBColor
     dfbColor() const;
 
-  private:
+private:
     //! Red component
     u8 _red;
     //! Green component
@@ -263,31 +263,31 @@ namespace ilixi
     u8 _blue;
     //! Alpha component
     u8 _alpha;
-  };
+};
 
-  inline u8
-  Color::alpha() const
-  {
+inline u8
+Color::alpha() const
+{
     return _alpha;
-  }
+}
 
-  inline u8
-  Color::blue() const
-  {
+inline u8
+Color::blue() const
+{
     return _blue;
-  }
+}
 
-  inline u8
-  Color::green() const
-  {
+inline u8
+Color::green() const
+{
     return _green;
-  }
+}
 
-  inline u8
-  Color::red() const
-  {
+inline u8
+Color::red() const
+{
     return _red;
-  }
+}
 }
 
 #endif /* ILIXI_COLOR_H_ */

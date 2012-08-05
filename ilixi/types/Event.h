@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,27 +24,31 @@
 #ifndef ILIXI_EVENTS_H_
 #define ILIXI_EVENTS_H_
 
-#include "directfb.h"
-#include "types/Rectangle.h"
-#include "ilixiConfig.h"
+#include <directfb.h>
+#include <types/Rectangle.h>
+#include <ilixiConfig.h>
 
 namespace ilixi
 {
-  enum KeyEventType
-  {
+enum KeyEventType
+{
     KeyDownEvent = 0x00000100, KeyUpEvent = 0x00000200
-  };
+};
 
-  struct KeyEvent
-  {
-    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol) :
-        eventType(type), keySymbol(symbol)
+struct KeyEvent
+{
+    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol)
+            : eventType(type),
+              keySymbol(symbol)
     {
     }
 
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol,
-        DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks) :
-        eventType(type), keySymbol(symbol), modifierMask(mask), lockState(locks)
+             DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks)
+            : eventType(type),
+              keySymbol(symbol),
+              modifierMask(mask),
+              lockState(locks)
     {
     }
 
@@ -52,46 +56,56 @@ namespace ilixi
     DFBInputDeviceKeySymbol keySymbol;
     DFBInputDeviceModifierMask modifierMask;
     DFBInputDeviceLockState lockState;
-  };
+};
 
-  enum PointerEventType
-  {
+enum PointerEventType
+{
     PointerButtonDown = 0x00010000,
     PointerButtonUp = 0x00020000,
     PointerMotion = 0x00040000,
     PointerWheel = 0x00200000
-  };
+};
 
-  enum PointerButton
-  {
+enum PointerButton
+{
     ButtonLeft = 0x00000000,
     ButtonRight = 0x00000001,
     ButtonMiddle = 0x00000002,
     ButtonFirst = ButtonLeft,
     ButtonLast = 0x0000001F
-  };
+};
 
-  enum PointerButtonMask
-  {
+enum PointerButtonMask
+{
     ButtonMaskNone = 0,
     ButtonMaskLeft = 0x00000001,
     ButtonMaskRight = 0x00000002,
     ButtonMaskMiddle = 0x00000004
-  };
+};
 
-  struct PointerEvent
-  {
-    PointerEvent() :
-        eventType(PointerMotion), x(0), y(0), wheelStep(0), button(ButtonLast), buttonMask(
-            ButtonMaskNone), timestamp(direct_clock_get_millis())
+struct PointerEvent
+{
+    PointerEvent()
+            : eventType(PointerMotion),
+              x(0),
+              y(0),
+              wheelStep(0),
+              button(ButtonLast),
+              buttonMask(ButtonMaskNone),
+              timestamp(direct_clock_get_millis())
     {
     }
 
     PointerEvent(PointerEventType type, int X, int Y, int step = 0,
-        PointerButton pbutton = ButtonLast, PointerButtonMask mask =
-            ButtonMaskNone) :
-        eventType(type), x(X), y(Y), wheelStep(step), button(pbutton), buttonMask(
-            mask), timestamp(direct_clock_get_millis())
+                 PointerButton pbutton = ButtonLast, PointerButtonMask mask =
+                         ButtonMaskNone)
+            : eventType(type),
+              x(X),
+              y(Y),
+              wheelStep(step),
+              button(pbutton),
+              buttonMask(mask),
+              timestamp(direct_clock_get_millis())
     {
     }
 
@@ -102,14 +116,14 @@ namespace ilixi
     PointerButton button;
     PointerButtonMask buttonMask;
     long timestamp;
-  };
+};
 
-  class Widget;
-  struct PaintEvent
-  {
+class Widget;
+struct PaintEvent
+{
     enum PaintEventEye
     {
-      LeftEye = 0x01, RightEye = 0x02, BothEyes = 0x03
+        LeftEye = 0x01, RightEye = 0x02, BothEyes = 0x03
     };
 
     PaintEvent()
@@ -120,59 +134,62 @@ namespace ilixi
 
 #ifdef ILIXI_STEREO_OUTPUT
     PaintEvent(Rectangle l, Rectangle r) :
-        right(r), rect(l), eye(BothEyes)
+    right(r), rect(l), eye(BothEyes)
     {
     }
 
     PaintEvent(Rectangle r, int disparity) :
-        right(r), rect(r), eye(BothEyes)
+    right(r), rect(r), eye(BothEyes)
     {
-      right.translate(-disparity, 0);
-      rect.translate(disparity, 0);
+        right.translate(-disparity, 0);
+        rect.translate(disparity, 0);
     }
 
     PaintEvent(Rectangle r, PaintEventEye e) :
-        right(r), rect(r), eye(e)
+    right(r), rect(r), eye(e)
     {
     }
 
     bool
     isValid()
     {
-      if (eye & LeftEye)
+        if (eye & LeftEye)
         return rect.isValid();
-      else
+        else
         return right.isValid();
     }
 
     Rectangle right;
     Rectangle rect;
 #else
-    PaintEvent(Rectangle r) :
-    rect(r), eye(BothEyes)
-      {
-      }
+    PaintEvent(Rectangle r)
+            : rect(r),
+              eye(BothEyes)
+    {
+    }
 
-    PaintEvent(Rectangle r, int disparity) :
-    rect(r), eye(BothEyes)
-      {
-      }
+    PaintEvent(Rectangle r, int disparity)
+            : rect(r),
+              eye(BothEyes)
+    {
+    }
 
-    PaintEvent(Rectangle r, PaintEventEye e) :
-    rect(r), eye(e)
-      {
-      }
+    PaintEvent(Rectangle r, PaintEventEye e)
+            : rect(r),
+              eye(e)
+    {
+    }
 
     bool
     isValid()
-      {
+    {
         return rect.isValid();
-      }
+    }
 
     Rectangle rect;
 #endif
     PaintEventEye eye;
-  };
+};
 }
 
 #endif /* ILIXI_EVENTS_H_ */

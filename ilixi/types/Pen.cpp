@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,71 +21,79 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Pen.h"
-#include "core/Logger.h"
+#include <types/Pen.h>
+#include <core/Logger.h>
 
-using namespace ilixi;
-
-Pen::Pen() :
-    _modified(true), _color(0, 0, 0)
+namespace ilixi
 {
-  ILOG_TRACE(ILX_PEN);
+
+D_DEBUG_DOMAIN( ILX_PEN, "ilixi/types/Pen", "Pen");
+
+Pen::Pen()
+        : _modified(true),
+          _color(0, 0, 0)
+{
+    ILOG_TRACE(ILX_PEN);
 }
 
-Pen::Pen(const Pen& pen) :
-    _modified(true), _color(pen._color)
+Pen::Pen(const Pen& pen)
+        : _modified(true),
+          _color(pen._color)
 {
-  ILOG_TRACE(ILX_PEN);
+    ILOG_TRACE(ILX_PEN);
 }
 
-Pen::Pen(const Color& color) :
-    _modified(true), _color(color)
+Pen::Pen(const Color& color)
+        : _modified(true),
+          _color(color)
 {
-  ILOG_TRACE(ILX_PEN);
+    ILOG_TRACE(ILX_PEN);
 }
 
 Pen::~Pen()
 {
-  ILOG_TRACE(ILX_PEN);
+    ILOG_TRACE(ILX_PEN);
 }
 
 Color
 Pen::color() const
 {
-  return _color;
+    return _color;
 }
 
 void
 Pen::setColor(const Color& color)
 {
-  _color = color;
-  _modified = true;
+    _color = color;
+    _modified = true;
 }
 
 Pen&
 Pen::operator=(const Pen& pen)
 {
-  if (this != &pen)
+    if (this != &pen)
     {
-      _color = pen._color;
-      _modified = true;
+        _color = pen._color;
+        _modified = true;
     }
-  return *this;
+    return *this;
 }
 
 bool
 Pen::applyPen(IDirectFBSurface* surface)
 {
-  if (_modified)
+    if (_modified)
     {
-      DFBResult ret = surface->SetColor(surface, _color.red(), _color.green(),
-          _color.blue(), _color.alpha());
-      if (ret)
+        DFBResult ret = surface->SetColor(surface, _color.red(), _color.green(),
+                                          _color.blue(), _color.alpha());
+        if (ret)
         {
-          ILOG_ERROR(ILX_PEN, "Error while applying brush: %x", ret);
-          return false;
+            ILOG_ERROR(ILX_PEN, "Error while applying brush: %x", ret);
+            return false;
         }
-      _modified = false;
+        _modified = false;
     }
-  return true;
+    return true;
 }
+
+} /* namespace ilixi */

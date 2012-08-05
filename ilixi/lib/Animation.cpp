@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,19 +21,29 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/Animation.h"
-#include "core/Window.h"
+#include <lib/Animation.h>
+#include <core/Window.h>
 extern "C"
 {
 #include <direct/clock.h>
 }
 
-using namespace ilixi;
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_ANIMATION, "ilixi/lib/Animation", "Animation");
 
 Animation::Animation()
-        : _state(Stopped), _delayDuration(0), _delayTime(0), _delayLast(0), _duration(
-                0), _currentTime(0), _lastTime(0), _loops(1), _currentLoop(1), _cb(
-                this)
+        : _state(Stopped),
+          _delayDuration(0),
+          _delayTime(0),
+          _delayLast(0),
+          _duration(0),
+          _currentTime(0),
+          _lastTime(0),
+          _loops(1),
+          _currentLoop(1),
+          _cb(this)
 {
 }
 
@@ -194,3 +204,4 @@ Animation::funck()
     return 0;
 }
 
+} /* namespace ilixi */

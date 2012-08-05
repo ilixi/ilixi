@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,32 +21,34 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/Callback.h"
-#include "core/AppBase.h"
-#include "lib/Animation.h"
-#include "lib/Timer.h"
+#include <core/Callback.h>
+#include <core/AppBase.h>
+#include <lib/Animation.h>
+#include <lib/Timer.h>
 
 namespace ilixi
 {
-  Callback::Callback(Functionoid* funck) :
-      _funck(funck)
-  {
-  }
 
-  Callback::~Callback()
-  {
-    stop();
-  }
-
-  void
-  Callback::start()
-  {
-    AppBase::addCallback(this);
-  }
-
-  void
-  Callback::stop()
-  {
-    AppBase::removeCallback(this);
-  }
+Callback::Callback(Functionoid* funck)
+        : _funck(funck)
+{
 }
+
+Callback::~Callback()
+{
+    stop();
+}
+
+void
+Callback::start()
+{
+    AppBase::addCallback(this);
+}
+
+void
+Callback::stop()
+{
+    AppBase::removeCallback(this);
+}
+
+} /* namespace ilixi */

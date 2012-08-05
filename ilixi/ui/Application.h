@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,18 +24,18 @@
 #ifndef ILIXI_APPLICATION_H_
 #define ILIXI_APPLICATION_H_
 
-#include "core/AppBase.h"
-#include "ui/WindowWidget.h"
+#include <core/AppBase.h>
+#include <ui/WindowWidget.h>
 
 namespace ilixi
 {
-  //! Windowed application.
-  /*!
-   * This class is used to create a new UI application with its own window.
-   */
-  class Application : public AppBase, public WindowWidget
-  {
-  public:
+//! Windowed application.
+/*!
+ * This class is used to create a new UI application with its own window.
+ */
+class Application : public AppBase, public WindowWidget
+{
+public:
     /*!
      * Constructor.
      */
@@ -52,6 +52,30 @@ namespace ilixi
      */
     Image*
     background() const;
+
+    /*!
+     * Returns frame's canvas x-coordinate including the left margin.
+     */
+    virtual int
+    canvasX() const;
+
+    /*!
+     * Returns frame's canvas y-coordinate including the top margin.
+     */
+    virtual int
+    canvasY() const;
+
+    /*!
+     * Returns frame's canvas height excluding margins.
+     */
+    virtual int
+    canvasHeight() const;
+
+    /*!
+     * Returns frame's canvas width excluding margins.
+     */
+    virtual int
+    canvasWidth() const;
 
     /*!
      * Terminates application.
@@ -86,7 +110,7 @@ namespace ilixi
      */
     sigc::signal<void> sigQuit;
 
-  protected:
+protected:
     /*!
      * Shows application window.
      */
@@ -108,7 +132,7 @@ namespace ilixi
     void
     postUserEvent(unsigned int type, void* data = NULL);
 
-  private:
+private:
     //! Background image of application.
     Image* _backgroundImage;
 
@@ -121,6 +145,6 @@ namespace ilixi
      */
     virtual void
     compose(const PaintEvent& event);
-  };
+};
 }
 #endif /* ILIXI_APPLICATION_H_ */

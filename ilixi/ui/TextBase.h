@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,16 +24,16 @@
 #ifndef ILIXI_TEXTBASE_H_
 #define ILIXI_TEXTBASE_H_
 
-#include "ui/Widget.h"
-#include "types/Font.h"
-#include "types/TextLayout.h"
+#include <ui/Widget.h>
+#include <types/Font.h>
+#include <types/TextLayout.h>
 
 namespace ilixi
 {
-  //! Base class for widgets with text display.
-  class TextBase
-  {
-  public:
+//! Base class for widgets with text display.
+class TextBase
+{
+public:
     /*!
      * Constructor.
      */
@@ -121,7 +121,7 @@ namespace ilixi
      */
     sigc::signal<void> sigFontChanged;
 
-  protected:
+protected:
     //! TextLayout for this widget.
     TextLayout _layout;
 
@@ -135,7 +135,7 @@ namespace ilixi
     virtual void
     updateTextBaseGeometry();
 
-  private:
+private:
     //! Font for this widget.
     Font* _font;
     //! Owner of this text layout.
@@ -144,7 +144,7 @@ namespace ilixi
     //! Returns default font for this widget.
     virtual Font*
     defaultFont() const;
-  };
+};
 
 }
 

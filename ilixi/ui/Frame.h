@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,16 +24,15 @@
 #ifndef ILIXI_FRAME_H_
 #define ILIXI_FRAME_H_
 
-#include "ui/ContainerBase.h"
-#include "ui/BorderBase.h"
-#include "types/Margin.h"
+#include <ui/ContainerBase.h>
+#include <types/Margin.h>
 
 namespace ilixi
 {
-  //! Base class of widgets with frames and possible children.
-  class Frame : public ContainerBase, public BorderBase
-  {
-  public:
+//! Base class of widgets with frames and possible children.
+class Frame : public ContainerBase
+{
+public:
 
     /*!
      * Constructor.
@@ -63,82 +62,6 @@ namespace ilixi
     preferredSize() const;
 
     /*!
-     * Returns true if frame paints its background.
-     */
-    bool
-    backgroundFilled() const;
-
-    /*!
-     * Returns container's margin.
-     */
-    Margin
-    margin() const;
-
-    /*!
-     * Sets whether frame paints its background.
-     *
-     * @param fill
-     */
-    void
-    setBackgroundFilled(bool fill);
-
-    /*!
-     * Sets the canvas position of this container. Layout is positioned at this point.
-     *
-     * @param topLeft
-     */
-    void
-    setCanvasPosition(const Point& topLeft);
-
-    /*!
-     * Set layout's margins.
-     *
-     * @param top Margin top.
-     * @param bottom Margin bottom.
-     * @param left Margin left.
-     * @param right Margin right.
-     */
-    void
-    setMargins(int top, int bottom, int left, int right);
-
-    /*!
-     * Set container's margin.
-     *
-     * @param margin Margins.
-     */
-    void
-    setMargin(const Margin& margin);
-
-  protected:
-    enum BackgroundFlags
-    {
-      BGFNone = 0x000, BGFClear = 0x001, BGFFill = 0x002, BGFAll = 0x003
-    };
-    //! This flag specifies whether frame fills its background.
-    char _backgroundFlags;
-    //! This property holds the margin of container.
-    Margin _margin;
-    //! This property holds the top-left point of canvas.
-    Point _canvasTopLeft;
-
-    /*!
-     * Reimplemented from ContainerBase.
-     *
-     * This method sets layout's geometry. Layout is positioned at canvasX(), canvasY() and its width and height are
-     * set to canvasWidth() and canvasHeight() of frame respectively.
-     */
-    virtual void
-    updateContainerGeometry();
-
-    /*!
-     * Draw frame borders.
-     *
-     * @param rect
-     */
-    virtual void
-    compose(const PaintEvent& event);
-
-    /*!
      * Returns frame's canvas x-coordinate including the left margin.
      */
     virtual int
@@ -161,7 +84,54 @@ namespace ilixi
      */
     virtual int
     canvasWidth() const;
-  };
+
+    /*!
+     * Returns container's margin.
+     */
+    Margin
+    margin() const;
+
+    /*!
+     * Set layout's margins.
+     *
+     * @param top Margin top.
+     * @param bottom Margin bottom.
+     * @param left Margin left.
+     * @param right Margin right.
+     */
+    void
+    setMargins(int top, int bottom, int left, int right);
+
+    /*!
+     * Set container's margin.
+     *
+     * @param margin Margins.
+     */
+    void
+    setMargin(const Margin& margin);
+
+protected:
+    //! This property holds the margin of container.
+    Margin _margin;
+
+    /*!
+     * Reimplemented from ContainerBase.
+     *
+     * This method sets layout's geometry. Layout is positioned at canvasX(), canvasY() and its width and height are
+     * set to canvasWidth() and canvasHeight() of frame respectively.
+     */
+    virtual void
+    updateLayoutGeometry();
+
+    /*!
+     * Draw frame borders.
+     *
+     * @param rect
+     */
+    virtual void
+    compose(const PaintEvent& event);
+
+};
 }
 
 #endif /* ILIXI_FRAME_H_ */

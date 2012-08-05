@@ -1,22 +1,38 @@
 /*
- * ComaComponent.cpp
- *
- *  Created on: Jul 23, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/ComaComponent.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
-
-D_DEBUG_DOMAIN( ILX_COMACOMP, "ilixi/core/ComaComponent", "ComaComponent");
+#include <core/ComaComponent.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_COMACOMP, "ilixi/core/ComaComponent", "ComaComponent");
+
 void
 ComaComponentMethod(void *ctx, ComaMethodID method, void *arg,
-        unsigned int magic)
+                    unsigned int magic)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
     ComaComponent* comp = (ComaComponent*) ctx;
@@ -28,7 +44,9 @@ ComaComponent::ComaComponent(const std::string& name, int numNotifications)
         : _name(name)
 {
     if (AppBase::getComa()->CreateComponent(AppBase::getComa(), name.c_str(),
-            ComaComponentMethod, numNotifications, this, &_component) != DR_OK)
+                                            ComaComponentMethod,
+                                            numNotifications, this, &_component)
+            != DR_OK)
         ILOG_THROW(ILX_COMACOMP, "CreateComponent failed!\n");
 }
 

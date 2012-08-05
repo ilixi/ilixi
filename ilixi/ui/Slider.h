@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,15 +24,15 @@
 #ifndef ILIXI_SLIDER_H_
 #define ILIXI_SLIDER_H_
 
-#include "ui/Widget.h"
+#include <ui/Widget.h>
 
 namespace ilixi
 {
 
-  class Slider : public Widget
-  {
+class Slider : public Widget
+{
     friend class Stylist;
-  public:
+public:
     /*!
      * Constructor creates a horizontal slider.
      * Sets min=0, max=100, step=1, pageStep=10.
@@ -47,6 +47,9 @@ namespace ilixi
 
     Size
     preferredSize() const;
+
+    float
+    range() const;
 
     /*!
      * Returns slider's value.
@@ -104,7 +107,7 @@ namespace ilixi
      */
     sigc::signal<void, float> sigValueChanged;
 
-  protected:
+protected:
     //! This property holds slider's maximum limit.
     float _maximum;
     //! This property holds slider's minimum limit.
@@ -154,13 +157,13 @@ namespace ilixi
     virtual void
     focusOutEvent();
 
-  private:
+private:
     void
     updateIndicatorPosition();
 
     void
     updateSliderGeometry();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_SLIDER_H_ */

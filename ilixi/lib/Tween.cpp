@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,22 +21,29 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/Tween.h"
-#include "lib/Easing.h"
+#include <lib/Tween.h>
+#include <lib/Easing.h>
 #include <stdio.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
 Tween::Tween(Transition transition, Equation equation, float initialValue,
-    float endValue) :
-    _transition(transition), _equation(equation), _initialValue(initialValue), _change(
-        endValue - initialValue), _value(initialValue)
+             float endValue)
+        : _transition(transition),
+          _equation(equation),
+          _initialValue(initialValue),
+          _change(endValue - initialValue),
+          _value(initialValue)
 {
 }
 
-Tween::Tween(const Tween& t) :
-    _transition(t._transition), _equation(t._equation), _initialValue(
-        t._initialValue), _change(t._change), _value(t._initialValue)
+Tween::Tween(const Tween& t)
+        : _transition(t._transition),
+          _equation(t._equation),
+          _initialValue(t._initialValue),
+          _change(t._change),
+          _value(t._initialValue)
 {
 }
 
@@ -47,217 +54,219 @@ Tween::~Tween()
 Tween::Transition
 Tween::transition() const
 {
-  return _transition;
+    return _transition;
 }
 
 Tween::Equation
 Tween::equation() const
 {
-  return _equation;
+    return _equation;
 }
 
 float
 Tween::initialValue() const
 {
-  return _initialValue;
+    return _initialValue;
 }
 
 float
 Tween::endValue() const
 {
-  return _change + _initialValue;
+    return _change + _initialValue;
 }
 
 void
 Tween::setTransition(Transition transition)
 {
-  _transition = transition;
+    _transition = transition;
 }
 
 void
 Tween::setEquation(Equation equation)
 {
-  _equation = equation;
+    _equation = equation;
 }
 
 void
 Tween::setInitialValue(float initialValue)
 {
-  float end = endValue();
-  _initialValue = initialValue;
-  _change = end - _initialValue;
-  _value = _initialValue;
+    float end = endValue();
+    _initialValue = initialValue;
+    _change = end - _initialValue;
+    _value = _initialValue;
 }
 
 void
 Tween::setEndValue(float endValue)
 {
-  _change = endValue - _initialValue;
+    _change = endValue - _initialValue;
 }
 
 void
 Tween::runEase(float t, float d)
 {
-  using namespace Ease;
+    using namespace Ease;
 
-  switch (_transition)
+    switch (_transition)
     {
 
-  case Tween::BACK:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Back::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Back::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Back::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::BACK:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Back::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Back::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Back::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::BOUNCE:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Bounce::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Bounce::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Bounce::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::BOUNCE:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Bounce::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Bounce::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Bounce::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::CIRCLE:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Circle::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Circle::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Circle::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::CIRCLE:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Circle::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Circle::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Circle::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::CUBIC:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Cubic::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Cubic::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Cubic::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::CUBIC:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Cubic::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Cubic::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Cubic::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::ELASTIC:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Elastic::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Elastic::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Elastic::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::ELASTIC:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Elastic::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Elastic::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Elastic::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::EXPO:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Expo::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Expo::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Expo::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::EXPO:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Expo::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Expo::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Expo::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::QUAD:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Quad::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Quad::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Quad::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::QUAD:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Quad::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Quad::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Quad::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::QUART:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Quart::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Quart::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Quart::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::QUART:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Quart::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Quart::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Quart::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::QUINT:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Quint::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Quint::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Quint::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::QUINT:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Quint::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Quint::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Quint::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::SINE:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Sine::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Sine::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Sine::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::SINE:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Sine::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Sine::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Sine::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  case Tween::LINEAR:
-    switch (_equation)
-      {
-    case Tween::EASE_IN:
-      _value = Linear::easeIn(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_OUT:
-      _value = Linear::easeOut(t, _initialValue, _change, d);
-      return;
-    case Tween::EASE_IN_OUT:
-      _value = Linear::easeInOut(t, _initialValue, _change, d);
-      return;
-      }
+    case Tween::LINEAR:
+        switch (_equation)
+        {
+        case Tween::EASE_IN:
+            _value = Linear::easeIn(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_OUT:
+            _value = Linear::easeOut(t, _initialValue, _change, d);
+            return;
+        case Tween::EASE_IN_OUT:
+            _value = Linear::easeInOut(t, _initialValue, _change, d);
+            return;
+        }
 
-  default:
-    return;
+    default:
+        return;
     }
 }
+
+} /* namespace ilixi */

@@ -1,8 +1,24 @@
 /*
- * NotificationManager.cpp
- *
- *  Created on: Jul 25, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "NotificationManager.h"
@@ -14,19 +30,21 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_NOTIFICATIONMAN, "ilixi/comp/NotificationMan",
-        "NotificationMan");
+               "NotificationMan");
 
 NotificationManager::NotificationManager(Compositor* compositor)
-        : _deltaY(0), _compositor(compositor)
+        : _deltaY(0),
+          _compositor(compositor)
 {
     _timer.sigExec.connect(
             sigc::mem_fun(this, &NotificationManager::removeNotifications));
     _timer.start(1000);
 
-    _anim.setDuration(200);
-    _tween = new Tween(Tween::LINEAR, Tween::EASE_OUT, 0, 1);
+    _anim.setDuration(100);
+    _tween = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_tween);
     _anim.sigExec.connect(sigc::mem_fun(this, &NotificationManager::tweenSlot));
+
 }
 
 NotificationManager::~NotificationManager()
@@ -40,7 +58,11 @@ NotificationManager::addNotification(DFBSurfaceID id)
     _notifications.push_back(notify);
     Size s = notify->preferredSize();
     notify->setGeometry(_compositor->width() - s.width(),
-            _compositor->height() - s.height() - 10, s.width(), s.height());
+                        _compositor->height() - s.height() - 10, s.width(),
+                        s.height());
+
+    notify->_xStart = _compositor->width() - s.width();
+
     _compositor->addWidget(notify);
     _compositor->widgetToFront(notify);
     arrangeNotifications(s.height());
@@ -57,7 +79,7 @@ NotificationManager::removeNotifications()
         if (((Notification*) *it)->state() == Notification::Hidden)
         {
             ILOG_DEBUG(ILX_NOTIFICATIONMAN,
-                    "Notification %p is removed.\n", ((Notification*) *it));
+                       "Notification %p is removed.\n", ((Notification*) *it));
             _compositor->removeWidget(*it);
             it = _notifications.erase(it);
         } else

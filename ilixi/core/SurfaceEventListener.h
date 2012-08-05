@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,19 +24,19 @@
 #ifndef ILIXI_SURFACELISTENER_H_
 #define ILIXI_SURFACELISTENER_H_
 
-#include "directfb.h"
+#include <directfb.h>
 #include <queue>
-#include "core/Callback.h"
+#include <core/Callback.h>
 
 namespace ilixi
 {
 
-  //! Listens to incoming events from a surface.
-  class SurfaceEventListener : public Functionoid
-  {
+//! Listens to incoming events from a surface.
+class SurfaceEventListener : public Functionoid
+{
     friend class AppBase;
 
-  public:
+public:
     /*!
      * Constructor will automatically add listener to Application.
      */
@@ -60,7 +60,7 @@ namespace ilixi
     IDirectFBSurface*
     sourceSurface() const;
 
-  protected:
+protected:
     //! ID of source surface.
     DFBSurfaceID _surfaceID;
 
@@ -95,7 +95,7 @@ namespace ilixi
     virtual void
     onSourceDestroyed(const DFBSurfaceEvent& event) = 0;
 
-  private:
+private:
     //! Callback for stack.
     Callback _cb;
     //! Stack of surface events waiting.
@@ -108,7 +108,7 @@ namespace ilixi
     //! Functor of callback.
     bool
     funck();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_SURFACELISTENER_H_ */

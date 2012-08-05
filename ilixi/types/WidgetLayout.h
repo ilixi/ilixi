@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_WIDGETLAYOUT_H_
 #define ILIXI_WIDGETLAYOUT_H_
 
-#include "ui/Widget.h"
+#include <ui/Widget.h>
 
 namespace ilixi
 {
 
-  class WidgetLayout
-  {
-  public:
+class WidgetLayout
+{
+public:
     WidgetLayout(Widget* parent = NULL);
 
     WidgetLayout(const WidgetLayout& layout);
@@ -81,7 +81,7 @@ namespace ilixi
     virtual void
     tile();
 
-  protected:
+protected:
     //! Parent widget.
     Widget* _parent;
     //! Flag is set to true if modified.
@@ -93,8 +93,8 @@ namespace ilixi
 
     struct CacheElement
     {
-      Widget* widget;
-      Size size;
+        Widget* widget;
+        Size size;
     };
 
     typedef std::list<CacheElement> ElementList;
@@ -103,7 +103,7 @@ namespace ilixi
 
     void
     createCache(ElementList* cache);
-  };
+};
 
 }
 

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,15 +24,15 @@
 #ifndef ILIXI_ICON_H_
 #define ILIXI_ICON_H_
 
-#include "ui/Widget.h"
-#include "types/Image.h"
+#include <ui/Widget.h>
+#include <types/Image.h>
 
 namespace ilixi
 {
 
-  class Icon : public Widget
-  {
-  public:
+class Icon : public Widget
+{
+public:
     Icon(Widget* parent = 0);
 
     Icon(const std::string& path, Widget* parent = 0);
@@ -63,7 +63,7 @@ namespace ilixi
     void
     setFocusedImage(const std::string& path);
 
-  private:
+private:
     //! Image to show if icon is in default state.
     Image* _default;
     //! Image to show if icon is in disabled state.
@@ -79,7 +79,7 @@ namespace ilixi
     void
     compose(const PaintEvent& event);
 
-  };
+};
 
 }
 

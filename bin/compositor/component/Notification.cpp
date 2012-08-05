@@ -1,8 +1,24 @@
 /*
- * Notification.cpp
- *
- *  Created on: Jul 24, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Notification.h"
@@ -17,7 +33,10 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_NOTIFICATION, "ilixi/comp/Notification", "Notification");
 
 Notification::Notification(DFBSurfaceID sid, Compositor* parent)
-        : Widget(parent), _compositor(parent), _surface(NULL), _state(Init)
+        : Widget(parent),
+          _compositor(parent),
+          _surface(NULL),
+          _state(Init)
 {
     ILOG_TRACE_W(ILX_NOTIFICATION);
     _surface = new SurfaceView();
@@ -44,7 +63,10 @@ Notification::~Notification()
 Size
 Notification::preferredSize() const
 {
-    return _surface->preferredSize();
+    Size s = _surface->preferredSize();
+    return Size(
+            s.width() + stylist()->defaultParameter(StyleHint::FrameOffsetLR),
+            s.height() + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
 }
 
 Notification::NotificationState
@@ -64,7 +86,7 @@ Notification::show(unsigned int ms)
         _tween->setInitialValue(1);
         _tween->setEndValue(0);
         _anim.start();
-        _timer.start(2000, 1);
+        _timer.start(3000, 1);
         _state = Visible;
         setVisible(true);
     }
@@ -86,25 +108,28 @@ Notification::hide()
 void
 Notification::compose(const PaintEvent& event)
 {
-//    ILOG_TRACE_W(ILX_NOTIFICATION);
-//    Painter painter(this);
-//    painter.begin(event);
-//    painter.setBrush(Color(255, 0, 0, 50));
-//    painter.fillRectangle(0, 0, width(), height());
-//    painter.end();
+    ILOG_TRACE_W(ILX_NOTIFICATION);
+    Painter painter(this);
+    painter.begin(event);
+    stylist()->drawFrame(&painter, 0, 0, width(), height(), LeftCorners);
+    painter.end();
 }
 
 void
 Notification::onNotificationGeomUpdate()
 {
-    _surface->setGeometry(0, 0, width(), height());
+    _surface->setGeometry(
+            stylist()->defaultParameter(StyleHint::FrameOffsetLeft),
+            stylist()->defaultParameter(StyleHint::FrameOffsetTop),
+            width() - stylist()->defaultParameter(StyleHint::FrameOffsetLR),
+            height() - stylist()->defaultParameter(StyleHint::FrameOffsetTB));
 }
 
 void
 Notification::tweenSlot()
 {
-    _surface->setX(_tween->value() * width());
-    update();
+//    setOpacity(1 - _tween->value());
+//    update();
 }
 
 void

@@ -1,24 +1,40 @@
 /*
- * AnimationSequence.h
- *
- *  Created on: Jun 10, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_ANIMATIONSEQUENCE_H_
 #define ILIXI_ANIMATIONSEQUENCE_H_
 
-#include "lib/Animation.h"
+#include <lib/Animation.h>
 #include <vector>
 
 namespace ilixi
 {
-  /*!
-   * Allows to run animations in sequential order.
-   */
-  class AnimationSequence
-  {
-  public:
+/*!
+ * Allows to run animations in sequential order.
+ */
+class AnimationSequence
+{
+public:
     /*!
      * Constructor.
      */
@@ -72,7 +88,7 @@ namespace ilixi
     void
     stop();
 
-  private:
+private:
     //! This property stores the currently running animation.
     Animation* _current;
     typedef std::vector<Animation*> AnimationVector;
@@ -81,7 +97,7 @@ namespace ilixi
     //! Sets current animation, used by signals.
     void
     setCurrentAnimation(Animation* animation);
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_ANIMATIONSEQUENCE_H_ */

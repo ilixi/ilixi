@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,84 +21,90 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Point.h"
+#include <types/Point.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-Point::Point() :
-  _x(0), _y(0)
+Point::Point()
+        : _x(0),
+          _y(0)
 {
 }
 
-Point::Point(const Point& point) :
-  _x(point._x), _y(point._y)
+Point::Point(const Point& point)
+        : _x(point._x),
+          _y(point._y)
 {
 }
 
-Point::Point(int x, int y) :
-  _x(x), _y(y)
+Point::Point(int x, int y)
+        : _x(x),
+          _y(y)
 {
 }
 
 bool
 Point::isNull() const
 {
-  if (_x == 0 && _y == 0)
-    return true;
-  return false;
+    if (_x == 0 && _y == 0)
+        return true;
+    return false;
 }
 
 void
 Point::moveTo(int x, int y)
 {
-  _x = x;
-  _y = y;
+    _x = x;
+    _y = y;
 }
 
 void
 Point::moveTo(const Point &point)
 {
-  *this = point;
+    *this = point;
 }
 
 void
 Point::translate(int x, int y)
 {
-  _x += x;
-  _y += y;
+    _x += x;
+    _y += y;
 }
 
 void
 Point::setX(int x)
 {
-  _x = x;
+    _x = x;
 }
 
 void
 Point::setY(int y)
 {
-  _y = y;
+    _y = y;
 }
 
 Point&
 Point::operator=(const Point &point)
 {
-  if (this != &point)
+    if (this != &point)
     {
-      _x = point._x;
-      _y = point._y;
+        _x = point._x;
+        _y = point._y;
     }
-  return *this;
+    return *this;
 }
 
 bool
 Point::operator==(const Point &point) const
 {
-  return ((_x == point._x) && (_y == point._y));
+    return ((_x == point._x) && (_y == point._y));
 }
 
 bool
 Point::operator!=(const Point &point) const
 {
-  return !(*this == point);
+    return !(*this == point);
 }
+
+} /* namespace ilixi */

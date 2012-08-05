@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,15 +24,15 @@
 #ifndef ILIXI_RECTANGLE_H_
 #define ILIXI_RECTANGLE_H_
 
-#include "types/Point.h"
-#include "types/Size.h"
+#include <types/Point.h>
+#include <types/Size.h>
 
 namespace ilixi
 {
-  //! Defines a rectangle with top-left point and size using integer precision.
-  class Rectangle
-  {
-  public:
+//! Defines a rectangle with top-left point and size using integer precision.
+class Rectangle
+{
+public:
     /*!
      * Constructs a null rectangle.
      */
@@ -348,59 +348,59 @@ namespace ilixi
     DFBRegion
     dfbRegion() const;
 
-  private:
+private:
     //! This property stores the top-left point.
     Point _topLeft;
     //! This property stores the size.
     Size _size;
-  };
+};
 
-  inline int
-  Rectangle::x() const
-  {
+inline int
+Rectangle::x() const
+{
     return _topLeft.x();
-  }
+}
 
-  inline int
-  Rectangle::y() const
-  {
+inline int
+Rectangle::y() const
+{
     return _topLeft.y();
-  }
+}
 
-  inline int
-  Rectangle::width() const
-  {
+inline int
+Rectangle::width() const
+{
     return _size.width();
-  }
+}
 
-  inline int
-  Rectangle::height() const
-  {
+inline int
+Rectangle::height() const
+{
     return _size.height();
-  }
+}
 
-  inline int
-  Rectangle::left() const
-  {
+inline int
+Rectangle::left() const
+{
     return _topLeft.x();
-  }
+}
 
-  inline int
-  Rectangle::bottom() const
-  {
+inline int
+Rectangle::bottom() const
+{
     return (_topLeft.y() + _size.height());
-  }
+}
 
-  inline int
-  Rectangle::right() const
-  {
+inline int
+Rectangle::right() const
+{
     return (_topLeft.x() + _size.width());
-  }
+}
 
-  inline int
-  Rectangle::top() const
-  {
+inline int
+Rectangle::top() const
+{
     return _topLeft.y();
-  }
+}
 }
 #endif /* ILIXI_RECTANGLE_H_ */

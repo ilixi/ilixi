@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_PUSHBUTTON_H_
 #define ILIXI_PUSHBUTTON_H_
 
-#include "ui/Button.h"
+#include <ui/Button.h>
 
 namespace ilixi
 {
 
-  class PushButton : public Button
-  {
-  public:
+class PushButton : public Button
+{
+public:
     PushButton(const std::string& text, Widget* parent = 0);
 
     virtual
@@ -40,7 +40,7 @@ namespace ilixi
     virtual Size
     preferredSize() const;
 
-  private:
+private:
     /*!
      * Just updates button.
      */
@@ -66,7 +66,7 @@ namespace ilixi
     virtual void
     updateTextBaseGeometry();
 
-  };
+};
 
 }
 

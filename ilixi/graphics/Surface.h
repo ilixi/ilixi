@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,8 +24,8 @@
 #ifndef ILIXI_SURFACE_H_
 #define ILIXI_SURFACE_H_
 
-#include "types/Event.h"
-#include "ilixiConfig.h"
+#include <types/Event.h>
+#include <ilixiConfig.h>
 
 namespace ilixi
 {
@@ -56,7 +56,7 @@ public:
 
     bool
     createDFBSurface(int width, int height, DFBSurfaceCapabilities caps =
-            DSCAPS_VIDEOONLY);
+                             DSCAPS_VIDEOONLY);
 
     /*!
      * Creates a new DFB sub-surface.

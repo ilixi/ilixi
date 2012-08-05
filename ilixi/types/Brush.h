@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,20 +24,20 @@
 #ifndef ILIXI_BRUSH_H_
 #define ILIXI_BRUSH_H_
 
-#include "types/Color.h"
+#include <types/Color.h>
 
 namespace ilixi
 {
-  //! Defines color for filling inside primitive shapes.
-  /*!
-   * Brush is used by painter during drawing.
-   *
-   * By default, a brush only applies a solid color.
-   */
-  class Brush
-  {
+//! Defines color for filling inside primitive shapes.
+/*!
+ * Brush is used by painter during drawing.
+ *
+ * By default, a brush only applies a solid color.
+ */
+class Brush
+{
     friend class Painter; // applyBrush()
-  public:
+public:
     /*!
      * Creates an opaque white brush.
      */
@@ -76,7 +76,7 @@ namespace ilixi
     Brush&
     operator=(const Brush &brush);
 
-  private:
+private:
     //! Flag is set to true if pen is modified.
     bool _modified;
     //! This property holds current brush color.
@@ -85,7 +85,7 @@ namespace ilixi
     //! Applies brush to surface.
     bool
     applyBrush(IDirectFBSurface* surface);
-  };
+};
 }
 
 #endif /* ILIXI_BRUSH_H_ */

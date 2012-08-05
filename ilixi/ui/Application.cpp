@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,150 +21,179 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/Application.h"
-#include "graphics/Painter.h"
-#include "graphics/Stylist.h"
-#include "core/Logger.h"
+#include <ui/Application.h>
+#include <graphics/Painter.h>
+#include <graphics/Stylist.h>
+#include <core/Logger.h>
 #include <string.h>
 
-using namespace ilixi;
-
-Application::Application(int* argc, char*** argv, AppOptions opts) :
-    AppBase(argc, argv, opts), WindowWidget(), _backgroundImage(NULL)
+namespace ilixi
 {
-  // parse app-meta file...
-  ILOG_TRACE_W(ILX_APPLICATION);
-  initDFB(argc, argv);
-  setStylist(new Stylist());
-  setBackgroundFilled(false);
-  setMargins(5, 5, 5, 5);
-  setCanvasPosition(Point(0, 0));
-  setBorderStyle(NoBorder);
 
-  setTitle("Untitled");
-  sigAbort.connect(sigc::mem_fun(this, &Application::quit));
+D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
+
+Application::Application(int* argc, char*** argv, AppOptions opts)
+        : AppBase(argc, argv, opts),
+          WindowWidget(),
+          _backgroundImage(NULL)
+{
+    // parse app-meta file...
+    ILOG_TRACE_W(ILX_APPLICATION);
+    initDFB(argc, argv);
+    setStylist(new Stylist());
+    setBackgroundFilled(false);
+    setMargins(0, 0, 0, 0);
+
+    setTitle("Untitled");
+    sigAbort.connect(sigc::mem_fun(this, &Application::quit));
 }
 
 Application::~Application()
 {
-  delete _backgroundImage;
-  delete _stylist;
-  ILOG_TRACE_W(ILX_APPLICATION);
+    delete _backgroundImage;
+    delete _stylist;
+    ILOG_TRACE_W(ILX_APPLICATION);
 }
 
 Image*
 Application::background() const
 {
-  return (_backgroundImage);
+    return (_backgroundImage);
+}
+
+int
+Application::canvasX() const
+{
+    return _margin.left();
+}
+
+int
+Application::canvasY() const
+{
+    return _margin.top();
+}
+
+int
+Application::canvasHeight() const
+{
+    return height() - _margin.vSum();
+}
+
+int
+Application::canvasWidth() const
+{
+    return width() - _margin.hSum();
 }
 
 void
 Application::quit()
 {
-  setVisible(false);
-  setAppState(APS_TERM);
+    setVisible(false);
+    setAppState(APS_TERM);
 }
 
 void
 Application::exec()
 {
-  ILOG_INFO(ILX_APPLICATION, "Starting...\n");
+    ILOG_INFO(ILX_APPLICATION, "Starting...\n");
 
-  if (__options & OptExclusive)
+    if (__options & OptExclusive)
     {
-      if (__layer->SetCooperativeLevel(__layer, DLSCL_EXCLUSIVE))
-        ILOG_ERROR(ILX_APPLICATION, "Error while setting EXLUSIVE mode!\n");
-      else
-        ILOG_INFO(ILX_APPLICATION, "Now running in exclusive mode.\n");
+        if (__layer->SetCooperativeLevel(__layer, DLSCL_EXCLUSIVE))
+            ILOG_ERROR(ILX_APPLICATION, "Error while setting EXLUSIVE mode!\n");
+        else
+            ILOG_INFO(ILX_APPLICATION, "Now running in exclusive mode.\n");
     }
 
-  show();
+    show();
 
-  setLayerSize(width(), height());
-  if (_backgroundImage)
-    _backgroundImage->setSize(width(), height());
+    setLayerSize(width(), height());
+    if (_backgroundImage)
+        _backgroundImage->setSize(width(), height());
 
-  while (true)
+    while (true)
     {
-      if (__state & APS_TERM)
-        break;
-      else
+        if (__state & APS_TERM)
+            break;
+        else
         {
-          runCallbacks();
-          handleEvents();
-          updateWindows();
+            runCallbacks();
+            handleEvents();
+            updateWindows();
         }
     }
 
-  hide();
+    hide();
 
-  ILOG_INFO(ILX_APPLICATION, "Stopping...\n");
+    ILOG_INFO(ILX_APPLICATION, "Stopping...\n");
 
-  sigQuit();
+    sigQuit();
 }
 
 void
 Application::setBackgroundImage(std::string imagePath)
 {
-  if (_backgroundImage)
-    delete _backgroundImage;
+    if (_backgroundImage)
+        delete _backgroundImage;
 
-  _backgroundImage = new Image(imagePath);
-  setBackgroundFilled(true);
+    _backgroundImage = new Image(imagePath);
+    setBackgroundFilled(true);
 
-  ILOG_DEBUG( ILX_APPLICATION, "Background is set [%s]\n", imagePath.c_str());
+    ILOG_DEBUG( ILX_APPLICATION, "Background is set [%s]\n", imagePath.c_str());
 }
 
 void
 Application::show()
 {
-  if (__state & APS_HIDDEN)
+    if (__state & APS_HIDDEN)
     {
-      showWindow();
-      __state = APS_VISIBLE;
-      sigVisible();
+        showWindow();
+        __state = APS_VISIBLE;
+        sigVisible();
     }
 }
 
 void
 Application::hide()
 {
-  if (__state & APS_VISIBLE)
+    if (__state & APS_VISIBLE)
     {
-      closeWindow();
-      __state = APS_HIDDEN;
-      sigHidden();
+        closeWindow();
+        __state = APS_HIDDEN;
+        sigHidden();
     }
 }
 
 void
 Application::setStylist(Stylist* stylist)
 {
-  if (!stylist)
-    return;
-  // TODO we will allow setting custom stylist in the future.
-  if (_stylist)
-    return;
-  _stylist = stylist;
+    if (!stylist)
+        return;
+    // TODO we will allow setting custom stylist in the future.
+    if (_stylist)
+        return;
+    _stylist = stylist;
 }
 
 void
 Application::postUserEvent(unsigned int type, void* data)
 {
-  DFBUserEvent event;
-  event.clazz = DFEC_USER;
-  event.type = type;
-  event.data = data;
+    DFBUserEvent event;
+    event.clazz = DFEC_USER;
+    event.type = type;
+    event.data = data;
 
-  __buffer->PostEvent(__buffer, DFB_EVENT(&event));
+    __buffer->PostEvent(__buffer, DFB_EVENT(&event));
 }
 
 void
 Application::compose(const PaintEvent& event)
 {
-  ILOG_TRACE_W(ILX_APPLICATION);
-  Painter painter(this);
-  painter.begin(event);
-  stylist()->drawAppFrame(&painter, this);
-  painter.end();
+    ILOG_TRACE_W(ILX_APPLICATION);
+    Painter painter(this);
+    painter.begin(event);
+    stylist()->drawAppFrame(&painter, this);
+    painter.end();
 }
+
+} /* namespace ilixi */

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,16 +26,16 @@
 
 namespace ilixi
 {
-  class RadioButton;
+class RadioButton;
 
-  //! Groups radio buttons for exclusive selection.
-  /*!
-   * Each layout comes with a radio group. However, users can create their
-   * own groups assign buttons later.
-   */
-  class RadioGroup
-  {
-  public:
+//! Groups radio buttons for exclusive selection.
+/*!
+ * Each layout comes with a radio group. However, users can create their
+ * own groups assign buttons later.
+ */
+class RadioGroup
+{
+public:
     /*!
      * Constuctor.
      */
@@ -75,10 +75,10 @@ namespace ilixi
     void
     select(RadioButton* radio);
 
-  private:
+private:
     //! This property stores currently selected button.
     RadioButton* _selected;
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_RADIOGROUP_H_ */

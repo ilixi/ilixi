@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,185 +21,201 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "types/Image.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
-#include "graphics/Stylist.h"
+#include <types/Image.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
+#include <graphics/Stylist.h>
 
-using namespace ilixi;
-
-Image::Image() :
-    _dfbSurface(NULL), _imagePath(""), _size()
+namespace ilixi
 {
-  ILOG_TRACE(ILX_IMAGE);
+
+D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
+
+Image::Image()
+        : _dfbSurface(NULL),
+          _imagePath(""),
+          _size()
+{
+    ILOG_TRACE(ILX_IMAGE);
 }
 
-Image::Image(const std::string& path) :
-    _dfbSurface(NULL), _imagePath(path), _size()
+Image::Image(const std::string& path)
+        : _dfbSurface(NULL),
+          _imagePath(path),
+          _size()
 {
-  ILOG_TRACE(ILX_IMAGE);
+    ILOG_TRACE(ILX_IMAGE);
 }
 
-Image::Image(const std::string& path, int width, int height) :
-    _dfbSurface(NULL), _imagePath(path), _size(width, height)
+Image::Image(const std::string& path, int width, int height)
+        : _dfbSurface(NULL),
+          _imagePath(path),
+          _size(width, height)
 {
-  ILOG_TRACE(ILX_IMAGE);
+    ILOG_TRACE(ILX_IMAGE);
 }
 
-Image::Image(const std::string& path, const Size& size) :
-    _dfbSurface(NULL), _imagePath(path), _size(size)
+Image::Image(const std::string& path, const Size& size)
+        : _dfbSurface(NULL),
+          _imagePath(path),
+          _size(size)
 {
-  ILOG_TRACE(ILX_IMAGE);
+    ILOG_TRACE(ILX_IMAGE);
 }
 
-Image::Image(const Image& img) :
-    _dfbSurface(NULL), _imagePath(img._imagePath), _size(img._size)
+Image::Image(const Image& img)
+        : _dfbSurface(NULL),
+          _imagePath(img._imagePath),
+          _size(img._size)
 {
-  ILOG_TRACE(ILX_IMAGE);
+    ILOG_TRACE(ILX_IMAGE);
 }
 
 Image::~Image()
 {
-  ILOG_TRACE(ILX_IMAGE);
-  invalidateSurface();
+    ILOG_TRACE(ILX_IMAGE);
+    invalidateSurface();
 }
 
 int
 Image::height() const
 {
-  return _size.height();
+    return _size.height();
 }
 
 int
 Image::width() const
 {
-  return _size.width();
+    return _size.width();
 }
 
 Size
 Image::size() const
 {
-  return _size;
+    return _size;
 }
 
 IDirectFBSurface*
 Image::getDFBSurface()
 {
-  if (_dfbSurface)
-    return _dfbSurface;
-  else if (loadImage())
-    return _dfbSurface;
-  else
-    return Stylist::_noImage->getDFBSurface();
+    if (_dfbSurface)
+        return _dfbSurface;
+    else if (loadImage())
+        return _dfbSurface;
+    else
+        return Stylist::_noImage->getDFBSurface();
 }
 
 std::string
 Image::getImagePath() const
 {
-  return _imagePath;
+    return _imagePath;
 }
 
 void
 Image::setImagePath(const std::string& path)
 {
-  if (path != _imagePath)
+    if (path != _imagePath)
     {
-      invalidateSurface();
-      _imagePath = path;
+        invalidateSurface();
+        _imagePath = path;
     }
 }
 
 void
 Image::setSize(int width, int height)
 {
-  setSize(Size(width, height));
+    setSize(Size(width, height));
 }
 
 void
 Image::setSize(const Size& s)
 {
-  if (s.isValid() && s != _size)
+    if (s.isValid() && s != _size)
     {
-      invalidateSurface();
-      _size = s;
+        invalidateSurface();
+        _size = s;
     }
 }
 
 void
 Image::invalidateSurface()
 {
-  if (_dfbSurface)
+    if (_dfbSurface)
     {
-      _dfbSurface->ReleaseSource(_dfbSurface);
-      _dfbSurface->Release(_dfbSurface);
-      _dfbSurface = NULL;
-      ILOG_TRACE(ILX_IMAGE);
+        _dfbSurface->ReleaseSource(_dfbSurface);
+        _dfbSurface->Release(_dfbSurface);
+        _dfbSurface = NULL;
+        ILOG_TRACE(ILX_IMAGE);
     }
 }
 
 bool
 Image::loadImage()
 {
-  if (_imagePath == "")
+    if (_imagePath == "")
     {
-      ILOG_ERROR(ILX_IMAGE, "Image path is empty");
-      return false;
+        ILOG_ERROR(ILX_IMAGE, "Image path is empty");
+        return false;
     }
 
-  if (access(_imagePath.c_str(), F_OK) != 0)
+    if (access(_imagePath.c_str(), F_OK) != 0)
     {
-      ILOG_ERROR( ILX_IMAGE,
-          "File (%s) is not accessible!\n", _imagePath.c_str());
-      return false;
+        ILOG_ERROR( ILX_IMAGE,
+                   "File (%s) is not accessible!\n", _imagePath.c_str());
+        return false;
     }
 
-  invalidateSurface();
+    invalidateSurface();
 
-  DFBSurfaceDescription desc;
+    DFBSurfaceDescription desc;
 
-  IDirectFBImageProvider* provider;
-  if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-      _imagePath.c_str(), &provider) != DFB_OK)
+    IDirectFBImageProvider* provider;
+    if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
+                                               _imagePath.c_str(), &provider)
+            != DFB_OK)
     {
-      invalidateSurface();
-      ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
-      return false;
+        invalidateSurface();
+        ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
+        return false;
     }
 
-  if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
-    ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
+    if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
+        ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
 
-  desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
-      | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
-  desc.caps = DSCAPS_PREMULTIPLIED;
-  desc.pixelformat = DSPF_ARGB;
+    desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
+            | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+    desc.caps = DSCAPS_PREMULTIPLIED;
+    desc.pixelformat = DSPF_ARGB;
 
-  if (width() > 0)
-    desc.width = width();
+    if (width() > 0)
+        desc.width = width();
 
-  if (height() > 0)
-    desc.height = height();
+    if (height() > 0)
+        desc.height = height();
 
-  DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
-      &_dfbSurface);
+    DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
+                                                     &_dfbSurface);
 
-  if (ret)
+    if (ret)
     {
-      invalidateSurface();
-      ILOG_ERROR( ILX_IMAGE,
-          "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
-      return false;
-    }
-  else
+        invalidateSurface();
+        ILOG_ERROR(
+                ILX_IMAGE,
+                "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
+        return false;
+    } else
     {
-      if (provider->RenderTo(provider, _dfbSurface, NULL) != DFB_OK)
+        if (provider->RenderTo(provider, _dfbSurface, NULL) != DFB_OK)
         {
-          invalidateSurface();
-          ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface!\n");
-          return false;
+            invalidateSurface();
+            ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface!\n");
+            return false;
         }
-      provider->Release(provider);
-      ILOG_DEBUG(ILX_IMAGE, "Image [%s] is loaded.\n", _imagePath.c_str());
-      return true;
+        provider->Release(provider);
+        ILOG_DEBUG(ILX_IMAGE, "Image [%s] is loaded.\n", _imagePath.c_str());
+        return true;
     }
 }
+
+} /* namespace ilixi */

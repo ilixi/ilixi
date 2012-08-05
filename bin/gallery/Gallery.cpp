@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -47,7 +47,6 @@ Gallery::Gallery(int argc, char* argv[]) :
       widget = new ImageWidget(file);
       widget->setImage(new Image(file, 196, 196));
       widget->setGeometry(x * w, y * h, w, h);
-      ILOG_DEBUG(ILX, "%d%d - %d%d\n", x, y, w, h);
       widget->sigPressed.connect(
           sigc::bind<std::string>(sigc::mem_fun(this, &Gallery::showImage),
               file));

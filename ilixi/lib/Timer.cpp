@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,9 +21,9 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/Timer.h"
-#include "core/Window.h"
-#include "core/Logger.h"
+#include <lib/Timer.h>
+#include <core/Window.h>
+#include <core/Logger.h>
 extern "C"
 {
 #include <direct/clock.h>
@@ -35,7 +35,11 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_TIMER, "ilixi/lib/Timer", "Timer");
 
 Timer::Timer()
-        : _interval(500), _repeats(0), _count(0), _lastTime(0), _cb(this)
+        : _interval(500),
+          _repeats(0),
+          _count(0),
+          _lastTime(0),
+          _cb(this)
 {
 }
 
@@ -63,7 +67,7 @@ Timer::start(int msec, unsigned int repeats)
     _repeats = repeats;
     _lastTime = direct_clock_get_abs_millis();
     ILOG_DEBUG(ILX_TIMER,
-            "Starting timer[%p] in %d msec...\n", &_cb, _interval);
+               "Starting timer[%p] in %d msec...\n", &_cb, _interval);
     _cb.start();
 }
 

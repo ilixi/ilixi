@@ -1,8 +1,24 @@
 /*
- * ImageWidget.cpp
- *
- *  Created on: 10 Nov 2011
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ImageWidget.h"
@@ -32,7 +48,8 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent) :
   setInputMethod(KeyAndPointerInput);
 
   PushButton* button = new PushButton("text");
-  button->setGeometry(10, 10, 50, 20);
+  Size s = button->preferredSize();
+  button->setGeometry(10, 10, s.width(), s.height());
   addChild(button);
 }
 

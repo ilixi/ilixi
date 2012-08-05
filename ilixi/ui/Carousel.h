@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,18 +24,18 @@
 #ifndef ILIXI_CAROUSEL_H_
 #define ILIXI_CAROUSEL_H_
 
-#include "ui/Widget.h"
-#include "lib/TweenAnimation.h"
+#include <ui/Widget.h>
+#include <lib/TweenAnimation.h>
 
 namespace ilixi
 {
-  class Carousel;
-  /*!
-   * Contains widgets which are added to a Carousel.
-   */
-  class CarouselItem : public Widget
-  {
-  public:
+class Carousel;
+/*!
+ * Contains widgets which are added to a Carousel.
+ */
+class CarouselItem : public Widget
+{
+public:
     /*!
      * Constructor.
      */
@@ -92,7 +92,7 @@ namespace ilixi
      */
     sigc::signal<void> sigPressed;
 
-  protected:
+protected:
     void
     compose(const PaintEvent& event);
 
@@ -108,7 +108,7 @@ namespace ilixi
     virtual void
     keyUpEvent(const KeyEvent& event);
 
-  private:
+private:
     //! This property stores the attached widget.
     Widget* _source;
     //! This property stores the parent Carousel.
@@ -120,14 +120,14 @@ namespace ilixi
 
     void
     updateCarouselItemGeometry();
-  };
+};
 
-  /*!
-   * Carousel arranges items around circle.
-   */
-  class Carousel : public Widget
-  {
-  public:
+/*!
+ * Carousel arranges items around circle.
+ */
+class Carousel : public Widget
+{
+public:
     /*!
      * Constructor.
      */
@@ -180,11 +180,11 @@ namespace ilixi
      */
     sigc::signal<void, CarouselItem*> sigItemSelected;
 
-  protected:
+protected:
     void
     compose(const PaintEvent& event);
 
-  private:
+private:
     //! This property stores the radius on x axis.
     int _radiusX;
     //! This property stores the radius on y axis.
@@ -207,7 +207,7 @@ namespace ilixi
 
     void
     updateCarouselGeometry();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_CAROUSEL_H_ */

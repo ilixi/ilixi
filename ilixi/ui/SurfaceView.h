@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,8 +24,8 @@
 #ifndef ILIXI_SURFACEVIEW_H_
 #define ILIXI_SURFACEVIEW_H_
 
-#include "ui/Widget.h"
-#include "core/SurfaceEventListener.h"
+#include <ui/Widget.h>
+#include <core/SurfaceEventListener.h>
 
 namespace ilixi
 {

@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -28,13 +28,13 @@
 
 namespace ilixi
 {
-  //! Defines width and height using integers.
-  /*!
-   * Specifies a dimension using width and height.
-   */
-  class Size
-  {
-  public:
+//! Defines width and height using integers.
+/*!
+ * Specifies a dimension using width and height.
+ */
+class Size
+{
+public:
     /*!
      * Constructs an invalid size, i.e. width = height = -1.
      */
@@ -122,23 +122,23 @@ namespace ilixi
     DFBDimension
     dfbDimension() const;
 
-  private:
+private:
     //! This property stores the width in pixels.
     int _width;
     //! This property stores the height in pixels.
     int _height;
-  };
+};
 
-  inline int
-  Size::height() const
-  {
+inline int
+Size::height() const
+{
     return _height;
-  }
+}
 
-  inline int
-  Size::width() const
-  {
+inline int
+Size::width() const
+{
     return _width;
-  }
+}
 }
 #endif /* ILIXI_SIZE_H_ */

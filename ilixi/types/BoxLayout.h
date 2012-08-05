@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,14 +24,14 @@
 #ifndef ILIXI_BOXLAYOUT_H_
 #define ILIXI_BOXLAYOUT_H_
 
-#include "types/WidgetLayout.h"
+#include <types/WidgetLayout.h>
 
 namespace ilixi
 {
 
-  class BoxLayout : public WidgetLayout
-  {
-  public:
+class BoxLayout : public WidgetLayout
+{
+public:
     BoxLayout(Widget* parent = NULL);
 
     virtual
@@ -52,10 +52,10 @@ namespace ilixi
     virtual void
     tile();
 
-  private:
+private:
     //! This property defines how widgets are placed on y axis.
     Alignment::Vertical _alignment;
-  };
+};
 
 }
 

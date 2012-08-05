@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,23 +26,23 @@
 
 #include <list>
 #include <string>
-#include "types/Event.h"
-#include "types/Enums.h"
-#include "ilixiConfig.h"
+#include <types/Event.h>
+#include <types/Enums.h>
+#include <ilixiConfig.h>
 
 namespace ilixi
 {
-  class Widget;
-  class WindowWidget;
+class Widget;
+class WindowWidget;
 
-  //! Keeps track of input widgets.
-  /*!
-   * This class is used by window widgets in order to forward key inputs inside application's main loop.
-   */
-  class EventManager
-  {
+//! Keeps track of input widgets.
+/*!
+ * This class is used by window widgets in order to forward key inputs inside application's main loop.
+ */
+class EventManager
+{
     friend class WindowWidget;
-  public:
+public:
     /*!
      * Constructor.
      */
@@ -86,7 +86,7 @@ namespace ilixi
      */
     bool
     setExposedWidget(Widget* widget, const PointerEvent& pointerEvent =
-        PointerEvent());
+                             PointerEvent());
 
     /*!
      * Sets widgets focused flag and executes focusInEvent/focusOutEvent methods of widgets.
@@ -107,7 +107,7 @@ namespace ilixi
      */
     bool
     setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent =
-        PointerEvent());
+                             PointerEvent());
 
     /*!
      * Sets the target of OSK app.
@@ -130,7 +130,8 @@ namespace ilixi
     selectNext(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
 
     bool
-    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
+    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL,
+                   int iter = 0);
 
     void
     setOSKWidgetText(const std::string& text);
@@ -138,7 +139,7 @@ namespace ilixi
     void
     clear(Widget* widget);
 
-  private:
+private:
     bool
     selectNeighbourFromChildren(Widget* target, Direction direction);
 
@@ -152,7 +153,7 @@ namespace ilixi
     Widget* _oskWidget;
     //! WindowWidget that created this event manager.
     WindowWidget* _creator;
-  };
+};
 }
 
 #endif /* ILIXI_EVENTMANAGER_H_ */

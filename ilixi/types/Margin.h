@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -26,10 +26,10 @@
 
 namespace ilixi
 {
-  //! Defines margins.
-  class Margin
-  {
-  public:
+//! Defines margins.
+class Margin
+{
+public:
     /*!
      * Creates a new 0 margin.
      */
@@ -153,7 +153,7 @@ namespace ilixi
     Margin&
     operator=(const Margin& m);
 
-  private:
+private:
     //! This property stores top margin.
     int _top;
     //! This property stores bottom margin.
@@ -162,7 +162,7 @@ namespace ilixi
     int _left;
     //! This property stores right margin.
     int _right;
-  };
+};
 }
 
 #endif /* ILIXI_MARGIN_H_ */

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,15 +21,19 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/Window.h"
-#include "core/AppBase.h"
-#include "core/Logger.h"
+#include <core/Window.h>
+#include <core/AppBase.h>
+#include <core/Logger.h>
 #include <algorithm>
 
-using namespace ilixi;
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
 
 Window::Window()
-        : _dfbWindow(NULL), _windowSurface(NULL)
+        : _dfbWindow(NULL),
+          _windowSurface(NULL)
 {
 }
 
@@ -113,7 +117,8 @@ Window::initDFBWindow(const Size& size)
     ret = AppBase::getLayer()->GetConfiguration(AppBase::getLayer(), &conf);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR( ILX_WINDOW,
+        ILOG_ERROR(
+                ILX_WINDOW,
                 "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
@@ -125,8 +130,8 @@ Window::initDFBWindow(const Size& size)
         desc.posy = 0;
         if (AppBase::appOptions() & OptStatusBar)
         {
-            desc.width = conf.width;
-            desc.height = 80;
+            desc.width = conf.width - 200;
+            desc.height = 50;
         } else
         {
             desc.width = conf.width;
@@ -157,10 +162,11 @@ Window::initDFBWindow(const Size& size)
     }
 
     ret = AppBase::getLayer()->CreateWindow(AppBase::getLayer(), &desc,
-            &_dfbWindow);
+                                            &_dfbWindow);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR( ILX_WINDOW,
+        ILOG_ERROR(
+                ILX_WINDOW,
                 "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
@@ -168,7 +174,8 @@ Window::initDFBWindow(const Size& size)
     ret = _dfbWindow->GetSurface(_dfbWindow, &_windowSurface);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR( ILX_WINDOW,
+        ILOG_ERROR(
+                ILX_WINDOW,
                 "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
@@ -198,3 +205,4 @@ Window::releaseDFBWindow()
     }
 }
 
+} /* namespace ilixi */

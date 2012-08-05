@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,26 +24,26 @@
 #ifndef ILIXI_COMBOBOX_H_
 #define ILIXI_COMBOBOX_H_
 
-#include "ui/TextBase.h"
+#include <ui/TextBase.h>
 #include <vector>
 
 namespace ilixi
 {
 
-  class Dialog;
-  class RadioButton;
-  class ScrollArea;
-  class VBoxLayout;
+class Dialog;
+class RadioButton;
+class ScrollArea;
+class VBoxLayout;
 
-  class ComboBox : public Widget, public TextBase
-  {
-  public:
+class ComboBox : public Widget, public TextBase
+{
+public:
     typedef std::list<std::string> StringList;
 
     ComboBox(const std::string& title, Widget* parent = 0);
 
     ComboBox(const std::string& title, const StringList& items, Widget* parent =
-        0);
+                     0);
 
     virtual
     ~ComboBox();
@@ -69,7 +69,7 @@ namespace ilixi
     void
     setSelected(unsigned int index);
 
-  private:
+private:
     Dialog* _dialog;
     ScrollArea* _scrollArea;
     VBoxLayout* _vlayout;
@@ -98,7 +98,7 @@ namespace ilixi
 
     virtual Font*
     defaultFont() const;
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_COMBOBOX_H_ */
