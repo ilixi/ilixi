@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -49,9 +49,9 @@ namespace ilixi
      */
     virtual void
     leaveEvent(const PointerEvent& event);
-
-    void
-    compose(const PaintEvent& event);
+//
+//    void
+//    compose(const PaintEvent& event);
   };
 
 } /* namespace ilixi */

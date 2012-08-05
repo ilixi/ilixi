@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -22,7 +22,8 @@
  */
 
 #include "ApplicationManager.h"
-#include "core/Logger.h"
+#include <core/Logger.h>
+#include <lib/FileSystem.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -33,7 +34,7 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/compositor/AppMan",
-        "ApplicationManager");
+               "ApplicationManager");
 
 //*********************************************************************
 
@@ -48,7 +49,7 @@ DirectResult
 stop_request(void *context, pid_t pid, FusionID caller)
 {
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-            "Stop request from Fusion ID 0x%lx for pid %d!\n", caller, pid);
+               "Stop request from Fusion ID 0x%lx for pid %d!\n", caller, pid);
     ApplicationManager* appMan = (ApplicationManager*) context;
     return appMan->stopApplication(pid);
 }
@@ -97,7 +98,7 @@ window_reconfig(void *context, SaWManWindowReconfig *reconfig)
 
 DirectResult
 window_restack(void *context, SaWManWindowHandle handle,
-        SaWManWindowHandle relative, SaWManWindowRelation relation)
+               SaWManWindowHandle relative, SaWManWindowRelation relation)
 {
     ApplicationManager* appMan = (ApplicationManager*) context;
     return appMan->windowRestack(handle, relative, relation);
@@ -135,7 +136,7 @@ ApplicationManager::ApplicationManager(Compositor* compositor)
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Creating SaWManager.\n");
     if (_saw->CreateManager(_saw, &_callbacks, this, &_manager) != DR_OK)
         ILOG_THROW(ILX_APPLICATIONMANAGER,
-                "Unable to create SaWMan manager!\n");
+                   "Unable to create SaWMan manager!\n");
 
     initApps();
 }
@@ -258,7 +259,7 @@ DirectResult
 ApplicationManager::startApplication(const std::string& name)
 {
     ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-            "%s( name %s )\n", __FUNCTION__, name.c_str());
+               "%s( name %s )\n", __FUNCTION__, name.c_str());
 
     AppInfo* appInfo = infoByName(name);
     if (!appInfo)
@@ -271,7 +272,8 @@ ApplicationManager::startApplication(const std::string& name)
     if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE)
             && !waitpid(instance->pid(), NULL, WNOHANG))
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+        ILOG_DEBUG(
+                ILX_APPLICATIONMANAGER,
                 "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
         _compositor->handleViewRequest(instance);
         return DR_BUSY;
@@ -316,7 +318,7 @@ ApplicationManager::startApplication(const std::string& name)
 
             while (i++ < arC)
                 ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-                        "  -> ARG: %d - %s\n", i - 1, args[i - 1]);
+                           "  -> ARG: %d - %s\n", i - 1, args[i - 1]);
 
             execvp(args[0], (char**) args);
         } else
@@ -370,7 +372,7 @@ ApplicationManager::stopApplication(pid_t pid)
     } else
     {
         ILOG_ERROR(ILX_APPLICATIONMANAGER,
-                "Could not find an application with pid[%d]!", pid);
+                   "Could not find an application with pid[%d]!", pid);
         return DR_ITEMNOTFOUND;
     }
 }
@@ -384,7 +386,8 @@ ApplicationManager::stopAll()
     {
         AppInstance* instance = _instances.front();
         AppInfo* info = infoByAppID(instance->appID());
-        ILOG_DEBUG( ILX_APPLICATIONMANAGER,
+        ILOG_DEBUG(
+                ILX_APPLICATIONMANAGER,
                 "  -> Killing %s[%d]...\n", info->name().c_str(), instance->pid());
 
         kill(instance->pid(), SIGKILL);
@@ -398,8 +401,9 @@ DirectResult
 ApplicationManager::processAdded(SaWManProcess *process)
 {
     ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-            "%s( process %p )\n", __FUNCTION__, process);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+               "%s( process %p )\n", __FUNCTION__, process);
+    ILOG_DEBUG(
+            ILX_APPLICATIONMANAGER,
             "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
 
     if (process->fusion_id == 1)
@@ -410,7 +414,7 @@ ApplicationManager::processAdded(SaWManProcess *process)
         return DR_OK;
 
     ILOG_WARNING(ILX_APPLICATIONMANAGER,
-            "Process[%d] is not recognized!\n", process->pid);
+                 "Process[%d] is not recognized!\n", process->pid);
     kill(process->pid, SIGKILL);
     return DR_ITEMNOTFOUND;
 }
@@ -419,8 +423,9 @@ DirectResult
 ApplicationManager::processRemoved(SaWManProcess *process)
 {
     ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-            "%s( process %p )\n", __FUNCTION__, process);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+               "%s( process %p )\n", __FUNCTION__, process);
+    ILOG_DEBUG(
+            ILX_APPLICATIONMANAGER,
             "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
 
     pthread_mutex_lock(&_mutex);
@@ -462,7 +467,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-            "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+               "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (!instance)
@@ -484,7 +489,7 @@ ApplicationManager::windowRemoved(SaWManWindowInfo *info)
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-            "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+               "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
@@ -501,8 +506,9 @@ DirectResult
 ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 {
     ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-            "%s( reconfig %p )\n", __FUNCTION__, reconfig);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+               "%s( reconfig %p )\n", __FUNCTION__, reconfig);
+    ILOG_DEBUG(
+            ILX_APPLICATIONMANAGER,
             "  -> Window [%lu] Flags [0x%04x]\n", reconfig->handle, reconfig->flags);
 
     SaWManProcess process;
@@ -520,7 +526,7 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
                 && (reconfig->flags & SWMCF_POSITION))
         {
             ILOG_WARNING(ILX_APPLICATIONMANAGER,
-                    "SWMCF_POSITION not allowed!\n");
+                         "SWMCF_POSITION not allowed!\n");
             reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags
                     & ~SWMCF_POSITION);
         }
@@ -534,7 +540,8 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 
 DirectResult
 ApplicationManager::windowRestack(SaWManWindowHandle handle,
-        SaWManWindowHandle relative, SaWManWindowRelation relation)
+                                  SaWManWindowHandle relative,
+                                  SaWManWindowRelation relation)
 {
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, handle, &process);
@@ -563,127 +570,162 @@ ApplicationManager::windowRestack(SaWManWindowHandle handle,
 }
 
 void
-ApplicationManager::addApplication(const char* name, const char* path,
-        const char* args, const char* icon, const char* licence,
-        const char* author, int version, AppFlags appFlags,
-        DependencyFlags depFlags)
+ApplicationManager::initApps()
+{
+    std::vector<std::string> files;
+    files = FileSystem::listDirectory(ILIXI_DATADIR"apps");
+
+    for (unsigned int i = 0; i < files.size(); ++i)
+    {
+        if (files[i].find(".appdef") != std::string::npos)
+            parseAppDef(files[i].c_str());
+    }
+}
+
+bool
+ApplicationManager::parseAppDef(const char* file)
+{
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Parsing appdef file: %s\n", file);
+    xmlParserCtxtPtr ctxt;
+    xmlDocPtr doc;
+    std::string filePath = ILIXI_DATADIR"apps/";
+    filePath.append(file);
+
+    ctxt = xmlNewParserCtxt();
+    if (ctxt == NULL)
+    {
+        ILOG_ERROR(ILX_APPLICATIONMANAGER,
+                   "Failed to allocate parser context\n");
+        return false;
+    }
+
+    doc = xmlCtxtReadFile(
+            ctxt,
+            filePath.c_str(),
+            NULL,
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
+                    | XML_PARSE_NOBLANKS);
+
+    if (doc == NULL)
+    {
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_APPLICATIONMANAGER,
+                   "Failed to parse appdef: %s\n", file);
+        return false;
+    }
+
+    if (ctxt->valid == 0)
+    {
+        xmlFreeDoc(doc);
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_APPLICATIONMANAGER,
+                   "Failed to validate appdef: %s\n", file);
+        return false;
+    }
+
+    xmlNodePtr root = xmlDocGetRootElement(doc);
+    xmlNodePtr group = root->xmlChildrenNode;
+
+    xmlChar* name;
+    xmlChar* author;
+    xmlChar* licence;
+    xmlChar* category;
+    xmlChar* version;
+    xmlChar* icon;
+    xmlChar* exec;
+    xmlChar* args;
+    xmlChar* appFlags;
+    xmlChar* depFlags;
+
+    while (group != NULL)
+    {
+
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " Parsing %s...\n", group->name);
+
+        if (xmlStrcmp(group->name, (xmlChar*) "name") == 0)
+            name = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "author") == 0)
+            author = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "licence") == 0)
+            licence = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "category") == 0)
+            category = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "version") == 0)
+            version = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "icon") == 0)
+            icon = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "exec") == 0)
+            exec = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "args") == 0)
+            args = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "flags") == 0)
+            appFlags = xmlNodeGetContent(group->children);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "deps") == 0)
+            depFlags = xmlNodeGetContent(group->children);
+
+        group = group->next;
+    }
+
+    ILOG_INFO(ILX_APPLICATIONMANAGER, "Parsed appdef file: %s\n", file);
+
+    addApplication((const char*) name, (const char*) author,
+                   (const char*) licence, (const char*) category,
+                   (const char*) version, (const char*) icon,
+                   (const char*) exec, (const char*) args,
+                   (const char*) appFlags, (const char*) depFlags);
+
+    xmlFree(name);
+    xmlFree(author);
+    xmlFree(licence);
+    xmlFree(category);
+    xmlFree(version);
+    xmlFree(icon);
+    xmlFree(exec);
+    xmlFree(args);
+    xmlFree(appFlags);
+    xmlFree(depFlags);
+
+    xmlFreeDoc(doc);
+    xmlFreeParserCtxt(ctxt);
+
+    return true;
+}
+
+void
+ApplicationManager::addApplication(const char* name, const char* author,
+                                   const char* licence, const char* category,
+                                   const char* version, const char* icon,
+                                   const char* exec, const char* args,
+                                   const char* appFlags, const char* depFlags)
 {
     if (infoByName(name))
         return;
 
     AppInfo* app = new AppInfo();
-    app->setAppFlags(appFlags);
-    app->setArgs(args);
-    app->setAuthor(author);
-    app->setDepFlags(depFlags);
-    app->setIcon(icon);
-    app->setLicence(licence);
     app->setName(name);
-    app->setPath(path);
+
+    app->setAuthor(author);
+    app->setLicence(licence);
+    app->setCategory(category);
     app->setVersion(version);
-
+    if (icon)
+        app->setIcon(icon);
+    if (exec)
+        app->setPath(exec);
+    if (args)
+        app->setArgs(args);
+    app->setAppFlags(appFlags);
+    app->setDepFlags(depFlags);
     _infos.push_back(app);
-}
-
-void
-ApplicationManager::initApps()
-{
-    // statusbar
-    addApplication("StatusBar", "ilixi_statusbar", "",
-            ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
-            "Andreas Shimokawa", 1, APP_STATUSBAR, DEP_MOUSE);
-
-    // dfb-examples
-    addApplication("Windows", "df_window", "",
-            ILIXI_DATADIR"compositor/input.png", "MIT", "Andreas Shimokawa", 1,
-            (AppFlags) (APP_NO_MAINWINDOW | APP_NEEDS_CLEAR
-                    | APP_ALLOW_WINDOW_CONFIG), DEP_MOUSE);
-
-    addApplication("Fire", "df_fire", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/input.png", "MIT", "Andreas Shimokawa", 1,
-            APP_NEEDS_CLEAR, DEP_MOUSE);
-
-    addApplication("Neo", "df_neo", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/neo.png", "MIT", "Andreas Shimokawa", 1,
-            APP_NONE, DEP_NONE);
-
-    addApplication("Inputs", "df_input", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/input.png", "MIT", "Andreas Shimokawa", 1,
-            APP_NEEDS_CLEAR, DEP_NONE);
-
-    addApplication("Matrix", "df_matrix", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/matrix.png", "MIT", "Andreas Shimokawa", 1,
-            APP_NEEDS_CLEAR, DEP_NONE);
-
-    addApplication("Knuckles", "df_knuckles", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/knuckles.png", "MIT", "Andreas Shimokawa",
-            1, APP_NEEDS_CLEAR, DEP_NONE);
-
-    addApplication("Particle", "df_particle", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/particle.png", "MIT", "Andreas Shimokawa",
-            1, APP_NONE, DEP_NONE);
-
-    // lite
-    addApplication("DFBTerm", "dfbterm", "",
-            ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa",
-            1, (AppFlags) (APP_LITE | APP_ALLOW_MULTIPLE | APP_NEEDS_CLEAR),
-            DEP_NONE);
-
-    addApplication("ListTest", "lite_listtest", "",
-            ILIXI_DATADIR"compositor/dfbterm.png", "MIT", "Andreas Shimokawa",
-            1, APP_LITE, DEP_NONE);
-
-    // ilixi
-    addApplication("Gallery", "ilixi_demo1", "",
-            ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
-            "Andreas Shimokawa", 1, APP_ILIXI, DEP_MOUSE);
-
-    addApplication("Carousel", "ilixi_carousel", "",
-            ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
-            "Andreas Shimokawa", 1, APP_ILIXI, DEP_MOUSE);
-
-    addApplication("SoundMixer", "ilixi_mixer", "--fd:remote=%1",
-            ILIXI_DATADIR"compositor/gallery.png", "LGPLv3",
-            "Andreas Shimokawa", 1, (AppFlags) (APP_ILIXI | APP_NEEDS_CLEAR),
-            DEP_MOUSE);
-
-    // others
-    addApplication("Video Player", "dfbtest_video",
-            ILIXI_DATADIR"compositor/demo.mp4 -f RGB32 -l --dfb:force-windowed",
-            ILIXI_DATADIR"compositor/player.png", "LGPLv3", "Andreas Shimokawa",
-            1, APP_ILIXI, DEP_MOUSE);
-
-    addApplication("ClanBomber 2", "clanbomber2", "--dfb:force-windowed",
-            ILIXI_DATADIR"compositor/clanbomber2.png", "LGPLv3",
-            "Andreas Shimokawa", 1, APP_NONE, DEP_MOUSE);
-
-    // Check if installed
-    addApplication("QML Viewer", "qmlviewer", "-qws -display directfb",
-            ILIXI_DATADIR"compositor/qt-qml.png", "GPL", "Andreas Shimokawa", 1,
-            APP_QT, DEP_MOUSE);
-
-addApplication("WebKitDFB", "lite_WebKit", "",
-        ILIXI_DATADIR"compositor/webkitdfb.png", "LGPLv3", "Andreas Shimokawa",
-        1, APP_LITE, DEP_MOUSE);
-
-#ifdef ILIXI_STEREO_OUTPUT
-addApplication("Texture", "df_texture3d", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NEEDS_CLEAR, DEP_NONE);
-
-addApplication("Penguins", "df_andi3d", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
-#else
-addApplication("Texture", "df_texture", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/texture.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NEEDS_CLEAR, DEP_NONE);
-
-addApplication("Penguins", "df_andi", "--dfb:force-windowed",
-        ILIXI_DATADIR"compositor/andi.png", "MIT", "Andreas Shimokawa", 1,
-        APP_NONE, DEP_NONE);
-#endif
-
 }
 
 } /* namespace ilixi */

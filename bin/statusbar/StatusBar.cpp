@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -28,36 +28,9 @@
 #include <core/Logger.h>
 #include <sigc++/sigc++.h>
 #include <string.h>
+#include "Clock.h"
 
 D_DEBUG_DOMAIN( ILX_STATUSBAR, "ilixi/StatusBar", "StatusBar");
-
-const char* days[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-
-const char* months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-        "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-DateThread::DateThread(StatusBar* parent)
-        : Thread(), _parent(parent)
-{
-}
-
-DateThread::~DateThread()
-{
-}
-
-int
-DateThread::run()
-{
-    while (1)
-    {
-        pthread_testcancel();
-        _parent->updateTime();
-        sleep(1);
-    }
-    return 0;
-}
-
-//*********************************************************
 
 void
 volumeListener(void* ctx, void* arg)
@@ -70,77 +43,59 @@ volumeListener(void* ctx, void* arg)
 }
 
 StatusBar::StatusBar(int argc, char* argv[])
-        : Application(&argc, &argv, OptStatusBar), _dateThread(NULL)
+        : Application(&argc, &argv, (AppOptions) (OptStatusBar | OptDale))
 {
     setTitle("StatusBar");
     setBackgroundFilled(true);
-    setMargins(5, 5, 10, 5);
+    setMargins(0, 0, 10, 10);
     HBoxLayout* mainLayout = new HBoxLayout();
     mainLayout->setVerticalAlignment(Alignment::Middle);
+    mainLayout->setSpacing(0);
     setLayout(mainLayout);
 
     _app = new Label("dfb_ilixi");
     _app->setLayoutAlignment(TextLayout::Left);
-    _app->setXConstraint(ExpandingConstraint);
-    _app->setFont(new Font(ILIXI_DATADIR"fonts/decker.ttf", 36));
+    _app->setFont(new Font("decker", 36));
     addWidget(_app);
 
+    addWidget(new Clock());
+
     _volume = new Label("  0  ");
-    _volume->setXConstraint(ExpandingConstraint);
     _volume->setLayoutAlignment(TextLayout::Left);
-    _volume->setFont(new Font(ILIXI_DATADIR"fonts/decker.ttf", 36));
+    _volume->setFont(new Font("decker", 36));
     addWidget(_volume);
-
-    _time = new Label("00:00:00");
-    _date = new Label("Fri 18 Nove");
-
-    VBoxLayout* dateBox = new VBoxLayout();
-    dateBox->addWidget(_time);
-    dateBox->addWidget(_date);
-    addWidget(dateBox);
 
     sigVisible.connect(sigc::mem_fun(this, &StatusBar::onShow));
     sigHidden.connect(sigc::mem_fun(this, &StatusBar::onHide));
 
-    _dateThread = new DateThread(this);
+    _bg = new Image(ILIXI_DATADIR"/images/statusbar_bg.png");
+    tl = Rectangle(0, 0, 32, 32);
+    tm = Rectangle(32, 0, 1, 32);
+    tr = Rectangle(33, 0, 32, 32);
+    l = Rectangle(0, 32, 32, 1);
+    m = Rectangle(32, 32, 1, 1);
+    r = Rectangle(33, 32, 32, 1);
+    bl = Rectangle(0, 33, 32, 32);
+    bm = Rectangle(32, 33, 1, 32);
+    br = Rectangle(33, 33, 32, 32);
 }
 
 StatusBar::~StatusBar()
 {
-    delete _dateThread;
+    delete _bg;
 }
 
 void
 StatusBar::onHide()
 {
-    _dateThread->cancel();
     _soundComponent->Release(_soundComponent);
 }
 
 void
 StatusBar::onShow()
 {
-    _dateThread->start();
     comaGetComponent("SoundComponent", &_soundComponent);
     _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
-}
-
-void
-StatusBar::updateTime()
-{
-    struct timeval tv;
-    struct tm* tm;
-    gettimeofday(&tv, NULL);
-    tm = localtime(&tv.tv_sec);
-
-    char time[9];
-    sprintf(time, "%02d:%02d:%02d", tm->tm_hour, tm->tm_min, tm->tm_sec);
-    _time->setText(time);
-
-    char date[12];
-    sprintf(date, "%s %d %s ", days[tm->tm_wday], tm->tm_mday,
-            months[tm->tm_mon]);
-    _date->setText(date);
 }
 
 void
@@ -148,10 +103,43 @@ StatusBar::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    painter.setBrush(Color(60, 60, 60, 127));
-    painter.fillRectangle(0, 0, width(), height());
-    painter.setPen(Color(0, 0, 0));
-    painter.drawRectangle(0, 0, width(), height());
+
+    int w = width();
+    int h = height();
+    int midWidth = w - tl.width() - tr.width();
+    int midHeight = h - bl.height();
+    int midY = tl.height();
+    int by = h - bl.height();
+
+    // top
+    painter.blitImage(_bg, tl, 0, 0);
+    painter.setClip(tl.width(), 0, midWidth, bm.height());
+    painter.tileImage(_bg, tl.width(), 0, tm);
+    painter.resetClip();
+    painter.blitImage(_bg, tr, w - tr.width(), 0);
+
+    // left
+    painter.setClip(0, midY, l.width(), midHeight);
+    painter.tileImage(_bg, 0, midY, l);
+    painter.resetClip();
+
+    // right
+    painter.setClip(w - r.width(), midY, r.width(), midHeight);
+    painter.tileImage(_bg, w - r.width(), midY, r);
+    painter.resetClip();
+
+    // mid
+    painter.setClip(l.width(), midY, midWidth, midHeight);
+    painter.tileImage(_bg, l.width(), midY, m);
+    painter.resetClip();
+
+//    // bottom
+//    painter.blitImage(_bg, bl, 0, by);
+//    painter.setClip(bl.width(), by, midWidth, bm.height());
+//    painter.tileImage(_bg, bl.width(), by, bm);
+//    painter.resetClip();
+//    painter.blitImage(_bg, br, w - br.width(), by);
+
     painter.end();
 }
 

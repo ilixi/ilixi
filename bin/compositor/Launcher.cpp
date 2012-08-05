@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -31,89 +31,92 @@
 namespace ilixi
 {
 
-  Launcher::Launcher(Compositor* parent) :
-      Widget(parent), _compositor(parent)
-  {
+Launcher::Launcher(Compositor* parent)
+        : Widget(parent),
+          _compositor(parent)
+{
     setInputMethod(PointerInput);
 
-    _font = new Font(ILIXI_DATADIR"compositor/verabd.ttf");
+    _font = new Font("decker");
     _font->setSize(12);
-    _font->setAttributes(DFFA_STYLE_BOLD);
+    _font->setStyle(Font::Bold);
 
     sigGeometryUpdated.connect(
-        sigc::mem_fun(this, &Launcher::updateLauncherGeometry));
+            sigc::mem_fun(this, &Launcher::updateLauncherGeometry));
 
     initButtons();
-  }
+}
 
-  Launcher::~Launcher()
-  {
+Launcher::~Launcher()
+{
     ILOG_DEBUG(ILX, "~Launcher %p\n", this);
-  }
+}
 
-  Size
-  Launcher::preferredSize() const
-  {
+Size
+Launcher::preferredSize() const
+{
     return Size(_children.size() * 96, _children.size() * 96);
-  }
+}
 
-  void
-  Launcher::addButton(const std::string& name, const std::string& icon)
-  {
+void
+Launcher::addButton(const std::string& name, const std::string& icon)
+{
     LauncherButton* button = new LauncherButton(name, this);
     button->setFont(_font);
     button->setIcon(icon, Size(96, 96));
     addChild(button);
 
     button->sigClicked.connect(
-        sigc::bind<std::string>(
-            sigc::mem_fun(_compositor->appMan(), &ApplicationManager::startApp),
-            name));
-  }
+            sigc::bind<std::string>(
+                    sigc::mem_fun(_compositor->appMan(),
+                                  &ApplicationManager::startApp),
+                    name));
+}
 
-  void
-  Launcher::initButtons()
-  {
+void
+Launcher::initButtons()
+{
     AppInfoList list = _compositor->appMan()->applicationList();
 
     for (AppInfoList::iterator it = list.begin(); it != list.end(); ++it)
-      addButton(((AppInfo*) *it)->name(), ((AppInfo*) *it)->icon());
-  }
+        if (!(((AppInfo*) *it)->appFlags() & APP_SYSTEM))
+            addButton(((AppInfo*) *it)->name(), ((AppInfo*) *it)->icon());
+}
 
-  void
-  Launcher::compose(const PaintEvent& event)
-  {
+void
+Launcher::compose(const PaintEvent& event)
+{
     Painter p(this);
     p.begin(event);
     p.setBrush(Color(0, 0, 0, 120));
     p.fillRectangle(0, 0, width(), height());
     p.end();
-  }
+}
 
-  void
-  Launcher::updateLauncherGeometry()
-  {
+void
+Launcher::updateLauncherGeometry()
+{
     int hOffset = (height() - 390) / 2;
     int wC = width() / 130.0;
     int xOffset = (width() - (wC * 130)) / 2;
     if (wC)
-      {
+    {
         int y = -1;
         int i = 0;
         for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it, ++i)
-          {
+                ++it, ++i)
+        {
             if (i % wC == 0)
-              y++;
+                y++;
             LauncherButton* button = dynamic_cast<LauncherButton*>(*it);
             if (button)
-              {
+            {
 
                 button->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
                 button->setSize(120, 120);
-              }
-          }
-      }
-  }
+            }
+        }
+    }
+}
 
 } /* namespace ilixi */

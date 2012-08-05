@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
+-->
+<!DOCTYPE app SYSTEM "application.dtd">
+<app>
+    <name>WebKitDFB</name>
+    <author>Denis Oliver Kropp</author>
+    <licence>LGPLv3</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:webkitdfb.png</icon>
+    <exec>lite_WebKit</exec>
+    <args></args>
+    <flags>APP_LITE</flags>
+    <deps>DEP_MOUSE</deps>
+</app>

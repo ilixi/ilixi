@@ -1,5 +1,5 @@
 /*
- Copyright 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -25,27 +25,10 @@
 #define STATUSBAR_H_
 
 #include "ui/Application.h"
-#include "core/Thread.h"
 #include "ui/Label.h"
 #include "ui/ToolButton.h"
 
 using namespace ilixi;
-
-class StatusBar;
-
-class DateThread : public Thread
-{
-public:
-    DateThread(StatusBar* parent);
-
-    ~DateThread();
-
-    int
-    run();
-
-private:
-    StatusBar* _parent;
-};
 
 class StatusBar : public Application
 {
@@ -61,21 +44,26 @@ public:
     virtual void
     onShow();
 
-    void
-    updateTime();
-
 private:
     unsigned int _currentAppID;
     Label* _app;
-    Label* _time;
-    Label* _date;
+
     Label* _volume;
 
-    DateThread* _dateThread;
     ToolButton* _home;
     ToolButton* _shutdown;
 
     IComaComponent* _soundComponent;
+    Image* _bg;
+    Rectangle tl;
+    Rectangle tm;
+    Rectangle tr;
+    Rectangle l;
+    Rectangle m;
+    Rectangle r;
+    Rectangle bl;
+    Rectangle bm;
+    Rectangle br;
 
     virtual void
     compose(const PaintEvent& event);

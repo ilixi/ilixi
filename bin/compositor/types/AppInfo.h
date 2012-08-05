@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -60,7 +60,8 @@ enum AppFlags
     APP_ALLOW_MULTIPLE = 0x100000, //!<
     APP_NEEDS_CLEAR = 0x200000,
 
-    APP_STATUSBAR = 0x800000
+    APP_STATUSBAR = 0x400000,
+    APP_SYSTEM = 0x800000
 };
 
 enum DependencyFlags
@@ -86,9 +87,6 @@ public:
     AppFlags
     appFlags() const;
 
-    void
-    setAppFlags(AppFlags appFlags);
-
     AppID
     appID() const;
 
@@ -97,6 +95,9 @@ public:
 
     std::string
     author() const;
+
+    std::string
+    category() const;
 
     DependencyFlags
     depFlags() const;
@@ -126,7 +127,16 @@ public:
     setAuthor(const std::string& author);
 
     void
+    setAppFlags(AppFlags appFlags);
+
+    void
+    setAppFlags(const std::string& appFlags);
+
+    void
     setDepFlags(DependencyFlags depFlags);
+
+    void
+    setDepFlags(const std::string& depFlags);
 
     void
     setIcon(const std::string& icon);
@@ -143,6 +153,12 @@ public:
     void
     setVersion(int version);
 
+    void
+    setVersion(const std::string& version);
+
+    void
+    setCategory(const std::string& category);
+
 private:
     AppID _appID;
     std::string _name;
@@ -151,6 +167,7 @@ private:
     std::string _icon;
     std::string _licence;
     std::string _author;
+    std::string _category;
     int _version;
     AppFlags _appFlags;
     DependencyFlags _depFlags;

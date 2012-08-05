@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -30,15 +30,15 @@
 
 namespace ilixi
 {
-  class Compositor;
+class Compositor;
 
-  typedef std::list<AppInfo*> AppInfoList;
-  typedef std::list<AppInstance*> AppInstanceList;
+typedef std::list<AppInfo*> AppInfoList;
+typedef std::list<AppInstance*> AppInstanceList;
 
-  class ApplicationManager
-  {
+class ApplicationManager
+{
 
-  public:
+public:
     ApplicationManager(Compositor* compositor);
 
     virtual
@@ -83,7 +83,7 @@ namespace ilixi
     void
     stopAll();
 
-  protected:
+protected:
 
     /*!
      * Called when a DirectFB process starts.
@@ -126,9 +126,9 @@ namespace ilixi
      */
     virtual DirectResult
     windowRestack(SaWManWindowHandle handle, SaWManWindowHandle relative,
-        SaWManWindowRelation relation);
+                  SaWManWindowRelation relation);
 
-  private:
+private:
     Compositor* _compositor;
     AppInfoList _infos;
     AppInstanceList _instances;
@@ -142,10 +142,14 @@ namespace ilixi
     void
     initApps();
 
+    bool
+    parseAppDef(const char* file);
+
     void
-    addApplication(const char* name, const char* path, const char* args,
-        const char* icon, const char* licence, const char* author, int version,
-        AppFlags appFlags, DependencyFlags depFlags = DEP_NONE);
+    addApplication(const char* name, const char* author, const char* licence,
+                   const char* category, const char* version, const char* icon,
+                   const char* exec, const char* args, const char* appFlags,
+                   const char* depFlags);
 
     // SaWMan callbacks...
     friend DirectResult
@@ -174,8 +178,8 @@ namespace ilixi
 
     friend DirectResult
     window_restack(void *context, SaWManWindowHandle handle,
-        SaWManWindowHandle relative, SaWManWindowRelation relation);
-  };
+                   SaWManWindowHandle relative, SaWManWindowRelation relation);
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPLICATIONMANAGER_H_ */

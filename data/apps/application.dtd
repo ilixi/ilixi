@@ -1,0 +1,11 @@
+<!ELEMENT app (name, author, licence, category, version, icon, exec, args, flags, deps)>
+	<!ELEMENT name 		(#PCDATA)>
+	<!ELEMENT author 	(#PCDATA)>
+	<!ELEMENT licence 	(#PCDATA)>
+	<!ELEMENT category 	(#PCDATA)>
+	<!ELEMENT version 	(#PCDATA)>
+	<!ELEMENT icon 		(#PCDATA)>
+	<!ELEMENT exec 		(#PCDATA)>
+	<!ELEMENT args 		(#PCDATA)>
+	<!ELEMENT flags 	(#PCDATA)>
+	<!ELEMENT deps 		(#PCDATA)>

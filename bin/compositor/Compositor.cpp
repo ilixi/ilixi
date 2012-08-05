@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -36,16 +36,23 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/compositor", "Compositor");
 
 Compositor::Compositor(int argc, char* argv[])
-        : Application(&argc, &argv, OptExclusive), _appMan(NULL), _currentApp(
-                NULL), _switcher(NULL), _launcher(NULL), _homeButton(NULL), _switchButton(
-                NULL), _quitButton(NULL), _fpsLabel(NULL), _fps(NULL)
+        : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale)),
+          _appMan(NULL),
+          _currentApp(NULL),
+          _switcher(NULL),
+          _launcher(NULL),
+          _homeButton(NULL),
+          _switchButton(NULL),
+          _quitButton(NULL),
+          _fpsLabel(NULL),
+          _fps(NULL)
 {
     _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
     _popupComp = new PopupComponent(this);
 
     setTitle("Compositor");
-    setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
+//    setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
     setMargin(0);
 
     _launcher = new Launcher(this);
@@ -82,7 +89,7 @@ Compositor::Compositor(int argc, char* argv[])
     _homeButton->setZ(5);
     _homeButton->sigPressed.connect(
             sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showLauncher),
-                    true));
+                             true));
     addWidget(_homeButton);
 
     _switchButton = new SwitchButton("comp_switch.png");
@@ -90,7 +97,7 @@ Compositor::Compositor(int argc, char* argv[])
     _switchButton->setVisible(false);
     _switchButton->sigPressed.connect(
             sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showSwitcher),
-                    true));
+                             true));
     addWidget(_switchButton);
 
     _quitButton = new QuitButton("comp_quit.png");
@@ -236,11 +243,11 @@ Compositor::getWindow(DFBWindowID id)
     {
         IDirectFBDisplayLayer* layer;
         DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY,
-                &layer);
+                                                  &layer);
         if (ret)
         {
             ILOG_ERROR( ILX_COMPOSITOR,
-                    "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
+                       "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
             return NULL;
         }
 
@@ -250,7 +257,7 @@ Compositor::getWindow(DFBWindowID id)
         {
             layer->Release(layer);
             ILOG_ERROR( ILX_COMPOSITOR,
-                    "Error! GetWindow: %s", DirectFBErrorString(ret));
+                       "Error! GetWindow: %s", DirectFBErrorString(ret));
             return NULL;
         }
         layer->Release(layer);
@@ -285,7 +292,7 @@ Compositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 
 void
 Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-        const SaWManWindowInfo* info)
+                         const SaWManWindowInfo* info)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %lu )\n", __FUNCTION__, info->win_id);
 
@@ -304,7 +311,7 @@ Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
 
 void
 Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
-        int order, DFBWindowID other)
+                          int order, DFBWindowID other)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -397,7 +404,8 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     data->instance->setView(
                             new AppView(this, data->instance, this));
-                    data->instance->view()->setGeometry(0, 0, width(), 80);
+                    data->instance->view()->setGeometry(100, height() - 50,
+                                                        width() - 200, 50);
                     addWidget(data->instance->view());
 //                    data->instance->view()->setNeighbour(Down, _switcher);
                     data->instance->view()->setZ(0);
@@ -411,7 +419,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         data->instance->setView(
                                 new AppView(this, data->instance, this));
                         data->instance->view()->setGeometry(0, 0, width(),
-                                height());
+                                                            height());
                         addWidget(data->instance->view());
                         data->instance->view()->setNeighbour(Down, _switcher);
                         data->instance->view()->setZ(-5);
@@ -449,10 +457,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 ILOG_DEBUG(ILX_COMPOSITOR, "CET_CONFIG (%d)\n", data->windowID);
 
                 data->instance->view()->onWindowConfig(data->windowID,
-                        data->reconfig);
+                                                       data->reconfig);
                 if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
-                            data->reconfig);
+                                                            data->reconfig);
 
                 delete data->reconfig;
             }
@@ -464,12 +472,12 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
         case CET_Restack:
             {
                 ILOG_DEBUG(ILX_COMPOSITOR,
-                        "CET_Restack (%d)\n", data->windowID);
+                           "CET_Restack (%d)\n", data->windowID);
                 data->instance->view()->onWindowConfig(data->windowID,
-                        data->reconfig);
+                                                       data->reconfig);
                 if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
-                            data->reconfig);
+                                                            data->reconfig);
 
                 delete data->reconfig;
             }

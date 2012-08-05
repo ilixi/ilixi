@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
+-->
+<!DOCTYPE app SYSTEM "application.dtd">
+<app>
+    <name>Inputs</name>
+    <author>Denis Oliver Kropp</author>
+    <licence>MIT</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:input.png</icon>
+    <exec>df_input</exec>
+    <args>--dfb:force-windowed</args>
+    <flags>APP_NEEDS_CLEAR</flags>
+    <deps>DEP_NONE</deps>
+</app>

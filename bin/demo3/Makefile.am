@@ -5,7 +5,5 @@ ilixi_demo3_CPPFLAGS 	= 	-I$(top_srcdir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
 ilixi_demo3_CFLAGS		=	$(AM_CFLAGS)
 ilixi_demo3_SOURCES		= 	Demo3.h \
                               Demo3.cpp \
-                              LineInput.h \
-                              LineInput.cpp \
 						WebView.h \
 						WebView.cpp

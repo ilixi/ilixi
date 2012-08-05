@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -33,7 +33,7 @@ namespace ilixi
   {
     setInputMethod(KeyAndPointerInput);
     setToolButtonStyle(ToolButton::IconAboveText);
-    setZ(3);
+//    setZ(3);
   }
 
   LauncherButton::~LauncherButton()
@@ -43,31 +43,31 @@ namespace ilixi
   void
   LauncherButton::enterEvent(const PointerEvent& event)
   {
-    setZ(6);
+//    setZ(6);
     update();
   }
 
   void
   LauncherButton::leaveEvent(const PointerEvent& event)
   {
-    setZ(3);
+//    setZ(3);
     update();
   }
 
-  void
-  LauncherButton::compose(const PaintEvent& event)
-  {
-    Painter p(this);
-    p.begin(event);
-    if (state() & FocusedState)
-      p.setBrush(Color(51, 102, 255));
-    else if (state() & PressedState)
-      p.setBrush(Color(128, 128, 128));
-    else
-      p.setBrush(Color(255, 255, 255));
-    p.setFont(*font());
-    p.drawLayout(_layout);
-    p.end();
-  }
+//  void
+//  LauncherButton::compose(const PaintEvent& event)
+//  {
+//    Painter p(this);
+//    p.begin(event);
+//    if (state() & FocusedState)
+//      p.setBrush(Color(51, 102, 255));
+//    else if (state() & PressedState)
+//      p.setBrush(Color(128, 128, 128));
+//    else
+//      p.setBrush(Color(255, 255, 255));
+//    p.setFont(*font());
+//    p.drawLayout(_layout);
+//    p.end();
+//  }
 
 } /* namespace ilixi */

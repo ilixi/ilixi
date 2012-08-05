@@ -1,5 +1,5 @@
 /*
- Copyright 2012 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -22,142 +22,281 @@
  */
 
 #include "types/AppInfo.h"
+#include <core/Logger.h>
+#include <ilixiConfig.h>
+#include <stdlib.h>
+#include <string.h>
 
 namespace ilixi
 {
 
-  unsigned int AppInfo::__appCounter = 0;
+D_DEBUG_DOMAIN( ILX_APPINFO, "ilixi/compositor/AppInfo", "AppInfo");
 
-  AppInfo::AppInfo() :
-      _appID(__appCounter++), _name(""), _path(""), _args(""), _icon(""), _licence(
-          ""), _author(""), _version(0), _appFlags(APP_NONE), _depFlags(
-          DEP_NONE)
-  {
+unsigned int AppInfo::__appCounter = 0;
+
+AppInfo::AppInfo()
+        : _appID(__appCounter++),
+          _name(""),
+          _path(""),
+          _args(""),
+          _icon(""),
+          _licence(""),
+          _author(""),
+          _category("default"),
+          _version(0),
+          _appFlags(APP_NONE),
+          _depFlags(DEP_NONE)
+{
     gettimeofday(&_installTime, NULL);
-  }
+}
 
-  AppInfo::~AppInfo()
-  {
-  }
+AppInfo::~AppInfo()
+{
+}
 
-  AppFlags
-  AppInfo::appFlags() const
-  {
+AppFlags
+AppInfo::appFlags() const
+{
     return _appFlags;
-  }
+}
 
-  AppID
-  AppInfo::appID() const
-  {
+AppID
+AppInfo::appID() const
+{
     return _appID;
-  }
+}
 
-  std::string
-  AppInfo::args() const
-  {
+std::string
+AppInfo::args() const
+{
     return _args;
-  }
+}
 
-  std::string
-  AppInfo::author() const
-  {
+std::string
+AppInfo::author() const
+{
     return _author;
-  }
+}
 
-  DependencyFlags
-  AppInfo::depFlags() const
-  {
+std::string
+AppInfo::category() const
+{
+    return _category;
+}
+
+DependencyFlags
+AppInfo::depFlags() const
+{
     return _depFlags;
-  }
+}
 
-  std::string
-  AppInfo::icon() const
-  {
+std::string
+AppInfo::icon() const
+{
     return _icon;
-  }
+}
 
-  timeval
-  AppInfo::installTime() const
-  {
+timeval
+AppInfo::installTime() const
+{
     return _installTime;
-  }
+}
 
-  std::string
-  AppInfo::licence() const
-  {
+std::string
+AppInfo::licence() const
+{
     return _licence;
-  }
+}
 
-  std::string
-  AppInfo::name() const
-  {
+std::string
+AppInfo::name() const
+{
     return _name;
-  }
+}
 
-  std::string
-  AppInfo::path() const
-  {
+std::string
+AppInfo::path() const
+{
     return _path;
-  }
+}
 
-  int
-  AppInfo::version() const
-  {
+int
+AppInfo::version() const
+{
     return _version;
-  }
+}
 
-  void
-  AppInfo::setAppFlags(AppFlags appFlags)
-  {
+void
+AppInfo::setAppFlags(AppFlags appFlags)
+{
     _appFlags = appFlags;
-  }
+}
 
-  void
-  AppInfo::setArgs(const std::string& args)
-  {
+void
+AppInfo::setAppFlags(const std::string& appFlags)
+{
+    ILOG_DEBUG(ILX_APPINFO, "%s\n", appFlags.c_str());
+    char* pch = strtok(const_cast<char*>(appFlags.c_str()), " ,");
+    while (pch != NULL)
+    {
+        ILOG_DEBUG(ILX_APPINFO, " Token: %s\n", pch);
+        if (strcmp(pch, "APP_NONE") == 0)
+            _appFlags = APP_NONE;
+        else if (strcmp(pch, "APP_LITE") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_LITE);
+        else if (strcmp(pch, "APP_ILIXI") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_ILIXI);
+        else if (strcmp(pch, "APP_QT") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_QT);
+        else if (strcmp(pch, "APP_ANDROID") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_ANDROID);
+        else if (strcmp(pch, "APP_FLASH") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_FLASH);
+        else if (strcmp(pch, "APP_WEB") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_WEB);
+        else if (strcmp(pch, "APP_FLTK") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_FLTK);
+        else if (strcmp(pch, "APP_GTK") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_GTK);
+        else if (strcmp(pch, "APP_X11") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_X11);
+        else if (strcmp(pch, "APP_WM_DEFAULT") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_WM_DEFAULT);
+        else if (strcmp(pch, "APP_WM_SAWMAN") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_WM_SAWMAN);
+        else if (strcmp(pch, "APP_NO_MAINWINDOW") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_NO_MAINWINDOW);
+        else if (strcmp(pch, "APP_SPLASH_WINDOW") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_SPLASH_WINDOW);
+        else if (strcmp(pch, "APP_ALLOW_WINDOW_CONFIG") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_ALLOW_WINDOW_CONFIG);
+        else if (strcmp(pch, "APP_ALLOW_MULTIPLE") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_ALLOW_MULTIPLE);
+        else if (strcmp(pch, "APP_NEEDS_CLEAR") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_NEEDS_CLEAR);
+        else if (strcmp(pch, "APP_STATUSBAR") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
+        else if (strcmp(pch, "APP_SYSTEM") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_SYSTEM);
+        pch = strtok(NULL, " ,");
+    }
+    ILOG_DEBUG(ILX_APPINFO, " _appFlags: %x\n", _appFlags);
+}
+
+void
+AppInfo::setArgs(const std::string& args)
+{
+    if (args.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setArgs( %s )\n", args.c_str());
     _args = args;
-  }
+}
 
-  void
-  AppInfo::setAuthor(const std::string& author)
-  {
+void
+AppInfo::setAuthor(const std::string& author)
+{
     _author = author;
-  }
+}
 
-  void
-  AppInfo::setDepFlags(DependencyFlags depFlags)
-  {
+void
+AppInfo::setDepFlags(DependencyFlags depFlags)
+{
     _depFlags = depFlags;
-  }
+}
 
-  void
-  AppInfo::setIcon(const std::string& icon)
-  {
-    _icon = icon;
-  }
+void
+AppInfo::setDepFlags(const std::string& depFlags)
+{
+    ILOG_DEBUG(ILX_APPINFO, "%s\n", depFlags.c_str());
+    char* pch = strtok(const_cast<char*>(depFlags.c_str()), " ,");
+    while (pch != NULL)
+    {
+        if (strcmp(pch, "DEP_NONE") == 0)
+            _depFlags = DEP_NONE;
+        else if (strcmp(pch, "DEP_3D") == 0)
+            _depFlags = (DependencyFlags) (_depFlags | DEP_3D);
+        else if (strcmp(pch, "DEP_RC") == 0)
+            _depFlags = (DependencyFlags) (_depFlags | DEP_RC);
+        else if (strcmp(pch, "DEP_TOUCH") == 0)
+            _depFlags = (DependencyFlags) (_depFlags | DEP_TOUCH);
+        else if (strcmp(pch, "DEP_MOUSE") == 0)
+            _depFlags = (DependencyFlags) (_depFlags | DEP_MOUSE);
+        pch = strtok(NULL, " ,");
+    }
+    ILOG_DEBUG(ILX_APPINFO, " _depFlags: %x\n", _depFlags);
+}
 
-  void
-  AppInfo::setLicence(const std::string& licence)
-  {
+void
+AppInfo::setIcon(const std::string& icon)
+{
+    if (icon.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setIcon( %s )\n", icon.c_str());
+    size_t found = icon.find("@DATADIR:");
+    if (found != std::string::npos)
+    {
+        _icon = ILIXI_DATADIR"compositor/";
+        _icon.append(icon.substr(found + 9, std::string::npos));
+    } else
+        _icon = icon;
+}
+
+void
+AppInfo::setLicence(const std::string& licence)
+{
+    if (licence.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setLicence( %s )\n", licence.c_str());
     _licence = licence;
-  }
+}
 
-  void
-  AppInfo::setName(const std::string& name)
-  {
+void
+AppInfo::setName(const std::string& name)
+{
+    if (name.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setName( %s )\n", name.c_str());
     _name = name;
-  }
+}
 
-  void
-  AppInfo::setPath(const std::string& path)
-  {
+void
+AppInfo::setPath(const std::string& path)
+{
+    if (path.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setPath( %s )\n", path.c_str());
     _path = path;
-  }
+}
 
-  void
-  AppInfo::setVersion(int version)
-  {
+void
+AppInfo::setVersion(int version)
+{
     _version = version;
-  }
+}
+
+void
+AppInfo::setVersion(const std::string& version)
+{
+    if (version.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setVersion( %s )\n", version.c_str());
+    _version = atoi(version.c_str());
+}
+
+void
+AppInfo::setCategory(const std::string& category)
+{
+    if (category.empty())
+        return;
+
+    ILOG_DEBUG(ILX_APPINFO, "setCategory( %s )\n", category.c_str());
+    _category = category;
+}
 
 } /* namespace ilixi */
