@@ -41,7 +41,7 @@ Stylist::Stylist()
     _palette = new Palette();
     _style = new Style();
     setPaletteFromFile(ILIXI_DATADIR"def_palette.xml");
-    setStyleFromFile(ILIXI_DATADIR"def_style2.xml");
+    setStyleFromFile(ILIXI_DATADIR"def_style.xml");
 }
 
 Stylist::~Stylist()
