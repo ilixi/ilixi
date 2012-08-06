@@ -1,0 +1,11 @@
+<!ELEMENT keyboard (row)>
+
+<!ELEMENT row (key+)>
+	<!ATTLIST row id ID #REQUIRED height CDATA #IMPLIED gap CDATA #IMPLIED>
+
+<!ELEMENT key (symbol*, icon?)>
+	<!ATTLIST key id ID #REQUIRED>
+	<!ELEMENT icon (#PCDATA)>
+
+<!ELEMENT symbol (#PCDATA)>
+	<!ATTLIST symbol states CDATA #REQUIRED>
