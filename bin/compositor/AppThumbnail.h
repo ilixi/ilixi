@@ -25,8 +25,8 @@
 #define ILIXI_APPTHUMBNAIL_H_
 
 #include "AppCompositor.h"
-#include "ui/Label.h"
-#include "lib/TweenAnimation.h"
+#include <ui/Label.h>
+#include <lib/TweenAnimation.h>
 
 namespace ilixi
 {

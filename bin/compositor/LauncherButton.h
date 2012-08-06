@@ -24,20 +24,20 @@
 #ifndef LAUNCHERBUTTON_H_
 #define LAUNCHERBUTTON_H_
 
-#include "ui/ToolButton.h"
+#include <ui/ToolButton.h>
 
 namespace ilixi
 {
 
-  class LauncherButton : public ToolButton
-  {
-  public:
+class LauncherButton : public ToolButton
+{
+public:
     LauncherButton(const std::string& name, Widget* parent = 0);
 
     virtual
     ~LauncherButton();
 
-  protected:
+protected:
     /*!
      * Just updates button.
      */
@@ -49,10 +49,10 @@ namespace ilixi
      */
     virtual void
     leaveEvent(const PointerEvent& event);
-//
-//    void
-//    compose(const PaintEvent& event);
-  };
+
+    void
+    compose(const PaintEvent& event);
+};
 
 } /* namespace ilixi */
 #endif /* LAUNCHERBUTTON_H_ */

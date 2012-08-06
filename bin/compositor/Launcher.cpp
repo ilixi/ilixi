@@ -23,10 +23,9 @@
 
 #include "Launcher.h"
 #include "Compositor.h"
-#include "graphics/Painter.h"
-
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 #include <sigc++/bind.h>
-#include "core/Logger.h"
 
 namespace ilixi
 {
@@ -96,9 +95,9 @@ Launcher::compose(const PaintEvent& event)
 void
 Launcher::updateLauncherGeometry()
 {
-    int hOffset = (height() - 390) / 2;
-    int wC = width() / 130.0;
-    int xOffset = (width() - (wC * 130)) / 2;
+    int hOffset = (height() - 450) / 2;
+    int wC = width() / 150.0;
+    int xOffset = (width() - (wC * 150)) / 2;
     if (wC)
     {
         int y = -1;
@@ -112,8 +111,8 @@ Launcher::updateLauncherGeometry()
             if (button)
             {
 
-                button->moveTo(xOffset + i % wC * 130, hOffset + y * 130);
-                button->setSize(120, 120);
+                button->moveTo(xOffset + i % wC * 150, hOffset + y * 150);
+                button->setSize(145, 145);
             }
         }
     }

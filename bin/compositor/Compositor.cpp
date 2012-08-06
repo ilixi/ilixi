@@ -22,12 +22,12 @@
  */
 
 #include "Compositor.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
-#include "sigc++/bind.h"
 #include "switcher/HorizontalSwitcher.h"
 #include "switcher/CarouselSwitcher.h"
 #include "component/Notification.h"
+#include <graphics/Painter.h>
+#include <core/Logger.h>
+#include <sigc++/bind.h>
 
 using namespace std;
 

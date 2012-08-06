@@ -25,7 +25,7 @@
 #define ILIXI_APPVIEW_H_
 
 #include "AppCompositor.h"
-#include "lib/TweenAnimation.h"
+#include <lib/TweenAnimation.h>
 
 namespace ilixi
 {

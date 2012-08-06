@@ -23,7 +23,7 @@
 
 #include "AppThumbnail.h"
 #include "Compositor.h"
-#include "graphics/Painter.h"
+#include <graphics/Painter.h>
 
 namespace ilixi
 {

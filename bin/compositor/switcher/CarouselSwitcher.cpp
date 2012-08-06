@@ -22,8 +22,8 @@
  */
 
 #include "CarouselSwitcher.h"
-#include "graphics/Painter.h"
-#include "core/Logger.h"
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {

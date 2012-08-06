@@ -27,7 +27,7 @@
 #include <map>
 #include <directfb_windows.h>
 #include <lib/FPSCalculator.h>
-#include "ui/Application.h"
+#include <ui/Application.h>
 #include "Launcher.h"
 #include "HomeButton.h"
 #include "SwitchButton.h"
@@ -115,7 +115,9 @@ private:
     struct CompositorEventData
     {
         CompositorEventData()
-                : instance(NULL), windowID(0), reconfig(0)
+                : instance(NULL),
+                  windowID(0),
+                  reconfig(0)
         {
         }
 
@@ -141,11 +143,11 @@ private:
 
     void
     configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-            const SaWManWindowInfo* info);
+                 const SaWManWindowInfo* info);
 
     void
     restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
-            int order, DFBWindowID other);
+                  int order, DFBWindowID other);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);

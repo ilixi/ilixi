@@ -24,7 +24,7 @@
 #ifndef ILIXI_APPCOMPOSITOR_H_
 #define ILIXI_APPCOMPOSITOR_H_
 
-#include "ui/SurfaceView.h"
+#include <ui/SurfaceView.h>
 #include "types/AppInstance.h"
 extern "C" {
 #include <directfb_windows.h>

@@ -22,7 +22,7 @@
  */
 
 #include "AppView.h"
-#include "core/Logger.h"
+#include <core/Logger.h>
 
 namespace ilixi
 {
@@ -35,14 +35,14 @@ namespace ilixi
   {
     setInputMethod(PointerInput);
 
-    _ani.setDuration(300);
+    _ani.setDuration(500);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
     _ani.sigFinished.connect(sigc::mem_fun(this, &AppView::tweenEndSlot));
 
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 255);
     _ani.addTween(_opacityTween);
 
-    _zoomTween = new Tween(Tween::SINE, Tween::EASE_IN, 0.8, 1);
+    _zoomTween = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0.8, 1);
     _ani.addTween(_zoomTween);
 
     setVisible(false);
@@ -64,7 +64,9 @@ namespace ilixi
         setFocus();
         _opacityTween->setInitialValue(0);
         _opacityTween->setEndValue(255);
-        _zoomTween->setInitialValue(0.8);
+        _opacityTween->setTransition(Tween::SINE);
+        _opacityTween->setEquation(Tween::EASE_OUT);
+        _zoomTween->setInitialValue(0.5);
         _zoomTween->setEndValue(1);
         setOpacity(0);
         setZoomFactor(0.8);
@@ -80,6 +82,8 @@ namespace ilixi
     _ani.stop();
     _opacityTween->setInitialValue(255);
     _opacityTween->setEndValue(0);
+    _opacityTween->setTransition(Tween::SINE);
+    _opacityTween->setEquation(Tween::EASE_OUT);
     _zoomTween->setInitialValue(1);
     _zoomTween->setEndValue(2);
     setOpacity(255);

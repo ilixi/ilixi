@@ -25,7 +25,7 @@
 #define CAROUSELSWITCHER_H_
 
 #include "Switcher.h"
-#include "ui/Carousel.h"
+#include <ui/Carousel.h>
 
 namespace ilixi
 {
