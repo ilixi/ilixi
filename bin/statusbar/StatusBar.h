@@ -24,11 +24,16 @@
 #ifndef STATUSBAR_H_
 #define STATUSBAR_H_
 
-#include "ui/Application.h"
-#include "ui/Label.h"
-#include "ui/ToolButton.h"
+#include <ui/Application.h>
+#include <ui/Label.h>
+#include <ui/ToolButton.h>
+#include <vector>
 
-using namespace ilixi;
+namespace ilixi
+{
+
+class SurfaceView;
+class StatusbarComponent;
 
 class StatusBar : public Application
 {
@@ -44,6 +49,12 @@ public:
     virtual void
     onShow();
 
+    bool
+    addRemoteContent(DFBSurfaceID id);
+
+    bool
+    removeRemoteContent(DFBSurfaceID id);
+
 private:
     unsigned int _currentAppID;
     Label* _app;
@@ -54,6 +65,10 @@ private:
     ToolButton* _shutdown;
 
     IComaComponent* _soundComponent;
+    StatusbarComponent* _statComp;
+
+    std::vector<SurfaceView*> _remoteContent;
+
     Image* _bg;
     Rectangle tl;
     Rectangle tm;
@@ -72,4 +87,5 @@ private:
     volumeListener(void* ctx, void* arg);
 };
 
+}
 #endif /* STATUSBAR_H_ */

@@ -6,5 +6,7 @@ ilixi_statusbar_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLA
 ilixi_statusbar_CFLAGS		=	$(AM_CFLAGS)
 ilixi_statusbar_SOURCES		= 	StatusBar.cpp \
 								StatusBar.h \
+								StatusbarComponent.cpp \
+								StatusbarComponent.h \
 								Clock.h \
 								Clock.cpp

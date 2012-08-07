@@ -24,13 +24,18 @@
 #include "StatusBar.h"
 #include <ui/HBoxLayout.h>
 #include <ui/VBoxLayout.h>
+#include <ui/SurfaceView.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <sigc++/sigc++.h>
 #include <string.h>
 #include "Clock.h"
+#include "StatusbarComponent.h"
 
 D_DEBUG_DOMAIN( ILX_STATUSBAR, "ilixi/StatusBar", "StatusBar");
+
+namespace ilixi
+{
 
 void
 volumeListener(void* ctx, void* arg)
@@ -78,6 +83,8 @@ StatusBar::StatusBar(int argc, char* argv[])
     bl = Rectangle(0, 33, 32, 32);
     bm = Rectangle(32, 33, 1, 32);
     br = Rectangle(33, 33, 32, 32);
+
+    _statComp = new StatusbarComponent(this);
 }
 
 StatusBar::~StatusBar()
@@ -96,6 +103,35 @@ StatusBar::onShow()
 {
     comaGetComponent("SoundComponent", &_soundComponent);
     _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
+}
+
+bool
+StatusBar::addRemoteContent(DFBSurfaceID id)
+{
+    SurfaceView* s = new SurfaceView();
+    s->setSourceFromSurfaceID(id);
+
+    if (addWidget(s))
+    {
+        _remoteContent.push_back(s);
+        return true;
+    }
+    return false;
+}
+
+bool
+StatusBar::removeRemoteContent(DFBSurfaceID id)
+{
+    for (std::vector<SurfaceView*>::iterator it = _remoteContent.begin();
+            it != _remoteContent.end(); ++it)
+    {
+        if ((*it)->sourceID() == id)
+        {
+            _remoteContent.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 
 void
@@ -143,10 +179,12 @@ StatusBar::compose(const PaintEvent& event)
     painter.end();
 }
 
+}
+
 int
 main(int argc, char* argv[])
 {
-    StatusBar app(argc, argv);
+    ilixi::StatusBar app(argc, argv);
     app.exec();
     return 0;
 }
