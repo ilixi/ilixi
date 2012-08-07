@@ -192,9 +192,9 @@ AppBase::initDFB(int* argc, char*** argv)
             if (FusionDaleCreate(&_dale) != DR_OK)
                 ILOG_THROW(ILX_APPBASE, "FusionDaleCreate() failed!\n");
 
-            if (_dale->EnterComa(_dale, "ilixi", &_coma) != DR_OK)
+            if (_dale->EnterComa(_dale, "directfb.org", &_coma) != DR_OK)
                 ILOG_THROW(ILX_APPBASE,
-                           "IFusionDale::EnterComa('ilixi') failed!\n");
+                           "IFusionDale::EnterComa('directfb.org') failed!\n");
 
             ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
         }
