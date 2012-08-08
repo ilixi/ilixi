@@ -32,20 +32,34 @@ namespace ilixi
 class Compositor;
 class NotificationManager;
 
-class PopupComponent : public ilixi::ComaComponent
+class CompositorComponent : public ilixi::ComaComponent
 {
 public:
     enum PopupMethods
     {
         AddNotification, // e.g. song changed.
         AddOverlay, // No input
-        AddDialog // Alerts with OK button.
+        AddDialog     // Alerts with OK button.
     };
 
-    PopupComponent(Compositor* compositor);
+    enum CompositorNotifications
+    {
+        AppVisible, AppHidden, AppHasFocus, CompositorNumNotifications
+    };
+
+    CompositorComponent(Compositor* compositor);
 
     virtual
-    ~PopupComponent();
+    ~CompositorComponent();
+
+    void
+    notifyVisible(pid_t pid);
+
+    void
+    notifyHidden(pid_t pid);
+
+    void
+    notifyHasFocus(pid_t pid);
 
 protected:
     virtual DirectResult

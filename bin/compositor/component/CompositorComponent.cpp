@@ -21,7 +21,7 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PopupComponent.h"
+#include "CompositorComponent.h"
 #include <core/Logger.h>
 #include "Compositor.h"
 #include "NotificationManager.h"
@@ -29,41 +29,78 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_POPUPCOMP, "ilixi/Coma/PopupComponent", "PopupComponent");
+D_DEBUG_DOMAIN( ILX_COMPCOMP, "ilixi/Coma/CompositorComponent",
+               "CompositorComponent");
 
-PopupComponent::PopupComponent(Compositor* compositor)
-        : ComaComponent("PopUpComponent"),
+CompositorComponent::CompositorComponent(Compositor* compositor)
+        : ComaComponent("CompositorComponent", CompositorNumNotifications),
           _compositor(compositor),
           _notificationMan(NULL)
 {
     init();
+    createNotification(0, NULL);
+    createNotification(1, NULL);
+    createNotification(2, NULL);
     _notificationMan = new NotificationManager(compositor);
 }
 
-PopupComponent::~PopupComponent()
+CompositorComponent::~CompositorComponent()
 {
     delete _notificationMan;
 }
 
+void
+CompositorComponent::notifyVisible(pid_t pid)
+{
+    int* tPid;
+    allocate(sizeof(tPid), (void**) &tPid);
+    *tPid = pid;
+    notify(0, tPid);
+    ILOG_DEBUG(ILX_COMPCOMP, "%d is now visible!\n", pid);
+    deallocate((void*) tPid);
+}
+
+void
+CompositorComponent::notifyHidden(pid_t pid)
+{
+    int* tPid;
+    allocate(sizeof(tPid), (void**) &tPid);
+    *tPid = pid;
+    notify(1, tPid);
+    ILOG_DEBUG(ILX_COMPCOMP, "%d is now hidden!\n", pid);
+    deallocate((void*) tPid);
+}
+
+void
+CompositorComponent::notifyHasFocus(pid_t pid)
+{
+    int* tPid;
+    allocate(sizeof(tPid), (void**) &tPid);
+    *tPid = pid;
+    notify(2, tPid);
+    ILOG_DEBUG(ILX_COMPCOMP, "%d is now focused!\n", pid);
+    deallocate((void*) tPid);
+}
+
 DirectResult
-PopupComponent::comaMethod(ComaMethodID method, void *arg)
+CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 {
     DirectResult ret = DR_OK;
     unsigned int surfaceID = *((unsigned int*) arg);
     switch (method)
     {
     case AddNotification:
-        ILOG_DEBUG(ILX_POPUPCOMP, "AddNotification for %u\n", surfaceID);
+        ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %u\n", surfaceID);
         _notificationMan->addNotification(surfaceID);
         break;
 
     case AddOverlay:
-        ILOG_DEBUG(ILX_POPUPCOMP, "AddOverlay for %u\n", surfaceID);
+        ILOG_DEBUG(ILX_COMPCOMP, "AddOverlay for %u\n", surfaceID);
         _compositor->addOverlay(surfaceID);
         break;
 
     case AddDialog:
-        ILOG_DEBUG(ILX_POPUPCOMP, "AddDialog for %u\n", surfaceID);
+        ILOG_DEBUG(ILX_COMPCOMP, "AddDialog for %u\n", surfaceID);
         _compositor->addDialog(surfaceID);
         break;
 

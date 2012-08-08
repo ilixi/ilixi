@@ -46,11 +46,14 @@ Compositor::Compositor(int argc, char* argv[])
           _switchButton(NULL),
           _quitButton(NULL),
           _fpsLabel(NULL),
-          _fps(NULL)
+          _fps(NULL),
+          _compComp(NULL),
+          _soundComp(NULL),
+          _oskComp(NULL)
 {
     _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
-    _popupComp = new PopupComponent(this);
+    _compComp = new CompositorComponent(this);
 //    _oskComp = new OSKComponent(this);
 
     setTitle("Compositor");
@@ -116,7 +119,7 @@ Compositor::Compositor(int argc, char* argv[])
 Compositor::~Compositor()
 {
     delete _fps;
-    delete _popupComp;
+    delete _compComp;
     delete _soundComp;
 //    delete _oskComp;
     delete _appMan;
@@ -135,7 +138,10 @@ Compositor::showLauncher(bool show)
     if (show && !_launcher->visible())
     {
         if (_currentApp)
+        {
             _currentApp->view()->hide();
+            _compComp->notifyHidden(_currentApp->pid());
+        }
         _backgroundFlags = BGFAll;
         _launcher->setVisible(true);
         _homeButton->hide();
@@ -146,6 +152,7 @@ Compositor::showLauncher(bool show)
         {
             _switcher->setNeighbour(Up, _currentApp->view());
             _currentApp->view()->show();
+            _compComp->notifyVisible(_currentApp->pid());
             AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
             if (info->appFlags() & APP_NEEDS_CLEAR)
                 _backgroundFlags = BGFAll;

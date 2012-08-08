@@ -130,7 +130,7 @@ Notify::show()
     void *ptr;
     int result;
 
-    AppBase::comaGetComponent("PopUpComponent", &_component);
+    AppBase::comaGetComponent("CompositorComponent", &_component);
 
     AppBase::comaGetLocal(sizeof(DFBSurfaceID), &ptr);
     DFBSurfaceID* _id = (DFBSurfaceID*) ptr;

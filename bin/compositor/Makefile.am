@@ -28,8 +28,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						buttons/QuitButton.cpp \
 						buttons/SwitchButton.h \
 						buttons/SwitchButton.cpp \
-						component/PopupComponent.h \
-						component/PopupComponent.cpp \
+						component/CompositorComponent.h \
+						component/CompositorComponent.cpp \
 						component/Notification.h \
 						component/Notification.cpp \
 						component/NotificationManager.h \

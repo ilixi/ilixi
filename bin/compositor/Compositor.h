@@ -35,7 +35,7 @@
 #include "AppView.h"
 #include "ApplicationManager.h"
 #include "Switcher.h"
-#include "component/PopupComponent.h"
+#include "component/CompositorComponent.h"
 #include "component/SoundComponent.h"
 #include "component/OSKComponent.h"
 
@@ -47,7 +47,7 @@ namespace ilixi
 class Compositor : public Application
 {
     friend class ApplicationManager;
-    friend class PopupComponent;
+    friend class CompositorComponent;
     friend class NotificationManager;
     friend class OSKComponent;
 
@@ -155,9 +155,11 @@ private:
     Label* _fpsLabel;
     FPSCalculator* _fps;
 
-    // components
+    //! CompositorComponent instance.
+    CompositorComponent* _compComp;
+    //! SoundComponent instance.
     SoundComponent* _soundComp;
-    PopupComponent* _popupComp;
+    //! OSKComponent instance.
     OSKComponent* _oskComp;
 
     // OSK
