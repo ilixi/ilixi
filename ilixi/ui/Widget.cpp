@@ -607,7 +607,7 @@ Widget::repaint(const PaintEvent& event)
 void
 Widget::update()
 {
-    if (_parent && !(_state & InvisibleState)) // FIXME move invis check above
+    if (_rootWindow && !(_state & InvisibleState)) // FIXME move invis check above
         _rootWindow->update(PaintEvent(_frameGeometry, z()));
     else
         paint(PaintEvent(_frameGeometry, z()));

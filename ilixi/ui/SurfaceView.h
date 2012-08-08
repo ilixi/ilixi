@@ -69,6 +69,9 @@ public:
     DFBWindowID
     dfbWindowID() const;
 
+    bool
+    isBlocking() const;
+
     /*!
      * Sets source surface using given id.
      */
@@ -86,6 +89,9 @@ public:
      */
     void
     setSourceFromWindow(IDirectFBWindow* window);
+
+    void
+    setBlocking(bool blocking);
 
     void
     paint(const PaintEvent& event);
@@ -134,6 +140,8 @@ private:
     {
         SVS_NONE, SVS_READY
     };
+    //! This flag controls whether flip blocks when this view is not visible.
+    bool _blocking;
     //! This property stores the scale ratio in horizontal direction.
     double _hScale;
     //! This property stores the scale ratio in vertical direction.

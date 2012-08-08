@@ -24,14 +24,14 @@
 #include "SoundComponent.h"
 #include <core/Logger.h>
 
-D_DEBUG_DOMAIN( ILX_SOUNDCOMP, "ilixi/SoundComponent", "SoundComponent");
-
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_SOUNDCOMP, "ilixi/Coma/SoundComponent", "SoundComponent");
+
 SoundComponent::SoundComponent()
-        : ComaComponent("SoundComponent", SoundCompNumNotifications), _volume(
-                50)
+        : ComaComponent("SoundComponent", SoundCompNumNotifications),
+          _volume(50)
 {
     init();
     createNotification(0, NULL);
@@ -86,25 +86,31 @@ SoundComponent::setVolume(unsigned int volume)
 
 void
 SoundComponent::VolumeChangedDispatchCallback(void *ctx,
-        ComaNotificationID notification, void *arg)
+                                              ComaNotificationID notification,
+                                              void *arg)
 {
-    ILOG_DEBUG(ILX_SOUNDCOMP,
+    ILOG_DEBUG(
+            ILX_SOUNDCOMP,
             "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
 }
 
 void
 SoundComponent::MutedDispatchCallback(void *ctx,
-        ComaNotificationID notification, void *arg)
+                                      ComaNotificationID notification,
+                                      void *arg)
 {
-    ILOG_DEBUG(ILX_SOUNDCOMP,
+    ILOG_DEBUG(
+            ILX_SOUNDCOMP,
             "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
 }
 
 void
 SoundComponent::UnMutedDispatchCallback(void *ctx,
-        ComaNotificationID notification, void *arg)
+                                        ComaNotificationID notification,
+                                        void *arg)
 {
-    ILOG_DEBUG(ILX_SOUNDCOMP,
+    ILOG_DEBUG(
+            ILX_SOUNDCOMP,
             "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
 }
 

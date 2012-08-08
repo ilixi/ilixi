@@ -26,21 +26,22 @@
 
 #include <ui/SurfaceView.h>
 #include "types/AppInstance.h"
-extern "C" {
+extern "C"
+{
 #include <directfb_windows.h>
 }
 #include <vector>
 
 namespace ilixi
 {
-  class Compositor;
-  //! Arranges SurfaceView(s) which belong to an Application.
-  class AppCompositor : public Widget
-  {
+class Compositor;
+//! Arranges SurfaceView(s) which belong to an Application.
+class AppCompositor : public Widget
+{
     friend class Compositor;
-  public:
+public:
     AppCompositor(Compositor* compositor, AppInstance* instance,
-        Widget* parent = 0);
+                  Widget* parent = 0);
 
     virtual
     ~AppCompositor();
@@ -49,7 +50,8 @@ namespace ilixi
     instance() const;
 
     void
-    addWindow(IDirectFBWindow* window, bool eventHandling = true);
+    addWindow(IDirectFBWindow* window, bool eventHandling = true,
+              bool blocking = true);
 
     void
     removeWindow(DFBWindowID windowID);
@@ -60,10 +62,10 @@ namespace ilixi
     void
     setZoomFactor(float zoomFactor);
 
-  protected:
+protected:
     enum AppCompState
     {
-      APPCOMP_NONE, APPCOMP_READY
+        APPCOMP_NONE, APPCOMP_READY
     };
 
     Compositor* _compositor;
@@ -71,12 +73,12 @@ namespace ilixi
     AppCompState _state;
 
     virtual void
-    compose();
+    compose(const PaintEvent& event);
 
-  private:
+private:
     float _zoomFactor;
 
-    void
+    virtual void
     updateAppCompositorGeometry();
 
     void
@@ -84,7 +86,7 @@ namespace ilixi
 
     virtual void
     madeAvailable();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPCOMPOSITOR_H_ */

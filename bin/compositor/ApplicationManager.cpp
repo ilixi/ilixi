@@ -415,7 +415,7 @@ ApplicationManager::processAdded(SaWManProcess *process)
 
     ILOG_WARNING(ILX_APPLICATIONMANAGER,
                  "Process[%d] is not recognized!\n", process->pid);
-    kill(process->pid, SIGKILL);
+//    kill(process->pid, SIGKILL);
     return DR_ITEMNOTFOUND;
 }
 
@@ -472,6 +472,19 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     AppInstance* instance = instanceByPID(process.pid);
     if (!instance)
         return DR_FAILURE;
+
+    AppInfo* appInfo = infoByPID(process.pid);
+
+    if (appInfo->appFlags() & APP_OSK)
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK\n");
+        DFBRectangle r = { 0, 0, _compositor->width(), 400 };
+        info->config.bounds = r;
+        _manager->SetWindowConfig(
+                _manager, info->handle,
+                (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE),
+                &info->config);
+    }
 
     _manager->Lock(_manager);
     instance->addWindow(info->handle);

@@ -35,6 +35,7 @@ D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
 SurfaceView::SurfaceView(Widget* parent)
         : SurfaceEventListener(),
           Widget(parent),
+          _blocking(true),
           _hScale(1),
           _vScale(1),
           _sourceWindow(NULL),
@@ -84,6 +85,12 @@ DFBWindowID
 SurfaceView::dfbWindowID() const
 {
     return _windowID;
+}
+
+bool
+SurfaceView::isBlocking() const
+{
+    return _blocking;
 }
 
 void
@@ -173,6 +180,14 @@ SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
             attachSourceSurface();
         }
     }
+}
+
+void
+SurfaceView::setBlocking(bool blocking)
+{
+    _blocking = blocking;
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
+    ILOG_DEBUG(ILX_SURFACEVIEW, " -> Blocking: %d\n", _blocking);
 }
 
 void
@@ -292,8 +307,9 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
-    }
-//    if (!_flipCount)
+    } else if (!_blocking)
+        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
+
     _flipCount = event.flip_count;
     sigSourceUpdated();
 }

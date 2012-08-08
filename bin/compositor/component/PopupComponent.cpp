@@ -26,14 +26,15 @@
 #include "Compositor.h"
 #include "NotificationManager.h"
 
-D_DEBUG_DOMAIN( ILX_POPUPCOMP, "ilixi/Coma/PopUpComp", "PopUpComponent");
-
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_POPUPCOMP, "ilixi/Coma/PopupComponent", "PopupComponent");
+
 PopupComponent::PopupComponent(Compositor* compositor)
-        : ComaComponent("PopUpComponent"), _compositor(compositor), _notificationMan(
-                NULL)
+        : ComaComponent("PopUpComponent"),
+          _compositor(compositor),
+          _notificationMan(NULL)
 {
     init();
     _notificationMan = new NotificationManager(compositor);

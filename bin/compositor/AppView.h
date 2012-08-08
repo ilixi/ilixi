@@ -29,11 +29,11 @@
 
 namespace ilixi
 {
-  //! Helper class for animating an AppCompositor.
-  class AppView : public AppCompositor
-  {
+//! Helper class for animating an AppCompositor.
+class AppView : public AppCompositor
+{
     friend class Compositor;
-  public:
+public:
     AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);
 
     virtual
@@ -45,11 +45,7 @@ namespace ilixi
     void
     hide();
 
-  protected:
-    virtual void
-    compose(const PaintEvent& event);
-
-  private:
+private:
     TweenAnimation _ani;
     Tween* _opacityTween;
     Tween* _zoomTween;
@@ -62,7 +58,7 @@ namespace ilixi
 
     virtual void
     madeAvailable();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPVIEW_H_ */

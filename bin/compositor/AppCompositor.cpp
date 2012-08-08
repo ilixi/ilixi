@@ -54,11 +54,13 @@ AppCompositor::instance() const
 }
 
 void
-AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling)
+AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling,
+                         bool blocking)
 {
     SurfaceView* view = new SurfaceView();
     if (!eventHandling)
         view->setInputMethod(NoInput);
+    view->setBlocking(blocking);
     view->setSourceFromWindow(window);
     view->sigSourceReady.connect(
             sigc::mem_fun(this, &AppCompositor::madeAvailable));
@@ -93,7 +95,7 @@ AppCompositor::setZoomFactor(float zoomFactor)
 }
 
 void
-AppCompositor::compose()
+AppCompositor::compose(const PaintEvent& event)
 {
 }
 

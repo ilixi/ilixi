@@ -28,6 +28,7 @@
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <sigc++/bind.h>
+#include "OSKView.h"
 
 using namespace std;
 
@@ -50,6 +51,7 @@ Compositor::Compositor(int argc, char* argv[])
     _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
     _popupComp = new PopupComponent(this);
+//    _oskComp = new OSKComponent(this);
 
     setTitle("Compositor");
 //    setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
@@ -116,6 +118,7 @@ Compositor::~Compositor()
     delete _fps;
     delete _popupComp;
     delete _soundComp;
+//    delete _oskComp;
     delete _appMan;
     ILOG_TRACE_W(ILX_COMPOSITOR);
 }
@@ -221,9 +224,20 @@ Compositor::addDialog(DFBSurfaceID id)
 }
 
 void
+Compositor::showOSK(DFBRectangle rect)
+{
+}
+
+void
+Compositor::hideOSK()
+{
+}
+
+void
 Compositor::onVisible()
 {
     _quitButton->show();
+
     if (_fps)
         _fps->start();
 
@@ -407,11 +421,37 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->setGeometry(100, height() - 50,
                                                         width() - 200, 50);
                     addWidget(data->instance->view());
-//                    data->instance->view()->setNeighbour(Down, _switcher);
                     data->instance->view()->setZ(0);
-                    widgetToBack(data->instance->view());
+                    widgetToFront(data->instance->view());
 
                     data->instance->view()->addWindow(dfbWindow);
+//                    _appMan->startApp("OnScreenKeyboard");
+                } else if (appInfo->appFlags() & APP_OSK)
+                {
+                    _osk = data->instance;
+//                    data->instance->setView(
+//                            new AppView(this, data->instance, this));
+//                    data->instance->view()->setGeometry(0, height() - 400,
+//                                                        width(), 400);
+//                    addWidget(data->instance->view());
+//                    data->instance->view()->setZ(0);
+//                    widgetToFront(data->instance->view());
+//
+//                    data->instance->view()->addWindow(dfbWindow);
+//                    data->instance->view()->show();
+
+                    OSKView* oskView = new OSKView(this, data->instance, this);
+                    oskView->setGeometry(0, 0, width(), height());
+                    addWidget(oskView);
+                    widgetToFront(oskView);
+                    oskView->addWindow(dfbWindow);
+                    oskView->show();
+
+//                    SurfaceView* osk = new SurfaceView();
+//                    osk->setSourceFromWindow(dfbWindow);
+//                    osk->setGeometry(0, height() - 400, width(), 400);
+//                    addWidget(osk);
+//                    widgetToFront(osk);
                 } else
                 {
                     if (data->instance->view() == NULL)
@@ -433,8 +473,12 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         _switcher->addThumb(data->instance->thumb());
                     }
 
+                    AppInfo* info = _appMan->infoByAppID(
+                            data->instance->appID());
                     data->instance->thumb()->addWindow(dfbWindow, false);
-                    data->instance->view()->addWindow(dfbWindow);
+                    data->instance->view()->addWindow(
+                            dfbWindow, true,
+                            !(info->appFlags() & APP_SURFACE_DONTBLOCK));
                     _currentApp = data->instance;
                     showLauncher(false);
                 }
@@ -446,7 +490,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
         case CET_Remove:
             {
                 ILOG_DEBUG(ILX_COMPOSITOR, "CET_Remove (%d)\n", data->windowID);
-                data->instance->view()->removeWindow(data->windowID);
+
+                if (data->instance->view())
+                    data->instance->view()->removeWindow(data->windowID);
+
                 if (data->instance->thumb())
                     data->instance->thumb()->removeWindow(data->windowID);
             }
@@ -456,8 +503,9 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG(ILX_COMPOSITOR, "CET_CONFIG (%d)\n", data->windowID);
 
-                data->instance->view()->onWindowConfig(data->windowID,
-                                                       data->reconfig);
+                if (data->instance->view())
+                    data->instance->view()->onWindowConfig(data->windowID,
+                                                           data->reconfig);
                 if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
                                                             data->reconfig);
@@ -473,8 +521,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG(ILX_COMPOSITOR,
                            "CET_Restack (%d)\n", data->windowID);
-                data->instance->view()->onWindowConfig(data->windowID,
-                                                       data->reconfig);
+
+                if (data->instance->view())
+                    data->instance->view()->onWindowConfig(data->windowID,
+                                                           data->reconfig);
                 if (data->instance->thumb())
                     data->instance->thumb()->onWindowConfig(data->windowID,
                                                             data->reconfig);

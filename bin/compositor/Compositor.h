@@ -37,63 +37,131 @@
 #include "Switcher.h"
 #include "component/PopupComponent.h"
 #include "component/SoundComponent.h"
+#include "component/OSKComponent.h"
 
 namespace ilixi
 {
-
+/*!
+ * Main application.
+ */
 class Compositor : public Application
 {
     friend class ApplicationManager;
     friend class PopupComponent;
     friend class NotificationManager;
+    friend class OSKComponent;
 
 public:
+    /*!
+     * Constructor.
+     *
+     * Creates ApplicationManager and Coma components.
+     */
     Compositor(int argc, char* argv[]);
 
+    /*!
+     * Destructor.
+     *
+     * Deletes all components.
+     */
     virtual
     ~Compositor();
 
+    /*!
+     * Returns the application manager instance.
+     */
     ApplicationManager*
     appMan() const;
 
+    /*!
+     * Shows launcher screen and hides current application.
+     *
+     * @param show launcher if true, hide otherwise.
+     */
     void
     showLauncher(bool show);
 
+    /*!
+     * Shows application switcher.
+     *
+     * @param show switcher if true, hide otherwise.
+     */
     void
     showSwitcher(bool show);
 
+    /*!
+     * Shows given application instance and hides launcher.
+     *
+     * @param instance
+     */
     void
     handleViewRequest(AppInstance* instance);
 
+    /*!
+     * Hides current application and shows
+     * the selected application in switcher.
+     */
     void
     handleSwitchRequest();
 
+    /*!
+     *Terminates client application or compositor.
+     */
     void
     handleQuit();
 
 protected:
+    /*!
+     * Adds a overlay on top.
+     */
     void
     addOverlay(DFBSurfaceID id);
 
+    /*!
+     * Adds a dialog on top.
+     */
     void
     addDialog(DFBSurfaceID id);
 
+    /*!
+     * Shows OSK and centers given rect at top.
+     */
+    void
+    showOSK(DFBRectangle rect);
+
+    /*!
+     * Hides OSK.
+     */
+    void
+    hideOSK();
+
 private:
+    //! Application manager instance.
     ApplicationManager* _appMan;
+    //! Current application instance.
     AppInstance* _currentApp;
 
+    //! Switcher instance.
     Switcher* _switcher;
+    //! Launcher screen instance.
     Launcher* _launcher;
+
+    //! Buttons
     HomeButton* _homeButton;
     SwitchButton* _switchButton;
     QuitButton* _quitButton;
 
+    //! FPS stuff
     Label* _fpsLabel;
     FPSCalculator* _fps;
 
     // components
     SoundComponent* _soundComp;
     PopupComponent* _popupComp;
+    OSKComponent* _oskComp;
+
+    // OSK
+    AppInstance* _osk;
 
     enum CompositorEventType
     {

@@ -27,12 +27,11 @@
 namespace ilixi
 {
 
-  D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
+D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
 
-  AppView::AppView(Compositor* compositor, AppInstance* instance,
-      Widget* parent) :
-      AppCompositor(compositor, instance, parent)
-  {
+AppView::AppView(Compositor* compositor, AppInstance* instance, Widget* parent)
+        : AppCompositor(compositor, instance, parent)
+{
     setInputMethod(PointerInput);
 
     _ani.setDuration(500);
@@ -47,19 +46,19 @@ namespace ilixi
 
     setVisible(false);
     ILOG_TRACE_W(ILX_APPVIEW);
-  }
+}
 
-  AppView::~AppView()
-  {
+AppView::~AppView()
+{
     ILOG_TRACE_W(ILX_APPVIEW);
-  }
+}
 
-  void
-  AppView::show()
-  {
+void
+AppView::show()
+{
     ILOG_TRACE_W(ILX_APPVIEW);
     if (_state == APPCOMP_READY)
-      {
+    {
         _ani.stop();
         setFocus();
         _opacityTween->setInitialValue(0);
@@ -72,12 +71,12 @@ namespace ilixi
         setZoomFactor(0.8);
         _ani.start();
         setVisible(true);
-      }
-  }
+    }
+}
 
-  void
-  AppView::hide()
-  {
+void
+AppView::hide()
+{
     ILOG_TRACE_W(ILX_APPVIEW);
     _ani.stop();
     _opacityTween->setInitialValue(255);
@@ -89,34 +88,29 @@ namespace ilixi
     setOpacity(255);
     setZoomFactor(1);
     _ani.start();
-  }
+}
 
-  void
-  AppView::compose(const PaintEvent& event)
-  {
-  }
-
-  void
-  AppView::tweenSlot()
-  {
+void
+AppView::tweenSlot()
+{
     setOpacity(_opacityTween->value());
     setZoomFactor(_zoomTween->value());
     update();
-  }
+}
 
-  void
-  AppView::tweenEndSlot()
-  {
+void
+AppView::tweenEndSlot()
+{
     if (_opacityTween->value() == 0)
-      setVisible(false);
-  }
+        setVisible(false);
+}
 
-  void
-  AppView::madeAvailable()
-  {
+void
+AppView::madeAvailable()
+{
     ILOG_TRACE_W(ILX_APPVIEW);
     if (_state == APPCOMP_NONE)
-      {
+    {
         _ani.stop();
         setFocus();
         _opacityTween->setInitialValue(0);
@@ -127,8 +121,8 @@ namespace ilixi
         setZoomFactor(0.8);
         _ani.start();
         setVisible(true);
-      }
+    }
     _state = APPCOMP_READY;
-  }
+}
 
 } /* namespace ilixi */

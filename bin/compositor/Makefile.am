@@ -18,6 +18,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						Launcher.cpp \
 						LauncherButton.h \
 						LauncherButton.cpp \
+						OSKView.cpp \
+						OSKView.h \
 						buttons/CompositorButton.h \
 						buttons/CompositorButton.cpp \
 						buttons/HomeButton.h \
@@ -32,6 +34,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						component/Notification.cpp \
 						component/NotificationManager.h \
 						component/NotificationManager.cpp \
+						component/OSKComponent.cpp \
+						component/OSKComponent.h \
 						component/SoundComponent.h \
 						component/SoundComponent.cpp \
 						switcher/CarouselSwitcher.h \

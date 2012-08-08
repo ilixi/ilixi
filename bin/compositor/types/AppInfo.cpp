@@ -160,22 +160,22 @@ AppInfo::setAppFlags(const std::string& appFlags)
             _appFlags = (AppFlags) (_appFlags | APP_GTK);
         else if (strcmp(pch, "APP_X11") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_X11);
-        else if (strcmp(pch, "APP_WM_DEFAULT") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_WM_DEFAULT);
-        else if (strcmp(pch, "APP_WM_SAWMAN") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_WM_SAWMAN);
         else if (strcmp(pch, "APP_NO_MAINWINDOW") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_NO_MAINWINDOW);
         else if (strcmp(pch, "APP_SPLASH_WINDOW") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_SPLASH_WINDOW);
         else if (strcmp(pch, "APP_ALLOW_WINDOW_CONFIG") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_ALLOW_WINDOW_CONFIG);
+        else if (strcmp(pch, "APP_SURFACE_DONTBLOCK") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_SURFACE_DONTBLOCK);
         else if (strcmp(pch, "APP_ALLOW_MULTIPLE") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_ALLOW_MULTIPLE);
         else if (strcmp(pch, "APP_NEEDS_CLEAR") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_NEEDS_CLEAR);
         else if (strcmp(pch, "APP_STATUSBAR") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
+        else if (strcmp(pch, "APP_OSK") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_OSK);
         else if (strcmp(pch, "APP_SYSTEM") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_SYSTEM);
         pch = strtok(NULL, " ,");
