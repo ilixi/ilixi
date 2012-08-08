@@ -196,7 +196,10 @@ void
 Compositor::handleSwitchRequest()
 {
     if (_currentApp)
+    {
         _currentApp->view()->hide();
+        _compComp->notifyHidden(_currentApp->pid());
+    }
 
     _currentApp = _switcher->currentThumb()->instance();
     showLauncher(false);
