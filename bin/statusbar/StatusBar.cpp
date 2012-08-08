@@ -114,6 +114,7 @@ StatusBar::addRemoteContent(DFBSurfaceID id)
     if (addWidget(s))
     {
         _remoteContent.push_back(s);
+        ILOG_DEBUG(ILX_STATUSBAR, "addRemoteContent..\n");
         return true;
     }
     return false;
@@ -128,6 +129,7 @@ StatusBar::removeRemoteContent(DFBSurfaceID id)
         if ((*it)->sourceID() == id)
         {
             _remoteContent.erase(it);
+            ILOG_DEBUG(ILX_STATUSBAR, "removeRemoteContent..\n");
             return true;
         }
     }

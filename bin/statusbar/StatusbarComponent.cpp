@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_STATCOMP, "ilixi/statusbar/StatComp", "StatusbarComponent");
+D_DEBUG_DOMAIN( ILX_STATCOMP, "ilixi/StatusBar/StatComp", "StatusbarComponent");
 
 StatusbarComponent::StatusbarComponent(StatusBar* statusbar)
         : ComaComponent("StatusbarComponent", StatCompNumNotifications),
