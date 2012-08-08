@@ -81,37 +81,6 @@ SoundComponent::setVolume(unsigned int volume)
     *vol = volume;
     notify(0, vol);
     ILOG_DEBUG(ILX_SOUNDCOMP, "Volume is %d\n", _volume);
-    deallocate((void*) vol);
-}
-
-void
-SoundComponent::VolumeChangedDispatchCallback(void *ctx,
-                                              ComaNotificationID notification,
-                                              void *arg)
-{
-    ILOG_DEBUG(
-            ILX_SOUNDCOMP,
-            "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
-}
-
-void
-SoundComponent::MutedDispatchCallback(void *ctx,
-                                      ComaNotificationID notification,
-                                      void *arg)
-{
-    ILOG_DEBUG(
-            ILX_SOUNDCOMP,
-            "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
-}
-
-void
-SoundComponent::UnMutedDispatchCallback(void *ctx,
-                                        ComaNotificationID notification,
-                                        void *arg)
-{
-    ILOG_DEBUG(
-            ILX_SOUNDCOMP,
-            "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
 }
 
 } /* namespace ilixi */

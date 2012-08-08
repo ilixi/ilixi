@@ -56,18 +56,6 @@ protected:
 
 private:
     unsigned int _volume;
-
-    void
-    VolumeChangedDispatchCallback(void *ctx, ComaNotificationID notification,
-            void *arg);
-
-    void
-    MutedDispatchCallback(void *ctx, ComaNotificationID notification,
-            void *arg);
-
-    void
-    UnMutedDispatchCallback(void *ctx, ComaNotificationID notification,
-            void *arg);
 };
 
 } /* namespace ilixi */

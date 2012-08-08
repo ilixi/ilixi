@@ -57,7 +57,6 @@ CompositorComponent::notifyVisible(pid_t pid)
     *tPid = pid;
     notify(0, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now visible!\n", pid);
-    deallocate((void*) tPid);
 }
 
 void
@@ -68,7 +67,6 @@ CompositorComponent::notifyHidden(pid_t pid)
     *tPid = pid;
     notify(1, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now hidden!\n", pid);
-    deallocate((void*) tPid);
 }
 
 void
@@ -79,7 +77,6 @@ CompositorComponent::notifyHasFocus(pid_t pid)
     *tPid = pid;
     notify(2, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now focused!\n", pid);
-    deallocate((void*) tPid);
 }
 
 DirectResult
