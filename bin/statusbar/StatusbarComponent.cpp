@@ -28,12 +28,13 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_STATCOMP, "ilixi/StatComp", "StatusbarComponent");
+D_DEBUG_DOMAIN( ILX_STATCOMP, "ilixi/statusbar/StatComp", "StatusbarComponent");
 
 StatusbarComponent::StatusbarComponent(StatusBar* statusbar)
         : ComaComponent("StatusbarComponent", StatCompNumNotifications),
           _statusbar(statusbar)
 {
+    ILOG_TRACE_F(ILX_STATCOMP);
     init();
     createNotification(0, NULL);
     createNotification(1, NULL);
@@ -41,6 +42,7 @@ StatusbarComponent::StatusbarComponent(StatusBar* statusbar)
 
 StatusbarComponent::~StatusbarComponent()
 {
+    ILOG_TRACE_F(ILX_STATCOMP);
 }
 
 DirectResult
@@ -52,18 +54,18 @@ StatusbarComponent::comaMethod(ComaMethodID method, void *arg)
     switch (method)
     {
     case GetOptimalSize:
-        ILOG_DEBUG(ILX_STATCOMP, "GetOptimalSize\n");
+        ILOG_DEBUG(ILX_STATCOMP, "GetOptimalSize %u\n", idValue);
         sendNotification(idValue);
         break;
 
     case AddContent:
-        ILOG_DEBUG(ILX_STATCOMP, "AddContent\n");
+        ILOG_DEBUG(ILX_STATCOMP, "AddContent %u\n", idValue);
         if (_statusbar->addRemoteContent(idValue))
             sendNotification(idValue);
         break;
 
     case RemoveContent:
-        ILOG_DEBUG(ILX_STATCOMP, "RemoveContent\n");
+        ILOG_DEBUG(ILX_STATCOMP, "RemoveContent %u\n", idValue);
         if (_statusbar->removeRemoteContent(idValue))
             sendNotification(idValue);
         break;
