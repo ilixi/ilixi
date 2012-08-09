@@ -4,9 +4,13 @@ bin_PROGRAMS 				= 	ilixi_statusbar
 ilixi_statusbar_LDADD		=	@DEPS_LIBS@ $(top_srcdir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
 ilixi_statusbar_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
 ilixi_statusbar_CFLAGS		=	$(AM_CFLAGS)
-ilixi_statusbar_SOURCES		= 	StatusBar.cpp \
+ilixi_statusbar_SOURCES		= 	Clock.h \
+								Clock.cpp \
+								RemoteContentArea.cpp \
+								RemoteContentArea.h \
+								StatusBar.cpp \
 								StatusBar.h \
+								StatusbarButton.cpp \
+								StatusbarButton.h \
 								StatusbarComponent.cpp \
-								StatusbarComponent.h \
-								Clock.h \
-								Clock.cpp
+								StatusbarComponent.h

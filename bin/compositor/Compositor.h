@@ -29,8 +29,6 @@
 #include <lib/FPSCalculator.h>
 #include <ui/Application.h>
 #include "Launcher.h"
-#include "HomeButton.h"
-#include "SwitchButton.h"
 #include "QuitButton.h"
 #include "AppView.h"
 #include "ApplicationManager.h"
@@ -135,6 +133,9 @@ protected:
     void
     hideOSK();
 
+    void
+    compose(const PaintEvent& event);
+
 private:
     //! Application manager instance.
     ApplicationManager* _appMan;
@@ -147,8 +148,6 @@ private:
     Launcher* _launcher;
 
     //! Buttons
-    HomeButton* _homeButton;
-    SwitchButton* _switchButton;
     QuitButton* _quitButton;
 
     //! FPS stuff

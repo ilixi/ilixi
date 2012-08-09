@@ -26,13 +26,12 @@
 
 #include <ui/Application.h>
 #include <ui/Label.h>
-#include <ui/ToolButton.h>
-#include <vector>
+#include "StatusbarButton.h"
+#include "RemoteContentArea.h"
 
 namespace ilixi
 {
 
-class SurfaceView;
 class StatusbarComponent;
 
 class StatusBar : public Application
@@ -55,36 +54,44 @@ public:
     bool
     removeRemoteContent(DFBSurfaceID id);
 
+    void
+    clickedHome();
+
+    void
+    clickedSwitcher();
+
+    void
+    clickedTemp();
+
+    void
+    clickedSound();
+
 private:
-    unsigned int _currentAppID;
-    Label* _app;
-
-    Label* _volume;
-
-    ToolButton* _home;
-    ToolButton* _shutdown;
+    Image* _bg;
+    StatusbarButton* _home;
+    StatusbarButton* _switch;
+    StatusbarButton* _temp;
+    StatusbarButton* _sound;
+    RemoteContentArea* _rca;
 
     IComaComponent* _soundComponent;
+    IComaComponent* _compComponent;
     StatusbarComponent* _statComp;
-
-    std::vector<SurfaceView*> _remoteContent;
-
-    Image* _bg;
-    Rectangle tl;
-    Rectangle tm;
-    Rectangle tr;
-    Rectangle l;
-    Rectangle m;
-    Rectangle r;
-    Rectangle bl;
-    Rectangle bm;
-    Rectangle br;
-
-    virtual void
-    compose(const PaintEvent& event);
 
     friend void
     volumeListener(void* ctx, void* arg);
+
+    friend void
+    homeShowing(void* ctx, void* arg);
+
+    friend void
+    homeHidden(void* ctx, void* arg);
+
+    friend void
+    switcherShowing(void* ctx, void* arg);
+
+    friend void
+    switcherHidden(void* ctx, void* arg);
 };
 
 }

@@ -42,8 +42,6 @@ Compositor::Compositor(int argc, char* argv[])
           _currentApp(NULL),
           _switcher(NULL),
           _launcher(NULL),
-          _homeButton(NULL),
-          _switchButton(NULL),
           _quitButton(NULL),
           _fpsLabel(NULL),
           _fps(NULL),
@@ -57,7 +55,7 @@ Compositor::Compositor(int argc, char* argv[])
 //    _oskComp = new OSKComponent(this);
 
     setTitle("Compositor");
-//    setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
+    setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
     setMargin(0);
 
     _launcher = new Launcher(this);
@@ -89,21 +87,6 @@ Compositor::Compositor(int argc, char* argv[])
     _switcher->sigSwitchRequest.connect(
             sigc::mem_fun(this, &Compositor::handleSwitchRequest));
     addWidget(_switcher);
-
-    _homeButton = new HomeButton("comp_home.png");
-    _homeButton->setZ(5);
-    _homeButton->sigPressed.connect(
-            sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showLauncher),
-                             true));
-    addWidget(_homeButton);
-
-    _switchButton = new SwitchButton("comp_switch.png");
-    _switchButton->setZ(5);
-    _switchButton->setVisible(false);
-    _switchButton->sigPressed.connect(
-            sigc::bind<bool>(sigc::mem_fun(this, &Compositor::showSwitcher),
-                             true));
-    addWidget(_switchButton);
 
     _quitButton = new QuitButton("comp_quit.png");
     _quitButton->setZ(5);
@@ -144,7 +127,7 @@ Compositor::showLauncher(bool show)
         }
         _backgroundFlags = BGFAll;
         _launcher->setVisible(true);
-        _homeButton->hide();
+        _compComp->signalHomeShowing();
         showSwitcher(false);
     } else
     {
@@ -162,7 +145,7 @@ Compositor::showLauncher(bool show)
             _backgroundFlags = BGFAll;
 
         _launcher->setVisible(false);
-        _homeButton->show();
+        _compComp->signalHomeHidden();
         showSwitcher(false);
     }
 }
@@ -175,13 +158,13 @@ Compositor::showSwitcher(bool show)
 
     if (show)
     {
-        _switchButton->hide();
         _switcher->show();
+        _compComp->signalSwitcherShowing();
         eventManager()->setGrabbedWidget(NULL);
     } else
     {
         _switcher->hide();
-        _switchButton->show();
+        _compComp->signalSwitcherHidden();
     }
 }
 
@@ -241,6 +224,15 @@ Compositor::showOSK(DFBRectangle rect)
 void
 Compositor::hideOSK()
 {
+}
+
+void
+Compositor::compose(const PaintEvent& event)
+{
+    Painter painter(this);
+    painter.begin(event);
+    painter.drawImage(background(), 0, 0, width(), height() - 50);
+    painter.end();
 }
 
 void
@@ -398,9 +390,7 @@ void
 Compositor::updateCompositorGeometry()
 {
     _launcher->setGeometry(0, 0, width(), height());
-    _switcher->setOptimalGeometry(width(), height());
-    _homeButton->moveTo(0, 0);
-    _switchButton->moveTo(0, height() - 80);
+    _switcher->setOptimalGeometry(width(), height() - 50);
     _quitButton->moveTo(width() - 80, 0);
     if (_fpsLabel)
         _fpsLabel->setGeometry((width() - 100) / 2, 0, 100, height());
@@ -428,8 +418,8 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     data->instance->setView(
                             new AppView(this, data->instance, this));
-                    data->instance->view()->setGeometry(100, height() - 50,
-                                                        width() - 200, 50);
+                    data->instance->view()->setGeometry(0, height() - 54,
+                                                        width(), 54);
                     addWidget(data->instance->view());
                     data->instance->view()->setZ(0);
                     widgetToFront(data->instance->view());
@@ -469,7 +459,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         data->instance->setView(
                                 new AppView(this, data->instance, this));
                         data->instance->view()->setGeometry(0, 0, width(),
-                                                            height());
+                                                            height() - 50);
                         addWidget(data->instance->view());
                         data->instance->view()->setNeighbour(Down, _switcher);
                         data->instance->view()->setZ(-5);

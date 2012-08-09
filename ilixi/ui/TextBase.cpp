@@ -141,6 +141,12 @@ TextBase::setText(const std::string &text)
 }
 
 void
+TextBase::setSingleLine(bool single)
+{
+    _layout.setSingleLine(single);
+}
+
+void
 TextBase::updateTextBaseGeometry()
 {
     _layout.setBounds(0, 0, _owner->width(), _owner->height());

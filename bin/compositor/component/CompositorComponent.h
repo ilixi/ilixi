@@ -35,16 +35,27 @@ class NotificationManager;
 class CompositorComponent : public ilixi::ComaComponent
 {
 public:
-    enum PopupMethods
+    enum CompositorComaMethods
     {
-        AddNotification, // e.g. song changed.
-        AddOverlay, // No input
-        AddDialog     // Alerts with OK button.
+        AddNotification = 0, // e.g. song changed.
+        AddOverlay = 1, // No input
+        AddDialog = 2,     // Alerts with OK button.
+        ShowHome = 3,
+        ShowSwitcher = 4,
+        HideHome = 5,
+        HideSwither = 6
     };
 
     enum CompositorNotifications
     {
-        AppVisible, AppHidden, AppHasFocus, CompositorNumNotifications
+        AppVisible,
+        AppHidden,
+        AppHasFocus,
+        ShowingHome,
+        ShowingSwitcher,
+        HidingHome,
+        HidingSwitcher,
+        CompositorNumNotifications
     };
 
     CompositorComponent(Compositor* compositor);
@@ -60,6 +71,18 @@ public:
 
     void
     notifyHasFocus(pid_t pid);
+
+    void
+    signalHomeShowing();
+
+    void
+    signalSwitcherShowing();
+
+    void
+    signalHomeHidden();
+
+    void
+    signalSwitcherHidden();
 
 protected:
     virtual DirectResult

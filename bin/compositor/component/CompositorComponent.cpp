@@ -41,6 +41,10 @@ CompositorComponent::CompositorComponent(Compositor* compositor)
     createNotification(0, NULL);
     createNotification(1, NULL);
     createNotification(2, NULL);
+    createNotification(3, NULL, CNF_NONE);
+    createNotification(4, NULL, CNF_NONE);
+    createNotification(5, NULL, CNF_NONE);
+    createNotification(6, NULL, CNF_NONE);
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -55,7 +59,7 @@ CompositorComponent::notifyVisible(pid_t pid)
     int* tPid;
     allocate(sizeof(tPid), (void**) &tPid);
     *tPid = pid;
-    notify(0, tPid);
+    notify(AppVisible, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now visible!\n", pid);
 }
 
@@ -65,7 +69,7 @@ CompositorComponent::notifyHidden(pid_t pid)
     int* tPid;
     allocate(sizeof(tPid), (void**) &tPid);
     *tPid = pid;
-    notify(1, tPid);
+    notify(AppHidden, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now hidden!\n", pid);
 }
 
@@ -75,30 +79,78 @@ CompositorComponent::notifyHasFocus(pid_t pid)
     int* tPid;
     allocate(sizeof(tPid), (void**) &tPid);
     *tPid = pid;
-    notify(2, tPid);
+    notify(AppHasFocus, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%d is now focused!\n", pid);
+}
+
+void
+CompositorComponent::signalHomeShowing()
+{
+    notify(ShowingHome, NULL);
+}
+
+void
+CompositorComponent::signalSwitcherShowing()
+{
+    notify(ShowingSwitcher, NULL);
+}
+
+void
+CompositorComponent::signalHomeHidden()
+{
+    notify(HidingHome, NULL);
+}
+
+void
+CompositorComponent::signalSwitcherHidden()
+{
+    notify(HidingSwitcher, NULL);
 }
 
 DirectResult
 CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 {
     DirectResult ret = DR_OK;
-    unsigned int surfaceID = *((unsigned int*) arg);
     switch (method)
     {
     case AddNotification:
-        ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %u\n", surfaceID);
-        _notificationMan->addNotification(surfaceID);
-        break;
+        {
+            unsigned int surfaceID = *((unsigned int*) arg);
+            ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %u\n", surfaceID);
+            _notificationMan->addNotification(surfaceID);
+            break;
+        }
 
     case AddOverlay:
-        ILOG_DEBUG(ILX_COMPCOMP, "AddOverlay for %u\n", surfaceID);
-        _compositor->addOverlay(surfaceID);
-        break;
+        {
+            unsigned int surfaceID = *((unsigned int*) arg);
+            ILOG_DEBUG(ILX_COMPCOMP, "AddOverlay for %u\n", surfaceID);
+            _compositor->addOverlay(surfaceID);
+            break;
+        }
 
     case AddDialog:
-        ILOG_DEBUG(ILX_COMPCOMP, "AddDialog for %u\n", surfaceID);
-        _compositor->addDialog(surfaceID);
+        {
+            unsigned int surfaceID = *((unsigned int*) arg);
+            ILOG_DEBUG(ILX_COMPCOMP, "AddDialog for %u\n", surfaceID);
+            _compositor->addDialog(surfaceID);
+            break;
+        }
+
+    case ShowHome:
+        _compositor->showLauncher(true);
+        break;
+
+    case ShowSwitcher:
+        _compositor->showSwitcher(true);
+        break;
+
+    case HideHome:
+        _compositor->showLauncher(false);
+        break;
+
+    case HideSwither:
+        _compositor->showSwitcher(false);
         break;
 
     default:

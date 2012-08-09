@@ -96,10 +96,11 @@ ComaComponent::comaMethod(ComaMethodID method, void* arg)
 }
 
 void
-ComaComponent::createNotification(ComaNotificationID id, ComaNotifyFunc func)
+ComaComponent::createNotification(ComaNotificationID id, ComaNotifyFunc func,
+                                  ComaNotificationFlags flags)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
-    _component->InitNotification(_component, id, func, this, CNF_DEALLOC_ARG);
+    _component->InitNotification(_component, id, func, this, flags);
 
 }
 

@@ -1,6 +1,7 @@
 ## Makefile.am for compositor/images
 miscdatadir 	=	$(ILIXI_DATADIR)/compositor
 miscdata_DATA 	=	andi.png \
+			bg.png \
 			clanbomber2.png \
 			comp_home.png \
 			comp_switch.png \

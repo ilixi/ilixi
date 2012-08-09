@@ -38,18 +38,18 @@ Clock::Clock(Widget* parent)
           _date(NULL),
           _timer(NULL)
 {
+    setConstraints(FixedConstraint, FixedConstraint);
     _box = new VBoxLayout();
     _box->setSpacing(0);
     _box->setHorizontalAlignment(Alignment::Center);
 
     _time = new Label("55:55");
-    _time->setMargin(1);
     _time->setFont(new Font("decker", 24));
-    _time->setXConstraint(FixedConstraint);
-    _date = new Label("Frii181Nov");
+
+    _date = new Label("Frii181Nov111");
+    _date->setSingleLine(true);
+
     updateTime();
-    _date->setXConstraint(FixedConstraint);
-    _date->setYConstraint(FixedConstraint);
     _box->addWidget(_time);
     _box->addWidget(_date);
     addChild(_box);
@@ -75,11 +75,6 @@ Clock::preferredSize() const
 void
 Clock::compose(const PaintEvent& event)
 {
-    Painter painter(this);
-    painter.begin(event);
-    painter.setBrush(Color(255, 255, 255, 25));
-    painter.fillRectangle(0, 0, width(), height());
-    painter.end();
 }
 
 void
@@ -90,7 +85,7 @@ Clock::updateTime()
     gettimeofday(&tv, NULL);
     tm = localtime(&tv.tv_sec);
 
-    char time[5];
+    char time[6];
     sprintf(time, "%02d:%02d", tm->tm_hour, tm->tm_min);
     _time->setText(time);
 

@@ -61,7 +61,8 @@ protected:
     comaMethod(ComaMethodID method, void* arg);
 
     void
-    createNotification(ComaNotificationID id, ComaNotifyFunc func);
+    createNotification(ComaNotificationID id, ComaNotifyFunc func,
+                       ComaNotificationFlags flags = CNF_DEALLOC_ARG);
 
 private:
     std::string _name;

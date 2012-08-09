@@ -23,8 +23,6 @@
 
 #include "StatusBar.h"
 #include <ui/HBoxLayout.h>
-#include <ui/VBoxLayout.h>
-#include <ui/SurfaceView.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <sigc++/sigc++.h>
@@ -41,10 +39,44 @@ void
 volumeListener(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    char volText[3];
-    sprintf(volText, "%d", *((int*) arg));
-    bar->_volume->setText(volText);
+    int vol = *((int*) arg);
+
+    if (vol < 30)
+        bar->_sound->setState(0);
+    else if (vol < 60)
+        bar->_sound->setState(2);
+    else
+        bar->_sound->setState(4);
+
     ILOG_DEBUG(ILX_STATUSBAR, "Volume %d\n", *((int*) arg));
+}
+
+void
+homeShowing(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_home->setState(1);
+}
+
+void
+homeHidden(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_home->setState(0);
+}
+
+void
+switcherShowing(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_switch->setState(1);
+}
+
+void
+switcherHidden(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_switch->setState(0);
 }
 
 StatusBar::StatusBar(int argc, char* argv[])
@@ -52,39 +84,60 @@ StatusBar::StatusBar(int argc, char* argv[])
 {
     setTitle("StatusBar");
     setBackgroundFilled(true);
-    setMargins(0, 0, 10, 10);
+    setBackgroundImage(ILIXI_DATADIR"statusbar/statusbar_bg.png");
+    setMargins(0, 0, 0, 0);
     HBoxLayout* mainLayout = new HBoxLayout();
     mainLayout->setVerticalAlignment(Alignment::Middle);
     mainLayout->setSpacing(0);
     setLayout(mainLayout);
 
-    _app = new Label("dfb_ilixi");
-    _app->setLayoutAlignment(TextLayout::Left);
-    _app->setFont(new Font("decker", 36));
-    addWidget(_app);
+    _home = new StatusbarButton();
+    _home->addImage(new Image(ILIXI_DATADIR"statusbar/home.png", Size(48, 48)));
+    _home->addImage(
+            new Image(ILIXI_DATADIR"statusbar/homeG.png", Size(48, 48)));
+    _home->setState(1);
+    _home->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedHome));
+    addWidget(_home);
+
+    _switch = new StatusbarButton();
+    _switch->addImage(
+            new Image(ILIXI_DATADIR"statusbar/switch.png", Size(48, 48)));
+    _switch->addImage(
+            new Image(ILIXI_DATADIR"statusbar/switchG.png", Size(48, 48)));
+    _switch->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSwitcher));
+    addWidget(_switch);
+
+    _temp = new StatusbarButton();
+    _temp->addImage(new Image(ILIXI_DATADIR"statusbar/temp.png", Size(48, 48)));
+    _temp->addImage(
+            new Image(ILIXI_DATADIR"statusbar/tempG.png", Size(48, 48)));
+    addWidget(_temp);
+
+    _sound = new StatusbarButton();
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol1.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol1G.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol2.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol2G.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol3.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol3G.png", Size(48, 48)));
+    addWidget(_sound);
 
     addWidget(new Clock());
 
-    _volume = new Label("  0  ");
-    _volume->setLayoutAlignment(TextLayout::Left);
-    _volume->setFont(new Font("decker", 36));
-    addWidget(_volume);
+    _rca = new RemoteContentArea();
+    addWidget(_rca);
 
     sigVisible.connect(sigc::mem_fun(this, &StatusBar::onShow));
     sigHidden.connect(sigc::mem_fun(this, &StatusBar::onHide));
 
-    _bg = new Image(ILIXI_DATADIR"/images/statusbar_bg.png");
-    tl = Rectangle(0, 0, 32, 32);
-    tm = Rectangle(32, 0, 1, 32);
-    tr = Rectangle(33, 0, 32, 32);
-    l = Rectangle(0, 32, 32, 1);
-    m = Rectangle(32, 32, 1, 1);
-    r = Rectangle(33, 32, 32, 1);
-    bl = Rectangle(0, 33, 32, 32);
-    bm = Rectangle(32, 33, 1, 32);
-    br = Rectangle(33, 33, 32, 32);
-
     _statComp = new StatusbarComponent(this);
+
 }
 
 StatusBar::~StatusBar()
@@ -103,82 +156,53 @@ StatusBar::onShow()
 {
     comaGetComponent("SoundComponent", &_soundComponent);
     _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
+    comaGetComponent("CompositorComponent", &_compComponent);
+    _compComponent->Listen(_compComponent, 3, homeShowing, this);
+    _compComponent->Listen(_compComponent, 4, switcherShowing, this);
+    _compComponent->Listen(_compComponent, 5, homeHidden, this);
+    _compComponent->Listen(_compComponent, 6, switcherHidden, this);
 }
 
 bool
 StatusBar::addRemoteContent(DFBSurfaceID id)
 {
-    SurfaceView* s = new SurfaceView();
-    s->setSourceFromSurfaceID(id);
-
-    if (addWidget(s))
-    {
-        _remoteContent.push_back(s);
-        ILOG_DEBUG(ILX_STATUSBAR, "addRemoteContent..\n");
-        return true;
-    }
-    return false;
+    return _rca->addRemoteContent(id);
 }
 
 bool
 StatusBar::removeRemoteContent(DFBSurfaceID id)
 {
-    for (std::vector<SurfaceView*>::iterator it = _remoteContent.begin();
-            it != _remoteContent.end(); ++it)
-    {
-        if ((*it)->sourceID() == id)
-        {
-            _remoteContent.erase(it);
-            ILOG_DEBUG(ILX_STATUSBAR, "removeRemoteContent..\n");
-            return true;
-        }
-    }
-    return false;
+    return _rca->removeRemoteContent(id);
 }
 
 void
-StatusBar::compose(const PaintEvent& event)
+StatusBar::clickedHome()
 {
-    Painter painter(this);
-    painter.begin(event);
+    if (_home->state() % 2 == 0)
+        AppBase::comaCallComponent(_compComponent, 3, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 5, NULL);
+}
 
-    int w = width();
-    int h = height();
-    int midWidth = w - tl.width() - tr.width();
-    int midHeight = h - bl.height();
-    int midY = tl.height();
-    int by = h - bl.height();
+void
+StatusBar::clickedSwitcher()
+{
+    if (_switch->state() % 2 == 0)
+        AppBase::comaCallComponent(_compComponent, 4, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 6, NULL);
+}
 
-    // top
-    painter.blitImage(_bg, tl, 0, 0);
-    painter.setClip(tl.width(), 0, midWidth, bm.height());
-    painter.tileImage(_bg, tl.width(), 0, tm);
-    painter.resetClip();
-    painter.blitImage(_bg, tr, w - tr.width(), 0);
+void
+StatusBar::clickedTemp()
+{
 
-    // left
-    painter.setClip(0, midY, l.width(), midHeight);
-    painter.tileImage(_bg, 0, midY, l);
-    painter.resetClip();
+}
 
-    // right
-    painter.setClip(w - r.width(), midY, r.width(), midHeight);
-    painter.tileImage(_bg, w - r.width(), midY, r);
-    painter.resetClip();
+void
+StatusBar::clickedSound()
+{
 
-    // mid
-    painter.setClip(l.width(), midY, midWidth, midHeight);
-    painter.tileImage(_bg, l.width(), midY, m);
-    painter.resetClip();
-
-//    // bottom
-//    painter.blitImage(_bg, bl, 0, by);
-//    painter.setClip(bl.width(), by, midWidth, bm.height());
-//    painter.tileImage(_bg, bl.width(), by, bm);
-//    painter.resetClip();
-//    painter.blitImage(_bg, br, w - br.width(), by);
-
-    painter.end();
 }
 
 }

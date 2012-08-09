@@ -111,6 +111,9 @@ public:
     virtual void
     setText(const std::string &text);
 
+    void
+    setSingleLine(bool single);
+
     /*!
      * This signal is emitted if the text is changed.
      */

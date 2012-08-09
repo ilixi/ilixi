@@ -60,8 +60,11 @@ Window::dfbSurface() const
 Size
 Window::windowSize() const
 {
-    int w, h;
-    _dfbWindow->GetSize(_dfbWindow, &w, &h);
+    int w = 0, h = 0;
+    if (_dfbWindow)
+        _dfbWindow->GetSize(_dfbWindow, &w, &h);
+    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_DEBUG(ILX_WINDOW, " -> Size(%d, %d)\n", w, h);
     return Size(w, h);
 }
 
@@ -130,8 +133,8 @@ Window::initDFBWindow(const Size& size)
         desc.posy = 0;
         if (AppBase::appOptions() & OptStatusBar)
         {
-            desc.width = conf.width - 200;
-            desc.height = 50;
+            desc.width = conf.width;
+            desc.height = 54;
         } else
         {
             desc.width = conf.width;
