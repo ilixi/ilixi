@@ -25,7 +25,10 @@ public:
     ~Row();
 
     std::string
-    id() const;
+    xmlID() const;
+
+    unsigned int
+    gap() const;
 
     Key*
     key(const std::string& label);
@@ -46,10 +49,14 @@ public:
     setKeyHeight(unsigned int keyHeight);
 
     void
-    setRowSymbolIndex(unsigned char index);
+    setSymbolState(unsigned char index);
+
+protected:
+    void
+    compose(const PaintEvent& event);
 
 private:
-    std::string _id;
+    std::string _xmlID;
     unsigned int _gap;
     unsigned int _keyHeight;
     std::vector<Key*> _keys;

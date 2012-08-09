@@ -4,66 +4,66 @@
 -->
 <!DOCTYPE keyboard SYSTEM "keyboard.dtd">
 
-<keyboard>    
+<keyboard>
     <row id="numbers" height="%15">
         <key id="N1">
-            <symbol states="0, 1, 2">1</symbol>
-            <symbol states="3">¶</symbol>
-            <symbol states="4">≡</symbol>
+            <symbol states="1, 2, 3">1</symbol>
+            <symbol states="4">¶</symbol>
+            <symbol states="5">≡</symbol>
         </key>
         
         <key id="N2">
-            <symbol states="0, 1, 2">2</symbol>
-            <symbol states="3">~</symbol>
-            <symbol states="4">≤</symbol>
+            <symbol states="1, 2, 3">2</symbol>
+            <symbol states="4">~</symbol>
+            <symbol states="5">≤</symbol>
         </key>
         
         <key id="N3">
-            <symbol states="0, 1, 2">3</symbol>
-            <symbol states="3">=</symbol>
-            <symbol states="4">❤</symbol>
+            <symbol states="1, 2, 3">3</symbol>
+            <symbol states="4">=</symbol>
+            <symbol states="5">❤</symbol>
         </key>
         
         <key id="N4">
-            <symbol states="0, 1, 2">4</symbol>
-            <symbol states="3">_</symbol>
-            <symbol states="4">♡</symbol>
+            <symbol states="1, 2, 3">4</symbol>
+            <symbol states="4">_</symbol>
+            <symbol states="5">♡</symbol>
         </key>
                 
         <key id="N5">
-            <symbol states="0, 1, 2">5</symbol>
-            <symbol states="3">&lt;</symbol>
-            <symbol states="4">✩</symbol>
+            <symbol states="1, 2, 3">5</symbol>
+            <symbol states="4">&lt;</symbol>
+            <symbol states="5">✩</symbol>
         </key>
         
         <key id="N6">
-            <symbol states="0, 1, 2">6</symbol>
-            <symbol states="3">></symbol>
-            <symbol states="4">✪</symbol>
+            <symbol states="1, 2, 3">6</symbol>
+            <symbol states="4">></symbol>
+            <symbol states="5">✪</symbol>
         </key>
         
         <key id="N7">
-            <symbol states="0, 1, 2">7</symbol>
-            <symbol states="3">{</symbol>
-            <symbol states="4">●</symbol>
+            <symbol states="1, 2, 3">7</symbol>
+            <symbol states="4">{</symbol>
+            <symbol states="5">●</symbol>
         </key>
         
         <key id="N8">
-            <symbol states="0, 1, 2">8</symbol>
-            <symbol states="3">}</symbol>
-            <symbol states="4">○</symbol>
+            <symbol states="1, 2, 3">8</symbol>
+            <symbol states="4">}</symbol>
+            <symbol states="5">○</symbol>
         </key>
         
         <key id="N9">
-            <symbol states="0, 1, 2">9</symbol>
-            <symbol states="3">[</symbol>
-            <symbol states="4">;o)</symbol>
+            <symbol states="1, 2, 3">9</symbol>
+            <symbol states="4">[</symbol>
+            <symbol states="5">;o)</symbol>
         </key>
         
         <key id="N0">
-            <symbol states="0, 1, 2">0</symbol>
-            <symbol states="3">]</symbol>
-            <symbol states="4">:(</symbol>
+            <symbol states="1, 2, 3">0</symbol>
+            <symbol states="4">]</symbol>
+            <symbol states="5">:(</symbol>
         </key>
     </row>
             
@@ -150,9 +150,7 @@
             <symbol states="5">B-)</symbol>
         </key>
         
-    </row>
-    
-    
+    </row>        
     
     <row id="rowA" gap="10" height="%20">
         
@@ -223,8 +221,8 @@
         <key id="l">
             <symbol states="1">l</symbol>
             <symbol states="2">L</symbol>
-            <symbol states="3">(</symbol>
-            <symbol states="4"></symbol>
+            <symbol states="3">XX</symbol>
+            <symbol states="4">XX</symbol>
             <symbol states="5">:o</symbol>
         </key>
  
@@ -232,8 +230,9 @@
 
 	<row id="rowShift" height="%20">
 	            
-        <key id="Shift" modifier="yes" states="0, 1" constraint="extend">
-            <icon>@DATADIR:shift.png</icon>
+        <key id="Shift" modifier="yes" constraint="extend">
+            <icon>@DATADIR:caps.png</icon>
+			<rollStates>1, 2</rollStates>
         </key>
         
         <key id="z">
@@ -292,7 +291,50 @@
             <symbol states="5">=-o</symbol>
         </key>
 
-        <key id="BackSpace" repeatable="yes" constraint="extend" icon="@DATADIR:backspace.png"/>
+        <key id="BackSpace" constraint="extend" repeatable="yes">
+            <symbol states="1, 2, 3, 4, 5" unicode="yes">U+0008</symbol>
+			<icon>@DATADIR:backspace.png</icon>
+        </key>
+        
     </row>
+    
+	<row id="Bottom" height="%25">
+		<key id="ABC" sticky="yes" constraint="extend" repeatable="yes">
+            <symbol states="1, 2">ABC</symbol>
+			<symbol states="3">SYM1</symbol>
+            <symbol states="4">SYM2</symbol>
+            <symbol states="5">SYM3</symbol>
+            <rollStates>3, 4, 5</rollStates>
+        </key>
+        
+        <key id="Left" special="yes">
+            <symbol states="1, 2, 3, 4, 5">DIKS_CURSOR_LEFT</symbol>
+            <icon>@DATADIR:left_arrow.png</icon>
+        </key>
+		
+		<key id="Space" constraint="extend">
+            <symbol states="1, 2, 3, 4, 5"> </symbol>
+            <icon>@DATADIR:space.png</icon>
+        </key>
+
+		<key id="Right" special="yes">
+            <symbol states="1, 2, 3, 4, 5">DIKS_CURSOR_RIGHT</symbol>
+            <icon>@DATADIR:right_arrow.png</icon>
+        </key>
+        
+		<key id="Dot">
+            <symbol states="1, 2, 3, 4, 5">.</symbol>            
+        </key>
+        
+		<key id="Return" special="yes">
+            <symbol states="1, 2, 3, 4, 5">DIKS_ENTER</symbol>
+            <icon>@DATADIR:return.png</icon>
+        </key>
+        
+		<key id="Close" special="yes">
+            <symbol states="1, 2, 3, 4, 5">CLOSE</symbol>
+            <icon>@DATADIR:cancel.png</icon>
+        </key>
+	</row>
                  
 </keyboard>

@@ -22,6 +22,9 @@ public:
     virtual
     ~Keyboard();
 
+    void
+    setSymbolState(unsigned char state);
+
     bool
     parseLayoutFile(const char* file);
 
@@ -40,6 +43,9 @@ private:
 
     void
     release();
+
+    void
+    updateKeyboardGeometry();
 };
 
 } /* namespace ilixi */

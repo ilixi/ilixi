@@ -22,6 +22,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <core/Logger.h>
+#include <vector>
+
+namespace ilixi
+{
+
+D_DEBUG_DOMAIN( ILX_UTF8_DECODER, "ilixi/osk/utf8", "utf8");
 
 #define ASCII_IN_TABLE 1
 
@@ -72,7 +79,7 @@ static const uint8_t utf8d[] = {
 };
 
 void
-decode(uint8_t* s)
+decode(uint8_t* s, std::vector<uint32_t>& ucs32)
 {
     uint8_t data, byte, stat = 9;
     uint32_t unic = 0;
@@ -103,7 +110,8 @@ decode(uint8_t* s)
         if (!stat)
         {
             // unic is now a proper code point, we just print it out.
-            printf("U+%04X\n", unic);
+            ILOG_DEBUG(ILX_UTF8_DECODER, "U+%04X\n", unic);
+            ucs32.push_back(unic);
             unic = 0;
         }
 
@@ -115,5 +123,7 @@ decode(uint8_t* s)
 
     }
 }
+
+} /* namespace ilixi */
 
 #endif /* UTF8_DECODER_H_ */

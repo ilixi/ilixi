@@ -12,12 +12,14 @@ namespace ilixi
 
 Row::Row(const std::string& id, Widget* parent)
         : Widget(parent),
-          _id(id),
+          _xmlID(id),
           _gap(0),
           _keyHeight(100)
 {
+    setInputMethod(PointerInput);
     _box = new HBoxLayout();
     addChild(_box);
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Row::updateRowGeometry));
 }
 
 Row::~Row()
@@ -25,9 +27,15 @@ Row::~Row()
 }
 
 std::string
-Row::id() const
+Row::xmlID() const
 {
-    return _id;
+    return _xmlID;
+}
+
+unsigned int
+Row::gap() const
+{
+    return _gap;
 }
 
 Key*
@@ -43,6 +51,7 @@ void
 Row::addKey(Key* key)
 {
     _box->addWidget(key);
+    _keys.push_back(key);
 }
 
 void
@@ -70,10 +79,15 @@ Row::setKeyHeight(unsigned int keyHeight)
 }
 
 void
-Row::setRowSymbolIndex(unsigned char index)
+Row::setSymbolState(unsigned char index)
 {
     for (unsigned int i = 0; i < _keys.size(); ++i)
         _keys[i]->setSymbolState(index);
+}
+
+void
+Row::compose(const PaintEvent& event)
+{
 }
 
 void

@@ -34,57 +34,6 @@
 
 using namespace ilixi;
 
-class OSKButton;
-
-class OSKButtonThread : public Thread
-{
-public:
-    OSKButtonThread(OSKButton* button);
-
-    virtual
-    ~OSKButtonThread();
-
-    int
-    run();
-
-private:
-    OSKButton* _button;
-};
-
-class OSKButton : public ToolButton
-{
-    friend class OSK;
-public:
-    /*!
-     * Constructor
-     * @param text
-     * @param parent
-     */
-    OSKButton(std::string text, Widget* parent = 0);
-
-    OSKButton(std::string c1, std::string c2, std::string c3,
-              DFBInputDeviceKeySymbol s1, DFBInputDeviceKeySymbol s2,
-              DFBInputDeviceKeySymbol s3, Widget* parent = 0);
-
-    /*!
-     * Destructor
-     */
-    virtual
-    ~OSKButton();
-
-    void
-    pressSlot();
-
-    static LineInput* _target;
-    static short _mode;
-
-private:
-    const std::string _c1, _c2, _c3;
-    DFBInputDeviceKeySymbol _s1, _s2, _s3;
-    //  OSKButtonThread* _thread;
-
-};
-
 class OSK : public Application
 {
 public:
@@ -94,30 +43,8 @@ public:
     ~OSK();
 
 private:
-    LineInput* _input;
     Font* _buttonFont;
-    OSKButton* _caps;
-    OSKButton* _style;
-    std::vector<OSKButton*> _keys;
     Keyboard* _keyboard;
-
-    void
-    append(DFBInputDeviceKeySymbol key);
-
-    void
-    changeCase();
-
-    void
-    changeLayout();
-
-    void
-    changeSymbols();
-
-    void
-    createKeys();
-
-    void
-    done();
 
     void
     compose(const PaintEvent& event);

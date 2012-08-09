@@ -10,9 +10,12 @@
 
 #include <ui/ToolButton.h>
 #include <map>
+#include <vector>
 
 namespace ilixi
 {
+
+class Keyboard;
 
 class Key : public ToolButton
 {
@@ -25,10 +28,13 @@ public:
         Repeatable = 0x008 //!< Long-press will repeat.
     };
 
-    Key(const std::string& id, Widget* parent = 0);
+    Key(const std::string& id, Keyboard* keyboard, Widget* parent = 0);
 
     virtual
     ~Key();
+
+    std::string
+    xmlID() const;
 
     unsigned char
     symbolState() const;
@@ -43,19 +49,27 @@ public:
     setKeyMode(KeyMode keyMode);
 
     void
-    addSymbol(unsigned int state, const std::string& symbol);
+    addSymbol(const std::string& states, const std::string& symbol);
+
+    void
+    setRollStates(const std::string& rollStates);
 
 private:
+    std::string _xmlID;
     KeyMode _keyMode;
     unsigned char _state;
+    Keyboard* _keyboard;
+    typedef std::list<unsigned char> RollStateList;
+    RollStateList _rollStates;
 
     struct utf8Data
     {
         std::string str;
-        uint32_t* data;
+        std::vector<uint32_t> ucs32;
     };
 
-    std::map<unsigned int, std::string> _symbols;
+    typedef std::map<unsigned char, utf8Data> SymbolMap;
+    SymbolMap _symbols;
 
     void
     pressSlot();
