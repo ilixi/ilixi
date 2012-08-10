@@ -90,9 +90,18 @@ Image::width() const
 }
 
 Size
-Image::size() const
+Image::size()
 {
-    return _size;
+    if (_size.isValid())
+        return _size;
+    else if (loadImage())
+    {
+        int w, h;
+        _dfbSurface->GetSize(_dfbSurface, &w, &h);
+        return Size(w, h);
+    } else
+        return _size;
+
 }
 
 IDirectFBSurface*

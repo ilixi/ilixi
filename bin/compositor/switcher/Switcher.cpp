@@ -22,82 +22,115 @@
  */
 
 #include "Switcher.h"
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
-  Switcher::Switcher(Widget* parent) :
-      Widget(parent), _current(NULL), _currentID(-1)
-  {
+D_DEBUG_DOMAIN( ILX_SWITCHER, "ilixi/comp/Switcher", "Switcher");
+
+Switcher::Switcher(Widget* parent)
+        : Widget(parent),
+          _current(NULL),
+          _currentID(-1)
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     setInputMethod(PointerInput);
     setConstraints(ExpandingConstraint, FixedConstraint);
     setVisible(false);
-  }
+}
 
-  Switcher::~Switcher()
-  {
-  }
+Switcher::~Switcher()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
+}
 
-  Size
-  Switcher::preferredSize() const
-  {
+Size
+Switcher::preferredSize() const
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     return Size(100, 100);
-  }
+}
 
-  void
-  Switcher::show()
-  {
+unsigned int
+Switcher::itemCount() const
+{
+    return _thumbs.size();
+}
+
+void
+Switcher::show()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     setVisible(true);
-  }
+}
 
-  void
-  Switcher::hide()
-  {
+void
+Switcher::hide()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     setVisible(false);
-  }
+}
 
-  void
-  Switcher::scrollToNext()
-  {
-    scrollTo(nextThumb());
-  }
+void
+Switcher::scrollToNext()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
+    if (_thumbs.size() > 1)
+        scrollTo(nextThumb());
+}
 
-  void
-  Switcher::scrollToPrevious()
-  {
-    scrollTo(previousThumb());
-  }
+void
+Switcher::scrollToPrevious()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
+    if (_thumbs.size() > 1)
+        scrollTo(previousThumb());
+}
 
-  AppThumbnail*
-  Switcher::currentThumb()
-  {
+AppThumbnail*
+Switcher::currentThumb()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     return _current;
-  }
+}
 
-  AppThumbnail*
-  Switcher::nextThumb()
-  {
+AppThumbnail*
+Switcher::nextThumb()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     if (_currentID >= 0)
-      {
+    {
         if (++_currentID == _thumbs.size())
-          _currentID = 0;
+            _currentID = 0;
 
         return _thumbs[_currentID];
-      }
+    }
     return NULL;
-  }
+}
 
-  AppThumbnail*
-  Switcher::previousThumb()
-  {
+AppThumbnail*
+Switcher::previousThumb()
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
     if (_currentID >= 0)
-      {
+    {
         if (--_currentID == -1)
-          _currentID = _thumbs.size() - 1;
+            _currentID = _thumbs.size() - 1;
 
         return _thumbs[_currentID];
-      }
+    }
     return NULL;
-  }
+}
+
+void
+Switcher::setCurrentThumb(AppThumbnail* thumb)
+{
+    ILOG_TRACE_W(ILX_SWITCHER);
+    _current = thumb;
+    for (unsigned int i = 0; i < _thumbs.size(); ++i)
+        if (_thumbs[i] == thumb)
+            _currentID = i;
+}
 
 } /* namespace ilixi */

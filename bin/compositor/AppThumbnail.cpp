@@ -49,7 +49,7 @@ namespace ilixi
   Size
   AppThumbnail::preferredSize() const
   {
-    return Size(196, 196);
+    return Size(196, 156);
   }
 
   void

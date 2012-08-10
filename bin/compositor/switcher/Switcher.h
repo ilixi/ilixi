@@ -29,12 +29,12 @@
 namespace ilixi
 {
 
-  /*!
-   * Allows switching between applications.
-   */
-  class Switcher : public Widget
-  {
-  public:
+/*!
+ * Allows switching between applications.
+ */
+class Switcher : public Widget
+{
+public:
     /*!
      * Constructor.
      */
@@ -51,6 +51,9 @@ namespace ilixi
      */
     virtual Size
     preferredSize() const;
+
+    unsigned int
+    itemCount() const;
 
     /*!
      * Adds a thumb to switcher.
@@ -123,12 +126,15 @@ namespace ilixi
     virtual void
     setOptimalGeometry(int width, int height) = 0;
 
+    void
+    setCurrentThumb(AppThumbnail*);
+
     /*!
      * This signal is used to notify compositor.
      */
     sigc::signal<void> sigSwitchRequest;
 
-  protected:
+protected:
     //! This property stores the current thumbnail.
     AppThumbnail* _current;
 
@@ -138,7 +144,8 @@ namespace ilixi
     typedef std::vector<AppThumbnail*> Thumbnails;
     //! Thumbnails are also stored in a vector for ease of access.
     Thumbnails _thumbs;
-  };
+
+};
 
 } /* namespace ilixi */
 #endif /* SWITCHER_H_ */

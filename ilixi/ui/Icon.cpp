@@ -80,7 +80,8 @@ Icon::preferredSize() const
 {
     if (size().isValid())
         return size();
-    return stylist()->defaultSize(StyleHint::Icon);
+    return _default->size();
+//    return stylist()->defaultSize(StyleHint::Icon);
 }
 
 Image*

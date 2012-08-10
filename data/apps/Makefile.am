@@ -10,6 +10,7 @@ miscdata_DATA 	=	application.dtd \
 					lite_web.appdef \
 					matrix.appdef \
 					neo.appdef \
+					osk.appdef \
 					particle.appdef \
 					penguins.appdef \
 					soundmixer.appdef \

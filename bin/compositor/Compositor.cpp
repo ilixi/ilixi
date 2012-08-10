@@ -120,6 +120,7 @@ Compositor::showLauncher(bool show)
 {
     if (show && !_launcher->visible())
     {
+        ILOG_TRACE_W(ILX_COMPOSITOR);
         if (_currentApp)
         {
             _currentApp->view()->hide();
@@ -153,9 +154,10 @@ Compositor::showLauncher(bool show)
 void
 Compositor::showSwitcher(bool show)
 {
-    if (_appMan->instanceCount() < 2)
+    if (_switcher->itemCount() < 2)
         return;
 
+    ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show)
     {
         _switcher->show();

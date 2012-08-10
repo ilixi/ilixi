@@ -10,11 +10,14 @@ miscdata_DATA 	=	andi.png \
 			gallery.png \
 			input.png \
 			knuckles.png \
+			left.png \
 			matrix.png \
 			neo.png \
 			particle.png \
 			player.png \
 			qt-qml.png \
+			right.png \
+			switcher.png \
 			texture.png \
 			verabd.ttf \
 			webkitdfb.png

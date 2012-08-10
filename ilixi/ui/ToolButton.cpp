@@ -33,7 +33,8 @@ D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
 ToolButton::ToolButton(std::string text, Widget* parent)
         : Button(text, parent),
           _toolButtonStyle(IconBeforeText),
-          _icon(NULL)
+          _icon(NULL),
+          _drawFrame(true)
 {
     ILOG_TRACE_W(ILX_TOOLBUTTON);
     setConstraints(FixedConstraint, FixedConstraint);
@@ -53,8 +54,10 @@ ToolButton::preferredSize() const
     if (text().empty() && !icon())
         return stylist()->defaultSize(StyleHint::PushButton);
 
-    int w = stylist()->defaultParameter(StyleHint::ToolButtonLR);
-    int h = stylist()->defaultParameter(StyleHint::ToolButtonTB);
+    int w = _drawFrame ?
+            stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
+    int h = _drawFrame ?
+            stylist()->defaultParameter(StyleHint::ToolButtonTB) : 0;
 
     if (checkable())
     {
@@ -163,13 +166,22 @@ ToolButton::setIconSize(const Size& size)
 }
 
 void
+ToolButton::setDrawFrame(bool drawFrame)
+{
+    _drawFrame = drawFrame;
+}
+
+void
 ToolButton::compose(const PaintEvent& event)
 {
-    ILOG_TRACE_W(ILX_TOOLBUTTON);
-    Painter p(this);
-    p.begin(event);
-    stylist()->drawToolButton(&p, this);
-    p.end();
+    if (_drawFrame)
+    {
+        ILOG_TRACE_W(ILX_TOOLBUTTON);
+        Painter p(this);
+        p.begin(event);
+        stylist()->drawToolButton(&p, this);
+        p.end();
+    }
 }
 
 void
@@ -197,6 +209,8 @@ ToolButton::updateTextBaseGeometry()
 
     if (_icon)
     {
+        if (!_icon->size().isValid())
+            _icon->setSize(_icon->preferredSize());
         iconW = _icon->width();
         iconH = _icon->height() + 1;
     }

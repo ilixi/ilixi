@@ -25,18 +25,19 @@
 #define HORIZONTALSWITCHER_H_
 
 #include "Switcher.h"
-#include "ui/ScrollArea.h"
-#include "ui/HBoxLayout.h"
+#include "HorizontalScroller.h"
+#include <ui/ScrollArea.h>
+#include <ui/HBoxLayout.h>
+#include <ui/ToolButton.h>
 
 namespace ilixi
 {
-
-  /*!
-   * Allows switching between applications using a ScrollArea.
-   */
-  class HorizontalSwitcher : public Switcher
-  {
-  public:
+/*!
+ * Allows switching between applications using a ScrollArea.
+ */
+class HorizontalSwitcher : public Switcher
+{
+public:
     /*!
      * Initialises ScrollArea, layout and animations.
      */
@@ -69,11 +70,15 @@ namespace ilixi
     virtual void
     setOptimalGeometry(int width, int height);
 
-  protected:
-    ScrollArea* _scrollArea;
-    HBoxLayout* _box;
+protected:
+    Image* _bg;
+    ToolButton* _left;
+    ToolButton* _right;
+    HorizontalScroller* _scroller;
+
     TweenAnimation _anim;
     Tween* _tween;
+    int _anchorY;
 
     virtual void
     compose(const PaintEvent& event);
@@ -81,13 +86,13 @@ namespace ilixi
     void
     updateSwitcherGeometry();
 
-  private:
+private:
     virtual void
     tweenSlot();
 
     virtual void
     tweenEndSlot();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* HORIZONTALSWITCHER_H_ */

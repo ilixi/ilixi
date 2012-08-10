@@ -41,8 +41,7 @@ public:
         TextOnly, //!< Only text is drawn.
         IconBeforeText, //!< Icon is placed before text.
         IconBelowText, //!< Icon is placed below text and centered.
-        IconAboveText
-    //!< Icon is placed above text and centered.
+        IconAboveText  //!< Icon is placed above text and centered.
     };
 
     /*!
@@ -101,11 +100,19 @@ public:
     void
     setIconSize(const Size& size);
 
+    /*!
+     * Sets whether frame is drawn or not.
+     */
+    void
+    setDrawFrame(bool drawFrame);
+
 private:
-    //    ! This property holds tool button's style.
+    //! This property holds tool button's style.
     ToolButtonStyle _toolButtonStyle;
     //! This property holds button's icon.
     Icon* _icon;
+    //! This flag specifies whether button frame is drawn.
+    bool _drawFrame;
 
     /*!
      * Paints ToolButton on its surface using current designer.

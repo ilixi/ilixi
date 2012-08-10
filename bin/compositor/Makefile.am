@@ -36,6 +36,8 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						component/SoundComponent.cpp \
 						switcher/CarouselSwitcher.h \
 						switcher/CarouselSwitcher.cpp \
+						switcher/HorizontalScroller.cpp \
+						switcher/HorizontalScroller.h \
 						switcher/HorizontalSwitcher.h \
 						switcher/HorizontalSwitcher.cpp \
 						switcher/Switcher.h \

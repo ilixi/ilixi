@@ -90,7 +90,13 @@ public:
      * Returns size of image.
      */
     Size
-    size() const;
+    size();
+
+    /*!
+     * Returns actual size of image.
+     */
+    Size
+    preferredSize() const;
 
     /*!
      * Returns a pointer to DirectFB surface.
