@@ -55,6 +55,8 @@ HBoxLayout::setVerticalAlignment(Alignment::Vertical alignment)
 int
 HBoxLayout::heightForWidth(int width) const
 {
+    if (!_children.size())
+        return -1;
     // TODO This method is not working...
     int h = 0; // max. height
     int hTemp = 0; // height for current widget
@@ -96,6 +98,9 @@ HBoxLayout::heightForWidth(int width) const
 Size
 HBoxLayout::preferredSize() const
 {
+    if (!_children.size())
+        return Size(50, 50);
+
     Widget* widget; // current widget
     int w = 0; // total width
     int h = 0; // max. height

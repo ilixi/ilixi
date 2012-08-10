@@ -52,6 +52,7 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    static Image* _bgDef;
     std::vector<SurfaceView*> _remoteContent;
 };
 

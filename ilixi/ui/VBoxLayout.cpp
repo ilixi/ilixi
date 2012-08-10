@@ -57,6 +57,8 @@ VBoxLayout::setHorizontalAlignment(Alignment::Horizontal alignment)
 int
 VBoxLayout::heightForWidth(int width) const
 {
+    if (!_children.size())
+        return -1;
     ILOG_TRACE_W(ILX_VBOX);
     Widget* widget; // current widget
     int h = 0; // total height
@@ -118,6 +120,9 @@ VBoxLayout::heightForWidth(int width) const
 Size
 VBoxLayout::preferredSize() const
 {
+    if (!_children.size())
+        return Size(50, 50);
+
     ILOG_TRACE_W(ILX_VBOX);
     int w = 0; // max. width.
     int h = 0; // total height.
