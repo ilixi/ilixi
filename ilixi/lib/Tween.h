@@ -95,6 +95,12 @@ public:
     initialValue() const;
 
     /*!
+     * Returns true if tween is enabled.
+     */
+    bool
+    enabled() const;
+
+    /*!
      * Returns end value.
      */
     float
@@ -125,12 +131,19 @@ public:
     setInitialValue(float initialValue);
 
     /*!
+     * Enables/Disables tween.
+     */
+    void
+    setEnabled(bool enabled);
+
+    /*!
      * Sets end value of tweened variable.
      */
     void
     setEndValue(float endValue);
 
 private:
+    bool _enabled;
     //! This property stores transition.
     Transition _transition;
     //! This property stores equation.

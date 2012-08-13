@@ -30,7 +30,8 @@ namespace ilixi
 
 Tween::Tween(Transition transition, Equation equation, float initialValue,
              float endValue)
-        : _transition(transition),
+        : _enabled(true),
+          _transition(transition),
           _equation(equation),
           _initialValue(initialValue),
           _change(endValue - initialValue),
@@ -102,10 +103,25 @@ Tween::setEndValue(float endValue)
     _change = endValue - _initialValue;
 }
 
+bool
+Tween::enabled() const
+{
+    return _enabled;
+}
+
+void
+Tween::setEnabled(bool enabled)
+{
+    _enabled = enabled;
+}
+
 void
 Tween::runEase(float t, float d)
 {
     using namespace Ease;
+
+    if (!_enabled)
+        return;
 
     switch (_transition)
     {
