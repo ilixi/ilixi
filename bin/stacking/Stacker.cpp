@@ -27,9 +27,9 @@
 namespace ilixi
 {
 
-  Stacker::Stacker(int argc, char* argv[]) :
-      Application(&argc, &argv)
-  {
+Stacker::Stacker(int argc, char* argv[])
+        : Application(&argc, &argv)
+{
     setTitle("Stacking");
     setBackgroundImage(ILIXI_DATADIR"images/grid.png");
 
@@ -74,50 +74,50 @@ namespace ilixi
     pb1 = new PushButton("Button 1");
     addWidget(pb1);
     pb1->setGeometry(200, 100, 100, 100);
-  }
+}
 
-  Stacker::~Stacker()
-  {
-  }
+Stacker::~Stacker()
+{
+}
 
-  void
-  Stacker::sendBack()
-  {
-    ILOG_DEBUG(ILX, "back: %d\n", widgetToBack(pb1));
+void
+Stacker::sendBack()
+{
+    pb1->sendToBack();
     update();
-  }
+}
 
-  void
-  Stacker::bringForward()
-  {
-    ILOG_DEBUG(ILX, "front: %d\n", widgetToFront(pb1));
+void
+Stacker::bringForward()
+{
+    pb1->bringToFront();
     update();
-  }
+}
 
-  void
-  Stacker::raise()
-  {
+void
+Stacker::raise()
+{
     pb1->setZ(pb1->z() + 1);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
 //    ILOG_DEBUG(ILX, "raise: %d\n", raiseWidget(pb1));
     update();
-  }
+}
 
-  void
-  Stacker::lower()
-  {
+void
+Stacker::lower()
+{
     pb1->setZ(pb1->z() - 1);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
 //    ILOG_DEBUG(ILX, "lower: %d\n", lowerWidget(pb1));
     update();
-  }
+}
 
 } /* namespace ilixi */
 
 int
 main(int argc, char* argv[])
 {
-  ilixi::Stacker app(argc, argv);
-  app.exec();
-  return 0;
+    ilixi::Stacker app(argc, argv);
+    app.exec();
+    return 0;
 }
