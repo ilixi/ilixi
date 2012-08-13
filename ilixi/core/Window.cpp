@@ -107,7 +107,7 @@ Window::initDFBWindow(const Size& size)
 
     desc.pixelformat = DSPF_ARGB;
     desc.surface_caps = DSCAPS_DOUBLE;
-    desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL | DWOP_SCALE);
+    desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL);
 #ifdef ILIXI_STEREO_OUTPUT
     desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL
             | DWCAPS_STEREO);
@@ -131,15 +131,8 @@ Window::initDFBWindow(const Size& size)
         ILOG_DEBUG(ILX_WINDOW, "Main window is initialising...\n");
         desc.posx = 0;
         desc.posy = 0;
-        if (AppBase::appOptions() & OptStatusBar)
-        {
-            desc.width = conf.width;
-            desc.height = 54;
-        } else
-        {
-            desc.width = conf.width;
-            desc.height = conf.height;
-        }
+        desc.width = conf.width;
+        desc.height = conf.height;
         desc.stacking = DWSC_MIDDLE;
     } else // other windows
     {

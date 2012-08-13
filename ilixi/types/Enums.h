@@ -246,7 +246,6 @@ enum AppOptions
     OptExclusive = 0x001, //!< Application will use layer exclusively.
     OptFullScreenUpdate = 0x002, //!< Windows will update whole surface each time.
     OptTripleAccelerated = 0x004,
-    OptStatusBar = 0x100,
     OptDale = 0x200
 };
 }
