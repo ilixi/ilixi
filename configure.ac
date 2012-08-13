@@ -108,6 +108,11 @@ if test "$enable_stereo" = "yes"; then
 	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereo output])
 fi
 
+AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
+if test "$enable_dale" = "yes"; then
+	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
+fi
+
 ######################################################################
 # DOXYGEN SUPPORT
 ######################################################################
@@ -165,6 +170,7 @@ AC_CONFIG_FILES([ \
 		bin/compositor/images/Makefile \
 		bin/carousel/Makefile \
 		bin/osk/Makefile \
+		bin/test/Makefile \
 		ilixi.pc:ilixi.pc.in
 ])
 AC_OUTPUT
@@ -179,7 +185,9 @@ AC_MSG_RESULT([
    CPPFLAGS                 : $CPPFLAGS
    CFLAGS                   : $CFLAGS
    LDFLAGS                  : $LDFLAGS
-   Log level                : $LOGGER_LEVEL   
+   Log level                : $LOGGER_LEVEL
+   Stereo output support    : $enable_stereo   
+   FusionDale support       : $enable_dale
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.

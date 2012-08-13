@@ -37,6 +37,7 @@ IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
+IComaComponent* AppBase::__oskComp = NULL;
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
         : __options(options),
@@ -80,6 +81,7 @@ AppBase::setTitle(std::string title)
     __title = title;
 }
 
+#if ILIXI_HAVE_FUSIONDALE
 bool
 AppBase::comaGetComponent(const char* name, IComaComponent** component)
 {
@@ -127,6 +129,16 @@ AppBase::comaCallComponent(IComaComponent* component, ComaMethodID method,
     }
     return false;
 }
+
+IComaComponent*
+AppBase::oskComponent()
+{
+    if (__oskComp == NULL)
+        AppBase::comaGetComponent("OSKComponent", &__oskComp);
+    return __oskComp;
+}
+
+#endif
 
 void
 AppBase::handleUserEvent(const DFBUserEvent& event)
@@ -183,7 +195,7 @@ AppBase::initDFB(int* argc, char*** argv)
             ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
 
         ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
-
+#if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
             if (FusionDaleInit(argc, argv) != DR_OK)
@@ -198,7 +210,7 @@ AppBase::initDFB(int* argc, char*** argv)
 
             ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
         }
-
+#endif
     } else
         ILOG_WARNING(ILX_APPBASE,
                      "DirectFB interfaces are already initialised.\n");
@@ -209,16 +221,20 @@ AppBase::releaseDFB()
 {
     if (__dfb)
     {
+#if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
             ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale interfaces...\n");
+            if (__oskComp)
+                __oskComp->Release(__oskComp);
+            __oskComp = NULL;
             _coma->Release(_coma);
             _coma = NULL;
             _dale->Release(_dale);
             _dale = NULL;
             ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
         }
-
+#endif
         ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
 
         if (__buffer)

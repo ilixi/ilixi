@@ -32,10 +32,13 @@
 #include <core/Window.h>
 #include <list>
 #include <map>
+
+#if ILIXI_HAVE_FUSIONDALE
 extern "C"
 {
 #include <fusiondale.h>
 }
+#endif
 
 namespace ilixi
 {
@@ -97,6 +100,7 @@ public:
     void
     setTitle(std::string title);
 
+#if ILIXI_HAVE_FUSIONDALE
     static bool
     comaGetComponent(const char* name, IComaComponent** component);
 
@@ -106,6 +110,10 @@ public:
     static bool
     comaCallComponent(IComaComponent* component, ComaMethodID method,
                       void* arg);
+
+    static IComaComponent*
+    oskComponent();
+#endif
 
 protected:
     /*!
@@ -208,8 +216,14 @@ private:
     //! AppBase instance.
     static AppBase* __instance;
 
+#if ILIXI_HAVE_FUSIONDALE
+    //! FusionDale interface.
     IFusionDale* _dale;
+    //! directfb.org coma world.
     IComa* _coma;
+    //! ilixi OSK component.
+    static IComaComponent* __oskComp;
+#endif
 
     /*!
      * Initialise DirectFB. This method is executed
