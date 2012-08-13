@@ -20,7 +20,9 @@ class OSKComponent : public ilixi::ComaComponent
 {
     enum OSKMethods
     {
-        ShowOSK, HideOSK
+        ShowOSK = 0,
+        HideOSK = 1,
+        ConsumeKey = 2
     };
 
     enum LayoutMode

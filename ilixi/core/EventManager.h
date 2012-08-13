@@ -153,6 +153,13 @@ private:
     Widget* _oskWidget;
     //! WindowWidget that created this event manager.
     WindowWidget* _creator;
+
+    struct OSKRequest
+    {
+        DFBRectangle inputRect;
+        int mode;
+        pid_t process;
+    };
 };
 }
 

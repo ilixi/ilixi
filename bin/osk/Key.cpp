@@ -1,8 +1,24 @@
 /*
- * Key.cpp
- *
- *  Created on: Aug 6, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Key.h"
@@ -11,16 +27,21 @@
 #include <core/Logger.h>
 #include <algorithm>
 
+#include <direct/util.h>
+#include <directfb_keynames.h>
+
 namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_KEY, "ilixi/osk/Key", "Key");
 
+static const DirectFBKeySymbolNames( symbol_names );
+
 Key::Key(const std::string& id, Keyboard* keyboard, Widget* parent)
         : ToolButton(id, parent),
           _xmlID(id),
           _keyMode(Default),
-          _state(1),
+          _keyState(1),
           _keyboard(keyboard)
 {
     setInputMethod(PointerInput);
@@ -43,7 +64,7 @@ Key::xmlID() const
 unsigned char
 Key::symbolState() const
 {
-    return _state;
+    return _keyState;
 }
 
 void
@@ -53,18 +74,21 @@ Key::setSymbolState(unsigned char state)
         setDisabled();
     else if (_keyMode & Modifier)
     {
-        RollStateList::iterator it = std::find(_rollStates.begin(), _rollStates.end(),
-                                     state);
+        RollStateList::iterator it = std::find(_rollStates.begin(),
+                                               _rollStates.end(), state);
         if (state == *it)
-            _state = state;
-        else
+        {
+            _keyState = state;
+            setEnabled();
+        } else
             setDisabled();
     } else
     {
-        _state = state;
-        setText(_symbols[_state].str);
-        ILOG_DEBUG(ILX_KEY,
-                   "State %d Text %s\n", _state, _symbols[_state].str.c_str());
+        _keyState = state;
+        setText(_symbols[_keyState].str);
+        ILOG_DEBUG(
+                ILX_KEY,
+                "%s (%d, %s)\n", _xmlID.c_str(), _keyState, _symbols[_keyState].str.c_str());
     }
 }
 
@@ -86,13 +110,22 @@ Key::setKeyMode(KeyMode keyMode)
 void
 Key::addSymbol(const std::string& states, const std::string& symbol)
 {
+
     char* pch = strtok(const_cast<char*>(states.c_str()), " ,");
     while (pch != NULL)
     {
         unsigned char state = atoi(pch);
         utf8Data keyData;
         ILOG_DEBUG(ILX_KEY, "State: %d\n", state);
-        decode((uint8_t*) symbol.c_str(), keyData.ucs32);
+
+        if (_keyMode & Special)
+        {
+            for (int i = 0; i < D_ARRAY_SIZE(symbol_names); i++)
+                if (symbol_names[i].name == symbol)
+                    keyData.ucs32.push_back(symbol_names[i].symbol);
+
+        } else
+            decode((uint8_t*) symbol.c_str(), keyData.ucs32);
         keyData.str = symbol;
 
         _symbols.insert(std::pair<unsigned char, utf8Data>(state, keyData));
@@ -118,20 +151,33 @@ Key::pressSlot()
 {
     if (_keyMode & Modifier)
     {
-        ILOG_DEBUG(ILX_KEY, "Modifier state: %d\n", _state);
-        _state + 1;
-        _keyboard->setSymbolState(_state);
+        ILOG_DEBUG(ILX_KEY, "Modifier state: %d\n", _keyState);
+        _keyboard->setSymbolState(getNextState());
     } else if (_keyMode & Sticky)
     {
-        ILOG_DEBUG(ILX_KEY, "Sticky state: %d\n", _state);
-        if (_state == _symbols.size())
-            _state = 0;
-        _keyboard->setSymbolState(_state + 1);
+        ILOG_DEBUG(ILX_KEY, "Sticky state: %d\n", _keyState);
+        if (_keyState == _symbols.size())
+            _keyboard->setSymbolState(1);
+        else
+            _keyboard->setSymbolState(_keyState + 1);
     } else
+        _keyboard->forwardKeyData(_symbols[_keyState].ucs32);
+}
+
+unsigned char
+Key::getNextState()
+{
+    unsigned int next = _rollStates[0];
+    for (unsigned int i = 0; i < _rollStates.size(); ++i)
     {
-        // encode symbols
-        // _target->consumeKeyEvent(KeyEvent(KeyDownEvent, _symbols[_index]));
+        if (_keyState == _rollStates[i])
+        {
+            if (i + 1 < _rollStates.size())
+                next = _rollStates[i + 1];
+            break;
+        }
     }
+    return next;
 }
 
 } /* namespace ilixi */

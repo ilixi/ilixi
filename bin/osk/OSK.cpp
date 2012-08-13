@@ -29,7 +29,7 @@
 #include <ilixiConfig.h>
 
 OSK::OSK(int argc, char* argv[])
-        : Application(&argc, &argv),
+        : Application(&argc, &argv, OptDale),
           _buttonFont(NULL)
 {
     setTitle("OSK");
@@ -55,7 +55,7 @@ OSK::compose(const PaintEvent& event)
     Painter painter(this);
     painter.begin(event);
     painter.setBrush(Color(0, 0, 0, 128));
-    painter.drawRectangle(0, 0, width(), height());
+    painter.fillRectangle(0, 0, width(), height());
     painter.end();
 }
 

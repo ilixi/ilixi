@@ -25,6 +25,7 @@
 #include <ui/Widget.h>
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
+#include <core/AppBase.h>
 
 namespace ilixi
 {
@@ -144,17 +145,33 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setOSKWidget(Widget* widget)
 {
-    if (widget == _oskWidget || widget == NULL
-            || !(widget->inputMethod() & OSKInput))
+    if (widget == NULL || !(widget->inputMethod() & OSKInput) && _oskWidget)
+    {
+        _oskWidget = NULL;
+#if ILIXI_HAVE_FUSIONDALE
+        AppBase::comaCallComponent(AppBase::oskComponent(), 1, NULL);
+#endif
         return false;
-    //  TextLayout* tw = dynamic_cast<TextLayout*> (_focusedWidget);
-    //  if (tw)
-    //    {
-    //      _oskWidget = tw;
-    //      AppBase::__appInstance->setOSKText(tw->text());
-    //      AppBase::__appInstance->callMaestro(OSKEvent, Visible);
-    //      return true;
-    //    }
+    } else if (widget == _oskWidget)
+        return false;
+    else if (widget->inputMethod() & OSKInput)
+    {
+#if ILIXI_HAVE_FUSIONDALE
+        OSKRequest request;
+        request.inputRect = widget->frameGeometry().dfbRect();
+        request.mode = 0;
+        request.process = 0;
+
+        void *ptr;
+        AppBase::comaGetLocal(sizeof(OSKRequest), &ptr);
+        OSKRequest* req = (OSKRequest*) ptr;
+        *req = request;
+
+        AppBase::comaCallComponent(AppBase::oskComponent(), 0, (void*) req);
+#endif
+        _oskWidget = widget;
+        return true;
+    }
     return false;
 }
 

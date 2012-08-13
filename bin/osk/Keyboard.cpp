@@ -1,13 +1,30 @@
 /*
- * Keyboard.cpp
- *
- *  Created on: Aug 6, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Keyboard.h"
 #include <core/Logger.h>
 #include <libxml/parser.h>
+#include <core/AppBase.h>
 
 namespace ilixi
 {
@@ -21,6 +38,8 @@ Keyboard::Keyboard(Widget* parent)
     setInputMethod(PointerInput);
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
+
+    AppBase::comaGetComponent("OSKComponent", &_oskComponent);
 }
 
 Keyboard::~Keyboard()
@@ -97,6 +116,23 @@ Keyboard::parseLayoutFile(const char* file)
 }
 
 void
+Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
+{
+    for (unsigned int i = 0; i < ucs32.size(); ++i)
+    {
+        ILOG_TRACE_W(ILX_KEYBOARD);
+        ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32[i]);
+
+        void *ptr;
+        AppBase::comaGetLocal(sizeof(uint32_t), &ptr);
+        uint32_t* key = (uint32_t*) ptr;
+        *key = ucs32[i];
+
+        AppBase::comaCallComponent(_oskComponent, 2, (void*) key);
+    }
+}
+
+void
 Keyboard::compose(const PaintEvent& event)
 {
 }
@@ -109,6 +145,7 @@ Keyboard::getKey(xmlNodePtr node)
     xmlChar* constraint = xmlGetProp(node, (xmlChar*) "constraint");
     xmlChar* repeatable = xmlGetProp(node, (xmlChar*) "repeatable");
     xmlChar* sticky = xmlGetProp(node, (xmlChar*) "sticky");
+    xmlChar* special = xmlGetProp(node, (xmlChar*) "special");
 
     ILOG_DEBUG(ILX_KEYBOARD, "Key: %s\n", (char*) id);
 
@@ -118,13 +155,16 @@ Keyboard::getKey(xmlNodePtr node)
         key->setKeyMode(Key::Modifier);
 
     if (xmlStrcmp(constraint, (xmlChar*) "expand") == 0)
-        key->setXConstraint(ExpandingConstraint);
+        key->setXConstraint(MinimumExpandingConstraint);
 
     if (xmlStrcmp(repeatable, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Repeatable);
 
     if (xmlStrcmp(sticky, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Sticky);
+
+    if (xmlStrcmp(special, (xmlChar*) "yes") == 0)
+        key->setKeyMode(Key::Special);
 
     xmlFree(id);
     xmlFree(modifier);
@@ -157,7 +197,7 @@ Keyboard::getKey(xmlNodePtr node)
                 iconPath = iconStr;
             ILOG_DEBUG(ILX_KEYBOARD, "ICON: %s\n", iconPath.c_str());
 
-            key->setIcon(iconPath, Size(48,48));
+            key->setIcon(iconPath, Size(48, 48));
             key->setToolButtonStyle(ToolButton::IconOnly);
         } else if (xmlStrcmp(element->name, (xmlChar*) "rollStates") == 0)
         {

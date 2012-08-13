@@ -299,8 +299,9 @@
     </row>
     
 	<row id="Bottom" height="%25">
-		<key id="ABC" sticky="yes" constraint="extend" repeatable="yes">
-            <symbol states="1, 2">ABC</symbol>
+		<key id="ABC" sticky="yes">
+		    <symbol states="1">abc</symbol>
+            <symbol states="2">ABC</symbol>
 			<symbol states="3">SYM1</symbol>
             <symbol states="4">SYM2</symbol>
             <symbol states="5">SYM3</symbol>
@@ -308,17 +309,17 @@
         </key>
         
         <key id="Left" special="yes">
-            <symbol states="1, 2, 3, 4, 5">DIKS_CURSOR_LEFT</symbol>
+            <symbol states="1, 2, 3, 4, 5">CURSOR_LEFT</symbol>
             <icon>@DATADIR:left_arrow.png</icon>
         </key>
 		
-		<key id="Space" constraint="extend">
+		<key id="Space" constraint="extend" repeatable="yes">
             <symbol states="1, 2, 3, 4, 5"> </symbol>
             <icon>@DATADIR:space.png</icon>
         </key>
 
 		<key id="Right" special="yes">
-            <symbol states="1, 2, 3, 4, 5">DIKS_CURSOR_RIGHT</symbol>
+            <symbol states="1, 2, 3, 4, 5">CURSOR_RIGHT</symbol>
             <icon>@DATADIR:right_arrow.png</icon>
         </key>
         
@@ -327,14 +328,10 @@
         </key>
         
 		<key id="Return" special="yes">
-            <symbol states="1, 2, 3, 4, 5">DIKS_ENTER</symbol>
+            <symbol states="1, 2, 3, 4, 5">RETURN</symbol>
             <icon>@DATADIR:return.png</icon>
         </key>
         
-		<key id="Close" special="yes">
-            <symbol states="1, 2, 3, 4, 5">CLOSE</symbol>
-            <icon>@DATADIR:cancel.png</icon>
-        </key>
 	</row>
                  
 </keyboard>
