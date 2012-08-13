@@ -136,18 +136,6 @@ public:
     virtual void
     doLayout();
 
-    bool
-    widgetToFront(Widget* widget);
-
-    bool
-    widgetToBack(Widget* widget);
-
-    bool
-    lowerWidget(Widget* widget);
-
-    bool
-    raiseWidget(Widget* widget);
-
 protected:
     //! This is the container's current layout.
     LayoutBase* _layout;

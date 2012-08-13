@@ -128,30 +128,6 @@ ContainerBase::doLayout()
         parent()->doLayout();
 }
 
-bool
-ContainerBase::widgetToFront(Widget* widget)
-{
-    return _layout->raiseChildToFront(widget);
-}
-
-bool
-ContainerBase::widgetToBack(Widget* widget)
-{
-    return _layout->lowerChildToBottom(widget);
-}
-
-bool
-ContainerBase::lowerWidget(Widget* widget)
-{
-    return _layout->lowerChild(widget);
-}
-
-bool
-ContainerBase::raiseWidget(Widget* widget)
-{
-    return _layout->raiseChild(widget);
-}
-
 void
 ContainerBase::updateLayoutGeometry()
 {
