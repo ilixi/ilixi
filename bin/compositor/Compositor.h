@@ -134,6 +134,9 @@ protected:
     hideOSK();
 
     void
+    sendOSKInput(uint32_t key);
+
+    void
     compose(const PaintEvent& event);
 
 private:
@@ -162,6 +165,7 @@ private:
     OSKComponent* _oskComp;
 
     // OSK
+    AppInstance* _statusBar;
     AppInstance* _osk;
 
     enum CompositorEventType

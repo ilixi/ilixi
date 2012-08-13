@@ -47,12 +47,13 @@ Compositor::Compositor(int argc, char* argv[])
           _fps(NULL),
           _compComp(NULL),
           _soundComp(NULL),
-          _oskComp(NULL)
+          _oskComp(NULL),
+          _osk(NULL)
 {
     _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
     _compComp = new CompositorComponent(this);
-//    _oskComp = new OSKComponent(this);
+    _oskComp = new OSKComponent(this);
 
     setTitle("Compositor");
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
@@ -104,7 +105,7 @@ Compositor::~Compositor()
     delete _fps;
     delete _compComp;
     delete _soundComp;
-//    delete _oskComp;
+    delete _oskComp;
     delete _appMan;
     ILOG_TRACE_W(ILX_COMPOSITOR);
 }
@@ -123,7 +124,13 @@ Compositor::showLauncher(bool show)
         ILOG_TRACE_W(ILX_COMPOSITOR);
         if (_currentApp)
         {
-            _currentApp->view()->hide();
+            if (_osk && _osk->view()->visible())
+            {
+                _osk->view()->hide(0, height());
+                _currentApp->view()->setAnimatedProperty(AppView::Position);
+                _currentApp->view()->hide(0, 0);
+            } else
+                _currentApp->view()->hide();
             _compComp->notifyHidden(_currentApp->pid());
         }
         _backgroundFlags = BGFAll;
@@ -135,6 +142,7 @@ Compositor::showLauncher(bool show)
         if (_currentApp)
         {
             _switcher->setNeighbour(Up, _currentApp->view());
+            _currentApp->view()->clearAnimatedProperty(AppView::Position);
             _currentApp->view()->show();
             _compComp->notifyVisible(_currentApp->pid());
             AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
@@ -221,11 +229,25 @@ Compositor::addDialog(DFBSurfaceID id)
 void
 Compositor::showOSK(DFBRectangle rect)
 {
+    if (!_osk)
+        _appMan->startApp("OnScreenKeyboard");
+    else
+        _osk->view()->show(0, height() - 450);
+    _currentApp->view()->slideTo(0, -rect.y + 10);
 }
 
 void
 Compositor::hideOSK()
 {
+    _currentApp->view()->slideTo(0, 0);
+    _osk->view()->hide(0, height());
+}
+
+void
+Compositor::sendOSKInput(uint32_t key)
+{
+    _currentApp->view()->consumeKeyEvent(
+            KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
 }
 
 void
@@ -240,12 +262,11 @@ Compositor::compose(const PaintEvent& event)
 void
 Compositor::onVisible()
 {
+    _appMan->startApp("StatusBar");
     _quitButton->show();
 
     if (_fps)
         _fps->start();
-
-    _appMan->startApp("StatusBar");
 }
 
 void
@@ -312,7 +333,7 @@ void
 Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
                          const SaWManWindowInfo* info)
 {
-    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %lu )\n", __FUNCTION__, info->win_id);
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
@@ -418,42 +439,32 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
 
                 if (appInfo->appFlags() & APP_STATUSBAR)
                 {
-                    data->instance->setView(
+                    _statusBar = data->instance;
+                    _statusBar->setView(
                             new AppView(this, data->instance, this));
-                    data->instance->view()->setGeometry(0, height() - 54,
-                                                        width(), 54);
-                    addWidget(data->instance->view());
-                    data->instance->view()->setZ(0);
-                    widgetToFront(data->instance->view());
-
+                    _statusBar->view()->setGeometry(0, height() - 55, width(),
+                                                    55);
+                    addWidget(_statusBar->view());
+                    _statusBar->view()->setZ(0);
+                    _statusBar->view()->bringToFront();
+                    _statusBar->view()->clearAnimatedProperty(AppView::Opacity);
+                    _statusBar->view()->clearAnimatedProperty(AppView::Zoom);
                     data->instance->view()->addWindow(dfbWindow);
-//                    _appMan->startApp("OnScreenKeyboard");
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
+                    ILOG_ERROR(ILX_COMPOSITOR, "APP_OSK *************\n");
                     _osk = data->instance;
-//                    data->instance->setView(
-//                            new AppView(this, data->instance, this));
-//                    data->instance->view()->setGeometry(0, height() - 400,
-//                                                        width(), 400);
-//                    addWidget(data->instance->view());
-//                    data->instance->view()->setZ(0);
-//                    widgetToFront(data->instance->view());
-//
-//                    data->instance->view()->addWindow(dfbWindow);
-//                    data->instance->view()->show();
-
-                    OSKView* oskView = new OSKView(this, data->instance, this);
-                    oskView->setGeometry(0, 0, width(), height());
-                    addWidget(oskView);
-                    widgetToFront(oskView);
-                    oskView->addWindow(dfbWindow);
-                    oskView->show();
-
-//                    SurfaceView* osk = new SurfaceView();
-//                    osk->setSourceFromWindow(dfbWindow);
-//                    osk->setGeometry(0, height() - 400, width(), 400);
-//                    addWidget(osk);
-//                    widgetToFront(osk);
+                    _osk->setView(new AppView(this, data->instance, this));
+                    _osk->view()->setAnimatedProperty(AppView::Position);
+                    _osk->view()->clearAnimatedProperty(AppView::Opacity);
+                    _osk->view()->clearAnimatedProperty(AppView::Zoom);
+                    _osk->view()->setGeometry(0, height() - 450, width(), 400);
+                    addWidget(_osk->view());
+                    _osk->view()->setZ(0);
+                    _osk->view()->addWindow(dfbWindow);
+//                    widgetToFront(_osk->view());
+                    _osk->view()->lower();
+                    _statusBar->view()->bringToFront();
                 } else
                 {
                     if (data->instance->view() == NULL)
@@ -465,7 +476,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         addWidget(data->instance->view());
                         data->instance->view()->setNeighbour(Down, _switcher);
                         data->instance->view()->setZ(-5);
-                        widgetToBack(data->instance->view());
+                        data->instance->view()->sendToBack();
                     }
 
                     if (data->instance->thumb() == NULL)

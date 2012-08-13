@@ -34,21 +34,41 @@ class AppView : public AppCompositor
 {
     friend class Compositor;
 public:
+    enum AnimatedProperty
+    {
+        Zoom = 0x001, Opacity = 0x002, Position = 0x004, HideWhenDone = 0x008
+    };
+
     AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);
 
     virtual
     ~AppView();
 
     void
-    show();
+    show(int x = 0, int y = 0);
 
     void
-    hide();
+    hide(int x = 0, int y = 0);
+
+    void
+    setAnimatedProperty(AnimatedProperty prop);
+
+    void
+    clearAnimatedProperty(AnimatedProperty prop);
+
+    void
+    slideTo(int x, int y);
 
 private:
-    TweenAnimation _ani;
+    AnimatedProperty _animProps;
+
+    TweenAnimation _propAnim;
     Tween* _opacityTween;
     Tween* _zoomTween;
+    Tween* _xTween;
+    Tween* _yTween;
+
+    static int _animDuration;
 
     void
     tweenSlot();

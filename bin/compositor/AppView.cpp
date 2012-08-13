@@ -29,20 +29,29 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
 
+int AppView::_animDuration = 500;
+
 AppView::AppView(Compositor* compositor, AppInstance* instance, Widget* parent)
-        : AppCompositor(compositor, instance, parent)
+        : AppCompositor(compositor, instance, parent),
+          _animProps((AnimatedProperty) (Zoom | Opacity))
 {
     setInputMethod(PointerInput);
 
-    _ani.setDuration(500);
-    _ani.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
-    _ani.sigFinished.connect(sigc::mem_fun(this, &AppView::tweenEndSlot));
+    _propAnim.setDuration(_animDuration);
+    _propAnim.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
+    _propAnim.sigFinished.connect(sigc::mem_fun(this, &AppView::tweenEndSlot));
 
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 255);
-    _ani.addTween(_opacityTween);
+    _propAnim.addTween(_opacityTween);
 
     _zoomTween = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0.8, 1);
-    _ani.addTween(_zoomTween);
+    _propAnim.addTween(_zoomTween);
+
+    _xTween = new Tween(Tween::CUBIC, Tween::EASE_OUT, 0, 0);
+    _propAnim.addTween(_xTween);
+
+    _yTween = new Tween(Tween::CUBIC, Tween::EASE_OUT, 0, 0);
+    _propAnim.addTween(_yTween);
 
     setVisible(false);
     ILOG_TRACE_W(ILX_APPVIEW);
@@ -54,54 +63,168 @@ AppView::~AppView()
 }
 
 void
-AppView::show()
+AppView::show(int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
     if (_state == APPCOMP_READY)
     {
-        _ani.stop();
-        setFocus();
-        _opacityTween->setInitialValue(0);
-        _opacityTween->setEndValue(255);
-        _opacityTween->setTransition(Tween::SINE);
-        _opacityTween->setEquation(Tween::EASE_OUT);
-        _zoomTween->setInitialValue(0.5);
-        _zoomTween->setEndValue(1);
-        setOpacity(0);
-        setZoomFactor(0.8);
-        _ani.start();
+        bool anim = false;
+        _propAnim.stop();
+
+        if (_animProps & Opacity)
+        {
+            _opacityTween->setEnabled(true);
+            _opacityTween->setInitialValue(0);
+            _opacityTween->setEndValue(255);
+            setOpacity(0);
+            anim = true;
+        } else
+            _opacityTween->setEnabled(false);
+
+        if (_animProps & Zoom)
+        {
+            _zoomTween->setEnabled(true);
+            _zoomTween->setInitialValue(0.5);
+            _zoomTween->setEndValue(1);
+            setZoomFactor(0.8);
+            anim = true;
+        } else
+            _zoomTween->setEnabled(false);
+
+        if (_animProps & Position)
+        {
+            if (x() != tx)
+            {
+                _xTween->setEnabled(true);
+                _xTween->setInitialValue(x());
+                _xTween->setEndValue(tx);
+            }
+            if (y() != ty)
+            {
+                _yTween->setEnabled(true);
+                _yTween->setInitialValue(y());
+                _yTween->setEndValue(ty);
+            }
+            anim = true;
+        } else
+        {
+            _xTween->setEnabled(false);
+            _yTween->setEnabled(false);
+        }
+
+        if (anim)
+            _propAnim.start();
+
         setVisible(true);
+        clearAnimatedProperty(HideWhenDone);
+        setFocus();
     }
 }
 
 void
-AppView::hide()
+AppView::hide(int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-    _ani.stop();
-    _opacityTween->setInitialValue(255);
-    _opacityTween->setEndValue(0);
-    _opacityTween->setTransition(Tween::SINE);
-    _opacityTween->setEquation(Tween::EASE_OUT);
-    _zoomTween->setInitialValue(1);
-    _zoomTween->setEndValue(2);
-    setOpacity(255);
-    setZoomFactor(1);
-    _ani.start();
+    _propAnim.stop();
+    bool anim = false;
+
+    if (_animProps & Opacity)
+    {
+        _opacityTween->setEnabled(true);
+        _opacityTween->setInitialValue(255);
+        _opacityTween->setEndValue(0);
+        setOpacity(255);
+        anim = true;
+    } else
+        _opacityTween->setEnabled(false);
+
+    if (_animProps & Zoom)
+    {
+        _zoomTween->setEnabled(true);
+        _zoomTween->setInitialValue(1);
+        _zoomTween->setEndValue(2);
+        setZoomFactor(1);
+        anim = true;
+    } else
+        _zoomTween->setEnabled(false);
+
+    if (_animProps & Position)
+    {
+        if (x() != tx)
+        {
+            _xTween->setEnabled(true);
+            _xTween->setInitialValue(x());
+            _xTween->setEndValue(tx);
+        }
+
+        if (y() != ty)
+        {
+            _yTween->setEnabled(true);
+            _yTween->setInitialValue(y());
+            _yTween->setEndValue(ty);
+        }
+
+        anim = true;
+    } else
+    {
+        _xTween->setEnabled(false);
+        _yTween->setEnabled(false);
+    }
+
+    setAnimatedProperty(HideWhenDone);
+
+    if (anim)
+        _propAnim.start();
+}
+
+void
+AppView::setAnimatedProperty(AnimatedProperty prop)
+{
+    _animProps = (AnimatedProperty) (_animProps | prop);
+}
+
+void
+AppView::clearAnimatedProperty(AnimatedProperty prop)
+{
+    _animProps = (AnimatedProperty) (_animProps & ~prop);
+}
+
+void
+AppView::slideTo(int tx, int ty)
+{
+    _xTween->setEnabled(true);
+    _xTween->setInitialValue(x());
+    _xTween->setEndValue(tx);
+
+    _yTween->setEnabled(true);
+    _yTween->setInitialValue(y());
+    _yTween->setEndValue(ty);
+
+    _opacityTween->setEnabled(false);
+    _zoomTween->setEnabled(false);
+
+    _propAnim.start();
 }
 
 void
 AppView::tweenSlot()
 {
-    setOpacity(_opacityTween->value());
-    setZoomFactor(_zoomTween->value());
+    if (_opacityTween->enabled())
+        setOpacity(_opacityTween->value());
+
+    if (_zoomTween->enabled())
+        setZoomFactor(_zoomTween->value());
+
+    if (_xTween->enabled())
+        moveTo(_xTween->value(), _yTween->value());
+
     update();
 }
 
 void
 AppView::tweenEndSlot()
 {
-    if (_opacityTween->value() == 0)
+    if (_animProps & HideWhenDone)
         setVisible(false);
 }
 
@@ -111,15 +234,43 @@ AppView::madeAvailable()
     ILOG_TRACE_W(ILX_APPVIEW);
     if (_state == APPCOMP_NONE)
     {
-        _ani.stop();
+        bool anim = false;
+        _propAnim.stop();
+
+        if (_animProps & Opacity)
+        {
+            _opacityTween->setInitialValue(0);
+            _opacityTween->setEndValue(255);
+            setOpacity(0);
+            anim = true;
+        }
+        if (_animProps & Zoom)
+        {
+            _zoomTween->setInitialValue(0.8);
+            _zoomTween->setEndValue(1);
+            setZoomFactor(0.8);
+            anim = true;
+        }
+
+//        if (_animProps & Position)
+//        {
+//            _xTween->setEnabled(true);
+//            _xTween->setInitialValue(0);
+//            _xTween->setEndValue(x());
+//            _yTween->setEnabled(true);
+//            _yTween->setInitialValue(parent()->height());
+//            _yTween->setEndValue(y());
+//            anim = true;
+//        } else
+//        {
+//            _xTween->setEnabled(false);
+//            _yTween->setEnabled(false);
+//        }
+
+        if (anim)
+            _propAnim.start();
+
         setFocus();
-        _opacityTween->setInitialValue(0);
-        _opacityTween->setEndValue(255);
-        _zoomTween->setInitialValue(0.8);
-        _zoomTween->setEndValue(1);
-        setOpacity(0);
-        setZoomFactor(0.8);
-        _ani.start();
         setVisible(true);
     }
     _state = APPCOMP_READY;

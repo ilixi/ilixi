@@ -1,2 +1,2 @@
 ## Makefile.am for bin/
-SUBDIRS = compositor gallery demo2 demo3 demo4 carousel stacking navigation statusbar soundmixer
+SUBDIRS = compositor gallery demo2 demo3 demo4 carousel stacking navigation statusbar soundmixer osk

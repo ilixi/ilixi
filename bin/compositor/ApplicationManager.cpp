@@ -467,7 +467,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-               "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+               " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (!instance)
@@ -477,13 +477,33 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
 
     if (appInfo->appFlags() & APP_OSK)
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK\n");
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+                   " -> setting window config for APP_OSK.\n");
         DFBRectangle r = { 0, 0, _compositor->width(), 400 };
+        info->config.bounds = r;
+        _manager->SetWindowConfig(_manager, info->handle,
+                                  (SaWManWindowConfigFlags) (SWMCF_SIZE),
+                                  &info->config);
+    } else if (appInfo->appFlags() & APP_STATUSBAR)
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+                   " -> setting window config for APP_STATUSBAR.\n");
+        DFBRectangle r = { 0, 0, _compositor->width(), 55 };
         info->config.bounds = r;
         _manager->SetWindowConfig(
                 _manager, info->handle,
                 (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE),
                 &info->config);
+    } else if (!(appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG))
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
+                   " -> setting window config for Default.\n");
+        DFBRectangle r = { 0, 0, _compositor->width(), _compositor->height()
+                - 50 };
+        info->config.bounds = r;
+        _manager->SetWindowConfig(_manager, info->handle,
+                                  (SaWManWindowConfigFlags) (SWMCF_SIZE),
+                                  &info->config);
     }
 
     _manager->Lock(_manager);
@@ -502,7 +522,7 @@ ApplicationManager::windowRemoved(SaWManWindowInfo *info)
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-               "  -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+               " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
@@ -721,6 +741,12 @@ ApplicationManager::addApplication(const char* name, const char* author,
                                    const char* appFlags, const char* depFlags)
 {
     if (infoByName(name))
+        return;
+
+    std::string str("which ");
+    str.append(exec);
+    int ret = system(str.c_str());
+    if (ret == 256)
         return;
 
     AppInfo* app = new AppInfo();

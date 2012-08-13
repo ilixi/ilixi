@@ -32,14 +32,14 @@
 namespace ilixi
 {
 
-  class AppView;
-  class AppThumbnail;
+class AppView;
+class AppThumbnail;
 
-  typedef unsigned int InstanceID;
+typedef unsigned int InstanceID;
 
-  class AppInstance
-  {
-  public:
+class AppInstance
+{
+public:
     AppInstance();
 
     ~AppInstance();
@@ -92,7 +92,7 @@ namespace ilixi
     void
     setView(AppView* view);
 
-  private:
+private:
     typedef std::list<SaWManWindowHandle> AppWindowList;
 
     InstanceID _instanceID;
@@ -106,7 +106,7 @@ namespace ilixi
     AppWindowList _windows;
 
     static unsigned int _instanceCounter;
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPINSTANCE_H_ */

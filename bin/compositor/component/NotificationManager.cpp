@@ -64,7 +64,7 @@ NotificationManager::addNotification(DFBSurfaceID id)
     notify->_xStart = _compositor->width() - s.width();
 
     _compositor->addWidget(notify);
-    _compositor->widgetToFront(notify);
+    notify->bringToFront();
     arrangeNotifications(s.height());
     notify->show(500);
 }
