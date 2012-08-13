@@ -48,6 +48,7 @@ Compositor::Compositor(int argc, char* argv[])
           _compComp(NULL),
           _soundComp(NULL),
           _oskComp(NULL),
+          _statusBar(NULL),
           _osk(NULL)
 {
     _appMan = new ApplicationManager(this);

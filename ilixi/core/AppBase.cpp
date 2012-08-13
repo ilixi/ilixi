@@ -37,7 +37,9 @@ IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
+#if ILIXI_HAVE_FUSIONDALE
 IComaComponent* AppBase::__oskComp = NULL;
+#endif
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
         : __options(options),
@@ -266,6 +268,7 @@ AppBase::getLayer()
     return __layer;
 }
 
+#if ILIXI_HAVE_FUSIONDALE
 IComa*
 AppBase::getComa()
 {
@@ -273,6 +276,7 @@ AppBase::getComa()
         return __instance->_coma;
     return NULL;
 }
+#endif
 
 IDirectFBWindow*
 AppBase::activeDFBWindow() const

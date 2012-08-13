@@ -152,11 +152,13 @@ protected:
     static IDirectFBDisplayLayer*
     getLayer();
 
+#if ILIXI_HAVE_FUSIONDALE
     /*!
      * Returns Coma interface.
      */
     static IComa*
     getComa();
+#endif
 
     IDirectFBWindow*
     activeDFBWindow() const;

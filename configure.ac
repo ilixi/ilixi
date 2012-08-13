@@ -49,35 +49,6 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 ######################################################################
-# Dependencies
-######################################################################
-# Checks for programs.
-LT_INIT
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
-AC_PROG_LIBTOOL
-AC_PROG_AWK
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-
-AC_CHECK_HEADERS([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
-AC_HEADER_STDBOOL
-AC_TYPE_PID_T
-AC_FUNC_ERROR_AT_LINE
-
-# Checks for libraries.
-DIRECTFB_REQ_VERSION=1.6.0
-SAWMAN_REQ_VERSION=1.6.0
-FUSIONDALE_REQ_VERSION=1.6.0
-SIGC_REQ_VERSION=2.2.4.2
-LIBXML_REQ_VERSION=2.7.7
-
-AC_MSG_NOTICE([checking dependencies...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION fusiondale >= $FUSIONDALE_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
-
-######################################################################
 # Options
 ######################################################################
 LOGGER_LEVEL="none"
@@ -112,6 +83,40 @@ AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support
 if test "$enable_dale" = "yes"; then
 	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 fi
+AM_CONDITIONAL([WITH_DALE], [test x$enable_dale = xyes])
+
+######################################################################
+# Dependencies
+######################################################################
+# Checks for programs.
+LT_INIT
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_LIBTOOL
+AC_PROG_AWK
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+AC_CHECK_HEADERS([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
+AC_HEADER_STDBOOL
+AC_TYPE_PID_T
+AC_FUNC_ERROR_AT_LINE
+
+# Checks for libraries.
+DIRECTFB_REQ_VERSION=1.6.0
+SAWMAN_REQ_VERSION=1.6.0
+FUSIONDALE_REQ_VERSION=1.6.0
+SIGC_REQ_VERSION=2.2.4.2
+LIBXML_REQ_VERSION=2.7.7
+
+AC_MSG_NOTICE([checking dependencies...])
+AS_IF([test "x$enable_dale" = "xyes"], [
+	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION fusiondale >= $FUSIONDALE_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+], [
+	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+])
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -192,3 +197,7 @@ AC_MSG_RESULT([
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
 ]);
+
+AS_IF([test "x$enable_dale" = "xno"], [
+	AC_MSG_WARN([ilixi compositor is disabled as it requires FusionDale.])
+])

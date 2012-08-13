@@ -9,7 +9,6 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							Easing.cpp \
 							FileSystem.cpp \
 							FPSCalculator.cpp \
-							Notify.cpp \
 							Thread.cpp \
 							Timer.cpp \
 							Tween.cpp \
@@ -22,10 +21,13 @@ ilixi_include_HEADERS	=	Animation.h \
 							Easing.h \
 							FileSystem.h \
 							FPSCalculator.h \
-							Notify.h \
 							Thread.h \
 							Timer.h \
 							Tween.h \
 							TweenAnimation.h \
 							Util.h
-							
+
+if WITH_DALE
+libilixi_lib_la_SOURCES 	+= 	Notify.cpp
+ilixi_include_HEADERS		+=	Notify.h
+endif

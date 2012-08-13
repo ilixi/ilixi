@@ -154,13 +154,16 @@ private:
     //! WindowWidget that created this event manager.
     WindowWidget* _creator;
 
+#if ILIXI_HAVE_FUSIONDALE
     struct OSKRequest
     {
         DFBRectangle inputRect;
         int mode;
         pid_t process;
     };
+#endif
 };
+
 }
 
 #endif /* ILIXI_EVENTMANAGER_H_ */
