@@ -555,6 +555,30 @@ public:
     setParent(Widget* parent);
 
     /*!
+     * Lowers widget within its parent.
+     */
+    bool
+    lower();
+
+    /*!
+     * Raises widget within its parent.
+     */
+    bool
+    raise();
+
+    /*!
+     * Puts widget at the back within parent.
+     */
+    bool
+    sendToBack();
+
+    /*!
+     * Puts widget at front within parent.
+     */
+    bool
+    bringToFront();
+
+    /*!
      * Invokes widget's compose method only if widget is visible and target area
      * intersects with widget's absolute geometry.
      *

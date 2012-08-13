@@ -512,7 +512,11 @@ void
 Widget::setOpacity(u8 opacity)
 {
     if (opacity != _opacity)
+    {
         _opacity = opacity;
+        if (_opacity == 0)
+            setVisible(false);
+    }
 }
 
 void
@@ -563,6 +567,38 @@ Widget::setParent(Widget* parent)
         //      moveTo(0, 0);
         setRootWindow(_parent->_rootWindow);
     }
+}
+
+bool
+Widget::lower()
+{
+    if (_parent)
+        return _parent->lowerChild(this);
+    return false;
+}
+
+bool
+Widget::raise()
+{
+    if (_parent)
+        return _parent->raiseChild(this);
+    return false;
+}
+
+bool
+Widget::sendToBack()
+{
+    if (_parent)
+        return _parent->lowerChildToBottom(this);
+    return false;
+}
+
+bool
+Widget::bringToFront()
+{
+    if (_parent)
+        return _parent->raiseChildToFront(this);
+    return false;
 }
 
 void
@@ -777,6 +813,12 @@ Widget::consumeKeyEvent(const KeyEvent& keyEvent)
         else
             keyDownEvent(keyEvent);
         return true;
+    } else
+    {
+        for (WidgetListReverseIterator it = _children.rbegin();
+                it != _children.rend(); ++it)
+            if (((Widget*) *it)->consumeKeyEvent(keyEvent))
+                return true;
     }
     return false;
 }
