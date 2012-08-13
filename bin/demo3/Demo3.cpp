@@ -36,10 +36,11 @@
 using namespace ilixi;
 
 Demo3::Demo3(int argc, char* argv[])
-        : Application(&argc, &argv)
+        : Application(&argc, &argv, OptDale)
 {
     setTitle("Forms Demo");
-    setBackgroundFilled(true);
+    setMargins(5, 5, 5, 5);
+//    setBackgroundFilled(true);
     setLayout(new VBoxLayout());
 
 //    addWidget(new Spacer(Vertical));
