@@ -80,7 +80,7 @@ switcherHidden(void* ctx, void* arg)
 }
 
 StatusBar::StatusBar(int argc, char* argv[])
-        : Application(&argc, &argv, (AppOptions) (OptStatusBar | OptDale))
+        : Application(&argc, &argv, (AppOptions) (OptDale))
 {
     setTitle("StatusBar");
     setBackgroundFilled(true);

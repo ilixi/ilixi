@@ -2,7 +2,7 @@
 miscdatadir 	=	$(ILIXI_DATADIR)/statusbar
 miscdata_DATA 	=	disabled.png \
 			home.png \
-			homeG.png \			
+			homeG.png \
 			statusbar_bg.png \
 			statusbar-buttons.png \
 			switch.png \
