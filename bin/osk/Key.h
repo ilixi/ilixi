@@ -46,8 +46,7 @@ public:
         Default = 0x001,    //!< Default key behavior.
         Modifier = 0x002,   //!< Checkable modifier key, e.g. SHIFT on/off.
         Sticky = 0x004,     //!< Toggles key states.
-        Repeatable = 0x008, //!< Long-press will repeat.
-        Special = 0x010     //!< Key can symbol is set to a DIKS_XX.
+        Special = 0x008     //!< Key can symbol is set to a DIKS_XX.
     };
 
     /*!

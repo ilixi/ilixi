@@ -25,13 +25,26 @@
 #define ILIXI_TOOLBUTTON_H_
 
 #include <ui/Button.h>
+#include <lib/Thread.h>
 
 namespace ilixi
 {
+
+class ToolButtonThread;
+
 //! A tool button with text label and icon.
 class ToolButton : public Button
 {
 public:
+    /*!
+     * This enum helps control various options of ToolButton.
+     */
+    enum ToolButtonOptions
+    {
+        DrawFrame = 0x001, //!< This flag specifies whether button frame is drawn.
+        Repeatable = 0x002 //!< This flag specifies whether button repeats press.
+    };
+
     /*!
      * This enum controls toolbutton's drawing style.
      */
@@ -106,13 +119,34 @@ public:
     void
     setDrawFrame(bool drawFrame);
 
+    /*!
+     * Sets whether button is repeatable.
+     */
+    void
+    setRepeatable(bool repeatable);
+
+protected:
+    /*!
+     * Emits sigPressed.
+     */
+    virtual void
+    pointerButtonDownEvent(const PointerEvent& event);
+
+    /*!
+     * Emits sigReleased and if pointer was down emits sigClicked and toggles state.
+     */
+    virtual void
+    pointerButtonUpEvent(const PointerEvent& event);
+
 private:
     //! This property holds tool button's style.
     ToolButtonStyle _toolButtonStyle;
     //! This property holds button's icon.
     Icon* _icon;
-    //! This flag specifies whether button frame is drawn.
-    bool _drawFrame;
+    //! This flag specifies options for tool button.
+    ToolButtonOptions _tbOptions;
+    //! This thread helps create repeated clicks.
+    static ToolButtonThread* __tbThread;
 
     /*!
      * Paints ToolButton on its surface using current designer.
@@ -124,6 +158,26 @@ private:
     virtual void
     updateTextBaseGeometry();
 };
+/*!
+ * This thread helps create repeated button clicks.
+ */
+class ToolButtonThread : public Thread
+{
+public:
+    ToolButtonThread();
+
+    ~ToolButtonThread();
+
+    void
+    setTarget(ToolButton* target);
+
+    virtual int
+    run();
+
+private:
+    ToolButton* _target;
+};
+
 }
 
 #endif /* ILIXI_TOOLBUTTON_H_ */

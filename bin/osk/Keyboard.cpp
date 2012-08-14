@@ -158,7 +158,7 @@ Keyboard::getKey(xmlNodePtr node)
         key->setXConstraint(MinimumExpandingConstraint);
 
     if (xmlStrcmp(repeatable, (xmlChar*) "yes") == 0)
-        key->setKeyMode(Key::Repeatable);
+        key->setRepeatable(true);
 
     if (xmlStrcmp(sticky, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Sticky);

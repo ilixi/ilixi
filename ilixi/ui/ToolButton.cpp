@@ -30,12 +30,51 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
 
+//*********************************************************************
+// ToolButtonThread
+//*********************************************************************
+ToolButtonThread::ToolButtonThread()
+{
+}
+
+ToolButtonThread::~ToolButtonThread()
+{
+}
+
+void
+ToolButtonThread::setTarget(ToolButton* target)
+{
+    _target = target;
+}
+
+int
+ToolButtonThread::run()
+{
+    int sleepNS = 300;
+    while (true)
+    {
+        pthread_testcancel();
+        _target->click(sleepNS);
+        if (sleepNS > 100)
+            sleepNS -= 100;
+    }
+    return 1;
+}
+
+//*********************************************************************
+// ToolButton
+//*********************************************************************
+ToolButtonThread* ToolButton::__tbThread = NULL;
+
 ToolButton::ToolButton(std::string text, Widget* parent)
         : Button(text, parent),
           _toolButtonStyle(IconBeforeText),
           _icon(NULL),
-          _drawFrame(true)
+          _tbOptions(DrawFrame)
 {
+    if (__tbThread == NULL)
+        __tbThread = new ToolButtonThread();
+
     ILOG_TRACE_W(ILX_TOOLBUTTON);
     setConstraints(FixedConstraint, FixedConstraint);
     _layout.setSingleLine(true);
@@ -54,9 +93,9 @@ ToolButton::preferredSize() const
     if (text().empty() && !icon())
         return stylist()->defaultSize(StyleHint::PushButton);
 
-    int w = _drawFrame ?
+    int w = (_tbOptions & DrawFrame) ?
             stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
-    int h = _drawFrame ?
+    int h = (_tbOptions & DrawFrame) ?
             stylist()->defaultParameter(StyleHint::ToolButtonTB) : 0;
 
     if (checkable())
@@ -168,13 +207,54 @@ ToolButton::setIconSize(const Size& size)
 void
 ToolButton::setDrawFrame(bool drawFrame)
 {
-    _drawFrame = drawFrame;
+    if (drawFrame)
+        _tbOptions = (ToolButtonOptions) (_tbOptions | DrawFrame);
+    else
+        _tbOptions = (ToolButtonOptions) (_tbOptions & ~DrawFrame);
+}
+
+void
+ToolButton::setRepeatable(bool repeatable)
+{
+    if (repeatable)
+        _tbOptions = (ToolButtonOptions) (_tbOptions | Repeatable);
+    else
+        _tbOptions = (ToolButtonOptions) (_tbOptions & ~Repeatable);
+}
+
+void
+ToolButton::pointerButtonDownEvent(const PointerEvent& event)
+{
+    if (_tbOptions & Repeatable)
+    {
+        __tbThread->setTarget(this);
+        __tbThread->start();
+    }
+
+    _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
+    sigPressed();
+    update();
+}
+
+void
+ToolButton::pointerButtonUpEvent(const PointerEvent& event)
+{
+    sigReleased();
+    if (_buttonFlag & PressedDown)
+    {
+        if (_tbOptions & Repeatable)
+            __tbThread->cancel();
+
+        sigClicked();
+        toggleChecked();
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
+    }
 }
 
 void
 ToolButton::compose(const PaintEvent& event)
 {
-    if (_drawFrame)
+    if (_tbOptions & DrawFrame)
     {
         ILOG_TRACE_W(ILX_TOOLBUTTON);
         Painter p(this);
