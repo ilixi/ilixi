@@ -291,8 +291,8 @@
             <symbol states="5">=-o</symbol>
         </key>
 
-        <key id="BackSpace" constraint="extend" repeatable="yes">
-            <symbol states="1, 2, 3, 4, 5" unicode="yes">U+0008</symbol>
+        <key id="BackSpace" constraint="extend" repeatable="yes" special="yes">
+            <symbol states="1, 2, 3, 4, 5" unicode="yes">BACKSPACE</symbol>
 			<icon>@DATADIR:backspace.png</icon>
         </key>
         
