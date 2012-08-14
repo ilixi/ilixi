@@ -64,9 +64,10 @@ if test "$enable_log_debug" = "yes"; then
 	CFLAGS="$CFLAGS -DDIRECT_ENABLE_DEBUG"
 fi
 
-AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging and trace support @<:@default=no@:>@]), [], [enable_debug=no])
 if test "$enable_debug" = "yes"; then
     CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline -finstrument-functions"
+	CPPFLAGS="$CPPFLAGS -DDIRECT_FORCE_DEBUG"
 fi
 
 AC_ARG_ENABLE([profiling], AS_HELP_STRING([--enable-profiling], [enable profiling @<:@default=no@:>@]), [], [enable_profiling=no])
@@ -80,9 +81,6 @@ if test "$enable_stereo" = "yes"; then
 fi
 
 AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
-if test "$enable_dale" = "yes"; then
-	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
-fi
 AM_CONDITIONAL([WITH_DALE], [test x$enable_dale = xyes])
 
 ######################################################################
@@ -114,9 +112,17 @@ LIBXML_REQ_VERSION=2.7.7
 AC_MSG_NOTICE([checking dependencies...])
 AS_IF([test "x$enable_dale" = "xyes"], [
 	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION fusiondale >= $FUSIONDALE_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
+	FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
 ], [
 	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
 ])
+
+AC_SUBST(DIRECTFB_REQ_VERSION)
+AC_SUBST(SAWMAN_REQ_VERSION)
+AC_SUBST(SIGC_REQ_VERSION)
+AC_SUBST(LIBXML_REQ_VERSION)
+AC_SUBST(FUSION_DALE_DEP)
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -199,5 +205,5 @@ Type \`make install' to install ilixi.
 ]);
 
 AS_IF([test "x$enable_dale" = "xno"], [
-	AC_MSG_WARN([ilixi compositor is disabled as it requires FusionDale.])
+	AC_MSG_WARN([ilixi compositor requires FusionDale support; so it won't build.])
 ])
