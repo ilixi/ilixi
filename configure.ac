@@ -181,7 +181,6 @@ AC_CONFIG_FILES([ \
 		bin/compositor/images/Makefile \
 		bin/carousel/Makefile \
 		bin/osk/Makefile \
-		bin/test/Makefile \
 		ilixi.pc:ilixi.pc.in
 ])
 AC_OUTPUT
