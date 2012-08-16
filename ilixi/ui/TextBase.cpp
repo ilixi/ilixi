@@ -94,7 +94,7 @@ TextBase::text() const
 Size
 TextBase::textExtents() const
 {
-    return font()->extents(_layout.text());
+    return font()->extents(_layout.text(), _layout.text().length());
 }
 
 int

@@ -86,7 +86,7 @@ ImageWidget::compose(const PaintEvent& event)
 
   // draw image
   p.setBrush(Color(0, 0, 0, 125 + val1 * 130));
-  p.drawImage(_image, -20 * val1, -20 * val1, width() + 40 * val1,
+  p.stretchImage(_image, -20 * val1, -20 * val1, width() + 40 * val1,
       height() + 40 * val1,
       (DFBSurfaceBlittingFlags) (DSBLIT_SRC_PREMULTCOLOR
           | DSBLIT_BLEND_COLORALPHA));

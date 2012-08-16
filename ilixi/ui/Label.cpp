@@ -35,7 +35,7 @@ Label::Label(std::string text, Widget* parent)
           TextBase(text, this),
           _margin(0)
 {
-    setConstraints(NoConstraint, MinimumConstraint);
+    setConstraints(MinimumConstraint, MinimumConstraint);
     ILOG_TRACE_W(ILX_LABEL);
 }
 

@@ -35,7 +35,10 @@ GroupBox::GroupBox(std::string title, Widget* parent)
         : Frame(parent),
           _title(new Label(""))
 {
+    ILOG_TRACE_W(ILX_GROUPBOX);
+    setConstraints(MinimumConstraint, MinimumConstraint);
     _title->setFont(stylist()->defaultFont(StyleHint::TitleFont));
+    _title->setSingleLine(true);
     setTitle(title);
     setMargin(5);
     addChild(_title);
@@ -43,14 +46,16 @@ GroupBox::GroupBox(std::string title, Widget* parent)
 
 GroupBox::~GroupBox()
 {
+    ILOG_TRACE_W(ILX_GROUPBOX);
 }
 
 int
 GroupBox::heightForWidth(int width) const
 {
-    int usedHorizontalSpace = _margin.hSum()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetLR);
-    return _layout->heightForWidth(width - usedHorizontalSpace)
+    ILOG_TRACE_W(ILX_GROUPBOX);
+    return _layout->heightForWidth(
+            width - _margin.hSum()
+                    - stylist()->defaultParameter(StyleHint::FrameOffsetLR))
             + stylist()->defaultParameter(StyleHint::FrameOffsetTB)
             + _titleSize.height();
 }
@@ -58,6 +63,7 @@ GroupBox::heightForWidth(int width) const
 Size
 GroupBox::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_GROUPBOX);
     Size s = _layout->preferredSize();
     return Size(
             std::max(s.width(), _titleSize.width()) + _margin.hSum()
@@ -88,12 +94,10 @@ GroupBox::setTitle(std::string title)
         Size s = _title->preferredSize();
         _titleSize.setWidth(
                 s.width()
-                        + stylist()->defaultParameter(
-                                StyleHint::FrameOffsetLR));
+                        + stylist()->defaultParameter(StyleHint::TabOffsetLR));
         _titleSize.setHeight(
                 s.height()
-                        + stylist()->defaultParameter(
-                                StyleHint::FrameOffsetTop));
+                        + stylist()->defaultParameter(StyleHint::TabOffsetTop));
         update();
     }
 }
@@ -128,12 +132,12 @@ GroupBox::updateLayoutGeometry()
     ILOG_TRACE_W(ILX_GROUPBOX);
     ILOG_DEBUG(
             ILX_GROUPBOX,
-            " -> R(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
+            " -> Canvas(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
     Size s = _title->preferredSize();
     _title->setGeometry(
-            30 + stylist()->defaultParameter(StyleHint::FrameOffsetLeft),
-            stylist()->defaultParameter(StyleHint::FrameOffsetTop) - 5,
-            s.width() + 10, s.height());
+            3 * stylist()->defaultParameter(StyleHint::TabOffsetLeft),
+            stylist()->defaultParameter(StyleHint::TabOffsetTop), s.width(),
+            s.height());
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
 

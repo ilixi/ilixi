@@ -157,7 +157,7 @@ HorizontalSwitcher::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    p.drawImage(_bg, Rectangle(0, 0, width(), height()));
+    p.stretchImage(_bg, Rectangle(0, 0, width(), height()));
     p.end();
 }
 

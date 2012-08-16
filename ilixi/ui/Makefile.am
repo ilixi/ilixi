@@ -48,8 +48,8 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Icon.h \
 							Label.h \
 							LayoutBase.h \
-							LineInput.cpp \
-							ProgressBar.cpp \
+							LineInput.h \
+							ProgressBar.h \
 							PushButton.h \
 							RadioButton.h \
 							ScrollArea.h \

@@ -21,7 +21,6 @@
 		<titleFont>
 			<file>Armata-Regular</file>
 			<size>18</size>
-			<fontStyle>italic</fontStyle>
 		</titleFont>
 	</fonts>
 
@@ -245,15 +244,15 @@
 				<bottom-right x="146" y="54" w="16" h="16"/>
 			</default>
 			<disabled>
-				<top-left x="129" y="38" w="16" h="16"/> 
-				<top-mid x="144" y="38" w="2" h="16"/>
-				<top-right x="146" y="38" w="16" h="16"/>
-				<left x="129" y="52" w="16" h="2"/>
-				<mid x="144" y="52" w="2" h="2"/>
-				<right x="146" y="52" w="16" h="2"/>
-				<bottom-left x="129" y="54" w="16" h="16"/>
-				<bottom-mid x="144" y="54" w="2" h="16"/>
-				<bottom-right x="146" y="54" w="16" h="16"/>
+				<top-left x="141" y="2" w="16" h="16"/> 
+				<top-mid x="157" y="2" w="2" h="16"/>
+				<top-right x="159" y="2" w="16" h="16"/>
+				<left x="141" y="18" w="16" h="2"/>
+				<mid x="157" y="18" w="2" h="2"/>
+				<right x="159" y="18" w="16" h="2"/>
+				<bottom-left x="141" y="20" w="16" h="16"/>
+				<bottom-mid x="157" y="20" w="2" h="16"/>
+				<bottom-right x="159" y="20" w="16" h="16"/>
 			</disabled>
 		</Tab>
 

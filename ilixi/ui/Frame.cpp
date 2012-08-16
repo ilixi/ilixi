@@ -34,7 +34,7 @@ Frame::Frame(Widget* parent)
         : ContainerBase(parent),
           _margin(0)
 {
-    setConstraints(NoConstraint, MinimumExpandingConstraint);
+    setConstraints(MinimumConstraint, MinimumExpandingConstraint);
 }
 
 Frame::~Frame()
@@ -74,7 +74,7 @@ int
 Frame::canvasY() const
 {
     return _margin.top()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetRight);
+            + stylist()->defaultParameter(StyleHint::FrameOffsetTop);
 }
 
 int

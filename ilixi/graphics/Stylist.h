@@ -133,7 +133,7 @@ public:
      * Draws a tab panel.
      */
     virtual void
-    drawTabPanel(Painter* painter, TabPanel* panel);
+    drawTabPanel(Painter* painter, TabPanel* panel, int y);
 
     /*!
      * Draws a toolbutton.

@@ -63,11 +63,11 @@ namespace ilixi
     painter.begin(event);
 #ifdef ILIXI_STEREO_OUTPUT
     if (event.eye == PaintEvent::LeftEye)
-      painter.drawImage(background(), -30, 0, width(), height());
+      painter.stretchImage(background(), -30, 0, width(), height());
     else
-      painter.drawImage(background(), 30, 0, width(), height());
+      painter.stretchImage(background(), 30, 0, width(), height());
 #else
-    painter.drawImage(background(), 0, 0, width(), height());
+    painter.stretchImage(background(), 0, 0, width(), height());
 #endif
     painter.end();
   }

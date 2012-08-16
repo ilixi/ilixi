@@ -89,18 +89,6 @@ ContainerBase::layout()
     return _layout;
 }
 
-WidgetResizeConstraint
-ContainerBase::xConstraint() const
-{
-    return _layout->xConstraint();
-}
-
-WidgetResizeConstraint
-ContainerBase::yConstraint() const
-{
-    return _layout->yConstraint();
-}
-
 void
 ContainerBase::setLayout(LayoutBase* layout)
 {

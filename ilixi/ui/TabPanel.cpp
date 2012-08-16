@@ -34,6 +34,7 @@ TabPanelButton::TabPanelButton(std::string label, Widget* parent)
 {
     setInputMethod(PointerInput);
     setCheckable(true);
+    _layout.setSingleLine(true);
 }
 
 TabPanelButton::~TabPanelButton()
@@ -43,23 +44,18 @@ TabPanelButton::~TabPanelButton()
 Size
 TabPanelButton::preferredSize() const
 {
-//    if (text().empty())
-//        return stylist()->sizeHint(ButtonSizeHint);
-//
-//    int w = 2
-//            * (std::max(stylist()->hint(BorderWidth),
-//                    stylist()->hint(FrameBorderRadius))
-//                    + stylist()->hint(ButtonOffset));
-//
-//    if (!text().empty())
-//        w += textExtents().width();
-//
-//    return Size(w, stylist()->hint(TabPanelButtonHeight));
-    return Size();
+    if (text().empty())
+        return stylist()->defaultSize(StyleHint::PushButton);
+
+    Size t = textExtents();
+    int w = stylist()->defaultParameter(StyleHint::TabOffsetLR) + t.width();
+    int h = stylist()->defaultParameter(StyleHint::TabOffsetTop) + t.height();
+
+    return Size(w, h);
 }
 
 void
-TabPanelButton::toggleState()
+TabPanelButton::toggleChecked()
 {
 }
 
@@ -73,27 +69,28 @@ TabPanelButton::compose(const PaintEvent& event)
 }
 
 void
-TabPanelButton::updateTextLayoutGeometry()
+TabPanelButton::updateTextBaseGeometry()
 {
-//    int border = std::max(stylist()->hint(BorderWidth),
-//            stylist()->hint(FrameBorderRadius));
-//    int x = border + stylist()->hint(ButtonOffset);
-//    int y = stylist()->hint(BorderWidth) + 3;
-//
-//    if (hasIcon())
-//    {
-//        _iconPosition.moveTo(x, y);
-//        x += icon()->width() + stylist()->hint(ButtonOffset);
-//    }
-//
-//    setTextGeometry(x, y, width(), 0);
+    _layout.setBounds(
+            stylist()->defaultParameter(StyleHint::TabOffsetLeft),
+            stylist()->defaultParameter(StyleHint::TabOffsetTop),
+            width() - stylist()->defaultParameter(StyleHint::TabOffsetLR),
+            height() - stylist()->defaultParameter(StyleHint::TabOffsetTop));
+    _layout.doLayout(font());
+}
+
+Font*
+TabPanelButton::defaultFont() const
+{
+    return stylist()->defaultFont(StyleHint::TitleFont);
 }
 
 //********************************************************************************
 
 TabPanel::TabPanel(Widget* parent)
         : Frame(parent),
-          _currentIndex(-1)
+          _currentIndex(-1),
+          _canvasOffsetY(0)
 {
     setConstraints(NoConstraint, MinimumConstraint);
     setInputMethod(PointerInput);
@@ -108,40 +105,52 @@ TabPanel::~TabPanel()
 int
 TabPanel::heightForWidth(int width) const
 {
-//    int used = 2 * (borderHorizontalOffset() + _margin);
-//    int h = -1;
-//    int h4w;
-//    for (unsigned int i = 0; i < _pages.size(); i++)
-//    {
-//        h4w = _pages.at(i).widget->heightForWidth(width - used);
-//        if (h4w > h)
-//            h = h4w;
-//    }
-//
-//    if (h > 0)
-//        h += stylist()->hint(TabPanelButtonHeight) + 2 * _margin;
-//    return h;
+    int used = stylist()->defaultParameter(StyleHint::FrameOffsetLR)
+            + _margin.hSum();
+    int h4w = 0;
+    for (unsigned int i = 0; i < _pages.size(); i++)
+        h4w = std::max(h4w, _pages.at(i).widget->heightForWidth(width - used));
+
+    if (h4w > 0)
+        return h4w + _canvasOffsetY + _margin.vSum();
     return -1;
 }
 
 Size
 TabPanel::preferredSize() const
 {
-//    int w = 0, h = 0;
-//
-//    // calculate max. size of pages.
-//    for (unsigned int i = 0; i < _pages.size(); i++)
-//    {
-//        Size wS = _pages[i].widget->preferredSize();
-//        if (wS.width() > w)
-//            w = wS.width();
-//        if (wS.height() > h)
-//            h = wS.height();
-//    }
-//    return Size(w + 2 * (borderHorizontalOffset() + _margin),
-//            h + stylist()->hint(TabPanelButtonHeight)
-//                    + 2 * (borderWidth() + _margin));
-    return Size();
+    int w = 0, h = 0;
+    // find max. size
+    for (unsigned int i = 0; i < _pages.size(); i++)
+    {
+        Size wS = _pages[i].widget->preferredSize();
+        if (wS.width() > w)
+            w = wS.width();
+        if (wS.height() > h)
+            h = wS.height();
+    }
+
+    return Size(
+            stylist()->defaultParameter(StyleHint::FrameOffsetLR)
+                    + _margin.hSum() + w,
+            stylist()->defaultParameter(StyleHint::FrameOffsetTB)
+                    + _margin.vSum() + h + _canvasOffsetY);
+}
+
+int
+TabPanel::canvasY() const
+{
+    return _margin.top()
+            + stylist()->defaultParameter(StyleHint::FrameOffsetTop)
+            + _canvasOffsetY;
+}
+
+int
+TabPanel::canvasHeight() const
+{
+    return height() - _margin.vSum()
+            - stylist()->defaultParameter(StyleHint::FrameOffsetTB)
+            - _canvasOffsetY;
 }
 
 int
@@ -216,6 +225,7 @@ TabPanel::addPage(Widget* widget, std::string label)
 
     addChild(page.button);
     addChild(widget);
+
     setSurfaceGeometryModified();
 }
 
@@ -312,16 +322,21 @@ TabPanel::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    stylist()->drawTabPanel(&painter, this);
+    stylist()->drawTabPanel(&painter, this, _canvasOffsetY);
     painter.end();
 }
 
 void
 TabPanel::updateChildrenFrameGeometry()
 {
-    int buttonX = 0;
+
+    _canvasOffsetY = 0;
+    for (unsigned int i = 0; i < _pages.size(); i++)
+        _canvasOffsetY = std::max(_canvasOffsetY,
+                                  _pages[i].button->preferredSize().height());
+    int buttonX = 30;
     int buttonW = 0;
-    int buttonH = 32;    //stylist()->hint(TabPanelButtonHeight);
+    int buttonH = _canvasOffsetY;
 
     int pageWidth = canvasWidth();
     int pageHeight = canvasHeight();
@@ -339,19 +354,21 @@ TabPanel::updateChildrenFrameGeometry()
         _pages[i].widgetSize = _pages[i].widget->preferredSize();
 
         if (_pages[i].widgetSize.width() < pageWidth
-                && _pages[i].widget->xConstraint() & GrowPolicy)
+                && ((_pages[i].widget->xConstraint() & GrowPolicy)
+                        || (_pages[i].widget->xConstraint() & ExpandPolicy)))
             _pages[i].widget->setWidth(pageWidth);
         else if (_pages[i].widgetSize.width() > pageWidth
-                && _pages[i].widget->xConstraint() & ShrinkPolicy)
+                && (_pages[i].widget->xConstraint() & ShrinkPolicy))
             _pages[i].widget->setWidth(pageWidth);
         else
             _pages[i].widget->setWidth(_pages[i].widgetSize.width());
 
         if (_pages[i].widgetSize.height() < pageHeight
-                && _pages[i].widget->yConstraint() & GrowPolicy)
+                && ((_pages[i].widget->yConstraint() & GrowPolicy)
+                        || (_pages[i].widget->yConstraint() & ExpandPolicy)))
             _pages[i].widget->setHeight(pageHeight);
         else if (_pages[i].widgetSize.height() > pageHeight
-                && _pages[i].widget->yConstraint() & ShrinkPolicy)
+                && (_pages[i].widget->yConstraint() & ShrinkPolicy))
             _pages[i].widget->setHeight(pageHeight);
         else
             _pages[i].widget->setHeight(_pages[i].widgetSize.height());

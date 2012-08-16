@@ -58,7 +58,7 @@ void
 Stylist::drawAppFrame(Painter* p, Application* app)
 {
     if (app->background())
-        p->drawImage(app->background(), 0, 0, app->width(), app->height());
+        p->stretchImage(app->background(), 0, 0, app->width(), app->height());
     else
     {
         p->setBrush(_palette->bg);
@@ -122,8 +122,8 @@ Stylist::drawIcon(Painter* p, Icon* icon)
                 (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE
                         | DSBLIT_BLEND_ALPHACHANNEL));
     } else
-        p->drawImage(icon->image(),
-                     Rectangle(0, 0, icon->width(), icon->height()));
+        p->stretchImage(icon->image(),
+                        Rectangle(0, 0, icon->width(), icon->height()));
 }
 
 void
@@ -154,6 +154,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
     // Text
     if (!checkbox->text().empty())
     {
+        p->setFont(*checkbox->font());
         p->setBrush(_palette->getGroup(state).text);
         p->drawLayout(checkbox->layout());
     }
@@ -168,53 +169,58 @@ Stylist::drawLineInput(Painter* p, LineInput* input)
     if (state & DisabledState)
     {
         p->blitImage(_style->_pack, _style->li.dis.l, 0, 0);
-        p->setClip(
-                _style->li.dis.l.width(),
-                0,
-                input->width() - _style->li.dis.l.width()
-                        - _style->li.dis.r.width(),
-                input->height());
-        p->tileImage(_style->_pack, 0, 0, _style->li.dis.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->li.dis.l.width(),
+                        0,
+                        input->width() - _style->li.dis.l.width()
+                                - _style->li.dis.r.width(),
+                        input->height()),
+                _style->li.dis.m);
+
         p->blitImage(_style->_pack, _style->li.dis.r,
                      input->width() - _style->li.dis.r.width(), 0);
     } else if (state & PressedState)
     {
         p->blitImage(_style->_pack, _style->li.pre.l, 0, 0);
-        p->setClip(
-                _style->li.pre.l.width(),
-                0,
-                input->width() - _style->li.pre.l.width()
-                        - _style->li.pre.r.width(),
-                input->height());
-        p->tileImage(_style->_pack, 0, 0, _style->li.pre.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->li.pre.l.width(),
+                        0,
+                        input->width() - _style->li.pre.l.width()
+                                - _style->li.pre.r.width(),
+                        input->height()),
+                _style->li.pre.m);
         p->blitImage(_style->_pack, _style->li.pre.r,
                      input->width() - _style->li.pre.r.width(), 0);
     } else if (state & ExposedState)
     {
         p->blitImage(_style->_pack, _style->li.exp.l, 0, 0);
-        p->setClip(
-                _style->li.exp.l.width(),
-                0,
-                input->width() - _style->li.exp.l.width()
-                        - _style->li.exp.r.width(),
-                input->height());
-        p->tileImage(_style->_pack, 0, 0, _style->li.exp.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->li.exp.l.width(),
+                        0,
+                        input->width() - _style->li.exp.l.width()
+                                - _style->li.exp.r.width(),
+                        input->height()),
+                _style->li.exp.m);
         p->blitImage(_style->_pack, _style->li.exp.r,
                      input->width() - _style->li.exp.r.width(), 0);
     } else
     {
         p->blitImage(_style->_pack, _style->li.def.l, 0, 0);
-        p->setClip(
-                _style->li.def.l.width(),
-                0,
-                input->width() - _style->li.def.l.width()
-                        - _style->li.def.r.width(),
-                input->height());
-        p->tileImage(_style->_pack, 0, 0, _style->li.def.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->li.def.l.width(),
+                        0,
+                        input->width() - _style->li.def.l.width()
+                                - _style->li.def.r.width(),
+                        input->height()),
+                _style->li.def.m);
         p->blitImage(_style->_pack, _style->li.def.r,
                      input->width() - _style->li.def.r.width(), 0);
     }
@@ -222,14 +228,15 @@ Stylist::drawLineInput(Painter* p, LineInput* input)
     if (state & FocusedState)
     {
         p->blitImage(_style->_pack, _style->li.foc.l, 0, 0);
-        p->setClip(
-                _style->li.foc.l.width(),
-                0,
-                input->width() - _style->li.foc.l.width()
-                        - _style->li.foc.r.width(),
-                input->height());
-        p->tileImage(_style->_pack, 0, 0, _style->li.foc.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->li.foc.l.width(),
+                        0,
+                        input->width() - _style->li.foc.l.width()
+                                - _style->li.foc.r.width(),
+                        input->height()),
+                _style->li.foc.m);
         p->blitImage(_style->_pack, _style->li.foc.r,
                      input->width() - _style->li.foc.r.width(), 0);
     }
@@ -259,10 +266,10 @@ Stylist::drawGroupBox(Painter* p, GroupBox* box)
     int tabHeight = box->titleSize().height();
 
     // Frame
-    drawTabFrame(p, 30, 0, box->titleSize().width(), tabHeight,
-                 _style->tab.def);
+    drawTabFrame(p, 2 * defaultParameter(StyleHint::TabOffsetLeft), 0,
+                 box->titleSize().width(), tabHeight, _style->tab.def);
     draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight,
-               _style->fr.def);
+               _style->tab.def);
 }
 
 void
@@ -274,54 +281,58 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     if (state & DisabledState)
     {
         p->blitImage(_style->_pack, _style->pb.dis.l, 0, 0);
-        p->setClip(
-                _style->pb.dis.l.width(),
-                0,
-                button->width() - _style->pb.dis.l.width()
-                        - _style->pb.dis.r.width(),
-                button->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pb.dis.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pb.dis.l.width(),
+                        0,
+                        button->width() - _style->pb.dis.l.width()
+                                - _style->pb.dis.r.width(),
+                        button->height()),
+                _style->pb.dis.m);
         p->blitImage(_style->_pack, _style->pb.dis.r,
                      button->width() - _style->pb.dis.r.width(), 0);
     } else if ((state & PressedState)
             || (button->checkable() && button->checked()))
     {
         p->blitImage(_style->_pack, _style->pb.pre.l, 0, 0);
-        p->setClip(
-                _style->pb.pre.l.width(),
-                0,
-                button->width() - _style->pb.pre.l.width()
-                        - _style->pb.pre.r.width(),
-                button->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pb.pre.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pb.pre.l.width(),
+                        0,
+                        button->width() - _style->pb.pre.l.width()
+                                - _style->pb.pre.r.width(),
+                        button->height()),
+                _style->pb.pre.m);
         p->blitImage(_style->_pack, _style->pb.pre.r,
                      button->width() - _style->pb.pre.r.width(), 0);
     } else if (state & ExposedState)
     {
         p->blitImage(_style->_pack, _style->pb.exp.l, 0, 0);
-        p->setClip(
-                _style->pb.exp.l.width(),
-                0,
-                button->width() - _style->pb.exp.l.width()
-                        - _style->pb.exp.r.width(),
-                button->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pb.exp.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pb.exp.l.width(),
+                        0,
+                        button->width() - _style->pb.exp.l.width()
+                                - _style->pb.exp.r.width(),
+                        button->height()),
+                _style->pb.exp.m);
         p->blitImage(_style->_pack, _style->pb.exp.r,
                      button->width() - _style->pb.exp.r.width(), 0);
     } else
     {
         p->blitImage(_style->_pack, _style->pb.def.l, 0, 0);
-        p->setClip(
-                _style->pb.def.l.width(),
-                0,
-                button->width() - _style->pb.def.l.width()
-                        - _style->pb.def.r.width(),
-                button->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pb.def.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pb.def.l.width(),
+                        0,
+                        button->width() - _style->pb.def.l.width()
+                                - _style->pb.def.r.width(),
+                        button->height()),
+                _style->pb.def.m);
         p->blitImage(_style->_pack, _style->pb.def.r,
                      button->width() - _style->pb.def.r.width(), 0);
     }
@@ -329,14 +340,15 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     if (state & FocusedState)
     {
         p->blitImage(_style->_pack, _style->pb.foc.l, 0, 0);
-        p->setClip(
-                _style->pb.foc.l.width(),
-                0,
-                button->width() - _style->pb.foc.l.width()
-                        - _style->pb.foc.r.width(),
-                button->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pb.foc.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pb.foc.l.width(),
+                        0,
+                        button->width() - _style->pb.foc.l.width()
+                                - _style->pb.foc.r.width(),
+                        button->height()),
+                _style->pb.foc.m);
         p->blitImage(_style->_pack, _style->pb.foc.r,
                      button->width() - _style->pb.foc.r.width(), 0);
     }
@@ -344,6 +356,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     // Text
     if (!button->text().empty())
     {
+        p->setFont(*button->font());
         p->setBrush(_palette->getGroup(state).text);
         p->drawLayout(button->layout());
     }
@@ -376,6 +389,7 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
     // Text
     if (!button->text().empty())
     {
+        p->setFont(*button->font());
         p->setBrush(_palette->getGroup(state).text);
         p->drawLayout(button->layout());
     }
@@ -390,27 +404,29 @@ Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
     if (state & DisabledState)
     {
         p->blitImage(_style->_pack, _style->pr.dis.l, 0, 0);
-        p->setClip(
-                _style->pr.dis.l.width(),
-                0,
-                bar->width() - _style->pr.dis.l.width()
-                        - _style->pr.dis.r.width(),
-                bar->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pr.dis.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pr.dis.l.width(),
+                        0,
+                        bar->width() - _style->pr.dis.l.width()
+                                - _style->pr.dis.r.width(),
+                        bar->height()),
+                _style->pr.dis.m);
         p->blitImage(_style->_pack, _style->pr.dis.r,
                      bar->width() - _style->pr.dis.r.width(), 0);
     } else
     {
         p->blitImage(_style->_pack, _style->pr.def.l, 0, 0);
-        p->setClip(
-                _style->pr.def.l.width(),
-                0,
-                bar->width() - _style->pr.def.l.width()
-                        - _style->pr.def.r.width(),
-                bar->height());
-        p->tileImage(_style->_pack, 0, 0, _style->pr.def.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->pr.def.l.width(),
+                        0,
+                        bar->width() - _style->pr.def.l.width()
+                                - _style->pr.def.r.width(),
+                        bar->height()),
+                _style->pr.def.m);
         p->blitImage(_style->_pack, _style->pr.def.r,
                      bar->width() - _style->pr.def.r.width(), 0);
     }
@@ -422,27 +438,29 @@ Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
         if (state & DisabledState)
         {
             p->blitImage(_style->_pack, _style->prI.dis.l, 0, 0);
-            p->setClip(
-                    _style->prI.dis.l.width(),
-                    0,
-                    fillWidth - _style->prI.dis.l.width()
-                            - _style->prI.dis.r.width(),
-                    bar->height());
-            p->tileImage(_style->_pack, 0, 0, _style->prI.dis.m);
-            p->resetClip();
+            p->stretchImage(
+                    _style->_pack,
+                    Rectangle(
+                            _style->prI.dis.l.width(),
+                            0,
+                            fillWidth - _style->prI.dis.l.width()
+                                    - _style->prI.dis.r.width(),
+                            bar->height()),
+                    _style->prI.dis.m);
             p->blitImage(_style->_pack, _style->prI.dis.r,
                          fillWidth - _style->prI.dis.r.width(), 0);
         } else
         {
             p->blitImage(_style->_pack, _style->prI.def.l, 0, 0);
-            p->setClip(
-                    _style->prI.def.l.width(),
-                    0,
-                    fillWidth - _style->pr.def.l.width()
-                            - _style->prI.def.r.width(),
-                    bar->height());
-            p->tileImage(_style->_pack, 0, 0, _style->prI.def.m);
-            p->resetClip();
+            p->stretchImage(
+                    _style->_pack,
+                    Rectangle(
+                            _style->prI.def.l.width(),
+                            0,
+                            fillWidth - _style->pr.def.l.width()
+                                    - _style->prI.def.r.width(),
+                            bar->height()),
+                    _style->prI.def.m);
             p->blitImage(_style->_pack, _style->prI.def.r,
                          fillWidth - _style->prI.def.r.width(), 0);
         }
@@ -455,14 +473,15 @@ Stylist::drawSlider(Painter* p, Slider* bar)
     const WidgetState state = bar->state();
     {
         p->blitImage(_style->_pack, _style->sl.def.l, 0, 0);
-        p->setClip(
-                _style->sl.def.l.width(),
-                0,
-                bar->width() - _style->sl.def.l.width()
-                        - _style->sl.def.r.width(),
-                bar->height());
-        p->tileImage(_style->_pack, 0, 0, _style->sl.def.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->sl.def.l.width(),
+                        0,
+                        bar->width() - _style->sl.def.l.width()
+                                - _style->sl.def.r.width(),
+                        bar->height()),
+                _style->sl.def.m);
         p->blitImage(_style->_pack, _style->sl.def.r,
                      bar->width() - _style->sl.def.r.width(), 0);
     }
@@ -472,12 +491,15 @@ Stylist::drawSlider(Painter* p, Slider* bar)
     {
         int fillWidth = bar->value() * bar->width() / bar->range();
         p->blitImage(_style->_pack, _style->sl.dis.l, 0, 0);
-        p->setClip(
-                _style->sl.dis.l.width(), 0,
-                fillWidth - _style->sl.dis.l.width() - _style->sl.dis.r.width(),
-                bar->height());
-        p->tileImage(_style->_pack, 0, 0, _style->sl.dis.m);
-        p->resetClip();
+        p->stretchImage(
+                _style->_pack,
+                Rectangle(
+                        _style->sl.dis.l.width(),
+                        0,
+                        fillWidth - _style->sl.dis.l.width()
+                                - _style->sl.dis.r.width(),
+                        bar->height()),
+                _style->sl.dis.m);
         p->blitImage(_style->_pack, _style->sl.dis.r,
                      fillWidth - _style->sl.dis.r.width(), 0);
     }
@@ -497,15 +519,30 @@ Stylist::drawSlider(Painter* p, Slider* bar)
 }
 
 void
-Stylist::drawTabPanelButton(Painter* painter, TabPanelButton* button)
+Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
 {
+    const WidgetState state = button->state();
 
+    if (button->checked())
+        drawTabFrame(p, 0, 0, button->width(), button->height(),
+                     _style->tab.def);
+    else
+        drawTabFrame(p, 0, 0, button->width(), button->height(),
+                     _style->tab.dis);
+
+    // Text
+    if (!button->text().empty())
+    {
+        p->setFont(*button->font());
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout());
+    }
 }
 
 void
-Stylist::drawTabPanel(Painter* painter, TabPanel* panel)
+Stylist::drawTabPanel(Painter* p, TabPanel* panel, int y)
 {
-
+    drawFrame(p, 0, y, panel->width(), panel->height() - y);
 }
 
 void
@@ -613,47 +650,35 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h,
     int midHeight = h - rect.bl.height() - rect.tl.height();
     int by = y + h - rect.bl.height();
 
-//    if (corners & TopLeft)
-//    {
-//        // top
-//        p->blitImage(_style->_pack, rect.tl, x, y);
-//        p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
-//        p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
-//        p->resetClip();
-//        p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
-//    }
+    if (corners & TopLeft)
+        p->blitImage(_style->_pack, rect.tl, x, y);
 
-    // top
-    p->blitImage(_style->_pack, rect.tl, x, y);
-    p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
-    p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
-    p->resetClip();
     p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
-
-    // left
-    p->setClip(x, y + rect.tl.height(), rect.tm.height(), midHeight);
-    p->tileImage(_style->_pack, x, y + rect.tl.height(), rect.l);
-    p->resetClip();
-
-    // right
-    p->setClip(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(),
-               midHeight);
-    p->tileImage(_style->_pack, x + w - rect.tr.width(), y + rect.tl.height(),
-                 rect.r);
-    p->resetClip();
-
-    // mid
-    p->setClip(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight);
-    p->tileImage(_style->_pack, x + rect.l.width(), y + rect.tl.height(),
-                 rect.m);
-    p->resetClip();
-
-    // bottom
     p->blitImage(_style->_pack, rect.bl, x, by);
-    p->setClip(x + rect.bl.width(), by, midWidth, rect.bm.height());
-    p->tileImage(_style->_pack, x + rect.bl.width(), by, rect.bm);
-    p->resetClip();
     p->blitImage(_style->_pack, rect.br, x + w - rect.br.width(), by);
+
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + rect.tl.width(), y, midWidth, rect.tm.height()),
+            rect.tm);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x, y + rect.tl.height(), rect.tm.height(), midHeight),
+            rect.l);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + w - rect.tr.width(), y + rect.tl.height(),
+                      rect.tm.height(), midHeight),
+            rect.r);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + rect.l.width(), y + rect.tl.height(), midWidth,
+                      midHeight),
+            rect.m);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + rect.bl.width(), by, midWidth, rect.bm.height()),
+            rect.bm);
 }
 
 void
@@ -664,30 +689,28 @@ Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h,
     int midHeight = h - rect.tl.height();
     int by = y + h - rect.bl.height();
 
-    // top
     p->blitImage(_style->_pack, rect.tl, x, y);
-    p->setClip(x + rect.tl.width(), y, midWidth, rect.tm.height());
-    p->tileImage(_style->_pack, x + rect.tl.width(), y, rect.tm);
-    p->resetClip();
     p->blitImage(_style->_pack, rect.tr, x + w - rect.tr.width(), y);
 
-    // left
-    p->setClip(x, y + rect.tl.height(), rect.tm.height(), midHeight);
-    p->tileImage(_style->_pack, x, y + rect.tl.height(), rect.l);
-    p->resetClip();
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + rect.tl.width(), y, midWidth, rect.tm.height()),
+            rect.tm);
 
-    // right
-    p->setClip(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(),
-               midHeight);
-    p->tileImage(_style->_pack, x + w - rect.tr.width(), y + rect.tl.height(),
-                 rect.r);
-    p->resetClip();
-
-    // mid
-    p->setClip(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight);
-    p->tileImage(_style->_pack, x + rect.l.width(), y + rect.tl.height(),
-                 rect.m);
-    p->resetClip();
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x, y + rect.tl.height(), rect.tm.height(), midHeight),
+            rect.l);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + w - rect.tr.width(), y + rect.tl.height(),
+                      rect.tm.height(), midHeight),
+            rect.r);
+    p->stretchImage(
+            _style->_pack,
+            Rectangle(x + rect.l.width(), y + rect.tl.height(), midWidth,
+                      midHeight),
+            rect.m);
 }
 
 } /* namespace ilixi */

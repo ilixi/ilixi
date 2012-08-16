@@ -121,6 +121,19 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::FrameOffsetTB:
         return _style->fr.def.tm.height() + _style->fr.def.bm.height();
 
+    case StyleHint::TabOffsetLeft:
+        return _style->tab.def.l.width();
+    case StyleHint::TabOffsetRight:
+        return _style->tab.def.r.width();
+    case StyleHint::TabOffsetTop:
+        return 5; //_style->tab.def.tm.height();
+    case StyleHint::TabOffsetBottom:
+        return _style->tab.def.bm.height();
+    case StyleHint::TabOffsetLR:
+        return _style->tab.def.l.width() + _style->tab.def.r.width();
+    case StyleHint::TabOffsetTB:
+        return _style->tab.def.tm.height() + _style->tab.def.bm.height();
+
     case StyleHint::LineInputLeft:
         return _style->li.def.l.width();
     case StyleHint::LineInputRight:

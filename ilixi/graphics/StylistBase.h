@@ -191,7 +191,7 @@ public:
      * Draws a tab panel.
      */
     virtual void
-    drawTabPanel(Painter* painter, TabPanel* panel)=0;
+    drawTabPanel(Painter* painter, TabPanel* panel, int y)=0;
 
     /*!
      * Draws a toolbutton.

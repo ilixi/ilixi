@@ -43,14 +43,18 @@ public:
     preferredSize() const;
 
     virtual void
-    toggleState();
+    toggleChecked();
 
 protected:
     void
     compose(const PaintEvent& event);
 
     virtual void
-    updateTextLayoutGeometry();
+    updateTextBaseGeometry();
+
+private:
+    virtual Font*
+    defaultFont() const;
 };
 
 class TabPanel : public Frame
@@ -74,6 +78,18 @@ public:
      */
     virtual Size
     preferredSize() const;
+
+    /*!
+     * Returns frame's canvas y-coordinate including the top margin.
+     */
+    virtual int
+    canvasY() const;
+
+    /*!
+     * Returns frame's canvas height excluding margins.
+     */
+    virtual int
+    canvasHeight() const;
 
     int
     count() const;
@@ -125,6 +141,8 @@ protected:
 private:
     //! This property stores current page index.
     int _currentIndex;
+
+    int _canvasOffsetY;
 
     struct TabPage
     {

@@ -107,7 +107,7 @@ ScrollItem::compose(const PaintEvent& event)
     p.setBrush(Color(255, 255, 255));
   p.fillRectangle(0, 0, width(), height());
 
-  p.drawImage(_image, 0, 0, 50, 50);
+  p.stretchImage(_image, 0, 0, 50, 50);
 
   p.setBrush(Color(0, 0, 0));
   p.drawLayout(_layout, 50, 0);

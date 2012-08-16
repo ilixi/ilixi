@@ -107,7 +107,7 @@ namespace ilixi
 
     // draw image
     p.setBrush(Color(0, 0, 0, 155 + val * 100));
-    p.drawImage(_image, -20 * val, 40 - 20 * val, 196 + 40 * val,
+    p.stretchImage(_image, -20 * val, 40 - 20 * val, 196 + 40 * val,
         156 + 40 * val,
         (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
             | DSBLIT_BLEND_COLORALPHA | DSBLIT_SRC_PREMULTIPLY));

@@ -235,22 +235,39 @@ Painter::drawLayout(const TextLayout& layout, int x, int y)
 }
 
 void
-Painter::drawImage(Image* image, int x, int y, int w, int h,
-                   const DFBSurfaceBlittingFlags& flags)
+Painter::stretchImage(Image* image, int x, int y, int w, int h,
+                      const DFBSurfaceBlittingFlags& flags)
 {
-    drawImage(image, Rectangle(x, y, w, h), flags);
+    stretchImage(image, Rectangle(x, y, w, h), flags);
 }
 
 void
-Painter::drawImage(Image* image, const Rectangle& rect,
-                   const DFBSurfaceBlittingFlags& flags)
+Painter::stretchImage(Image* image, const Rectangle& destRect,
+                      const DFBSurfaceBlittingFlags& flags)
 {
     if ((_state & Active) && image)
     {
         applyBrush();
-        DFBRectangle r = rect.dfbRect();
+        DFBRectangle dest = destRect.dfbRect();
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
-        dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), NULL, &r);
+        dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), NULL,
+                                &dest);
+    }
+}
+
+void
+Painter::stretchImage(Image* image, const Rectangle& destRect,
+                      const Rectangle& sourceRect,
+                      const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        DFBRectangle source = sourceRect.dfbRect();
+        DFBRectangle dest = destRect.dfbRect();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), &source,
+                                &dest);
     }
 }
 

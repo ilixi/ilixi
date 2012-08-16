@@ -257,7 +257,7 @@ Compositor::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    painter.drawImage(background(), 0, 0, width(), height() - 50);
+    painter.stretchImage(background(), 0, 0, width(), height() - 50);
     painter.end();
 }
 

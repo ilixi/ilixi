@@ -33,7 +33,8 @@ HBoxLayout::HBoxLayout(Widget* parent)
         : LayoutBase(parent),
           _alignment(Alignment::Top)
 {
-    //  setConstraints(MinimumConstraint, MinimumConstraint);
+    ILOG_TRACE_W(ILX_HBOX);
+    setConstraints(MinimumConstraint, MinimumConstraint);
 }
 
 HBoxLayout::~HBoxLayout()
@@ -55,6 +56,7 @@ HBoxLayout::setVerticalAlignment(Alignment::Vertical alignment)
 int
 HBoxLayout::heightForWidth(int width) const
 {
+    ILOG_TRACE_W(ILX_HBOX);
     if (!_children.size())
         return -1;
     // TODO This method is not working...
@@ -98,6 +100,7 @@ HBoxLayout::heightForWidth(int width) const
 Size
 HBoxLayout::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_HBOX);
     if (!_children.size())
         return Size(50, 50);
 
@@ -143,6 +146,7 @@ HBoxLayout::preferredSize() const
 void
 HBoxLayout::tile()
 {
+    ILOG_TRACE_W(ILX_HBOX);
     ElementList list;
     LayoutElement e;
     for (Widget::WidgetListConstIterator it = _children.begin();
@@ -363,31 +367,31 @@ HBoxLayout::tile()
         }
 
         // Set height
-        if (widget->yConstraint() != FixedConstraint)
-        {
-            // check if widget provides a height for width, if not use
-            // height for hbox instead.
-            int h4w = widget->heightForWidth(widget->width());
-            if (h4w > 0)
-            {
-                // check grow-shrink for height
-                if (((LayoutElement) *it).size.height() < h4w
-                        && widget->yConstraint() & GrowPolicy)
-                    widget->setHeight(h4w);
-                else if (((LayoutElement) *it).size.height() >= h4w
-                        && widget->yConstraint() & ShrinkPolicy)
-                    widget->setHeight(h4w);
-            } else
-            {
-                if (((LayoutElement) *it).size.height() < height()
-                        && widget->yConstraint() & GrowPolicy)
-                    widget->setHeight(height());
-                else if (((LayoutElement) *it).size.height() >= height()
-                        && widget->yConstraint() & ShrinkPolicy)
-                    widget->setHeight(height());
-            }
-        } else
+        if (widget->yConstraint() == FixedConstraint)
             widget->setHeight(((LayoutElement) *it).size.height());
+        else if (widget->yConstraint() & ExpandPolicy)
+            widget->setHeight(height());
+        else if (widget->height() < height()
+                && (widget->yConstraint() & GrowPolicy))
+            widget->setHeight(height());
+        else if (widget->height() >= height()
+                && (widget->yConstraint() & ShrinkPolicy))
+            widget->setHeight(height());
+
+        // check if widget provides a height for width, if not use
+        // height for hbox instead.
+//        int h4w = widget->heightForWidth(widget->width());
+//        if (h4w > 0)
+//        {
+//            ILOG_DEBUG(ILX_HBOX, "h4w: %d!\n", h4w);
+//            // check grow-shrink for height
+//            if (((LayoutElement) *it).size.height() < h4w
+//                    && (widget->yConstraint() & GrowPolicy))
+//                widget->setHeight(h4w);
+//            else if (((LayoutElement) *it).size.height() >= h4w
+//                    && (widget->yConstraint() & ShrinkPolicy))
+//                widget->setHeight(h4w);
+//        }
 
         // Set top-left using alignment.
         int y = 0;

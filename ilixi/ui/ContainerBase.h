@@ -103,18 +103,6 @@ public:
     layout();
 
     /*!
-     * Returns layout's horizontal constraint mode.
-     */
-    virtual WidgetResizeConstraint
-    xConstraint() const;
-
-    /*!
-     * Returns layout's vertical constraint mode.
-     */
-    virtual WidgetResizeConstraint
-    yConstraint() const;
-
-    /*!
      * Sets a new layout and destroys old one.
      *
      * Warning: Widgets added to previous layout will be destroyed implicitly.

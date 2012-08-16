@@ -467,8 +467,8 @@ Widget::setYConstraint(WidgetResizeConstraint constraint)
 void
 Widget::setConstraints(WidgetResizeConstraint x, WidgetResizeConstraint y)
 {
-    _xResizeConstraint = x;
-    _yResizeConstraint = y;
+    _xResizeConstraint = (WidgetResizeConstraint) x;
+    _yResizeConstraint = (WidgetResizeConstraint) y;
 }
 
 void

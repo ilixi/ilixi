@@ -210,16 +210,24 @@ public:
      * Brush color is used for colorizing.
      */
     void
-    drawImage(Image* image, int x, int y, int w, int h,
-              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    stretchImage(Image* image, int x, int y, int w, int h,
+                 const DFBSurfaceBlittingFlags& flags =
+                         DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Streches image inside given rectangle.
      * Brush color is used for colorizing.
      */
     void
-    drawImage(Image* image, const Rectangle& rect,
-              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    stretchImage(Image* image, const Rectangle& destRect,
+                 const DFBSurfaceBlittingFlags& flags =
+                         DSBLIT_BLEND_ALPHACHANNEL);
+
+    void
+    stretchImage(Image* image, const Rectangle& destRect,
+                 const Rectangle& sourceRect,
+                 const DFBSurfaceBlittingFlags& flags =
+                         DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
