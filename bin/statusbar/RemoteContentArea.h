@@ -38,7 +38,7 @@ public:
     virtual
     ~RemoteContentArea();
 
-    Size
+    virtual Size
     preferredSize() const;
 
     bool
@@ -53,6 +53,7 @@ protected:
 
 private:
     static Image* _bgDef;
+    int _contentX;
     std::vector<SurfaceView*> _remoteContent;
 };
 

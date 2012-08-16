@@ -19,13 +19,14 @@ D_DEBUG_DOMAIN( ILX_STATUSRCA, "ilixi/StatusBar/RCA", "RemoteContentArea");
 Image* RemoteContentArea::_bgDef = NULL;
 
 RemoteContentArea::RemoteContentArea(Widget* parent)
-        : ContainerBase(parent)
+        : ContainerBase(parent),
+          _contentX(15)
 {
     if (!_bgDef)
         _bgDef = new Image(ILIXI_DATADIR"statusbar/statusbar-buttons.png");
 
-    setConstraints(MinimumExpandingConstraint, MinimumExpandingConstraint);
-    setLayout(new HBoxLayout());
+    setConstraints(MinimumConstraint, FixedConstraint);
+//    setLayout(new HBoxLayout());
 }
 
 RemoteContentArea::~RemoteContentArea()
@@ -36,7 +37,7 @@ Size
 RemoteContentArea::preferredSize() const
 {
     Size s = _layout->preferredSize();
-    return Size(s.width(), std::min(s.height(), 54));
+    return Size(s.width(), 55);
 }
 
 bool
@@ -44,13 +45,22 @@ RemoteContentArea::addRemoteContent(DFBSurfaceID id)
 {
     SurfaceView* s = new SurfaceView();
     s->setSourceFromSurfaceID(id);
+    s->setGeometry(_contentX, 2, s->preferredSize().width(),
+                   s->preferredSize().height());
+    _contentX += s->preferredSize().width() + 10;
+
+    ILOG_DEBUG(
+            ILX_STATUSRCA,
+            "Pref: %d, %d\n", s->preferredSize().width(), s->preferredSize().height());
 
     if (addWidget(s))
     {
         _remoteContent.push_back(s);
-        ILOG_DEBUG(ILX_STATUSRCA, "addRemoteContent..\n");
+        ILOG_DEBUG(ILX_STATUSRCA, "addRemoteContent with ID: %u\n", id);
+        update();
         return true;
     }
+    delete s;
     return false;
 }
 
@@ -62,8 +72,10 @@ RemoteContentArea::removeRemoteContent(DFBSurfaceID id)
     {
         if ((*it)->sourceID() == id)
         {
+            removeWidget(*it);
             _remoteContent.erase(it);
-            ILOG_DEBUG(ILX_STATUSRCA, "removeRemoteContent..\n");
+            ILOG_DEBUG(ILX_STATUSRCA, "removeRemoteContent with ID: %u\n", id);
+            update();
             return true;
         }
     }
@@ -73,6 +85,9 @@ RemoteContentArea::removeRemoteContent(DFBSurfaceID id)
 void
 RemoteContentArea::compose(const PaintEvent& event)
 {
+    ILOG_DEBUG(
+            ILX_STATUSRCA,
+            "Compose (%d, %d, %d, %d)\n", event.rect.x(), event.rect.y(), width(), height());
     Painter p(this);
     p.begin(event);
 
