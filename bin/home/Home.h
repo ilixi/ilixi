@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -24,18 +24,49 @@
 #ifndef HOME_H_
 #define HOME_H_
 
-#include "ui/Application.h"
+#include <ui/Application.h>
+#include <types/Font.h>
 
-class Home : public ilixi::Application
+namespace ilixi
 {
+
+class Home : public Application
+{
+    struct AppData
+    {
+        char name[128];
+        char icon[256];
+    };
+
+    typedef std::vector<AppData> AppDataVector;
+
 public:
-  Home(int argc, char* argv[]);
+    Home(int argc, char* argv[]);
 
-  virtual
-  ~Home();
+    virtual
+    ~Home();
 
-  void
-  runApp(const char* path);
+    void
+    runApp(const char* name);
+
+protected:
+    void
+    initButtons(const AppDataVector& dataVector);
+
+    void
+    addButton(const char* name, const char* icon);
+
+private:
+    IComaComponent* _compositor;
+    Font* _font;
+
+    void
+    updateHomeGeometry();
+
+    friend void
+    receiveAppList(void* ctx, void* arg);
 };
+
+}
 
 #endif /* HOME_H_ */

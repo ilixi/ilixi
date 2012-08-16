@@ -80,6 +80,12 @@ public:
     icon() const;
 
     /*!
+     * Returns true if drawing frame, false otherwise.
+     */
+    bool
+    drawFrame() const;
+
+    /*!
      * Returns tool button's style.
      */
     ToolButtonStyle

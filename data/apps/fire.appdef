@@ -9,7 +9,7 @@
     <licence>MIT</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:dfbterm.png</icon>
+	<icon>@DATADIR:fire.png</icon>
     <exec>df_fire</exec>
     <args>--dfb:force-windowed</args>
     <flags>APP_NEEDS_CLEAR</flags>

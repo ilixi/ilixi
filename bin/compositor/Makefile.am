@@ -14,10 +14,6 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						AppView.cpp \
 						Compositor.cpp \
 						Compositor.h \
-						Launcher.h \
-						Launcher.cpp \
-						LauncherButton.h \
-						LauncherButton.cpp \
 						OSKView.cpp \
 						OSKView.h \
 						buttons/CompositorButton.h \

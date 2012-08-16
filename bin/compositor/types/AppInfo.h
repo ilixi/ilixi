@@ -60,7 +60,8 @@ enum AppFlags
     // special
     APP_STATUSBAR = 0x100000,
     APP_OSK = 0x200000,
-    APP_SYSTEM = 0x400000
+    APP_HOME = 0x400000,
+    APP_SYSTEM = 0x800000
 };
 
 enum DependencyFlags

@@ -176,6 +176,8 @@ AppInfo::setAppFlags(const std::string& appFlags)
             _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
         else if (strcmp(pch, "APP_OSK") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_OSK);
+        else if (strcmp(pch, "APP_HOME") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_HOME);
         else if (strcmp(pch, "APP_SYSTEM") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_SYSTEM);
         pch = strtok(NULL, " ,");

@@ -43,18 +43,21 @@ public:
         ShowHome = 3,
         ShowSwitcher = 4,
         HideHome = 5,
-        HideSwither = 6
+        HideSwither = 6,
+        StartApp = 7,
+        SendAppList = 8
     };
 
     enum CompositorNotifications
     {
-        AppVisible,
-        AppHidden,
-        AppHasFocus,
-        ShowingHome,
-        ShowingSwitcher,
-        HidingHome,
-        HidingSwitcher,
+        AppVisible = 0,
+        AppHidden = 1,
+        AppHasFocus = 2,
+        ShowingHome = 3,
+        ShowingSwitcher = 4,
+        HidingHome = 5,
+        HidingSwitcher = 6,
+        SendingAppList = 7,
         CompositorNumNotifications
     };
 
@@ -84,11 +87,20 @@ public:
     void
     signalSwitcherHidden();
 
+    void
+    sendAppList();
+
 protected:
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
 
 private:
+    struct AppData
+    {
+        char name[128];
+        char icon[256];
+    };
+
     Compositor* _compositor;
     NotificationManager* _notificationMan;
 };

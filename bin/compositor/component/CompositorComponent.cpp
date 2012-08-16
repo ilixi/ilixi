@@ -25,6 +25,7 @@
 #include <core/Logger.h>
 #include "Compositor.h"
 #include "NotificationManager.h"
+#include "ApplicationManager.h"
 
 namespace ilixi
 {
@@ -45,6 +46,7 @@ CompositorComponent::CompositorComponent(Compositor* compositor)
     createNotification(4, NULL, CNF_NONE);
     createNotification(5, NULL, CNF_NONE);
     createNotification(6, NULL, CNF_NONE);
+    createNotification(7, NULL);
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -107,6 +109,32 @@ CompositorComponent::signalSwitcherHidden()
     notify(HidingSwitcher, NULL);
 }
 
+void
+CompositorComponent::sendAppList()
+{
+    ILOG_TRACE_F(ILX_COMPCOMP);
+    AppInfoList list = _compositor->appMan()->applicationList();
+    std::vector<AppData> dataVector;
+
+    for (AppInfoList::iterator it = list.begin(); it != list.end(); ++it)
+    {
+        if (!(((AppInfo*) *it)->appFlags() & APP_SYSTEM))
+        {
+            AppData data;
+            snprintf(data.name, 128, "%s", ((AppInfo*) *it)->name().c_str());
+            snprintf(data.icon, 256, "%s", ((AppInfo*) *it)->icon().c_str());
+            dataVector.push_back(data);
+        }
+    }
+
+    int* vec;
+    allocate(sizeof(int) + dataVector.size() * sizeof(AppData), (void**) &vec);
+    *vec = dataVector.size();
+    memcpy(vec + 1, &dataVector[0], dataVector.size() * sizeof(AppData));
+    notify(SendingAppList, vec);
+    ILOG_DEBUG(ILX_COMPCOMP, "Sent application vector.\n");
+}
+
 DirectResult
 CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 {
@@ -151,6 +179,19 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 
     case HideSwither:
         _compositor->showSwitcher(false);
+        break;
+
+    case StartApp:
+        {
+            char name[128];
+            snprintf(name, 128, "%s", ((char*) arg));
+            _compositor->appMan()->startApp(name);
+        }
+        break;
+
+    case SendAppList:
+        ILOG_TRACE_F(ILX_COMPCOMP);
+        sendAppList();
         break;
 
     default:

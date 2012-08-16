@@ -28,7 +28,6 @@
 #include <directfb_windows.h>
 #include <lib/FPSCalculator.h>
 #include <ui/Application.h>
-#include "Launcher.h"
 #include "QuitButton.h"
 #include "AppView.h"
 #include "ApplicationManager.h"
@@ -147,8 +146,6 @@ private:
 
     //! Switcher instance.
     Switcher* _switcher;
-    //! Launcher screen instance.
-    Launcher* _launcher;
 
     //! Buttons
     QuitButton* _quitButton;
@@ -165,6 +162,7 @@ private:
     OSKComponent* _oskComp;
 
     // OSK
+    AppInstance* _home;
     AppInstance* _statusBar;
     AppInstance* _osk;
 

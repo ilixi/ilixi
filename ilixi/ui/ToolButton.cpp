@@ -163,6 +163,12 @@ ToolButton::icon() const
     return _icon;
 }
 
+bool
+ToolButton::drawFrame() const
+{
+    return (_tbOptions & DrawFrame);
+}
+
 ToolButton::ToolButtonStyle
 ToolButton::toolButtonStyle() const
 {
@@ -254,14 +260,11 @@ ToolButton::pointerButtonUpEvent(const PointerEvent& event)
 void
 ToolButton::compose(const PaintEvent& event)
 {
-    if (_tbOptions & DrawFrame)
-    {
-        ILOG_TRACE_W(ILX_TOOLBUTTON);
-        Painter p(this);
-        p.begin(event);
-        stylist()->drawToolButton(&p, this);
-        p.end();
-    }
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawToolButton(&p, this);
+    p.end();
 }
 
 void

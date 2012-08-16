@@ -7,6 +7,7 @@ miscdata_DATA 	=	andi.png \
 			comp_switch.png \
 			comp_quit.png \
 			dfbterm.png \
+			fire.png \
 			gallery.png \
 			input.png \
 			knuckles.png \

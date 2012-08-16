@@ -41,13 +41,13 @@ Compositor::Compositor(int argc, char* argv[])
           _appMan(NULL),
           _currentApp(NULL),
           _switcher(NULL),
-          _launcher(NULL),
           _quitButton(NULL),
           _fpsLabel(NULL),
           _fps(NULL),
           _compComp(NULL),
           _soundComp(NULL),
           _oskComp(NULL),
+          _home(NULL),
           _statusBar(NULL),
           _osk(NULL)
 {
@@ -57,11 +57,7 @@ Compositor::Compositor(int argc, char* argv[])
     _oskComp = new OSKComponent(this);
 
     setTitle("Compositor");
-    setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
     setMargin(0);
-
-    _launcher = new Launcher(this);
-    addWidget(_launcher);
 
     for (int i = 1; i < argc; i++)
     {
@@ -99,6 +95,9 @@ Compositor::Compositor(int argc, char* argv[])
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
+
+    _appMan->startApp("Home");
+    _appMan->startApp("StatusBar");
 }
 
 Compositor::~Compositor()
@@ -120,7 +119,7 @@ Compositor::appMan() const
 void
 Compositor::showLauncher(bool show)
 {
-    if (show && !_launcher->visible())
+    if (show)
     {
         ILOG_TRACE_W(ILX_COMPOSITOR);
         if (_currentApp)
@@ -135,17 +134,21 @@ Compositor::showLauncher(bool show)
             _compComp->notifyHidden(_currentApp->pid());
         }
         _backgroundFlags = BGFAll;
-        _launcher->setVisible(true);
+        _home->view()->show();
         _compComp->signalHomeShowing();
         showSwitcher(false);
     } else
     {
+        _home->view()->hide();
+        _compComp->signalHomeHidden();
+
         if (_currentApp)
         {
             _switcher->setNeighbour(Up, _currentApp->view());
             _currentApp->view()->clearAnimatedProperty(AppView::Position);
             _currentApp->view()->show();
             _compComp->notifyVisible(_currentApp->pid());
+
             AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
             if (info->appFlags() & APP_NEEDS_CLEAR)
                 _backgroundFlags = BGFAll;
@@ -154,8 +157,6 @@ Compositor::showLauncher(bool show)
         } else
             _backgroundFlags = BGFAll;
 
-        _launcher->setVisible(false);
-        _compComp->signalHomeHidden();
         showSwitcher(false);
     }
 }
@@ -205,7 +206,7 @@ Compositor::handleSwitchRequest()
 void
 Compositor::handleQuit()
 {
-    if (_launcher->visible())
+    if (_home->view()->visible())
         quit();
     else if (_currentApp)
     {
@@ -263,7 +264,6 @@ Compositor::compose(const PaintEvent& event)
 void
 Compositor::onVisible()
 {
-    _appMan->startApp("StatusBar");
     _quitButton->show();
 
     if (_fps)
@@ -413,7 +413,6 @@ Compositor::processRemoved(AppInstance* instance)
 void
 Compositor::updateCompositorGeometry()
 {
-    _launcher->setGeometry(0, 0, width(), height());
     _switcher->setOptimalGeometry(width(), height() - 50);
     _quitButton->moveTo(width() - 80, 0);
     if (_fpsLabel)
@@ -438,7 +437,16 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 if (!dfbWindow)
                     break;
 
-                if (appInfo->appFlags() & APP_STATUSBAR)
+                if (appInfo->appFlags() & APP_HOME)
+                {
+                    _home = data->instance;
+                    _home->setView(new AppView(this, data->instance, this));
+                    _home->view()->setGeometry(0, 0, width(), height() - 50);
+                    addWidget(_home->view());
+                    _home->view()->setZ(0);
+                    _home->view()->sendToBack();
+                    _home->view()->addWindow(dfbWindow);
+                } else if (appInfo->appFlags() & APP_STATUSBAR)
                 {
                     _statusBar = data->instance;
                     _statusBar->setView(
@@ -450,10 +458,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->bringToFront();
                     _statusBar->view()->clearAnimatedProperty(AppView::Opacity);
                     _statusBar->view()->clearAnimatedProperty(AppView::Zoom);
-                    data->instance->view()->addWindow(dfbWindow);
+                    _statusBar->view()->addWindow(dfbWindow);
+                    _statusBar->view()->show();
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
-                    ILOG_ERROR(ILX_COMPOSITOR, "APP_OSK *************\n");
                     _osk = data->instance;
                     _osk->setView(new AppView(this, data->instance, this));
                     _osk->view()->setAnimatedProperty(AppView::Position);
@@ -461,11 +469,9 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _osk->view()->clearAnimatedProperty(AppView::Zoom);
                     _osk->view()->setGeometry(0, height() - 450, width(), 400);
                     addWidget(_osk->view());
+                    _statusBar->view()->bringToFront();
                     _osk->view()->setZ(0);
                     _osk->view()->addWindow(dfbWindow);
-//                    widgetToFront(_osk->view());
-                    _osk->view()->lower();
-                    _statusBar->view()->bringToFront();
                 } else
                 {
                     if (data->instance->view() == NULL)

@@ -6,10 +6,12 @@ miscdata_DATA 	=	application.dtd \
 					dfbterm.appdef \
 					fire.appdef \
 					gallery.appdef \
+					ilixi_home.appdef \
 					ilixi_widgets.appdef \
 					knuckles.appdef \
 					lite_web.appdef \
 					matrix.appdef \
+					navit.appdef \
 					neo.appdef \
 					osk.appdef \
 					particle.appdef \

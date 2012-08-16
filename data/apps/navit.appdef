@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
+-->
+<!DOCTYPE app SYSTEM "application.dtd">
+<app>
+    <name>navit</name>
+    <author>navit developers</author>
+    <licence>XXX</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:navit.png</icon>
+    <exec>navit</exec>
+    <args></args>
+    <flags>APP_SURFACE_DONTBLOCK</flags>
+    <deps>DEP_NONE</deps>
+</app>
