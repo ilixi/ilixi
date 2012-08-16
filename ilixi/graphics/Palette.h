@@ -32,58 +32,40 @@ namespace ilixi
 //! Group of colours for widget states.
 struct ColorGroup
 {
-    //! Initialise members to default colours.
+    //! Initialise members to default color.
     ColorGroup();
 
     //! Copy
     ColorGroup(const ColorGroup& c);
 
-    //! Initialise members using given colours.
-    ColorGroup(Color base, Color baseAlt, Color backgroundTop,
-               Color backgrounMid, Color backgrounBottom, Color borderTop,
-               Color borderMid, Color borderBottom, Color text);
+    //! Initialise members using given color.
+    ColorGroup(Color base, Color baseAlt, Color background, Color border,
+               Color fill, Color text);
 
-    //! Set all colours.
+    //! Set all color.
     void
-    setColors(Color base, Color baseAlt, Color backgroundTop,
-              Color backgrounMid, Color backgrounBottom, Color borderTop,
-              Color borderMid, Color borderBottom, Color text);
+    setColors(Color base, Color baseAlt, Color background, Color border,
+              Color fill, Color text);
 
-    //! Base colour; use as the background colour of an input widget or row colour inside a list widget.
+    //! Base color; use as the background color of an input widget or row color inside a list widget.
     Color base;
-    //! Text colour; use for drawing text on base.
+    //! Text color; use for drawing text on base.
     Color baseText;
-    //! Alternative base colour; use for lists.
+    //! Alternative base color; use for lists.
     Color baseAlt;
-    //! Text colour; use for drawing text on alternative base.
+    //! Text color; use for drawing text on alternative base.
     Color baseAltText;
-
-    //! Alternative background colour; use with gradients.
-    Color bgBottom;
-    //! Alternative background colour; use with gradients.
-    Color bgMid;
-    //! Primary background colour.
-    Color bgTop;
-
-    //! Alternative border colour; use with gradients.
-    Color borderBottom;
-    //! Alternative border colour; use with gradients.
-    Color borderMid;
-    //! Primary border colour.
-    Color borderTop;
-
-    //! Alternative fill colour; used with gradients.
-    Color fillBottom;
-    //! Alternative fill colour; use with gradients.
-    Color fillMid;
-    //! Primary colour use for filling a region inside widget.
-    Color fillTop;
-
+    //! Background color; use with gradients.
+    Color bg;
+    //! Alternative border color; use with gradients.
+    Color border;
+    //! Indicator fill color.
+    Color fill;
     //! Text colour; use for drawing text or symbols inside a widget.
     Color text;
 };
 
-//! Stores colours for drawing.
+//! Stores color for drawing.
 /*!
  * A palette is a collection of colors which are used by a Stylist
  * during drawing widgets in various states.
@@ -112,20 +94,10 @@ public:
     bool
     parsePalette(const char* file);
 
-    //! Alternative window background colour; use with gradients.
-    Color bgBottom;
-    //! Alternative window background colour; use with gradients.
-    Color bgMid;
-    //! Primary window background colour.
-    Color bgTop;
-
-    //! Alternative colour for drawing focus rectangles; use with gradients.
-    Color focusBottom;
-    //! Alternative colour for drawing focus rectangles; use with gradients.
-    Color focusMid;
-    //! Primary colour for drawing focus rectangles.
-    Color focusTop;
-
+    //! Window background color; use with gradients.
+    Color bg;
+    //! Use for drawing focus rectangles.
+    Color focus;
     //! Use for drawing text on containers with no background.
     Color text;
     //! Use for drawing disabled text on containers with no background.

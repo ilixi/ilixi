@@ -25,6 +25,7 @@
 #include <core/Logger.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <libxml/catalog.h>
 
 namespace ilixi
 {
@@ -36,15 +37,9 @@ ColorGroup::ColorGroup()
           baseText(0, 0, 0),
           baseAlt(0.9, 0.9, 0.9),
           baseAltText(0, 0, 0),
-          bgBottom(0.28, 0.28, 0.28),
-          bgMid(0, 0, 0),
-          bgTop(0.43, 0.43, 0.43),
-          borderBottom(0, 0, 0),
-          borderMid(0, 0, 0),
-          borderTop(0.3, 0.3, 0.3),
-          fillBottom(0, 0, 0),
-          fillMid(0, 0, 0),
-          fillTop(0, 0, 1),
+          bg(0.43, 0.43, 0.43),
+          border(0.3, 0.3, 0.3),
+          fill(0, 0, 1),
           text(1, 1, 1)
 {
 }
@@ -54,57 +49,39 @@ ColorGroup::ColorGroup(const ColorGroup& c)
           baseText(c.baseText),
           baseAlt(c.baseAlt),
           baseAltText(c.baseAltText),
-          bgBottom(c.bgBottom),
-          bgMid(c.bgMid),
-          bgTop(c.bgTop),
-          borderBottom(c.borderBottom),
-          borderMid(c.borderMid),
-          borderTop(c.borderTop),
-          fillBottom(c.fillBottom),
-          fillMid(c.fillMid),
-          fillTop(c.fillTop),
+          bg(c.bg),
+          border(c.border),
+          fill(c.fill),
           text(c.text)
 {
 }
 
-ColorGroup::ColorGroup(Color b, Color bAlt, Color bTop, Color bMid,
-                       Color bBottom, Color boTop, Color boMid, Color boBottom,
-                       Color t)
-        : base(b),
-          baseAlt(bAlt),
-          bgTop(bTop),
-          bgMid(bMid),
-          bgBottom(bBottom),
-          borderTop(boTop),
-          borderMid(boMid),
-          borderBottom(boBottom),
-          text(t)
+ColorGroup::ColorGroup(Color c1, Color c2, Color c3, Color c4, Color c5,
+                       Color c6)
+        : base(c1),
+          baseAlt(c2),
+          bg(c3),
+          border(c4),
+          fill(c5),
+          text(c6)
 {
 }
 
 void
-ColorGroup::setColors(Color b, Color bAlt, Color bTop, Color bMid,
-                      Color bBottom, Color boTop, Color boMid, Color boBottom,
-                      Color t)
+ColorGroup::setColors(Color c1, Color c2, Color c3, Color c4, Color c5,
+                      Color c6)
 {
-    base = b;
-    baseAlt = bAlt;
-    bgTop = bTop;
-    bgMid = bMid;
-    bgBottom = bBottom;
-    borderTop = boTop;
-    borderMid = boMid;
-    borderBottom = boBottom;
-    text = t;
+    base = c1;
+    baseAlt = c2;
+    bg = c3;
+    border = c4;
+    fill = c5;
+    text = c6;
 }
 
 Palette::Palette()
-        : bgBottom(0, 0, 0),
-          bgMid(0, 0, 0),
-          bgTop(0, 0, 0),
-          focusBottom(0, 0, 0),
-          focusMid(0, 0, 0),
-          focusTop(1, 0, 0),
+        : bg(0, 0, 0),
+          focus(0, 0, 0),
           text(1, 1, 1),
           textDisabled(.9, .9, .9),
           _default(),
@@ -196,21 +173,10 @@ Palette::parsePalette(const char* palette)
             // check group name
             if (xmlStrcmp(group->name, (xmlChar*) "application") == 0)
             {
-                if (xmlStrcmp(element->name, (xmlChar*) "bgBottom") == 0)
-                    bgBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgMid") == 0)
-                    bgMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgTop") == 0)
-                    bgTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "focusBottom")
-                        == 0)
-                    focusBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "focusMid") == 0)
-                    focusMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "focusTop") == 0)
-                    focusTop = c;
-
+                if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
+                    bg = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "focus") == 0)
+                    focus = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     text = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "textDisabled")
@@ -229,29 +195,12 @@ Palette::parsePalette(const char* palette)
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
                         == 0)
                     _default.baseAltText = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgBottom") == 0)
-                    _default.bgBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgMid") == 0)
-                    _default.bgMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgTop") == 0)
-                    _default.bgTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderBottom")
-                        == 0)
-                    _default.borderBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderMid") == 0)
-                    _default.borderMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderTop") == 0)
-                    _default.borderTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillBottom") == 0)
-                    _default.fillBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillMid") == 0)
-                    _default.fillMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillTop") == 0)
-                    _default.fillTop = c;
-
+                else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
+                    _default.bg = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "border") == 0)
+                    _default.border = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "fill") == 0)
+                    _default.fill = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     _default.text = c;
             }
@@ -267,29 +216,12 @@ Palette::parsePalette(const char* palette)
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
                         == 0)
                     _disabled.baseAltText = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgBottom") == 0)
-                    _disabled.bgBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgMid") == 0)
-                    _disabled.bgMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgTop") == 0)
-                    _disabled.bgTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderBottom")
-                        == 0)
-                    _disabled.borderBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderMid") == 0)
-                    _disabled.borderMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderTop") == 0)
-                    _disabled.borderTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillBottom") == 0)
-                    _disabled.fillBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillMid") == 0)
-                    _disabled.fillMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillTop") == 0)
-                    _disabled.fillTop = c;
-
+                else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
+                    _disabled.bg = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "border") == 0)
+                    _disabled.border = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "fill") == 0)
+                    _disabled.fill = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     _disabled.text = c;
             }
@@ -305,29 +237,12 @@ Palette::parsePalette(const char* palette)
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
                         == 0)
                     _exposed.baseAltText = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgBottom") == 0)
-                    _exposed.bgBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgMid") == 0)
-                    _exposed.bgMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgTop") == 0)
-                    _exposed.bgTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderBottom")
-                        == 0)
-                    _exposed.borderBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderMid") == 0)
-                    _exposed.borderMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderTop") == 0)
-                    _exposed.borderTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillBottom") == 0)
-                    _exposed.fillBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillMid") == 0)
-                    _exposed.fillMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillTop") == 0)
-                    _exposed.fillTop = c;
-
+                else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
+                    _exposed.bg = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "border") == 0)
+                    _exposed.border = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "fill") == 0)
+                    _exposed.fill = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     _exposed.text = c;
             }
@@ -343,29 +258,12 @@ Palette::parsePalette(const char* palette)
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
                         == 0)
                     _pressed.baseAltText = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgBottom") == 0)
-                    _pressed.bgBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgMid") == 0)
-                    _pressed.bgMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "bgTop") == 0)
-                    _pressed.bgTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderBottom")
-                        == 0)
-                    _pressed.borderBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderMid") == 0)
-                    _pressed.borderMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "borderTop") == 0)
-                    _pressed.borderTop = c;
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillBottom") == 0)
-                    _pressed.fillBottom = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillMid") == 0)
-                    _pressed.fillMid = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "fillTop") == 0)
-                    _pressed.fillTop = c;
-
+                else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
+                    _pressed.bg = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "border") == 0)
+                    _pressed.border = c;
+                else if (xmlStrcmp(element->name, (xmlChar*) "fill") == 0)
+                    _pressed.fill = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     _pressed.text = c;
             }

@@ -1,40 +1,17 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE palette SYSTEM "http://www.ilixi.org/palette.dtd">
--->
-<!DOCTYPE palette SYSTEM "palette.dtd">
+<!DOCTYPE palette PUBLIC "-//ilixi//DTD Palette v2//EN" "http://www.ilixi.org/dtd/palette.dtd">
 <palette>
       <application>
-            <bgBottom>
+            <bg>
                   <color alpha="155">
                         <hex>666666</hex>
                   </color>
-            </bgBottom>
-            <bgMid>
-                  <color>
-                        <hex>000000</hex>
-                  </color>
-            </bgMid>
-            <bgTop>
-                  <color alpha="128">
-                        <hex>141414</hex>
-                  </color>
-            </bgTop>
-            <focusBottom>
+            </bg>
+            <focus>
                   <color>
                         <hex>FF6633</hex>
                   </color>
-            </focusBottom>
-            <focusMid>
-                  <color>
-                        <hex>FFFFFF</hex>
-                  </color>
-            </focusMid>
-            <focusTop>
-                  <color>
-                        <hex>5196FF</hex>
-                  </color>
-            </focusTop>
+            </focus>
             <text>
                   <color>
                         <hex>333333</hex>
@@ -67,51 +44,21 @@
                         <hex>000000</hex>
                   </color>
             </baseAltText>
-            <bgBottom>
+            <bg>
                   <color>
                         <hex>474747</hex>
                   </color>
-            </bgBottom>
-            <bgMid>
-                  <color>
-                        <hex>FFFFFF</hex>
-                  </color>
-            </bgMid>
-            <bgTop>
-                  <color>
-                        <hex>686868</hex>
-                  </color>
-            </bgTop>
-            <borderBottom>
+            </bg>
+            <border>
                   <color>
                         <hex>141414</hex>
                   </color>
-            </borderBottom>
-            <borderMid>
-                  <color>
-                        <hex>717171</hex>
-                  </color>
-            </borderMid>
-            <borderTop>
-                  <color>
-                        <hex>686868</hex>
-                  </color>
-            </borderTop>
-            <fillBottom>
+            </border>
+            <fill>
                   <color>
                         <hex>375C86</hex>
                   </color>
-            </fillBottom>
-            <fillMid>
-                  <color>
-                        <hex>5286B9</hex>
-                  </color>
-            </fillMid>
-            <fillTop>
-                  <color>
-                        <hex>65A2E1</hex>
-                  </color>
-            </fillTop>
+            </fill>
             <text>
                   <color>
                         <hex>333333</hex>
@@ -139,51 +86,21 @@
                         <hex>515151</hex>
                   </color>
             </baseAltText>
-            <bgBottom>
+            <bg>
                   <color>
                         <hex>4B4B4B</hex>
                   </color>
-            </bgBottom>
-            <bgMid>
-                  <color>
-                        <hex>747474</hex>
-                  </color>
-            </bgMid>
-            <bgTop>
-                  <color>
-                        <hex>424242</hex>
-                  </color>
-            </bgTop>
-            <borderBottom>
+            </bg>
+            <border>
                   <color>
                         <hex>303030</hex>
                   </color>
-            </borderBottom>
-            <borderMid>
-                  <color>
-                        <hex>565656</hex>
-                  </color>
-            </borderMid>
-            <borderTop>
-                  <color>
-                        <hex>303030</hex>
-                  </color>
-            </borderTop>
-            <fillBottom>
+            </border>
+            <fill>
                   <color>
                         <hex>45505D</hex>
                   </color>
-            </fillBottom>
-            <fillMid>
-                  <color>
-                        <hex>3A5A69</hex>
-                  </color>
-            </fillMid>
-            <fillTop>
-                  <color>
-                        <hex>4D5F72</hex>
-                  </color>
-            </fillTop>
+            </fill>
             <text>
                   <color>
                         <hex>747474</hex>
@@ -211,51 +128,21 @@
                         <hex>000000</hex>
                   </color>
             </baseAltText>
-            <bgBottom>
+            <bg>
                   <color>
                         <hex>545454</hex>
                   </color>
-            </bgBottom>
-            <bgMid>
-                  <color>
-                        <hex>FFFFFF</hex>
-                  </color>
-            </bgMid>
-            <bgTop>
-                  <color>
-                        <hex>767676</hex>
-                  </color>
-            </bgTop>
-            <borderBottom>
+            </bg>
+            <border>
                   <color>
                         <hex>000000</hex>
                   </color>
-            </borderBottom>
-            <borderMid>
-                  <color>
-                        <hex>969696</hex>
-                  </color>
-            </borderMid>
-            <borderTop>
-                  <color>
-                        <hex>515151</hex>
-                  </color>
-            </borderTop>
-            <fillBottom>
+            </border>
+            <fill>
                   <color>
                         <hex>375C86</hex>
                   </color>
-            </fillBottom>
-            <fillMid>
-                  <color>
-                        <hex>5286B9</hex>
-                  </color>
-            </fillMid>
-            <fillTop>
-                  <color>
-                        <hex>65A2E1</hex>
-                  </color>
-            </fillTop>
+            </fill>
             <text>
                   <color>
                         <hex>333333</hex>
@@ -283,51 +170,21 @@
                         <hex>000000</hex>
                   </color>
             </baseAltText>
-            <bgBottom>
+            <bg>
                   <color>
                         <hex>626262</hex>
                   </color>
-            </bgBottom>
-            <bgMid>
-                  <color>
-                        <hex>FFFFFF</hex>
-                  </color>
-            </bgMid>
-            <bgTop>
-                  <color>
-                        <hex>414141</hex>
-                  </color>
-            </bgTop>
-            <borderBottom>
+            </bg>
+            <border>
                   <color>
                         <hex>000000</hex>
                   </color>
-            </borderBottom>
-            <borderMid>
-                  <color>
-                        <hex>808080</hex>
-                  </color>
-            </borderMid>
-            <borderTop>
-                  <color>
-                        <hex>323232</hex>
-                  </color>
-            </borderTop>
-            <fillBottom>
+            </border>
+            <fill>
                   <color>
                         <hex>375C86</hex>
                   </color>
-            </fillBottom>
-            <fillMid>
-                  <color>
-                        <hex>5286B9</hex>
-                  </color>
-            </fillMid>
-            <fillTop>
-                  <color>
-                        <hex>65A2E1</hex>
-                  </color>
-            </fillTop>
+            </fill>
             <text>
                   <color>
                         <hex>000000</hex>

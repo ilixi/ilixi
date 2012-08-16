@@ -78,24 +78,6 @@ public:
     ~StylistBase();
 
     /*!
-     * Sets the palette using a file.
-     * Returns true if successful.
-     *
-     * @param palette path to a valid palette file.
-     */
-    virtual bool
-    setPaletteFromFile(const char* palette);
-
-    /*!
-     * Sets the images/hints/fonts using a file.
-     * Returns true if successful.
-     *
-     * @param style path to a valid style file.
-     */
-    virtual bool
-    setStyleFromFile(const char* style);
-
-    /*!
      * Returns the default size for given type.
      */
     virtual Size
@@ -247,6 +229,24 @@ protected:
     };
 
     AnimatedElement _focus;
+
+    /*!
+     * Sets the palette using a file.
+     * Returns true if successful.
+     *
+     * @param palette path to a valid palette file.
+     */
+    virtual bool
+    setPaletteFromFile(const char* palette);
+
+    /*!
+     * Sets the images/hints/fonts using a file.
+     * Returns true if successful.
+     *
+     * @param style path to a valid style file.
+     */
+    virtual bool
+    setStyleFromFile(const char* style);
 
 private:
     //! "Image not found" image.

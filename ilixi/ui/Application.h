@@ -125,9 +125,23 @@ protected:
 
     /*!
      * Sets the stylist for application.
+     *
+     * /warning This method is not implemented.
      */
     static void
     setStylist(Stylist* stylist);
+
+    /*!
+     * Sets the palette file for stylist.
+     */
+    static void
+    setPaletteFromFile(const char* palette);
+
+    /*!
+     * Sets the style file for stylist.
+     */
+    static void
+    setStyleFromFile(const char* style);
 
     void
     postUserEvent(unsigned int type, void* data = NULL);

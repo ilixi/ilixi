@@ -61,7 +61,7 @@ Stylist::drawAppFrame(Painter* p, Application* app)
         p->drawImage(app->background(), 0, 0, app->width(), app->height());
     else
     {
-        p->setBrush(_palette->bgBottom);
+        p->setBrush(_palette->bg);
         p->fillRectangle(0, 0, app->width(), app->height());
     }
 }
@@ -513,18 +513,26 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
 {
     const WidgetState state = button->state();
 
-    // Frame
-    if (state & DisabledState)
-        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.dis);
-    else if (state & PressedState)
-        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.pre);
-    else if (state & ExposedState)
-        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.exp);
-    else
-        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.def);
+    if (button->drawFrame())
+    {
+        // Frame
+        if (state & DisabledState)
+            draw9Frame(p, 0, 0, button->width(), button->height(),
+                       _style->tb.dis);
+        else if (state & PressedState)
+            draw9Frame(p, 0, 0, button->width(), button->height(),
+                       _style->tb.pre);
+        else if (state & ExposedState)
+            draw9Frame(p, 0, 0, button->width(), button->height(),
+                       _style->tb.exp);
+        else
+            draw9Frame(p, 0, 0, button->width(), button->height(),
+                       _style->tb.def);
 
-    if (state & FocusedState)
-        draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.foc);
+        if (state & FocusedState)
+            draw9Frame(p, 0, 0, button->width(), button->height(),
+                       _style->tb.foc);
+    }
 
     // Draw check indicator
     ToolButton::ToolButtonStyle buttonStyle = button->toolButtonStyle();
@@ -543,9 +551,9 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
             y = _borderWidth;
 
         if (button->checked())
-            p->setBrush(_palette->getGroup(state).fillBottom);
+            p->setBrush(_palette->getGroup(state).fill);
         else
-            p->setBrush(_palette->getGroup(state).bgBottom);
+            p->setBrush(_palette->getGroup(state).bg);
 
         // draw indicator
         if (horizontal)

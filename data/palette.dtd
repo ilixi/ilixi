@@ -1,7 +1,7 @@
 <!ELEMENT palette (application, default, disabled, exposed, pressed)>
 
 <!ELEMENT color (hex | (red, green, blue)) >
-<!-- alpha transparency [0-1] -->
+<!-- alpha transparency [0-255] -->
 <!ATTLIST color alpha CDATA "255">
 	<!-- 6 digit hex color -->
 	<!ELEMENT hex (#PCDATA)>
@@ -17,33 +17,25 @@
 <!ELEMENT baseAltText (color)>
 
 <!-- Background fill colors -->
-<!ELEMENT bgBottom (color)> 
-<!ELEMENT bgMid (color)>
-<!ELEMENT bgTop (color)>
+<!ELEMENT bg (color)> 
 
 <!-- Border colors -->
-<!ELEMENT borderBottom (color)>
-<!ELEMENT borderMid (color)>
-<!ELEMENT borderTop (color)>
+<!ELEMENT border (color)>
 
 <!-- Focus indication colors -->
-<!ELEMENT focusBottom (color)>
-<!ELEMENT focusMid (color)>
-<!ELEMENT focusTop (color)>
+<!ELEMENT focus (color)>
 
 <!-- Fill inside colors -->
-<!ELEMENT fillBottom (color)>
-<!ELEMENT fillMid (color)>
-<!ELEMENT fillTop (color)>
+<!ELEMENT fill (color)>
 
 <!-- Text drawing colors -->		
 <!ELEMENT text (color)>
 <!ELEMENT textDisabled (color)>
 
 <!-- Color groups -->	
-<!ELEMENT application (bgBottom, bgMid, bgTop, focusBottom, focusMid, focusTop, text, textDisabled)>
-<!ELEMENT default (base, baseText, baseAlt, baseAltText, bgBottom, bgMid, bgTop, borderBottom, borderMid, borderTop, fillBottom, fillMid, fillTop, text)>
-<!ELEMENT disabled (base, baseText, baseAlt, baseAltText, bgBottom, bgMid, bgTop, borderBottom, borderMid, borderTop, fillBottom, fillMid, fillTop, text)>
-<!ELEMENT exposed (base, baseText, baseAlt, baseAltText, bgBottom, bgMid, bgTop, borderBottom, borderMid, borderTop, fillBottom, fillMid, fillTop, text)>
-<!ELEMENT pressed (base, baseText, baseAlt, baseAltText, bgBottom, bgMid, bgTop, borderBottom, borderMid, borderTop, fillBottom, fillMid, fillTop, text)>
+<!ELEMENT application (bg, focus, text, textDisabled)>
+<!ELEMENT default (base, baseText, baseAlt, baseAltText, bg, border, fill, text)>
+<!ELEMENT disabled (base, baseText, baseAlt, baseAltText, bg, border, fill, text)>
+<!ELEMENT exposed (base, baseText, baseAlt, baseAltText, bg, border, fill, text)>
+<!ELEMENT pressed (base, baseText, baseAlt, baseAltText, bg, border, fill, text)>
 

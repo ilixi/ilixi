@@ -176,6 +176,20 @@ Application::setStylist(Stylist* stylist)
 }
 
 void
+Application::setPaletteFromFile(const char* palette)
+{
+    if (_stylist)
+        _stylist->setPaletteFromFile(palette);
+}
+
+void
+Application::setStyleFromFile(const char* style)
+{
+    if (_stylist)
+        _stylist->setStyleFromFile(style);
+}
+
+void
 Application::postUserEvent(unsigned int type, void* data)
 {
     DFBUserEvent event;
