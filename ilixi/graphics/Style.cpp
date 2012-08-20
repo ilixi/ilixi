@@ -128,27 +128,23 @@ Style::parseStyle(const char* style)
                 {
                     _defaultFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _defaultFont->setStyle(fontStyle);
-                    _defaultFont->dfbFont();
                 } else if (xmlStrcmp(element->name, (xmlChar*) "buttonFont")
                         == 0)
                 {
                     _buttonFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _buttonFont->setStyle(fontStyle);
-                    _buttonFont->dfbFont();
                 }
 
                 else if (xmlStrcmp(element->name, (xmlChar*) "inputFont") == 0)
                 {
                     _inputFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _inputFont->setStyle(fontStyle);
-                    _inputFont->dfbFont();
                 }
 
                 else if (xmlStrcmp(element->name, (xmlChar*) "titleFont") == 0)
                 {
                     _titleFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _titleFont->setStyle(fontStyle);
-                    _titleFont->dfbFont();
                 }
 
                 xmlFree(fileC);

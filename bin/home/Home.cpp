@@ -60,6 +60,7 @@ Home::Home(int argc, char* argv[])
     ILOG_TRACE_W(ILX_HOMEAPP);
     setTitle("Home");
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
+    setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
 
     _font = new Font("decker");
     _font->setSize(18);

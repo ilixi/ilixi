@@ -199,16 +199,7 @@ Painter::drawLayout(const TextLayout& layout)
     {
         applyBrush();
         applyFont();
-        const char* text = layout.text().c_str();
-        int x = layout._bounds.x();
-
-        for (TextLayout::LineList::const_iterator it = layout._lines.begin();
-                it != layout._lines.end(); ++it)
-            dfbSurface->DrawString(dfbSurface,
-                                   text + ((TextLayout::LayoutLine) *it).offset,
-                                   ((TextLayout::LayoutLine) *it).bytes, x,
-                                   ((TextLayout::LayoutLine) *it).y,
-                                   (DFBSurfaceTextFlags) layout._alignment);
+        layout.drawTextLayout(dfbSurface);
     }
 }
 
@@ -222,15 +213,7 @@ Painter::drawLayout(const TextLayout& layout, int x, int y)
     {
         applyBrush();
         applyFont();
-        const char* text = layout.text().c_str();
-
-        for (TextLayout::LineList::const_iterator it = layout._lines.begin();
-                it != layout._lines.end(); ++it)
-            dfbSurface->DrawString(dfbSurface,
-                                   text + ((TextLayout::LayoutLine) *it).offset,
-                                   ((TextLayout::LayoutLine) *it).bytes, x,
-                                   y + ((TextLayout::LayoutLine) *it).y,
-                                   (DFBSurfaceTextFlags) layout._alignment);
+        layout.drawTextLayout(dfbSurface, x, y);
     }
 }
 

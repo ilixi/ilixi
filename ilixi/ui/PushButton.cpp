@@ -95,7 +95,7 @@ PushButton::updateTextBaseGeometry()
     int y = (height() - textHeight) / 2;
 
     _layout.setBounds(
-            width() / 2, y,
+            stylist()->defaultParameter(StyleHint::PushButtonCorners), y,
             width() - stylist()->defaultParameter(StyleHint::PushButtonCorners),
             textHeight);
     _layout.doLayout(font());

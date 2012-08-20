@@ -14,5 +14,6 @@ miscdata_DATA 	=	disabled.png \
 			vol2.png \
 			vol2G.png \
 			vol3.png \
-			vol3G.png
+			vol3G.png \
+			def_palette.xml
 EXTRA_DIST 	= 	$(miscdata_DATA)

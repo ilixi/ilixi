@@ -360,9 +360,13 @@ TextLayout::heightForWidth(int width, Font* font) const
 }
 
 void
-TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y)
+TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 {
     const char* text = _text.c_str();
+
+    x += _bounds.x();
+    if (_alignment == Center)
+        x += _bounds.width() / 2;
 
     for (TextLayout::LineList::const_iterator it = _lines.begin();
             it != _lines.end(); ++it)

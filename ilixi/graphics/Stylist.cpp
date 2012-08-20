@@ -602,7 +602,6 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
     // Draw button text
     if (buttonStyle != ToolButton::IconOnly && !button->text().empty())
     {
-        ILOG_DEBUG(ILX_STYLIST, " -> text: %s\n", button->text().c_str());
         p->setFont(*button->font());
         p->setBrush(_palette->getGroup(state).text);
         p->drawLayout(button->layout());

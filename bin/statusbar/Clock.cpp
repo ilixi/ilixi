@@ -45,6 +45,7 @@ Clock::Clock(Widget* parent)
 
     _time = new Label("55:55");
     _time->setFont(new Font("decker", 24));
+    _time->setLayoutAlignment(TextLayout::Center);
 
     _date = new Label("Frii181Nov111");
     _date->setSingleLine(true);

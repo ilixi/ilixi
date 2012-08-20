@@ -294,7 +294,7 @@ private:
     LineList _lines;
 
     void
-    drawTextLayout(IDirectFBSurface* surface, int x, int y);
+    drawTextLayout(IDirectFBSurface* surface, int x = 0, int y = 0) const;
 };
 
 }

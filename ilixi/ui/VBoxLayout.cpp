@@ -443,7 +443,16 @@ VBoxLayout::tile()
         }
 
         // Set width
-        widget->setWidth(((LayoutElement) *it).size.width());
+        if (widget->xConstraint() == FixedConstraint)
+            widget->setWidth(((LayoutElement) *it).size.width());
+        else if (widget->xConstraint() & ExpandPolicy)
+            widget->setWidth(width());
+        else if (widget->width() < width()
+                && (widget->xConstraint() & GrowPolicy))
+            widget->setWidth(width());
+        else if (widget->width() >= width()
+                && (widget->xConstraint() & ShrinkPolicy))
+            widget->setWidth(width());
 
         // Set top-left using alignment.
         int x = 0;

@@ -271,13 +271,11 @@ void
 ToolButton::updateTextBaseGeometry()
 {
     ILOG_TRACE_W(ILX_TOOLBUTTON);
-    ILOG_DEBUG(ILX_TOOLBUTTON, " -> Size(%d, %d)\n", width(), height());
-    // Fixme align icon vertically.
     int textHeight = textExtents().height();
     int iconW = 0;
     int iconH = 0;
     int wUsed = stylist()->defaultParameter(StyleHint::ToolButtonLR);
-    int x = 0; //stylist()->defaultParameter(StyleHint::ToolButtonLeft);
+    int x = stylist()->defaultParameter(StyleHint::ToolButtonLeft);
 
     if (checkable())
     {
@@ -301,8 +299,7 @@ ToolButton::updateTextBaseGeometry()
     if (_toolButtonStyle == TextOnly)
     {
         int y = (height() - textHeight) / 2;
-        ILOG_DEBUG(ILX_TOOLBUTTON, " -> TextOnly\n");
-        _layout.setBounds(width() / 2, y, width(), textHeight);
+        _layout.setBounds(x, y, width() - wUsed, textHeight);
     }
 
     else if (_toolButtonStyle == IconOnly)
@@ -324,14 +321,14 @@ ToolButton::updateTextBaseGeometry()
                     + stylist()->defaultParameter(StyleHint::ButtonOffset);
         }
 
-        _layout.setBounds(x + width() / 2, (height() - textHeight) / 2, width(),
+        _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed,
                           textHeight);
 
     } else if (_toolButtonStyle == IconBelowText)
     {
-        _layout.setBounds(width() / 2,
+        _layout.setBounds(x,
                           stylist()->defaultParameter(StyleHint::ToolButtonTop),
-                          width(), textHeight);
+                          width() - wUsed, textHeight);
         if (iconW)
         {
             _icon->moveTo(
@@ -352,7 +349,7 @@ ToolButton::updateTextBaseGeometry()
                     + 1;
         }
 
-        _layout.setBounds(width() / 2, y, width(), textHeight);
+        _layout.setBounds(x, y, width() - wUsed, textHeight);
     }
     _layout.doLayout(font());
 }

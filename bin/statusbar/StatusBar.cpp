@@ -85,6 +85,8 @@ StatusBar::StatusBar(int argc, char* argv[])
     setTitle("StatusBar");
     setBackgroundFilled(true);
     setBackgroundImage(ILIXI_DATADIR"statusbar/statusbar_bg.png");
+    setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
+
     setMargins(0, 0, 0, 0);
     HBoxLayout* mainLayout = new HBoxLayout();
     mainLayout->setVerticalAlignment(Alignment::Middle);
