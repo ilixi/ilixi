@@ -23,61 +23,53 @@
 
 #include "Gallery.h"
 #include "ImageWidget.h"
-#include "core/Logger.h"
+#include <ui/GridLayout.h>
+#include <core/Logger.h>
 #include <sigc++/bind.h>
 
 using namespace ilixi;
 
-Gallery::Gallery(int argc, char* argv[]) :
-    Application(&argc, &argv)
+Gallery::Gallery(int argc, char* argv[])
+        : Application(&argc, &argv)
 {
-  setTitle("Gallery");
-  setBackgroundFilled(true);
-  setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
+    setTitle("Gallery");
+    setBackgroundFilled(true);
+    setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
+    setLayout(new GridLayout(4, 4));
+    setSpacing(1);
 
-  int x = 0;
-  int y = 0;
-  int w = 200;
-  int h = 140;
-  char file[128];
-  ImageWidget* widget;
-  for (int i = 0; i < 16; ++i)
+    char file[128];
+    ImageWidget* widget;
+    for (int i = 0; i < 16; ++i)
     {
-      sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
-      widget = new ImageWidget(file);
-      widget->setImage(new Image(file, 196, 196));
-      widget->setGeometry(x * w, y * h, w, h);
-      widget->sigPressed.connect(
-          sigc::bind<std::string>(sigc::mem_fun(this, &Gallery::showImage),
-              file));
-      addWidget(widget);
-      x++;
-      if (x > 3)
-        {
-          x = 0;
-          y++;
-        }
+        sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
+        widget = new ImageWidget(file);
+        widget->setImage(new Image(file, 196, 196));
+        widget->sigPressed.connect(
+                sigc::bind<std::string>(
+                        sigc::mem_fun(this, &Gallery::showImage), file));
+        addWidget(widget);
     }
 
-  _dialog = new ImageDialog("Image Dialog");
+    _dialog = new ImageDialog("Image Dialog");
 }
 
 Gallery::~Gallery()
 {
-  delete _dialog;
+    delete _dialog;
 }
 
 void
 Gallery::showImage(const std::string& file)
 {
-  _dialog->setImagePath(file);
-  _dialog->execute();
+    _dialog->setImagePath(file);
+    _dialog->execute();
 }
 
 int
 main(int argc, char* argv[])
 {
-  Gallery app(argc, argv);
-  app.exec();
-  return 0;
+    Gallery app(argc, argv);
+    app.exec();
+    return 0;
 }

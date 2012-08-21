@@ -24,72 +24,67 @@
 #ifndef IMAGEWIDGET_H_
 #define IMAGEWIDGET_H_
 
-#include "ui/Button.h"
-#include "lib/TweenAnimation.h"
+#include <ui/PushButton.h>
+#include <lib/TweenAnimation.h>
 
 #define POINTER_MODE true
 
 class ImageWidget : public ilixi::Button
 {
 public:
-  ImageWidget(const std::string& text, ilixi::Widget* parent = 0);
+    ImageWidget(const std::string& text, ilixi::Widget* parent = 0);
 
-  ~ImageWidget();
+    ~ImageWidget();
 
-  void
-  setImage(ilixi::Image* image);
+    void
+    setImage(ilixi::Image* image);
 
-  sigc::signal<void> sigPressed;
+    sigc::signal<void> sigPressed;
 
 protected:
-  void
-  tweenSlot();
+    void
+    tweenSlot();
 
-  virtual void
-  compose(const ilixi::PaintEvent& event);
+    virtual void
+    compose(const ilixi::PaintEvent& event);
 
-  virtual void
-  pointerButtonUpEvent(const ilixi::PointerEvent& event);
+    virtual void
+    pointerButtonUpEvent(const ilixi::PointerEvent& event);
 
-  void
-  updateTextBaseGeometry();
+    void
+    updateTextBaseGeometry();
 
 #if POINTER_MODE
-  /*!
-   * Starts/stops tweens.
-   */
-  virtual void
-  enterEvent(const ilixi::PointerEvent& event);
+    /*!
+     * Starts/stops tweens.
+     */
+    virtual void
+    enterEvent(const ilixi::PointerEvent& event);
 
-  /*!
-   * Starts/stops tweens.
-   */
-  virtual void
-  leaveEvent(const ilixi::PointerEvent& event);
+    /*!
+     * Starts/stops tweens.
+     */
+    virtual void
+    leaveEvent(const ilixi::PointerEvent& event);
 #else
-  /*!
-   * Starts/stops tweens.
-   */
-  virtual void
-  focusInEvent();
+    /*!
+     * Starts/stops tweens.
+     */
+    virtual void
+    focusInEvent();
 
-  /*!
-   * Starts/stops tweens.
-   */
-  virtual void
-  focusOutEvent();
+    /*!
+     * Starts/stops tweens.
+     */
+    virtual void
+    focusOutEvent();
 #endif
 
 private:
-  bool _doOut;
-  ilixi::Image* _image;
-  ilixi::TweenAnimation _inAni;
-  ilixi::Tween* _circleIn;
-  ilixi::Tween* _bounceIn;
-
-  ilixi::TweenAnimation _outAni;
-  ilixi::Tween* _circleOut;
-  ilixi::Tween* _bounceOut;
+    ilixi::Image* _image;
+    ilixi::TweenAnimation _anim;
+    ilixi::Tween* _circleIn;
+    ilixi::Tween* _bounceIn;
 };
 
 #endif /* IMAGEWIDGET_H_ */

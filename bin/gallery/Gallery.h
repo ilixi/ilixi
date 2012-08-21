@@ -24,22 +24,22 @@
 #ifndef ILIXI_GALLERY_H_
 #define ILIXI_GALLERY_H_
 
-#include "ui/Application.h"
+#include <ui/Application.h>
 #include "ImageDialog.h"
 
 class Gallery : public ilixi::Application
 {
 public:
-  Gallery(int argc, char* argv[]);
+    Gallery(int argc, char* argv[]);
 
-  virtual
-  ~Gallery();
+    virtual
+    ~Gallery();
 
-  void
-  showImage(const std::string& file);
+    void
+    showImage(const std::string& file);
 
 private:
-  ImageDialog* _dialog;
+    ImageDialog* _dialog;
 };
 
 #endif /* ILIXI_GALLERY_H_ */
