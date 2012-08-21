@@ -25,6 +25,7 @@
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
 #include <algorithm>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -57,6 +58,8 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     pthread_mutex_init(&__cbMutex, &attr);
     pthread_mutex_init(&__selMutex, NULL);
     pthread_mutex_init(&__windowMutex, &attr);
+
+    setenv("XML_CATALOG_FILES", ILIXI_DATADIR"ilixi_catalog.xml", 0);
 
     __cursorNew.x = 0;
     __cursorNew.y = 0;
