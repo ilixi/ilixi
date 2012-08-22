@@ -245,7 +245,12 @@ Compositor::showOSK(DFBRectangle rect)
         _appMan->startApp("OnScreenKeyboard");
     else
         _osk->view()->show(0, height() - 450);
-    _currentApp->view()->slideTo(0, -rect.y + 10);
+
+    if (rect.y > height() - 450)
+    {
+        rect.y = rect.y + rect.h - (height() - 450);
+        _currentApp->view()->slideTo(0, -rect.y);
+    }
 }
 
 void
