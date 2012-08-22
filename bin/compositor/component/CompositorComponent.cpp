@@ -47,6 +47,10 @@ CompositorComponent::CompositorComponent(Compositor* compositor)
     createNotification(5, NULL, CNF_NONE);
     createNotification(6, NULL, CNF_NONE);
     createNotification(7, NULL);
+    createNotification(8, NULL, CNF_NONE);
+    createNotification(9, NULL, CNF_NONE);
+    createNotification(10, NULL, CNF_NONE);
+    createNotification(11, NULL, CNF_NONE);
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -86,27 +90,21 @@ CompositorComponent::notifyHasFocus(pid_t pid)
 }
 
 void
-CompositorComponent::signalHomeShowing()
+CompositorComponent::signalHome(bool showing)
 {
-    notify(ShowingHome, NULL);
+    if (showing)
+        notify(ShowingHome, NULL);
+    else
+        notify(HidingHome, NULL);
 }
 
 void
-CompositorComponent::signalSwitcherShowing()
+CompositorComponent::signalSwitcher(bool showing)
 {
-    notify(ShowingSwitcher, NULL);
-}
-
-void
-CompositorComponent::signalHomeHidden()
-{
-    notify(HidingHome, NULL);
-}
-
-void
-CompositorComponent::signalSwitcherHidden()
-{
-    notify(HidingSwitcher, NULL);
+    if (showing)
+        notify(ShowingSwitcher, NULL);
+    else
+        notify(HidingSwitcher, NULL);
 }
 
 void
@@ -133,6 +131,24 @@ CompositorComponent::sendAppList()
     memcpy(vec + 1, &dataVector[0], dataVector.size() * sizeof(AppData));
     notify(SendingAppList, vec);
     ILOG_DEBUG(ILX_COMPCOMP, "Sent application vector.\n");
+}
+
+void
+CompositorComponent::signalSound(bool showing)
+{
+    if (showing)
+        notify(SoundVisible, NULL);
+    else
+        notify(SoundHidden, NULL);
+}
+
+void
+CompositorComponent::signalTemp(bool showing)
+{
+    if (showing)
+        notify(TempVisible, NULL);
+    else
+        notify(TempHidden, NULL);
 }
 
 DirectResult
@@ -192,6 +208,22 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     case SendAppList:
         ILOG_TRACE_F(ILX_COMPCOMP);
         sendAppList();
+        break;
+
+    case SoundShow:
+        _compositor->showSound(true);
+        break;
+
+    case SoundHide:
+        _compositor->showSound(false);
+        break;
+
+    case TempShow:
+        _compositor->showTemp(true);
+        break;
+
+    case TempHide:
+        _compositor->showTemp(false);
         break;
 
     default:

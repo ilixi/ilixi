@@ -40,6 +40,7 @@ Compositor::Compositor(int argc, char* argv[])
         : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale)),
           _appMan(NULL),
           _currentApp(NULL),
+          _previousApp(NULL),
           _switcher(NULL),
           _quitButton(NULL),
           _fpsLabel(NULL),
@@ -96,7 +97,6 @@ Compositor::Compositor(int argc, char* argv[])
             sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
 
-    _appMan->startApp("Home");
     _appMan->startApp("StatusBar");
 }
 
@@ -122,41 +122,16 @@ Compositor::showLauncher(bool show)
     if (show)
     {
         ILOG_TRACE_W(ILX_COMPOSITOR);
-        if (_currentApp)
-        {
-            if (_osk && _osk->view()->visible())
-            {
-                _osk->view()->hide(0, height());
-                _currentApp->view()->setAnimatedProperty(AppView::Position);
-                _currentApp->view()->hide(0, 0);
-            } else
-                _currentApp->view()->hide();
-            _compComp->notifyHidden(_currentApp->pid());
-        }
+        showCurrentApp(false);
         _backgroundFlags = BGFAll;
         _home->view()->show();
-        _compComp->signalHomeShowing();
+        _compComp->signalHome(true);
         showSwitcher(false);
     } else
     {
         _home->view()->hide();
-        _compComp->signalHomeHidden();
-
-        if (_currentApp)
-        {
-            _switcher->setNeighbour(Up, _currentApp->view());
-            _currentApp->view()->clearAnimatedProperty(AppView::Position);
-            _currentApp->view()->show();
-            _compComp->notifyVisible(_currentApp->pid());
-
-            AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
-            if (info->appFlags() & APP_NEEDS_CLEAR)
-                _backgroundFlags = BGFAll;
-            else
-                _backgroundFlags = BGFNone;
-        } else
-            _backgroundFlags = BGFAll;
-
+        _compComp->signalHome(false);
+        showCurrentApp(true);
         showSwitcher(false);
     }
 }
@@ -171,18 +146,22 @@ Compositor::showSwitcher(bool show)
     if (show)
     {
         _switcher->show();
-        _compComp->signalSwitcherShowing();
+        _compComp->signalSwitcher(true);
         eventManager()->setGrabbedWidget(NULL);
+        hideOSK();
     } else
     {
         _switcher->hide();
-        _compComp->signalSwitcherHidden();
+        _compComp->signalSwitcher(false);
     }
 }
 
 void
 Compositor::handleViewRequest(AppInstance* instance)
 {
+    _previousApp = _currentApp;
+    if (_previousApp)
+        _previousApp->view()->hide();
     _currentApp = instance;
     showLauncher(false);
 }
@@ -229,6 +208,37 @@ Compositor::addDialog(DFBSurfaceID id)
 }
 
 void
+Compositor::showCurrentApp(bool show)
+{
+    if (_currentApp)
+    {
+        if (show)
+        {
+            _switcher->setNeighbour(Up, _currentApp->view());
+            _currentApp->view()->clearAnimatedProperty(AppView::Position);
+            _currentApp->view()->show();
+            _compComp->notifyVisible(_currentApp->pid());
+
+            AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
+            if (info->appFlags() & APP_NEEDS_CLEAR)
+                _backgroundFlags = BGFAll;
+            else
+                _backgroundFlags = BGFNone;
+        } else
+        {
+            if (_osk && _osk->view()->visible())
+            {
+                _osk->view()->hide(0, height());
+                _currentApp->view()->setAnimatedProperty(AppView::Position);
+                _currentApp->view()->hide(0, 0);
+            } else
+                _currentApp->view()->hide();
+            _compComp->notifyHidden(_currentApp->pid());
+        }
+    }
+}
+
+void
 Compositor::showOSK(DFBRectangle rect)
 {
     if (!_osk)
@@ -241,8 +251,11 @@ Compositor::showOSK(DFBRectangle rect)
 void
 Compositor::hideOSK()
 {
-    _currentApp->view()->slideTo(0, 0);
-    _osk->view()->hide(0, height());
+    if (_osk)
+    {
+        _currentApp->view()->slideTo(0, 0);
+        _osk->view()->hide(0, height());
+    }
 }
 
 void
@@ -250,6 +263,39 @@ Compositor::sendOSKInput(uint32_t key)
 {
     _currentApp->view()->consumeKeyEvent(
             KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
+}
+
+void
+Compositor::showSound(bool show)
+{
+    if (show)
+    {
+        _appMan->startApplication("SoundMixer");
+        _compComp->signalSound(true);
+    } else
+    {
+        if (_previousApp && _previousApp != _currentApp)
+        {
+            _currentApp->view()->hide();
+            _currentApp = _previousApp;
+            _currentApp->view()->show();
+        } else
+            showLauncher(true);
+        _compComp->signalSound(false);
+    }
+}
+
+void
+Compositor::showTemp(bool show)
+{
+    if (show)
+    {
+        _compComp->signalTemp(true);
+    } else
+    {
+        showLauncher(true);
+        _compComp->signalTemp(false);
+    }
 }
 
 void
@@ -268,6 +314,9 @@ Compositor::onVisible()
 
     if (_fps)
         _fps->start();
+
+    usleep(500);
+    _appMan->startApp("Home");
 }
 
 void
@@ -436,17 +485,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 IDirectFBWindow* dfbWindow = getWindow(data->windowID);
                 if (!dfbWindow)
                     break;
-
-                if (appInfo->appFlags() & APP_HOME)
-                {
-                    _home = data->instance;
-                    _home->setView(new AppView(this, data->instance, this));
-                    _home->view()->setGeometry(0, 0, width(), height() - 50);
-                    addWidget(_home->view());
-                    _home->view()->setZ(0);
-                    _home->view()->sendToBack();
-                    _home->view()->addWindow(dfbWindow);
-                } else if (appInfo->appFlags() & APP_STATUSBAR)
+                if (appInfo->appFlags() & APP_STATUSBAR)
                 {
                     _statusBar = data->instance;
                     _statusBar->setView(
@@ -472,6 +511,33 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->bringToFront();
                     _osk->view()->setZ(0);
                     _osk->view()->addWindow(dfbWindow);
+                } else if (appInfo->appFlags() & APP_HOME)
+                {
+                    _home = data->instance;
+                    _home->setView(new AppView(this, _home, this));
+                    _home->view()->setGeometry(0, 0, width(), height() - 50);
+                    addWidget(_home->view());
+                    _home->view()->setZ(0);
+                    _home->view()->sendToBack();
+                    _home->view()->addWindow(dfbWindow);
+                } else if (appInfo->appFlags() & APP_SYSTEM)
+                {
+                    data->instance->setView(
+                            new AppView(this, data->instance, this));
+                    data->instance->view()->setGeometry(0, 0, width(),
+                                                        height() - 50);
+                    addWidget(data->instance->view());
+                    data->instance->view()->setZ(0);
+                    data->instance->view()->sendToBack();
+                    data->instance->view()->addWindow(dfbWindow);
+                    data->instance->view()->show();
+                    _previousApp = _currentApp;
+                    if (_previousApp)
+                        _previousApp->view()->hide();
+                    _currentApp = data->instance;
+
+                    if (_currentApp->windowCount() < 2)
+                        showLauncher(false);
                 } else
                 {
                     if (data->instance->view() == NULL)
@@ -499,6 +565,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->addWindow(
                             dfbWindow, true,
                             !(info->appFlags() & APP_SURFACE_DONTBLOCK));
+                    _previousApp = _currentApp;
                     _currentApp = data->instance;
 
                     if (_currentApp->windowCount() < 2)

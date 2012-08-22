@@ -35,7 +35,7 @@ AppCompositor::AppCompositor(Compositor* compositor, AppInstance* instance,
         : Widget(parent),
           _compositor(compositor),
           _instance(instance),
-          _state(APPCOMP_NONE),
+          _cState(APPCOMP_NONE),
           _zoomFactor(1)
 {
     setInputMethod(NoInput);
@@ -123,8 +123,7 @@ AppCompositor::updateAppCompositorGeometry()
                 int x, y;
                 view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                 Size s = view->preferredSize();
-                view->setGeometry(x, y, s.width() * _zoomFactor,
-                                  s.height() * _zoomFactor);
+                view->setGeometry(x, y, s.width(), s.height());
             } else
             {
                 if (i == 0)
@@ -211,7 +210,7 @@ void
 AppCompositor::madeAvailable()
 {
     ILOG_TRACE_W(ILX_APPCOMPOSITOR);
-    _state = APPCOMP_READY;
+    _cState = APPCOMP_READY;
 }
 
 } /* namespace ilixi */

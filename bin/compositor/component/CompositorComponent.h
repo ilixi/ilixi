@@ -45,7 +45,11 @@ public:
         HideHome = 5,
         HideSwither = 6,
         StartApp = 7,
-        SendAppList = 8
+        SendAppList = 8,
+        SoundShow = 9,
+        SoundHide = 10,
+        TempShow = 11,
+        TempHide = 12
     };
 
     enum CompositorNotifications
@@ -58,6 +62,10 @@ public:
         HidingHome = 5,
         HidingSwitcher = 6,
         SendingAppList = 7,
+        SoundVisible = 8,
+        SoundHidden = 9,
+        TempVisible = 10,
+        TempHidden = 11,
         CompositorNumNotifications
     };
 
@@ -76,19 +84,19 @@ public:
     notifyHasFocus(pid_t pid);
 
     void
-    signalHomeShowing();
+    signalHome(bool showing);
 
     void
-    signalSwitcherShowing();
-
-    void
-    signalHomeHidden();
-
-    void
-    signalSwitcherHidden();
+    signalSwitcher(bool showing);
 
     void
     sendAppList();
+
+    void
+    signalSound(bool showing);
+
+    void
+    signalTemp(bool showing);
 
 protected:
     virtual DirectResult

@@ -120,6 +120,9 @@ protected:
     void
     addDialog(DFBSurfaceID id);
 
+    void
+    showCurrentApp(bool show);
+
     /*!
      * Shows OSK and centers given rect at top.
      */
@@ -136,6 +139,12 @@ protected:
     sendOSKInput(uint32_t key);
 
     void
+    showSound(bool show);
+
+    void
+    showTemp(bool show);
+
+    void
     compose(const PaintEvent& event);
 
 private:
@@ -143,6 +152,7 @@ private:
     ApplicationManager* _appMan;
     //! Current application instance.
     AppInstance* _currentApp;
+    AppInstance* _previousApp;
 
     //! Switcher instance.
     Switcher* _switcher;

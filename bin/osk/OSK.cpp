@@ -54,7 +54,7 @@ OSK::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    painter.setBrush(Color(0, 0, 0, 128));
+    painter.setBrush(Color(0, 0, 0, 255));
     painter.fillRectangle(0, 0, width(), height());
     painter.end();
 }

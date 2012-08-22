@@ -70,7 +70,7 @@ protected:
 
     Compositor* _compositor;
     AppInstance* _instance;
-    AppCompState _state;
+    AppCompState _cState;
 
     virtual void
     compose(const PaintEvent& event);

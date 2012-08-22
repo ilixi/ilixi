@@ -24,7 +24,7 @@ OSKView::~OSKView()
 void
 OSKView::show()
 {
-    if (_state == APPCOMP_READY)
+    if (_cState == APPCOMP_READY)
         setVisible(true);
 }
 
@@ -37,9 +37,9 @@ OSKView::hide()
 void
 OSKView::madeAvailable()
 {
-    if (_state == APPCOMP_NONE)
+    if (_cState == APPCOMP_NONE)
         setVisible(true);
-    _state = APPCOMP_READY;
+    _cState = APPCOMP_READY;
 }
 
 } /* namespace ilixi */

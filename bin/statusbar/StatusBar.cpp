@@ -42,11 +42,11 @@ volumeListener(void* ctx, void* arg)
     int vol = *((int*) arg);
 
     if (vol < 30)
-        bar->_sound->setState(0);
+        bar->_sound->setButtonState(0);
     else if (vol < 60)
-        bar->_sound->setState(2);
+        bar->_sound->setButtonState(2);
     else
-        bar->_sound->setState(4);
+        bar->_sound->setButtonState(4);
 
     ILOG_DEBUG(ILX_STATUSBAR, "Volume %d\n", *((int*) arg));
 }
@@ -55,29 +55,61 @@ void
 homeShowing(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_home->setState(1);
+    bar->_home->setActive(1);
+    bar->_sound->setActive(0);
+    bar->_temp->setActive(0);
 }
 
 void
 homeHidden(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_home->setState(0);
+    bar->_home->setActive(0);
 }
 
 void
 switcherShowing(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_switch->setState(1);
+    bar->_switch->setActive(1);
 }
 
 void
 switcherHidden(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_switch->setState(0);
+    bar->_switch->setActive(0);
 }
+
+void
+soundVisible(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_sound->setActive(1);
+}
+
+void
+soundHidden(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_sound->setActive(0);
+}
+
+void
+tempVisible(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_temp->setActive(1);
+}
+
+void
+tempHidden(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_temp->setActive(0);
+}
+
+//*****************************************************************
 
 StatusBar::StatusBar(int argc, char* argv[])
         : Application(&argc, &argv, (AppOptions) (OptDale))
@@ -97,7 +129,7 @@ StatusBar::StatusBar(int argc, char* argv[])
     _home->addImage(new Image(ILIXI_DATADIR"statusbar/home.png", Size(48, 48)));
     _home->addImage(
             new Image(ILIXI_DATADIR"statusbar/homeG.png", Size(48, 48)));
-    _home->setState(1);
+    _home->setActive(1);
     _home->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedHome));
     addWidget(_home);
 
@@ -106,7 +138,8 @@ StatusBar::StatusBar(int argc, char* argv[])
             new Image(ILIXI_DATADIR"statusbar/switch.png", Size(48, 48)));
     _switch->addImage(
             new Image(ILIXI_DATADIR"statusbar/switchG.png", Size(48, 48)));
-    _switch->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSwitcher));
+    _switch->sigClicked.connect(
+            sigc::mem_fun(this, &StatusBar::clickedSwitcher));
     addWidget(_switch);
 
     _temp = new StatusbarButton();
@@ -128,6 +161,7 @@ StatusBar::StatusBar(int argc, char* argv[])
             new Image(ILIXI_DATADIR"statusbar/vol3.png", Size(48, 48)));
     _sound->addImage(
             new Image(ILIXI_DATADIR"statusbar/vol3G.png", Size(48, 48)));
+    _sound->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSound));
     addWidget(_sound);
 
     addWidget(new Clock());
@@ -163,6 +197,12 @@ StatusBar::onShow()
     _compComponent->Listen(_compComponent, 4, switcherShowing, this);
     _compComponent->Listen(_compComponent, 5, homeHidden, this);
     _compComponent->Listen(_compComponent, 6, switcherHidden, this);
+
+    _compComponent->Listen(_compComponent, 8, soundVisible, this);
+    _compComponent->Listen(_compComponent, 9, soundHidden, this);
+    _compComponent->Listen(_compComponent, 10, tempVisible, this);
+    _compComponent->Listen(_compComponent, 11, tempHidden, this);
+
 }
 
 bool
@@ -180,31 +220,37 @@ StatusBar::removeRemoteContent(DFBSurfaceID id)
 void
 StatusBar::clickedHome()
 {
-    if (_home->state() % 2 == 0)
-        AppBase::comaCallComponent(_compComponent, 3, NULL);
-    else
+    if (_home->active())
         AppBase::comaCallComponent(_compComponent, 5, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 3, NULL);
 }
 
 void
 StatusBar::clickedSwitcher()
 {
-    if (_switch->state() % 2 == 0)
-        AppBase::comaCallComponent(_compComponent, 4, NULL);
-    else
+    if (_switch->active())
         AppBase::comaCallComponent(_compComponent, 6, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 4, NULL);
 }
 
 void
 StatusBar::clickedTemp()
 {
-
+    if (_temp->active())
+        AppBase::comaCallComponent(_compComponent, 12, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 11, NULL);
 }
 
 void
 StatusBar::clickedSound()
 {
-
+    if (_sound->active())
+        AppBase::comaCallComponent(_compComponent, 10, NULL);
+    else
+        AppBase::comaCallComponent(_compComponent, 9, NULL);
 }
 
 }

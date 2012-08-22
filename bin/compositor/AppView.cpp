@@ -66,7 +66,7 @@ void
 AppView::show(int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-    if (_state == APPCOMP_READY)
+//    if (_cState == APPCOMP_READY)
     {
         bool anim = false;
         _propAnim.stop();
@@ -232,7 +232,7 @@ void
 AppView::madeAvailable()
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-    if (_state == APPCOMP_NONE)
+    if (_cState == APPCOMP_NONE)
     {
         bool anim = false;
         _propAnim.stop();
@@ -273,7 +273,7 @@ AppView::madeAvailable()
         setFocus();
         setVisible(true);
     }
-    _state = APPCOMP_READY;
+    _cState = APPCOMP_READY;
 }
 
 } /* namespace ilixi */

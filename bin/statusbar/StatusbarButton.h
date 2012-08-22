@@ -42,11 +42,17 @@ public:
     Size
     preferredSize() const;
 
+    bool
+    active() const;
+
     unsigned int
-    state() const;
+    buttonState() const;
 
     void
-    setState(unsigned int state);
+    setActive(bool active = true);
+
+    void
+    setButtonState(unsigned int state);
 
     void
     addImage(Image* image);
@@ -70,8 +76,7 @@ protected:
     compose(const PaintEvent& event);
 
 private:
-    unsigned int _myState;
-    bool _click;
+    unsigned int _myState;bool _click;bool _active;
     std::vector<Image*> _images;
 
     static Image* bgDef;

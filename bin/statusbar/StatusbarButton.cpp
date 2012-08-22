@@ -32,7 +32,8 @@ Image* StatusbarButton::bgDef = NULL;
 StatusbarButton::StatusbarButton(Widget* parent)
         : Widget(parent),
           _myState(0),
-          _click(false)
+          _click(false),
+          _active(false)
 {
     setXConstraint(FixedConstraint);
     setInputMethod(PointerInput);
@@ -50,14 +51,27 @@ StatusbarButton::preferredSize() const
     return Size(80, 50);
 }
 
-unsigned int
-StatusbarButton::state() const
+bool
+StatusbarButton::active() const
 {
-    return _myState;
+    return _active;
+}
+
+unsigned int
+StatusbarButton::buttonState() const
+{
+    return _myState + _active;
 }
 
 void
-StatusbarButton::setState(unsigned int state)
+StatusbarButton::setActive(bool active)
+{
+    _active = active;
+    update();
+}
+
+void
+StatusbarButton::setButtonState(unsigned int state)
 {
     if (state != _myState)
     {
@@ -132,7 +146,7 @@ StatusbarButton::compose(const PaintEvent& event)
     p.tileImage(bgDef, width() - 20, 0, Rectangle(106, y + 15, 20, 39));
     p.resetClip();
 
-    p.drawImage(_images[_myState], 15, 0);
+    p.drawImage(_images[buttonState()], 15, 0);
     p.end();
 }
 
