@@ -26,132 +26,143 @@
 namespace ilixi
 {
 
-  unsigned int AppInstance::_instanceCounter = 0;
+unsigned int AppInstance::_instanceCounter = 0;
 
-  AppInstance::AppInstance() :
-      _instanceID(_instanceCounter++), _appID(0), _started(0), _pid(0), _process(
-          NULL), _view(NULL), _thumb(NULL)
-  {
+AppInstance::AppInstance()
+        : _instanceID(_instanceCounter++),
+          _appID(0),
+          _started(0),
+          _pid(0),
+          _process(NULL),
+          _view(NULL),
+          _thumb(NULL)
+{
     pthread_mutex_init(&_mutex, NULL);
-  }
+}
 
-  AppInstance::~AppInstance()
-  {
+AppInstance::~AppInstance()
+{
     pthread_mutex_destroy(&_mutex);
-  }
+}
 
-  bool
-  AppInstance::hasWindow(const SaWManWindowHandle handle)
-  {
+bool
+AppInstance::hasWindow(const SaWManWindowHandle handle)
+{
     for (AppWindowList::iterator it = _windows.begin(); it != _windows.end();
-        ++it)
-      {
+            ++it)
+    {
         if (*it == handle)
-          return true;
-      }
+            return true;
+    }
     return false;
-  }
+}
 
-  void
-  AppInstance::addWindow(SaWManWindowHandle handle)
-  {
+void
+AppInstance::addWindow(SaWManWindowHandle handle)
+{
     pthread_mutex_lock(&_mutex);
     _windows.push_back(handle);
     pthread_mutex_unlock(&_mutex);
-  }
+}
 
-  void
-  AppInstance::removeWindow(SaWManWindowHandle handle)
-  {
+void
+AppInstance::removeWindow(SaWManWindowHandle handle)
+{
     pthread_mutex_lock(&_mutex);
     for (AppWindowList::iterator it = _windows.begin(); it != _windows.end();
-        ++it)
-      {
+            ++it)
+    {
         if (*it == handle)
-          {
+        {
             it = _windows.erase(it);
             break;
-          }
-      }
+        }
+    }
     pthread_mutex_unlock(&_mutex);
-  }
+}
 
-  AppID
-  AppInstance::appID() const
-  {
+AppID
+AppInstance::appID() const
+{
     return _appID;
-  }
+}
 
-  InstanceID
-  AppInstance::instanceID() const
-  {
+InstanceID
+AppInstance::instanceID() const
+{
     return _instanceID;
-  }
+}
 
-  pid_t
-  AppInstance::pid() const
-  {
+pid_t
+AppInstance::pid() const
+{
     return _pid;
-  }
+}
 
-  SaWManProcess*
-  AppInstance::process() const
-  {
+SaWManProcess*
+AppInstance::process() const
+{
     return _process;
-  }
+}
 
-  long long
-  AppInstance::started() const
-  {
+long long
+AppInstance::started() const
+{
     return _started;
-  }
+}
 
-  AppThumbnail*
-  AppInstance::thumb() const
-  {
+AppThumbnail*
+AppInstance::thumb() const
+{
     return _thumb;
-  }
+}
 
-  AppView*
-  AppInstance::view() const
-  {
+AppView*
+AppInstance::view() const
+{
     return _view;
-  }
+}
 
-  void
-  AppInstance::setAppID(AppID appId)
-  {
+unsigned int
+AppInstance::windowCount() const
+{
+    return _windows.size();
+}
+
+void
+AppInstance::setAppID(AppID appId)
+{
     _appID = appId;
-  }
+}
 
-  void
-  AppInstance::setPid(pid_t pid)
-  {
+void
+AppInstance::setPid(pid_t pid)
+{
     _pid = pid;
-  }
+}
 
-  void
-  AppInstance::setProcess(SaWManProcess* process)
-  {
+void
+AppInstance::setProcess(SaWManProcess* process)
+{
     _process = process;
-  }
+}
 
-  void
-  AppInstance::setStarted(long long started)
-  {
+void
+AppInstance::setStarted(long long started)
+{
     _started = started;
-  }
+}
 
-  void
-  AppInstance::setThumb(AppThumbnail* thumb)
-  {
+void
+AppInstance::setThumb(AppThumbnail* thumb)
+{
     _thumb = thumb;
-  }
+}
 
-  void
-  AppInstance::setView(AppView* view)
-  {
+void
+AppInstance::setView(AppView* view)
+{
     _view = view;
-  }
+}
 
 } /* namespace ilixi */

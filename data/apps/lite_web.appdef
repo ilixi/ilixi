@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
--->
-<!DOCTYPE app SYSTEM "application.dtd">
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
     <name>WebKitDFB</name>
     <author>Denis Oliver Kropp</author>

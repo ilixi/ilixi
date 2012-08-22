@@ -36,6 +36,25 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/compositor/AppMan",
                "ApplicationManager");
 
+bool
+app_sort(AppInfo* app1, AppInfo* app2)
+{
+
+    unsigned int i = 0;
+    while ((i < app1->name().length()) && (i < app2->name().length()))
+    {
+        if (tolower(app1->name()[i]) < tolower(app2->name()[i]))
+            return true;
+        else if (tolower(app1->name()[i]) > tolower(app2->name()[i]))
+            return false;
+        ++i;
+    }
+    if (app1->name().length() < app2->name().length())
+        return true;
+    else
+        return false;
+}
+
 //*********************************************************************
 
 DirectResult
@@ -613,6 +632,7 @@ ApplicationManager::initApps()
         if (files[i].find(".appdef") != std::string::npos)
             parseAppDef(files[i].c_str());
     }
+    _infos.sort(app_sort);
 }
 
 bool

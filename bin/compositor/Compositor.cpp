@@ -500,7 +500,9 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                             dfbWindow, true,
                             !(info->appFlags() & APP_SURFACE_DONTBLOCK));
                     _currentApp = data->instance;
-                    showLauncher(false);
+
+                    if (_currentApp->windowCount() < 2)
+                        showLauncher(false);
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);

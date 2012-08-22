@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
--->
-<!DOCTYPE app SYSTEM "application.dtd">
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
     <name>Windows</name>
     <author>Denis Oliver Kropp</author>
     <licence>MIT</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:dfbterm.png</icon>
+	<icon>@DATADIR:windows.png</icon>
     <exec>df_window</exec>
     <args></args>
     <flags>APP_NO_MAINWINDOW, APP_ALLOW_WINDOW_CONFIG, APP_NEEDS_CLEAR</flags>

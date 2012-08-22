@@ -74,6 +74,9 @@ public:
     AppView*
     view() const;
 
+    unsigned int
+    windowCount() const;
+
     void
     setAppID(AppID appId);
 

@@ -1,8 +1,8 @@
 ## Makefile.am for data/apps
+SUBDIRS			=	icons
 miscdatadir 	=	$(ILIXI_DATADIR)/apps
 
-miscdata_DATA 	=	application.dtd \
-					clanbomber.appdef \
+miscdata_DATA 	=	clanbomber.appdef \
 					dfbterm.appdef \
 					fire.appdef \
 					gallery.appdef \

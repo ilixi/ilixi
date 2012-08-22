@@ -21,6 +21,7 @@
 		<titleFont>
 			<file>Armata-Regular</file>
 			<size>18</size>
+			<fontStyle>bold</fontStyle>
 		</titleFont>
 	</fonts>
 

@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
--->
-<!DOCTYPE app SYSTEM "application.dtd">
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
     <name>SoundMixer</name>
     <author>Tarik Sekmen</author>
@@ -12,6 +9,6 @@
 	<icon>@DATADIR:gallery.png</icon>
     <exec>ilixi_mixer</exec>
     <args></args>
-    <flags>APP_ILIXI, APP_NEEDS_CLEAR</flags>
+    <flags>APP_ILIXI, APP_SYSTEM, APP_NEEDS_CLEAR</flags>
     <deps>DEP_MOUSE</deps>
 </app>

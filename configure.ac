@@ -148,7 +148,7 @@ AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data 
 AC_DEFINE_UNQUOTED([FONTDIR], ["$prefix/share/$PACKAGE-$VERSION/fonts/"], [ilixi font directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
-ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
+ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
 
 AC_CONFIG_FILES([ \
@@ -157,6 +157,8 @@ AC_CONFIG_FILES([ \
 		data/fonts/Makefile \
 		data/images/Makefile \
 		data/apps/Makefile \
+		data/apps/icons/Makefile \
+		data/ilixi_catalog.xml \
 		doc/Makefile \
 		doc/resources/Makefile \
 		ilixi/Makefile \

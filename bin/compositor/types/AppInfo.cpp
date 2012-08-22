@@ -239,7 +239,7 @@ AppInfo::setIcon(const std::string& icon)
     size_t found = icon.find("@DATADIR:");
     if (found != std::string::npos)
     {
-        _icon = ILIXI_DATADIR"compositor/";
+        _icon = ILIXI_DATADIR"apps/icons/";
         _icon.append(icon.substr(found + 9, std::string::npos));
     } else
         _icon = icon;
