@@ -256,10 +256,10 @@ SurfaceView::renderSource(const PaintEvent& event)
         {
             DFBSurfacePixelFormat fmt;
             _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
-            if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
-                dfbSurface->SetBlittingFlags(dfbSurface,
-                                             DSBLIT_BLEND_ALPHACHANNEL);
-            else
+            //if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
+            //    dfbSurface->SetBlittingFlags(dfbSurface,
+            //                                 DSBLIT_BLEND_ALPHACHANNEL);
+            //else
                 dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
         } else
         {
