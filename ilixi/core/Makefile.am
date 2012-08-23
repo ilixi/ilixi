@@ -19,7 +19,7 @@ ilixi_include_HEADERS		=	AppBase.h \
 	     						SurfaceEventListener.h \
 	     						Window.h
 
-if WITH_DALE
+if WITH_FUSIONDALE
 libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp
 ilixi_include_HEADERS		+=	ComaComponent.h
 endif

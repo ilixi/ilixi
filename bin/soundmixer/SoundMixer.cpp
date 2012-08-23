@@ -26,6 +26,7 @@
 #include <ui/Spacer.h>
 #include <core/Logger.h>
 #include <lib/Notify.h>
+#include "VolumeMeter.h"
 
 namespace ilixi
 {
@@ -37,6 +38,9 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     setLayout(new VBoxLayout());
 
     addWidget(new Spacer(Vertical));
+
+    VolumeMeter* meter = new VolumeMeter();
+    addWidget(meter);
 
     _volSlider = new Slider();
     addWidget(_volSlider);

@@ -81,7 +81,10 @@ if test "$enable_stereo" = "yes"; then
 fi
 
 AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
-AM_CONDITIONAL([WITH_DALE], [test x$enable_dale = xyes])
+AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
+
+AC_ARG_ENABLE([sound], AS_HELP_STRING([--enable-sound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_sound=no])
+AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
 
 ######################################################################
 # Dependencies
@@ -106,23 +109,37 @@ AC_FUNC_ERROR_AT_LINE
 DIRECTFB_REQ_VERSION=1.6.0
 SAWMAN_REQ_VERSION=1.6.0
 FUSIONDALE_REQ_VERSION=1.6.0
+FUSIONSOUND_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 
+PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION"
+
 AC_MSG_NOTICE([checking dependencies...])
 AS_IF([test "x$enable_dale" = "xyes"], [
-	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION fusiondale >= $FUSIONDALE_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+	PACKAGES="$PACKAGES fusiondale >= $FUSIONDALE_REQ_VERSION"
 	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 	FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
 ], [
-	PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+
 ])
+
+AS_IF([test "x$enable_sound" = "xyes"], [
+	PACKAGES="$PACKAGES fusionsound >= $FUSIONSOUND_REQ_VERSION"
+	AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
+	FUSION_SOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
+], [
+
+])
+
+PKG_CHECK_MODULES(DEPS, $PACKAGES)
 
 AC_SUBST(DIRECTFB_REQ_VERSION)
 AC_SUBST(SAWMAN_REQ_VERSION)
 AC_SUBST(SIGC_REQ_VERSION)
 AC_SUBST(LIBXML_REQ_VERSION)
 AC_SUBST(FUSION_DALE_DEP)
+AC_SUBST(FUSION_SOUND_DEP)
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -171,6 +188,7 @@ AC_CONFIG_FILES([ \
 		bin/statusbar/Makefile \
 		bin/statusbar/images/Makefile \
 		bin/soundmixer/Makefile \
+		bin/soundmixer/images/Makefile \
 		bin/home/Makefile \
 		bin/gallery/Makefile \
 		bin/gallery/images/Makefile \
@@ -197,9 +215,12 @@ AC_MSG_RESULT([
    CPPFLAGS                 : $CPPFLAGS
    CFLAGS                   : $CFLAGS
    LDFLAGS                  : $LDFLAGS
+   DEPS_CFLAGS              : $DEPS_CFLAGS
+   DEPS_LIBS                : $DEPS_LIBS
    Log level                : $LOGGER_LEVEL
-   Stereo output support    : $enable_stereo   
+   Stereoscopy support      : $enable_stereo   
    FusionDale support       : $enable_dale
+   FusionSound support      : $enable_sound
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
