@@ -22,8 +22,10 @@
  */
 
 #include <lib/Timer.h>
+#include <core/AppBase.h>
 #include <core/Window.h>
 #include <core/Logger.h>
+
 extern "C"
 {
 #include <direct/clock.h>
@@ -38,8 +40,7 @@ Timer::Timer()
         : _interval(500),
           _repeats(0),
           _count(0),
-          _lastTime(0),
-          _cb(this)
+          _expiry(0)
 {
 }
 
@@ -47,7 +48,7 @@ Timer::~Timer()
 {
 }
 
-int
+unsigned int
 Timer::interval() const
 {
     return _interval;
@@ -60,26 +61,28 @@ Timer::repeats() const
 }
 
 void
-Timer::start(int msec, unsigned int repeats)
+Timer::start(unsigned int msec, unsigned int repeats)
 {
     _interval = msec;
     _count = 0;
     _repeats = repeats;
-    _lastTime = direct_clock_get_abs_millis();
-    ILOG_DEBUG(ILX_TIMER,
-               "Starting timer[%p] in %d msec...\n", &_cb, _interval);
-    _cb.start();
+    _expiry = direct_clock_get_millis() + _interval;
+    ILOG_TRACE_F(ILX_TIMER);
+    ILOG_DEBUG(
+            ILX_TIMER,
+            " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
+    AppBase::addTimer(this);
 }
 
 void
 Timer::stop()
 {
-    ILOG_DEBUG(ILX_TIMER, "Stopping timer [%p]...\n", &_cb);
-    _cb.stop();
+    ILOG_TRACE_F(ILX_TIMER);
+    AppBase::removeTimer(this);
 }
 
 void
-Timer::setInterval(int msec)
+Timer::setInterval(unsigned int msec)
 {
     _interval = msec;
 }
@@ -95,20 +98,29 @@ Timer::notify()
 {
 }
 
+long long
+Timer::expiry() const
+{
+    return _expiry;
+}
+
 bool
 Timer::funck()
 {
     if (_repeats && _repeats == _count)
-        return false; // TODO should remove callback
-
-    long long stepTime = direct_clock_get_abs_millis() - _lastTime;
-    if (stepTime >= _interval)
     {
-        _lastTime += stepTime;
-        ++_count;
-        notify();
-        sigExec();
+        AppBase::removeTimer(this);
+        return false;
     }
+    _expiry = direct_clock_get_millis() + _interval;
+
+    ILOG_DEBUG(
+            ILX_TIMER,
+            "Timer[%p] next timeout %d.%d\n", this, (int) (_expiry/1000), (int)(_expiry%1000));
+
+    ++_count;
+    notify();
+    sigExec();
     return true;
 }
 

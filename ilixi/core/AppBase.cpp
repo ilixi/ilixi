@@ -23,6 +23,7 @@
 
 #include <core/AppBase.h>
 #include <ui/WindowWidget.h>
+#include <lib/Timer.h>
 #include <core/Logger.h>
 #include <algorithm>
 #include <stdlib.h>
@@ -58,6 +59,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     pthread_mutex_init(&__cbMutex, &attr);
     pthread_mutex_init(&__selMutex, NULL);
     pthread_mutex_init(&__windowMutex, &attr);
+    pthread_mutex_init(&__timerMutex, &attr);
 
     setenv("XML_CATALOG_FILES", ILIXI_DATADIR"ilixi_catalog.xml", 0);
 
@@ -93,7 +95,7 @@ AppBase::comaGetComponent(const char* name, IComaComponent** component)
     if (__instance->__options & OptDale)
     {
         ILOG_TRACE_F(ILX_APPBASE);
-        if (__instance->_coma->GetComponent(__instance->_coma, name, 7000,
+        if (__instance->_coma->GetComponent(__instance->_coma, name, 100,
                                             component) != DR_OK)
             return false;
         return true;
@@ -262,6 +264,7 @@ AppBase::releaseDFB()
         pthread_mutex_destroy(&__cbMutex);
         pthread_mutex_destroy(&__selMutex);
         pthread_mutex_destroy(&__windowMutex);
+        pthread_mutex_destroy(&__timerMutex);
     }
 }
 
@@ -369,11 +372,74 @@ AppBase::removeCallback(Callback* cb)
     return false;
 }
 
-void
+bool
+timerSort(Timer* first, Timer* second)
+{
+    return first->expiry() < second->expiry();
+}
+
+bool
+AppBase::addTimer(Timer* timer)
+{
+    if (__instance && timer)
+    {
+        pthread_mutex_lock(&__instance->__timerMutex);
+
+        for (TimerList::iterator it = __instance->_timers.begin();
+                it != __instance->_timers.end(); ++it)
+        {
+            if (timer == *it)
+            {
+                pthread_mutex_unlock(&__instance->__timerMutex);
+                ILOG_ERROR(ILX_APPBASE, "Timer %p already added!\n", timer);
+                return false;
+            }
+        }
+        __instance->_timers.push_back(timer);
+
+        std::sort(__instance->_timers.begin(), __instance->_timers.end(),
+                  timerSort);
+
+        pthread_mutex_unlock(&__instance->__timerMutex);
+        ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
+        return true;
+    }
+    return false;
+}
+
+bool
+AppBase::removeTimer(Timer* timer)
+{
+    if (__instance && timer)
+    {
+        pthread_mutex_lock(&__instance->__timerMutex);
+
+        for (TimerList::iterator it = __instance->_timers.begin();
+                it != __instance->_timers.end(); ++it)
+        {
+            if (timer == *it)
+            {
+                __instance->_timers.erase(it);
+                pthread_mutex_unlock(&__instance->__timerMutex);
+                ILOG_DEBUG(ILX_APPBASE, "Timer %p is removed.\n", timer);
+                return true;
+            }
+        }
+
+        std::sort(__instance->_timers.begin(), __instance->_timers.end(),
+                  timerSort);
+
+        pthread_mutex_unlock(&__instance->__timerMutex);
+    }
+    return false;
+}
+
+long long
 AppBase::runCallbacks()
 {
-    pthread_mutex_lock(&__cbMutex);
+    long long timeout = INT_MAX;
 
+    pthread_mutex_lock(&__cbMutex);
     CallbackList::iterator it = __callbacks.begin();
     while (it != __callbacks.end())
     {
@@ -385,11 +451,27 @@ AppBase::runCallbacks()
         } else
             ++it;
     }
-
     pthread_mutex_unlock(&__cbMutex);
 
-    if (!__callbacks.empty())
-        __buffer->WakeUp(__buffer);
+    // timer
+    pthread_mutex_lock(&__timerMutex);
+    if (_timers.size())
+    {
+        long long now = direct_clock_get_millis();
+        long long expiry = _timers[0]->expiry();
+
+        if (expiry <= now)
+        {
+            _timers[0]->funck();
+            std::sort(__instance->_timers.begin(), __instance->_timers.end(),
+                      timerSort);
+            timeout = _timers[0]->expiry() - now;
+        } else
+            timeout = expiry - now;
+    }
+    pthread_mutex_unlock(&__timerMutex);
+
+    return timeout;
 }
 
 bool
@@ -603,13 +685,25 @@ AppBase::updateWindows()
 }
 
 void
-AppBase::handleEvents()
+AppBase::handleEvents(long long timeout)
 {
     DFBEvent event;
-    if (__buffer)
-        __buffer->WaitForEventWithTimeout(__buffer, 0, 100);
-    else
-        return;
+
+    bool wait = true;
+
+    for (WindowList::iterator it = __windowList.begin();
+            it != __windowList.end(); ++it)
+    {
+        if (((WindowWidget*) *it)->_updates._updateQueue.size())
+        {
+            wait = false;
+            break;
+        }
+    }
+
+    if (wait)
+        __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000,
+                                          timeout % 1000);
 
     while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
     {

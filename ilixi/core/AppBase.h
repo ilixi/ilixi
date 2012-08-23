@@ -43,6 +43,7 @@ extern "C"
 namespace ilixi
 {
 class WindowWidget;
+class Timer;
 
 //! Base class for ilixi applications.
 /*!
@@ -51,6 +52,8 @@ class AppBase
 {
     friend class WindowWidget;
     friend class Window;
+
+    friend class Timer;
 
     friend class EventManager;
     friend class Image;
@@ -209,6 +212,10 @@ private:
     //! Serialises access to static variables.
     pthread_mutex_t __windowMutex;
 
+    typedef std::vector<Timer*> TimerList;
+    TimerList _timers;
+    pthread_mutex_t __timerMutex;
+
     //! DirectFB interface.
     static IDirectFB* __dfb;
     //! DFBLayer interface.
@@ -252,10 +259,16 @@ private:
     static bool
     removeCallback(Callback* cb);
 
+    static bool
+    addTimer(Timer* timer);
+
+    static bool
+    removeTimer(Timer* timer);
+
     /*!
-     * Executes each callback.
+     * Executes each callback and returns a timeout in ms.
      */
-    void
+    long long
     runCallbacks();
 
     /*!
@@ -310,7 +323,7 @@ private:
      * All events are handled using this function.
      */
     void
-    handleEvents();
+    handleEvents(long long timeout);
 
     /*!
      * Attach window to event buffer.

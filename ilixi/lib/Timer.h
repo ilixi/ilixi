@@ -24,14 +24,14 @@
 #ifndef ILIXI_TIMER_H_
 #define ILIXI_TIMER_H_
 
-#include <core/Callback.h>
 #include <sigc++/signal.h>
 
 namespace ilixi
 {
 //! Provides timers with milliseconds intervals.
-class Timer : public sigc::trackable, public Functionoid
+class Timer : public sigc::trackable
 {
+    friend class AppBase;
 public:
     /*!
      * Constructor.
@@ -48,7 +48,7 @@ public:
     /*!
      * Returns interval in milliseconds.
      */
-    int
+    unsigned int
     interval() const;
 
     /*!
@@ -61,7 +61,7 @@ public:
      * Starts timer and sets the interval.
      */
     void
-    start(int msec, unsigned int repeats = 0);
+    start(unsigned int msec, unsigned int repeats = 0);
 
     /*!
      * Stops timer.
@@ -73,7 +73,7 @@ public:
      * Sets the interval in milliseconds.
      */
     void
-    setInterval(int msec);
+    setInterval(unsigned int msec);
 
     /*!
      * Sets number of times to execute timer.
@@ -86,6 +86,9 @@ public:
      */
     virtual void
     notify();
+
+    long long
+    expiry() const;
 
     /*!
      * This signal is emitted when timer is fired.
@@ -100,15 +103,13 @@ protected:
 
 private:
     //! Interval between consecutive executions.
-    int _interval;
+    unsigned int _interval;
     //! Number of times to execute timer.
     unsigned int _repeats;
     //! Current repeat count.
     unsigned int _count;
-    //! Last measured time in milliseconds.
-    long long _lastTime;
-    //! Callback for timer.
-    Callback _cb;
+    //! This stores next time timer fires.
+    long long _expiry;
 
     // Callback uses step()
     friend bool
