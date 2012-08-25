@@ -150,7 +150,10 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setOSKWidget(Widget* widget)
 {
-    if (widget == NULL || !(widget->inputMethod() & OSKInput) && _oskWidget)
+    if(widget == _oskWidget)
+        return false;
+
+    if (widget == NULL || (!(widget->inputMethod() & OSKInput) && _oskWidget))
     {
         _oskWidget = NULL;
 #if ILIXI_HAVE_FUSIONDALE
