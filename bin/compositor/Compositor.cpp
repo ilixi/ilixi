@@ -96,8 +96,6 @@ Compositor::Compositor(int argc, char* argv[])
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
-
-    _appMan->startApp("StatusBar");
 }
 
 Compositor::~Compositor()
@@ -124,12 +122,13 @@ Compositor::showLauncher(bool show)
         ILOG_TRACE_W(ILX_COMPOSITOR);
         showCurrentApp(false);
         _backgroundFlags = BGFAll;
-        _home->view()->show();
+        _home->view()->show(AppView::Opacity);
         _compComp->signalHome(true);
         showSwitcher(false);
     } else
     {
-        _home->view()->hide();
+        _home->view()->hide(
+                AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom));
         _compComp->signalHome(false);
         showCurrentApp(true);
         showSwitcher(false);
@@ -171,7 +170,8 @@ Compositor::handleSwitchRequest()
 {
     if (_currentApp)
     {
-        _currentApp->view()->hide();
+        _currentApp->view()->hide(
+                AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom));
         _compComp->notifyHidden(_currentApp->pid());
     }
 
@@ -219,7 +219,7 @@ Compositor::showCurrentApp(bool show)
             _currentApp->view()->show();
             _compComp->notifyVisible(_currentApp->pid());
 
-            AppInfo* info = _appMan->infoByAppID(_currentApp->appID());
+            AppInfo* info = _currentApp->appInfo();
             if (info->appFlags() & APP_NEEDS_CLEAR)
                 _backgroundFlags = BGFAll;
             else
@@ -228,11 +228,16 @@ Compositor::showCurrentApp(bool show)
         {
             if (_osk && _osk->view()->visible())
             {
-                _osk->view()->hide(0, height());
-                _currentApp->view()->setAnimatedProperty(AppView::Position);
-                _currentApp->view()->hide(0, 0);
+                _osk->view()->hide(AppView::Position, 0, height());
+                _currentApp->view()->hide(
+                        AppView::AnimatedProperty(
+                                AppView::Opacity | AppView::Zoom
+                                        | AppView::Position),
+                        0, 0);
             } else
-                _currentApp->view()->hide();
+                _currentApp->view()->hide(
+                        AppView::AnimatedProperty(
+                                AppView::Opacity | AppView::Zoom));
             _compComp->notifyHidden(_currentApp->pid());
         }
     }
@@ -243,8 +248,10 @@ Compositor::showOSK(DFBRectangle rect)
 {
     if (!_osk)
         _appMan->startApp("OnScreenKeyboard");
+    else if (!_osk->view()->visible())
+        _osk->view()->show(AppView::Position, 0, height() - 450);
     else
-        _osk->view()->show(0, height() - 450);
+        update();
 
     if (rect.y > height() - 450)
     {
@@ -259,7 +266,7 @@ Compositor::hideOSK()
     if (_osk)
     {
         _currentApp->view()->slideTo(0, 0);
-        _osk->view()->hide(0, height());
+        _osk->view()->hide(AppView::Position, 0, height());
     }
 }
 
@@ -320,7 +327,9 @@ Compositor::onVisible()
     if (_fps)
         _fps->start();
 
-    usleep(500);
+    usleep(10000);
+    _appMan->startApp("StatusBar");
+    usleep(10000);
     _appMan->startApp("Home");
 }
 
@@ -516,6 +525,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->bringToFront();
                     _osk->view()->setZ(0);
                     _osk->view()->addWindow(dfbWindow);
+                    _osk->view()->show(AppView::Position, 0, height() - 450);
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
                     _home = data->instance;
@@ -535,7 +545,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->setZ(0);
                     data->instance->view()->sendToBack();
                     data->instance->view()->addWindow(dfbWindow);
-                    data->instance->view()->show();
+                    data->instance->view()->show(AppView::Opacity);
                     _previousApp = _currentApp;
                     if (_previousApp)
                         _previousApp->view()->hide();
@@ -564,8 +574,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         _switcher->addThumb(data->instance->thumb());
                     }
 
-                    AppInfo* info = _appMan->infoByAppID(
-                            data->instance->appID());
+                    AppInfo* info = data->instance->appInfo();
                     data->instance->thumb()->addWindow(dfbWindow, false);
                     data->instance->view()->addWindow(
                             dfbWindow, true,

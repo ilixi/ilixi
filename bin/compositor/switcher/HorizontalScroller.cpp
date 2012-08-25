@@ -73,14 +73,15 @@ HorizontalScroller::tweenSlot()
 void
 HorizontalScroller::updateLayoutGeometry()
 {
+    Size s = _layout->preferredSize();
     if (_selectedWidget)
     {
         ILOG_TRACE_W(ILX_HSCROLLER);
         _layout->setGeometry(_offset.x() - _selectedWidget->x(),
-                             _offset.y() + _selectedWidget->y(), width(),
+                             _offset.y() + _selectedWidget->y(), s.width(),
                              height());
     } else
-        _layout->setGeometry(_offset.x(), _offset.y(), width(), height());
+        _layout->setGeometry(_offset.x(), _offset.y(), s.width(), height());
 }
 
 } /* namespace ilixi */
