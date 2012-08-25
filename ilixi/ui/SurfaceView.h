@@ -72,6 +72,9 @@ public:
     bool
     isBlocking() const;
 
+    bool
+    isBlendingEnabled() const;
+
     /*!
      * Sets source surface using given id.
      */
@@ -92,6 +95,9 @@ public:
 
     void
     setBlocking(bool blocking);
+
+    void
+    setBlendingEnabled(bool blending);
 
     void
     paint(const PaintEvent& event);
@@ -136,12 +142,14 @@ protected:
     renderSource(const PaintEvent& event);
 
 private:
-    enum SurfaceViewState
+    enum SurfaceViewFlags
     {
-        SVS_NONE, SVS_READY
+        SV_NONE = 0x00,         //!< Default state.
+        SV_READY = 0x01,        //!< Source surface is ready.
+        SV_CAN_BLEND = 0x02,    //!< Source surface can be blended.
+        SV_SHOULD_BLOCK = 0x04 //!< Source surface will not be allowed to flip if surface view is hidden.
     };
-    //! This flag controls whether flip blocks when this view is not visible.
-    bool _blocking;
+
     //! This property stores the scale ratio in horizontal direction.
     double _hScale;
     //! This property stores the scale ratio in vertical direction.
@@ -152,8 +160,8 @@ private:
     DFBWindowID _windowID;
     //! This property stores the flip counter for last update.
     unsigned int _flipCount;
-    //! This property is used to paint the source when it is ready.
-    SurfaceViewState _state;
+    //! This property stores current state and options.
+    SurfaceViewFlags _svState;
 #ifdef ILIXI_STEREO_OUTPUT
     bool _sourceStereo;
 #endif

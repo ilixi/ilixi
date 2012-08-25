@@ -36,7 +36,11 @@ class AppView : public AppCompositor
 public:
     enum AnimatedProperty
     {
-        Zoom = 0x001, Opacity = 0x002, Position = 0x004, HideWhenDone = 0x008
+        None = 0x000,
+        Zoom = 0x001,
+        Opacity = 0x002,
+        Position = 0x004,
+        HideWhenDone = 0x008
     };
 
     AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);
@@ -45,10 +49,10 @@ public:
     ~AppView();
 
     void
-    show(int x = 0, int y = 0);
+    show(AnimatedProperty props = Opacity, int x = 0, int y = 0);
 
     void
-    hide(int x = 0, int y = 0);
+    hide(AnimatedProperty props = Opacity, int x = 0, int y = 0);
 
     void
     setAnimatedProperty(AnimatedProperty prop);

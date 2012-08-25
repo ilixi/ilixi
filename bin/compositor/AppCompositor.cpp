@@ -61,6 +61,8 @@ AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling,
     if (!eventHandling)
         view->setInputMethod(NoInput);
     view->setBlocking(blocking);
+    if (_instance->appInfo()->appFlags() & APP_NEEDS_BLENDING)
+        view->setBlendingEnabled(true);
     view->setSourceFromWindow(window);
     view->sigSourceReady.connect(
             sigc::mem_fun(this, &AppCompositor::madeAvailable));

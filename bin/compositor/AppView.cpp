@@ -33,7 +33,7 @@ int AppView::_animDuration = 500;
 
 AppView::AppView(Compositor* compositor, AppInstance* instance, Widget* parent)
         : AppCompositor(compositor, instance, parent),
-          _animProps((AnimatedProperty) (Zoom | Opacity))
+          _animProps((AnimatedProperty) (Opacity))
 {
     setInputMethod(PointerInput);
 
@@ -41,10 +41,10 @@ AppView::AppView(Compositor* compositor, AppInstance* instance, Widget* parent)
     _propAnim.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
     _propAnim.sigFinished.connect(sigc::mem_fun(this, &AppView::tweenEndSlot));
 
-    _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 255);
+    _opacityTween = new Tween(Tween::SINE, Tween::EASE_IN, 0, 255);
     _propAnim.addTween(_opacityTween);
 
-    _zoomTween = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0.8, 1);
+    _zoomTween = new Tween(Tween::QUAD, Tween::EASE_IN, 0.8, 1);
     _propAnim.addTween(_zoomTween);
 
     _xTween = new Tween(Tween::CUBIC, Tween::EASE_OUT, 0, 0);
@@ -63,14 +63,16 @@ AppView::~AppView()
 }
 
 void
-AppView::show(int tx, int ty)
+AppView::show(AnimatedProperty props, int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-//    if (_cState == APPCOMP_READY)
+    if (_cState == APPCOMP_READY)
     {
-        bool anim = false;
+        _animProps = props;
         _propAnim.stop();
+        _propAnim.setDuration(300);
 
+        bool anim = false;
         if (_animProps & Opacity)
         {
             _opacityTween->setEnabled(true);
@@ -84,12 +86,15 @@ AppView::show(int tx, int ty)
         if (_animProps & Zoom)
         {
             _zoomTween->setEnabled(true);
-            _zoomTween->setInitialValue(0.5);
+            _zoomTween->setInitialValue(0.8);
             _zoomTween->setEndValue(1);
             setZoomFactor(0.8);
             anim = true;
         } else
+        {
             _zoomTween->setEnabled(false);
+            setZoomFactor(1);
+        }
 
         if (_animProps & Position)
         {
@@ -122,12 +127,15 @@ AppView::show(int tx, int ty)
 }
 
 void
-AppView::hide(int tx, int ty)
+AppView::hide(AnimatedProperty props, int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-    _propAnim.stop();
-    bool anim = false;
 
+    _animProps = props;
+    _propAnim.stop();
+    _propAnim.setDuration(500);
+
+    bool anim = false;
     if (_animProps & Opacity)
     {
         _opacityTween->setEnabled(true);
@@ -232,25 +240,31 @@ void
 AppView::madeAvailable()
 {
     ILOG_TRACE_W(ILX_APPVIEW);
+
     if (_cState == APPCOMP_NONE)
     {
-        bool anim = false;
-        _propAnim.stop();
+        clearAnimatedProperty(Zoom);
 
+        _propAnim.stop();
+        _propAnim.setDuration(300);
+
+        bool anim = false;
         if (_animProps & Opacity)
         {
             _opacityTween->setInitialValue(0);
             _opacityTween->setEndValue(255);
             setOpacity(0);
             anim = true;
-        }
+        } else
+            _opacityTween->setEnabled(false);
         if (_animProps & Zoom)
         {
             _zoomTween->setInitialValue(0.8);
             _zoomTween->setEndValue(1);
             setZoomFactor(0.8);
             anim = true;
-        }
+        } else
+            _zoomTween->setEnabled(false);
 
 //        if (_animProps & Position)
 //        {

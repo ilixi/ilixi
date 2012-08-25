@@ -35,13 +35,12 @@ D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
 SurfaceView::SurfaceView(Widget* parent)
         : SurfaceEventListener(),
           Widget(parent),
-          _blocking(true),
           _hScale(1),
           _vScale(1),
           _sourceWindow(NULL),
           _windowID(0),
           _flipCount(0),
-          _state(SVS_NONE)
+          _svState(SV_NONE)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
     setInputMethod(KeyAndPointerInputTracking);
@@ -90,7 +89,13 @@ SurfaceView::dfbWindowID() const
 bool
 SurfaceView::isBlocking() const
 {
-    return _blocking;
+    return _svState & SV_SHOULD_BLOCK;
+}
+
+bool
+SurfaceView::isBlendingEnabled() const
+{
+    return _state & SV_CAN_BLEND;
 }
 
 void
@@ -185,9 +190,19 @@ SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
 void
 SurfaceView::setBlocking(bool blocking)
 {
-    _blocking = blocking;
-    ILOG_TRACE_W(ILX_SURFACEVIEW);
-    ILOG_DEBUG(ILX_SURFACEVIEW, " -> Blocking: %d\n", _blocking);
+    if (blocking)
+        _svState = (SurfaceViewFlags) (_svState | SV_SHOULD_BLOCK);
+    else
+        _svState = (SurfaceViewFlags) (_svState & ~SV_SHOULD_BLOCK);
+}
+
+void
+SurfaceView::setBlendingEnabled(bool blending)
+{
+    if (blending)
+        _svState = (SurfaceViewFlags) (_svState | SV_CAN_BLEND);
+    else
+        _svState = (SurfaceViewFlags) (_svState & ~SV_CAN_BLEND);
 }
 
 void
@@ -225,7 +240,7 @@ SurfaceView::compose(const PaintEvent& event)
 void
 SurfaceView::renderSource(const PaintEvent& event)
 {
-    if (_sourceSurface && _state == SVS_READY)
+    if (_sourceSurface && (_svState & SV_READY))
     {
         ILOG_TRACE_W(ILX_SURFACEVIEW);
 #ifdef ILIXI_STEREO_OUTPUT
@@ -256,10 +271,10 @@ SurfaceView::renderSource(const PaintEvent& event)
         {
             DFBSurfacePixelFormat fmt;
             _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
-            //if (DFB_PIXELFORMAT_HAS_ALPHA(fmt))
-            //    dfbSurface->SetBlittingFlags(dfbSurface,
-            //                                 DSBLIT_BLEND_ALPHACHANNEL);
-            //else
+            if (DFB_PIXELFORMAT_HAS_ALPHA(fmt) && (_svState & SV_CAN_BLEND))
+                dfbSurface->SetBlittingFlags(dfbSurface,
+                                             DSBLIT_BLEND_ALPHACHANNEL);
+            else
                 dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
         } else
         {
@@ -283,10 +298,10 @@ SurfaceView::renderSource(const PaintEvent& event)
 void
 SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 {
-    if (_state != SVS_READY)
+    if (!(_svState & SV_READY))
     {
         sigSourceReady();
-        _state = SVS_READY;
+        _svState = (SurfaceViewFlags) (_svState | SV_READY);
     }
 
     if (visible())
@@ -307,7 +322,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
-    } else if (!_blocking)
+    } else if (!(_svState & SV_SHOULD_BLOCK))
         _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
 
     _flipCount = event.flip_count;
@@ -324,7 +339,7 @@ SurfaceView::onSourceDestroyed(const DFBSurfaceEvent& event)
     _sourceSurface = NULL;
     _sourceWindow = NULL;
     _surfaceID = 0;
-    _state = SVS_NONE;
+    _svState = SV_NONE;
     sigSourceDestroyed();
 }
 

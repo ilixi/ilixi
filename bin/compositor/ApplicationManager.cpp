@@ -207,7 +207,7 @@ ApplicationManager::infoByInstanceID(unsigned int instanceID)
 {
     AppInstance* instanceRecord = instanceByInstanceID(instanceID);
     if (instanceRecord)
-        return infoByAppID(instanceRecord->appID());
+        return instanceRecord->appInfo();
     return NULL;
 }
 
@@ -216,7 +216,7 @@ ApplicationManager::infoByPID(pid_t pid)
 {
     AppInstance* instanceRecord = instanceByPID(pid);
     if (instanceRecord)
-        return infoByAppID(instanceRecord->appID());
+        return instanceRecord->appInfo();
     return NULL;
 }
 
@@ -355,7 +355,7 @@ ApplicationManager::startApplication(const std::string& name)
     default:
         pthread_mutex_lock(&_mutex);
         instance = new AppInstance();
-        instance->setAppID(appInfo->appID());
+        instance->setAppInfo(appInfo);
         instance->setStarted(direct_clock_get_millis());
         instance->setPid(pid);
         _instances.push_back(instance);
@@ -404,7 +404,7 @@ ApplicationManager::stopAll()
     while (!_instances.empty())
     {
         AppInstance* instance = _instances.front();
-        AppInfo* info = infoByAppID(instance->appID());
+        AppInfo* info = instance->appInfo();
         ILOG_DEBUG(
                 ILX_APPLICATIONMANAGER,
                 "  -> Killing %s[%d]...\n", info->name().c_str(), instance->pid());
@@ -492,7 +492,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     if (!instance)
         return DR_FAILURE;
 
-    AppInfo* appInfo = infoByPID(process.pid);
+    AppInfo* appInfo = instance->appInfo();
 
     if (appInfo->appFlags() & APP_OSK)
     {
@@ -572,7 +572,7 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
     {
-        AppInfo* info = infoByPID(process.pid);
+        AppInfo* info = instance->appInfo();
 
         if (!(info->appFlags() & APP_ALLOW_WINDOW_CONFIG)
                 && (reconfig->flags & SWMCF_POSITION))

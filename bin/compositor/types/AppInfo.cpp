@@ -172,6 +172,8 @@ AppInfo::setAppFlags(const std::string& appFlags)
             _appFlags = (AppFlags) (_appFlags | APP_ALLOW_MULTIPLE);
         else if (strcmp(pch, "APP_NEEDS_CLEAR") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_NEEDS_CLEAR);
+        else if (strcmp(pch, "APP_NEEDS_BLENDING") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_NEEDS_BLENDING);
         else if (strcmp(pch, "APP_STATUSBAR") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
         else if (strcmp(pch, "APP_OSK") == 0)

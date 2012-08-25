@@ -56,6 +56,7 @@ enum AppFlags
     // constraints
     APP_ALLOW_MULTIPLE = 0x010000, //!<
     APP_NEEDS_CLEAR = 0x020000,
+    APP_NEEDS_BLENDING = 0x040000,
 
     // special
     APP_STATUSBAR = 0x100000,

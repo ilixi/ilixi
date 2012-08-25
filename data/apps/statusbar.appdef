@@ -9,6 +9,6 @@
 	<icon></icon>
     <exec>ilixi_statusbar</exec>
     <args></args>
-    <flags>APP_ILIXI, APP_STATUSBAR, APP_SYSTEM</flags>
+    <flags>APP_ILIXI, APP_STATUSBAR, APP_SYSTEM, APP_NEEDS_BLENDING</flags>
     <deps>DEP_MOUSE</deps>
 </app>

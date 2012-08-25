@@ -53,6 +53,9 @@ public:
     void
     removeWindow(SaWManWindowHandle handle);
 
+    AppInfo*
+    appInfo() const;
+
     AppID
     appID() const;
 
@@ -78,7 +81,7 @@ public:
     windowCount() const;
 
     void
-    setAppID(AppID appId);
+    setAppInfo(AppInfo* appInfo);
 
     void
     setPid(pid_t pid);
@@ -99,7 +102,7 @@ private:
     typedef std::list<SaWManWindowHandle> AppWindowList;
 
     InstanceID _instanceID;
-    AppID _appID;
+    AppInfo* _appInfo;
     long long _started;
     pid_t _pid;
     SaWManProcess* _process;

@@ -30,7 +30,7 @@ unsigned int AppInstance::_instanceCounter = 0;
 
 AppInstance::AppInstance()
         : _instanceID(_instanceCounter++),
-          _appID(0),
+          _appInfo(NULL),
           _started(0),
           _pid(0),
           _process(NULL),
@@ -81,10 +81,16 @@ AppInstance::removeWindow(SaWManWindowHandle handle)
     pthread_mutex_unlock(&_mutex);
 }
 
+AppInfo*
+AppInstance::appInfo() const
+{
+    return _appInfo;
+}
+
 AppID
 AppInstance::appID() const
 {
-    return _appID;
+    return _appInfo->appID();
 }
 
 InstanceID
@@ -130,9 +136,9 @@ AppInstance::windowCount() const
 }
 
 void
-AppInstance::setAppID(AppID appId)
+AppInstance::setAppInfo(AppInfo* appInfo)
 {
-    _appID = appId;
+    _appInfo = appInfo;
 }
 
 void
