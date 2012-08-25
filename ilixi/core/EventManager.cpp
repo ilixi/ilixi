@@ -99,7 +99,10 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setFocusedWidget(Widget* widget)
 {
-    if (widget == _focusedWidget || !(widget->acceptsKeyInput()))
+    if (widget && !(widget->acceptsKeyInput()))
+        return false;
+
+    if (widget == _focusedWidget)
         return false;
 
     if (_focusedWidget)
@@ -119,8 +122,10 @@ EventManager::setFocusedWidget(Widget* widget)
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state
                 | FocusedState);
         _focusedWidget->focusInEvent();
-        setOSKWidget(widget);
     }
+
+    setOSKWidget(widget);
+
     return true;
 }
 

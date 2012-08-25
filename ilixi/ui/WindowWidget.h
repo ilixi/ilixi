@@ -100,6 +100,9 @@ public:
     void
     setBackgroundFilled(bool fill);
 
+    virtual bool
+    consumePointerEvent(const PointerEvent& pointerEvent);
+
 protected:
     enum BackgroundFlags
     {

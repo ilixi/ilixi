@@ -265,6 +265,52 @@ WindowWidget::setBackgroundFilled(bool fill)
     _backgroundFlags |= BGFAll;
 }
 
+bool
+WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
+{
+    if (visible()
+            && (_rootWindow->_eventManager->grabbedWidget() == this
+                    || _frameGeometry.contains(pointerEvent.x, pointerEvent.y,
+                                               true)))
+    {
+        if (_children.size())
+        {
+            for (WidgetListReverseIterator it = _children.rbegin();
+                    it != _children.rend(); ++it)
+                if (((Widget*) *it)->acceptsPointerInput()
+                        && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+                    return true;
+        }
+
+        if (pointerEvent.eventType == PointerButtonDown)
+        {
+            _eventManager->setFocusedWidget(NULL);
+            pointerButtonDownEvent(pointerEvent);
+        }
+//        else if (pointerEvent.eventType == PointerButtonUp)
+//        {
+//            _state = (WidgetState) (_state & ~PressedState);
+//            pointerButtonUpEvent(pointerEvent);
+//        } else if (pointerEvent.eventType == PointerWheel)
+//        {
+//            _rootWindow->_eventManager->setFocusedWidget(this);
+//            pointerWheelEvent(pointerEvent);
+//        } else if (pointerEvent.eventType == PointerMotion)
+//        {
+//            if (_inputMethod & PointerTracking)
+//            {
+//                if (_state & PressedState)
+//                    _rootWindow->_eventManager->setGrabbedWidget(this,
+//                                                                 pointerEvent);
+//                pointerMotionEvent(pointerEvent);
+//            }
+//            _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
+//        }
+//        return true;
+    }
+    return false;
+}
+
 void
 WindowWidget::showWindow()
 {
