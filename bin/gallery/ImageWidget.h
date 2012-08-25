@@ -83,8 +83,8 @@ protected:
 private:
     ilixi::Image* _image;
     ilixi::TweenAnimation _anim;
-    ilixi::Tween* _circleIn;
-    ilixi::Tween* _bounceIn;
+    ilixi::Tween* _imageScale;
+    ilixi::Tween* _boxSlide;
 };
 
 #endif /* IMAGEWIDGET_H_ */

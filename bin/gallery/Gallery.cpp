@@ -44,7 +44,7 @@ Gallery::Gallery(int argc, char* argv[])
     {
         sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
         widget = new ImageWidget(file);
-        widget->setImage(new Image(file, 196, 196));
+        widget->setImage(new Image(file, 300, 300));
         widget->sigPressed.connect(
                 sigc::bind<std::string>(
                         sigc::mem_fun(this, &Gallery::showImage), file));

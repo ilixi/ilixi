@@ -30,12 +30,12 @@ using namespace ilixi;
 ImageWidget::ImageWidget(const std::string& text, Widget* parent)
         : Button(text, parent)
 {
-    _anim.setDuration(500);
+    _anim.setDuration(300);
     _anim.sigExec.connect(sigc::mem_fun(this, &ImageWidget::tweenSlot));
-    _circleIn = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _anim.addTween(_circleIn);
-    _bounceIn = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0, 1);
-    _anim.addTween(_bounceIn);
+    _imageScale = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
+    _anim.addTween(_imageScale);
+    _boxSlide = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0, 1);
+    _anim.addTween(_boxSlide);
 
     setInputMethod(KeyAndPointerInput);
 
@@ -68,8 +68,8 @@ ImageWidget::compose(const PaintEvent& event)
     Painter p(this);
     p.begin(event);
 
-    float val1 = _circleIn->value();
-    float val2 = _bounceIn->value();
+    float val1 = _imageScale->value();
+    float val2 = _boxSlide->value();
 
     // draw image
     p.setBrush(Color(0, 0, 0, 125 + val1 * 130));
@@ -111,10 +111,10 @@ ImageWidget::enterEvent(const PointerEvent& event)
 {
 //  sigFocused(this);
     _anim.stop();
-    _circleIn->setInitialValue(0);
-    _circleIn->setEndValue(1);
-    _bounceIn->setInitialValue(0);
-    _bounceIn->setEndValue(1);
+    _imageScale->setInitialValue(_imageScale->value());
+    _imageScale->setEndValue(1);
+    _boxSlide->setInitialValue(_boxSlide->value());
+    _boxSlide->setEndValue(1);
     _anim.start();
 }
 
@@ -122,10 +122,10 @@ void
 ImageWidget::leaveEvent(const PointerEvent& event)
 {
     _anim.stop();
-    _circleIn->setInitialValue(1);
-    _circleIn->setEndValue(0);
-    _bounceIn->setInitialValue(1);
-    _bounceIn->setEndValue(0);
+    _imageScale->setInitialValue(_imageScale->value());
+    _imageScale->setEndValue(0);
+    _boxSlide->setInitialValue(_boxSlide->value());
+    _boxSlide->setEndValue(0);
     _anim.start();
 }
 #else
@@ -133,10 +133,10 @@ void
 ImageWidget::focusInEvent()
 {
     _anim.stop();
-    _circleIn->setInitialValue(0);
-    _circleIn->setEndValue(1);
-    _bounceIn->setInitialValue(0);
-    _bounceIn->setEndValue(1);
+    _imageScale->setInitialValue(0);
+    _imageScale->setEndValue(1);
+    _boxSlide->setInitialValue(0);
+    _boxSlide->setEndValue(1);
     _anim.start();
 }
 
@@ -144,10 +144,10 @@ void
 ImageWidget::focusOutEvent()
 {
     _anim.stop();
-    _circleIn->setInitialValue(1);
-    _circleIn->setEndValue(0);
-    _bounceIn->setInitialValue(1);
-    _bounceIn->setEndValue(0);
+    _imageScale->setInitialValue(1);
+    _imageScale->setEndValue(0);
+    _boxSlide->setInitialValue(1);
+    _boxSlide->setEndValue(0);
     _anim.start();
 }
 #endif
