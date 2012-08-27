@@ -8,7 +8,7 @@
     <version>1.0</version>
 	<icon>@DATADIR:andi.png</icon>
     <exec>df_andi</exec>
-    <args>--dfb:force-windowed</args>
+    <args>--dfb:force-windowed -a</args>
     <flags>APP_NONE</flags>
     <deps>DEP_NONE</deps>
 </app>
