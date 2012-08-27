@@ -24,7 +24,6 @@
 #include "Keyboard.h"
 #include <core/Logger.h>
 #include <libxml/parser.h>
-#include <core/AppBase.h>
 
 namespace ilixi
 {
@@ -41,7 +40,7 @@ Keyboard::Keyboard(Widget* parent)
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
-    AppBase::comaGetComponent("OSKComponent", &_oskComponent);
+    DaleDFB::comaGetComponent("OSKComponent", &_oskComponent);
 }
 
 Keyboard::~Keyboard()
@@ -130,11 +129,11 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
         ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32[i]);
 
         void *ptr;
-        AppBase::comaGetLocal(sizeof(uint32_t), &ptr);
+        DaleDFB::comaGetLocal(sizeof(uint32_t), &ptr);
         uint32_t* key = (uint32_t*) ptr;
         *key = ucs32[i];
 
-        AppBase::comaCallComponent(_oskComponent, 2, (void*) key);
+        DaleDFB::comaCallComponent(_oskComponent, 2, (void*) key);
     }
 }
 

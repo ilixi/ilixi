@@ -66,9 +66,9 @@ Home::Home(int argc, char* argv[])
     _font->setSize(18);
     _font->setStyle(Font::Bold);
 
-    AppBase::comaGetComponent("CompositorComponent", &_compositor);
+    DaleDFB::comaGetComponent("CompositorComponent", &_compositor);
     _compositor->Listen(_compositor, 7, receiveAppList, this);
-    AppBase::comaCallComponent(_compositor, 8, NULL);
+    DaleDFB::comaCallComponent(_compositor, 8, NULL);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
 }
@@ -82,10 +82,10 @@ void
 Home::runApp(const char* name)
 {
     void *ptr;
-    comaGetLocal(128, &ptr);
+    DaleDFB::comaGetLocal(128, &ptr);
     char* n = (char*) ptr;
     snprintf(n, 128, "%s", name);
-    AppBase::comaCallComponent(_compositor, 7, (void*) n);
+    DaleDFB::comaCallComponent(_compositor, 7, (void*) n);
 }
 
 void

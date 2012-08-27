@@ -22,8 +22,8 @@
  */
 
 #include <core/ComaComponent.h>
-#include <core/AppBase.h>
 #include <core/Logger.h>
+#include <core/DaleDFB.h>
 
 namespace ilixi
 {
@@ -43,7 +43,7 @@ ComaComponentMethod(void *ctx, ComaMethodID method, void *arg,
 ComaComponent::ComaComponent(const std::string& name, int numNotifications)
         : _name(name)
 {
-    if (AppBase::getComa()->CreateComponent(AppBase::getComa(), name.c_str(),
+    if (DaleDFB::getComa()->CreateComponent(DaleDFB::getComa(), name.c_str(),
                                             ComaComponentMethod,
                                             numNotifications, this, &_component)
             != DR_OK)
@@ -79,14 +79,14 @@ DirectResult
 ComaComponent::allocate(int bytes, void** arg)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
-    return AppBase::getComa()->Allocate(AppBase::getComa(), bytes, arg);
+    return DaleDFB::getComa()->Allocate(DaleDFB::getComa(), bytes, arg);
 }
 
 DirectResult
 ComaComponent::deallocate(void* ptr)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
-    return AppBase::getComa()->Deallocate(AppBase::getComa(), ptr);
+    return DaleDFB::getComa()->Deallocate(DaleDFB::getComa(), ptr);
 }
 
 DirectResult

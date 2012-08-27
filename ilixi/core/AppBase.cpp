@@ -28,6 +28,9 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <limits.h>
+#if ILIXI_HAVE_FUSIONDALE
+#include <core/DaleDFB.h>
+#endif
 
 using namespace std;
 
@@ -40,9 +43,6 @@ IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
-#if ILIXI_HAVE_FUSIONDALE
-IComaComponent* AppBase::__oskComp = NULL;
-#endif
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
         : __options(options),
@@ -88,65 +88,6 @@ AppBase::setTitle(std::string title)
 {
     __title = title;
 }
-
-#if ILIXI_HAVE_FUSIONDALE
-bool
-AppBase::comaGetComponent(const char* name, IComaComponent** component)
-{
-    if (__instance->__options & OptDale)
-    {
-        ILOG_TRACE_F(ILX_APPBASE);
-        if (__instance->_coma->GetComponent(__instance->_coma, name, 100,
-                                            component) != DR_OK)
-            return false;
-        return true;
-    }
-    return false;
-}
-
-bool
-AppBase::comaGetLocal(unsigned int bytes, void** ret)
-{
-    if (__instance->__options & OptDale)
-    {
-        ILOG_TRACE_F(ILX_APPBASE);
-        if (__instance->_coma->GetLocal(__instance->_coma, bytes, ret) != DR_OK)
-        {
-            ILOG_ERROR( ILX_APPBASE, "%s( %u ) failed!\n", __FUNCTION__, bytes);
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
-
-bool
-AppBase::comaCallComponent(IComaComponent* component, ComaMethodID method,
-                           void* arg)
-{
-    if ((__instance->__options & OptDale) && component)
-    {
-        int ret_val;
-        if (component->Call(component, method, arg, &ret_val) != DR_OK)
-        {
-            ILOG_ERROR( ILX_APPBASE,
-                       "%s( %lu ) failed!\n", __FUNCTION__, method);
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
-
-IComaComponent*
-AppBase::oskComponent()
-{
-    if (__oskComp == NULL)
-        AppBase::comaGetComponent("OSKComponent", &__oskComp);
-    return __oskComp;
-}
-
-#endif
 
 void
 AppBase::handleUserEvent(const DFBUserEvent& event)
@@ -206,16 +147,7 @@ AppBase::initDFB(int* argc, char*** argv)
 #if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
-            if (FusionDaleInit(argc, argv) != DR_OK)
-                ILOG_THROW(ILX_APPBASE, "FusionDaleInit() failed!\n");
-
-            if (FusionDaleCreate(&_dale) != DR_OK)
-                ILOG_THROW(ILX_APPBASE, "FusionDaleCreate() failed!\n");
-
-            if (_dale->EnterComa(_dale, "directfb.org", &_coma) != DR_OK)
-                ILOG_THROW(ILX_APPBASE,
-                           "IFusionDale::EnterComa('directfb.org') failed!\n");
-
+            DaleDFB::initDale(argc, argv);
             ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
         }
 #endif
@@ -230,18 +162,7 @@ AppBase::releaseDFB()
     if (__dfb)
     {
 #if ILIXI_HAVE_FUSIONDALE
-        if (__options & OptDale)
-        {
-            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale interfaces...\n");
-            if (__oskComp)
-                __oskComp->Release(__oskComp);
-            __oskComp = NULL;
-            _coma->Release(_coma);
-            _coma = NULL;
-            _dale->Release(_dale);
-            _dale = NULL;
-            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
-        }
+        DaleDFB::releaseDale();
 #endif
         ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
 
@@ -274,16 +195,6 @@ AppBase::getLayer()
 {
     return __layer;
 }
-
-#if ILIXI_HAVE_FUSIONDALE
-IComa*
-AppBase::getComa()
-{
-    if (__instance)
-        return __instance->_coma;
-    return NULL;
-}
-#endif
 
 IDirectFBWindow*
 AppBase::activeDFBWindow() const

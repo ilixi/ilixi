@@ -25,7 +25,7 @@
 #include <ui/Widget.h>
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
-#include <core/AppBase.h>
+#include <core/DaleDFB.h>
 
 namespace ilixi
 {
@@ -157,7 +157,7 @@ EventManager::setOSKWidget(Widget* widget)
     {
         _oskWidget = NULL;
 #if ILIXI_HAVE_FUSIONDALE
-        AppBase::comaCallComponent(AppBase::oskComponent(), 1, NULL);
+        DaleDFB::hideOSK();
 #endif
         return false;
     } else if (widget == _oskWidget)
@@ -165,17 +165,7 @@ EventManager::setOSKWidget(Widget* widget)
     else if (widget->inputMethod() & OSKInput)
     {
 #if ILIXI_HAVE_FUSIONDALE
-        OSKRequest request;
-        request.inputRect = widget->frameGeometry().dfbRect();
-        request.mode = 0;
-        request.process = 0;
-
-        void *ptr;
-        AppBase::comaGetLocal(sizeof(OSKRequest), &ptr);
-        OSKRequest* req = (OSKRequest*) ptr;
-        *req = request;
-
-        AppBase::comaCallComponent(AppBase::oskComponent(), 0, (void*) req);
+        DaleDFB::showOSK(widget->frameGeometry());
 #endif
         _oskWidget = widget;
         return true;

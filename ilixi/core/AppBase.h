@@ -34,13 +34,6 @@
 #include <map>
 #include <stdint.h>
 
-#if ILIXI_HAVE_FUSIONDALE
-extern "C"
-{
-#include <fusiondale.h>
-}
-#endif
-
 namespace ilixi
 {
 class WindowWidget;
@@ -68,7 +61,6 @@ class AppBase
     friend class SurfaceView;
     friend class Application;
     friend class WebView;
-    friend class ComaComponent;
 
     /*!
      * This enum is used to specify the state of an application.
@@ -103,21 +95,6 @@ public:
      */
     void
     setTitle(std::string title);
-
-#if ILIXI_HAVE_FUSIONDALE
-    static bool
-    comaGetComponent(const char* name, IComaComponent** component);
-
-    static bool
-    comaGetLocal(unsigned int bytes, void** ret);
-
-    static bool
-    comaCallComponent(IComaComponent* component, ComaMethodID method,
-                      void* arg);
-
-    static IComaComponent*
-    oskComponent();
-#endif
 
 protected:
     /*!
@@ -155,14 +132,6 @@ protected:
      */
     static IDirectFBDisplayLayer*
     getLayer();
-
-#if ILIXI_HAVE_FUSIONDALE
-    /*!
-     * Returns Coma interface.
-     */
-    static IComa*
-    getComa();
-#endif
 
     IDirectFBWindow*
     activeDFBWindow() const;
@@ -225,15 +194,6 @@ private:
     static IDirectFBEventBuffer* __buffer;
     //! AppBase instance.
     static AppBase* __instance;
-
-#if ILIXI_HAVE_FUSIONDALE
-    //! FusionDale interface.
-    IFusionDale* _dale;
-    //! directfb.org coma world.
-    IComa* _coma;
-    //! ilixi OSK component.
-    static IComaComponent* __oskComp;
-#endif
 
     /*!
      * Initialise DirectFB. This method is executed

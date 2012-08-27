@@ -27,10 +27,7 @@
 #include "Row.h"
 #include <types/Font.h>
 #include <libxml/tree.h>
-extern "C"
-{
-#include <fusiondale.h>
-}
+#include <core/DaleDFB.h>
 
 namespace ilixi
 {

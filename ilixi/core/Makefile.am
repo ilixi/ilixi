@@ -20,6 +20,8 @@ ilixi_include_HEADERS		=	AppBase.h \
 	     						Window.h
 
 if WITH_FUSIONDALE
-libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp
-ilixi_include_HEADERS		+=	ComaComponent.h
+libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp \
+								DaleDFB.cpp
+ilixi_include_HEADERS		+=	ComaComponent.h \
+								DaleDFB.h
 endif

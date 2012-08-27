@@ -197,9 +197,9 @@ StatusBar::onHide()
 void
 StatusBar::onShow()
 {
-    comaGetComponent("SoundComponent", &_soundComponent);
+    DaleDFB::comaGetComponent("SoundComponent", &_soundComponent);
     _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
-    comaGetComponent("CompositorComponent", &_compComponent);
+    DaleDFB::comaGetComponent("CompositorComponent", &_compComponent);
     _compComponent->Listen(_compComponent, 3, homeShowing, this);
     _compComponent->Listen(_compComponent, 4, switcherShowing, this);
     _compComponent->Listen(_compComponent, 5, homeHidden, this);
@@ -228,36 +228,36 @@ void
 StatusBar::clickedHome()
 {
     if (_home->active())
-        AppBase::comaCallComponent(_compComponent, 5, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 5, NULL);
     else
-        AppBase::comaCallComponent(_compComponent, 3, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 3, NULL);
 }
 
 void
 StatusBar::clickedSwitcher()
 {
     if (_switch->active())
-        AppBase::comaCallComponent(_compComponent, 6, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 6, NULL);
     else
-        AppBase::comaCallComponent(_compComponent, 4, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 4, NULL);
 }
 
 void
 StatusBar::clickedDash()
 {
     if (_dash->active())
-        AppBase::comaCallComponent(_compComponent, 12, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 12, NULL);
     else
-        AppBase::comaCallComponent(_compComponent, 11, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 11, NULL);
 }
 
 void
 StatusBar::clickedSound()
 {
     if (_sound->active())
-        AppBase::comaCallComponent(_compComponent, 10, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 10, NULL);
     else
-        AppBase::comaCallComponent(_compComponent, 9, NULL);
+        DaleDFB::comaCallComponent(_compComponent, 9, NULL);
 }
 
 }

@@ -22,6 +22,7 @@
  */
 
 #include <lib/Notify.h>
+#include <core/DaleDFB.h>
 #include <core/AppBase.h>
 #include <ui/Widget.h>
 
@@ -56,14 +57,14 @@ Notify::show()
     snprintf(msg.title, 128, "%s", _title.c_str());
 
     IComaComponent* comp;
-    AppBase::comaGetComponent("CompositorComponent", &comp);
+    DaleDFB::comaGetComponent("CompositorComponent", &comp);
 
     void *ptr;
-    AppBase::comaGetLocal(sizeof(NotifyData), &ptr);
+    DaleDFB::comaGetLocal(sizeof(NotifyData), &ptr);
     NotifyData* data = (NotifyData*) ptr;
     *data = msg;
 
-    AppBase::comaCallComponent(comp, 0, (void*) data);
+    DaleDFB::comaCallComponent(comp, 0, (void*) data);
 
     comp->Release(comp);
 }

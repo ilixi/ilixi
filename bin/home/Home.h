@@ -26,6 +26,7 @@
 
 #include <ui/Application.h>
 #include <types/Font.h>
+#include <core/DaleDFB.h>
 
 namespace ilixi
 {

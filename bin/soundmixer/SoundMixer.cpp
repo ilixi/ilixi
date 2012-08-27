@@ -94,6 +94,8 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     HBoxLayout* buttons = new HBoxLayout();
     buttons->addWidget(new PushButton("Load Preset"));
     buttons->addWidget(new PushButton("Save Preset"));
+    PushButton* testSound = new PushButton("Test");
+    buttons->addWidget(testSound);
     buttons->addWidget(new Spacer(Horizontal));
     buttons->addWidget(new CheckBox("EQ Enabled"));
     levels->addWidget(buttons);
@@ -117,7 +119,7 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     rowLevels->addWidget(new BandSlider("20KHz"));
     levels->addWidget(rowLevels);
 
-    AppBase::comaGetComponent("SoundComponent", &_soundComponent);
+    DaleDFB::comaGetComponent("SoundComponent", &_soundComponent);
 }
 
 SoundMixer::~SoundMixer()
@@ -136,10 +138,10 @@ void
 SoundMixer::changeVolume(int volume)
 {
     void *ptr;
-    comaGetLocal(sizeof(int), &ptr);
+    DaleDFB::comaGetLocal(sizeof(int), &ptr);
     int* vol = (int*) ptr;
     *vol = volume;
-    AppBase::comaCallComponent(_soundComponent, 0, (void*) vol);
+    DaleDFB::comaCallComponent(_soundComponent, 0, (void*) vol);
 }
 
 } /* namespace ilixi */

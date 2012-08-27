@@ -25,6 +25,7 @@
 #define SOUNDMIXER_H_
 
 #include <ui/Application.h>
+#include <core/DaleDFB.h>
 
 namespace ilixi
 {

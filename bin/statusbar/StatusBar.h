@@ -26,6 +26,7 @@
 
 #include <ui/Application.h>
 #include <ui/Label.h>
+#include <core/DaleDFB.h>
 #include "StatusbarButton.h"
 #include "RemoteContentArea.h"
 
