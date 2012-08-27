@@ -61,7 +61,7 @@ public:
     clickedSwitcher();
 
     void
-    clickedTemp();
+    clickedDash();
 
     void
     clickedSound();
@@ -100,10 +100,10 @@ private:
     soundHidden(void* ctx, void* arg);
 
     friend void
-    tempVisible(void* ctx, void* arg);
+    dashVisible(void* ctx, void* arg);
 
     friend void
-    tempHidden(void* ctx, void* arg);
+    dashHidden(void* ctx, void* arg);
 };
 
 }

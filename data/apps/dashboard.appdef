@@ -1,17 +1,14 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
--->
-<!DOCTYPE app SYSTEM "application.dtd">
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
     <name>Dashboard</name>
     <author>Denis Oliver Kropp</author>
     <licence>GPL</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:andi.png</icon>
+	<icon></icon>
     <exec>dashboard</exec>
     <args>--dfb:force-windowed</args>
-    <flags>APP_NONE</flags>
+    <flags>APP_SYSTEM</flags>
     <deps>DEP_NONE</deps>
 </app>

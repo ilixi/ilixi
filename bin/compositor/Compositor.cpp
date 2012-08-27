@@ -302,15 +302,22 @@ Compositor::showSound(bool show)
 }
 
 void
-Compositor::showTemp(bool show)
+Compositor::showDash(bool show)
 {
     if (show)
     {
-        _compComp->signalTemp(true);
+        _appMan->startApplication("Dashboard");
+        _compComp->signalDash(true);
     } else
     {
-        showLauncher(true);
-        _compComp->signalTemp(false);
+        if (_previousApp && _previousApp != _currentApp)
+        {
+            _currentApp->view()->hide();
+            _currentApp = _previousApp;
+            _currentApp->view()->show();
+        } else
+            showLauncher(true);
+        _compComp->signalDash(false);
     }
 }
 

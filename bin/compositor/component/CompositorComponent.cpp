@@ -143,12 +143,12 @@ CompositorComponent::signalSound(bool showing)
 }
 
 void
-CompositorComponent::signalTemp(bool showing)
+CompositorComponent::signalDash(bool showing)
 {
     if (showing)
-        notify(TempVisible, NULL);
+        notify(DashVisible, NULL);
     else
-        notify(TempHidden, NULL);
+        notify(DashHidden, NULL);
 }
 
 DirectResult
@@ -218,12 +218,12 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         _compositor->showSound(false);
         break;
 
-    case TempShow:
-        _compositor->showTemp(true);
+    case DashShow:
+        _compositor->showDash(true);
         break;
 
-    case TempHide:
-        _compositor->showTemp(false);
+    case DashHide:
+        _compositor->showDash(false);
         break;
 
     default:

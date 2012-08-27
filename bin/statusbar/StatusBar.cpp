@@ -98,14 +98,14 @@ soundHidden(void* ctx, void* arg)
 }
 
 void
-tempVisible(void* ctx, void* arg)
+dashVisible(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
     bar->_dash->setActive(1);
 }
 
 void
-tempHidden(void* ctx, void* arg)
+dashHidden(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
     bar->_dash->setActive(0);
@@ -148,6 +148,7 @@ StatusBar::StatusBar(int argc, char* argv[])
     _dash->addImage(new Image(ILIXI_DATADIR"statusbar/dash.png", Size(48, 48)));
     _dash->addImage(
             new Image(ILIXI_DATADIR"statusbar/dashG.png", Size(48, 48)));
+    _dash->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedDash));
     addWidget(_dash);
 
     _sound = new StatusbarButton();
@@ -206,8 +207,8 @@ StatusBar::onShow()
 
     _compComponent->Listen(_compComponent, 8, soundVisible, this);
     _compComponent->Listen(_compComponent, 9, soundHidden, this);
-    _compComponent->Listen(_compComponent, 10, tempVisible, this);
-    _compComponent->Listen(_compComponent, 11, tempHidden, this);
+    _compComponent->Listen(_compComponent, 10, dashVisible, this);
+    _compComponent->Listen(_compComponent, 11, dashHidden, this);
 
 }
 
@@ -242,7 +243,7 @@ StatusBar::clickedSwitcher()
 }
 
 void
-StatusBar::clickedTemp()
+StatusBar::clickedDash()
 {
     if (_dash->active())
         AppBase::comaCallComponent(_compComponent, 12, NULL);

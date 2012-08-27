@@ -48,8 +48,8 @@ public:
         SendAppList = 8,
         SoundShow = 9,
         SoundHide = 10,
-        TempShow = 11,
-        TempHide = 12
+        DashShow = 11,
+        DashHide = 12
     };
 
     enum CompositorNotifications
@@ -64,8 +64,8 @@ public:
         SendingAppList = 7,
         SoundVisible = 8,
         SoundHidden = 9,
-        TempVisible = 10,
-        TempHidden = 11,
+        DashVisible = 10,
+        DashHidden = 11,
         CompositorNumNotifications
     };
 
@@ -96,7 +96,7 @@ public:
     signalSound(bool showing);
 
     void
-    signalTemp(bool showing);
+    signalDash(bool showing);
 
 protected:
     virtual DirectResult

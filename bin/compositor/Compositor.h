@@ -142,7 +142,7 @@ protected:
     showSound(bool show);
 
     void
-    showTemp(bool show);
+    showDash(bool show);
 
     void
     compose(const PaintEvent& event);
