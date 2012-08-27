@@ -51,6 +51,9 @@ public:
     void
     setSymbolState(unsigned char index);
 
+    void
+    setKeyFont(Font* font);
+
 protected:
     void
     compose(const PaintEvent& event);

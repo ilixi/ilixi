@@ -5,7 +5,7 @@
 <!DOCTYPE keyboard SYSTEM "keyboard.dtd">
 
 <keyboard>
-    <row id="numbers" height="%15">
+    <row id="numbers" height="%20">
         <key id="N1">
             <symbol states="1, 2, 3">1</symbol>
             <symbol states="4">¶</symbol>
@@ -298,7 +298,7 @@
         
     </row>
     
-	<row id="Bottom" height="%25">
+	<row id="Bottom" height="%20">
 		<key id="ABC" sticky="yes">
 		    <symbol states="1">abc</symbol>
             <symbol states="2">ABC</symbol>

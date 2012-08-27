@@ -86,6 +86,13 @@ Row::setSymbolState(unsigned char index)
 }
 
 void
+Row::setKeyFont(Font* font)
+{
+    for (unsigned int i = 0; i < _keys.size(); ++i)
+        _keys[i]->setFont(font);
+}
+
+void
 Row::compose(const PaintEvent& event)
 {
 }

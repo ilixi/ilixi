@@ -43,14 +43,14 @@ public:
     ~OSK();
 
 private:
-    Font* _buttonFont;
+    Image* _bg;
     Keyboard* _keyboard;
 
     void
     compose(const PaintEvent& event);
 
     void
-    setOptimalFontSize();
+    updateOSKGeometry();
 
 };
 

@@ -25,6 +25,7 @@
 #define ILIXI_KEYBOARD_H_
 
 #include "Row.h"
+#include <types/Font.h>
 #include <libxml/tree.h>
 extern "C"
 {
@@ -56,6 +57,11 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    //! This font is shared by all keys.
+    Font* _buttonFont;
+    //! Compositor's osk component.
+    IComaComponent* _oskComponent;
+    //! This stores rows for ease of access.
     std::vector<Row*> _rows;
 
     Key*
@@ -70,8 +76,6 @@ private:
     void
     updateKeyboardGeometry();
 
-    //! Compositor's osk component.
-    IComaComponent* _oskComponent;
 };
 
 } /* namespace ilixi */

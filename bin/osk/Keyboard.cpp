@@ -32,7 +32,9 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_KEYBOARD, "ilixi/osk/Keyboard", "Keyboard");
 
 Keyboard::Keyboard(Widget* parent)
-        : Widget(parent)
+        : Widget(parent),
+          _buttonFont(NULL),
+          _oskComponent(NULL)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
     setInputMethod(PointerInput);
@@ -44,6 +46,10 @@ Keyboard::Keyboard(Widget* parent)
 
 Keyboard::~Keyboard()
 {
+    delete _buttonFont;
+    if (_oskComponent)
+        _oskComponent->Release(_oskComponent);
+
     ILOG_TRACE_W(ILX_KEYBOARD);
 }
 
@@ -156,6 +162,8 @@ Keyboard::getKey(xmlNodePtr node)
 
     if (xmlStrcmp(constraint, (xmlChar*) "expand") == 0)
         key->setXConstraint(MinimumExpandingConstraint);
+    else if (xmlStrcmp(constraint, (xmlChar*) "minimum") == 0)
+        key->setXConstraint(MinimumConstraint);
 
     if (xmlStrcmp(repeatable, (xmlChar*) "yes") == 0)
         key->setRepeatable(true);
@@ -257,10 +265,17 @@ Keyboard::updateKeyboardGeometry()
 {
     // TODO calculate row heights.
 
+    if (!_buttonFont)
+    {
+        _buttonFont = new Font("decker", (width() - 500) / 10);
+        _buttonFont->setStyle(Font::Bold);
+    }
+
     int y = 0;
     unsigned int h;
     for (unsigned int i = 0; i < _rows.size(); ++i)
     {
+        _rows[i]->setKeyFont(_buttonFont);
         h = height() * _rows[i]->keyHeight() / 100;
         _rows[i]->setGeometry(_rows[i]->gap(), y, width() - 2 * _rows[i]->gap(),
                               h);

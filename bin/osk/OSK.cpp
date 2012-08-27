@@ -30,14 +30,19 @@
 
 OSK::OSK(int argc, char* argv[])
         : Application(&argc, &argv, OptDale),
-          _buttonFont(NULL)
+          _bg(NULL),
+          _keyboard(NULL)
 {
     setTitle("OSK");
     setBackgroundFilled(true);
-    setMargin(5);
+    _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
+    setMargin(10);
+    setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
+    setStyleFromFile(ILIXI_DATADIR"osk/osk-style.xml");
+
     setLayout(new VBoxLayout());
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &OSK::setOptimalFontSize));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &OSK::updateOSKGeometry));
 
     _keyboard = new Keyboard(this);
     _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
@@ -46,7 +51,7 @@ OSK::OSK(int argc, char* argv[])
 
 OSK::~OSK()
 {
-    delete _buttonFont;
+    delete _bg;
 }
 
 void
@@ -54,22 +59,14 @@ OSK::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    painter.setBrush(Color(0, 0, 0, 255));
-    painter.fillRectangle(0, 0, width(), height());
+    painter.stretchImage(_bg, 0, 0, width(), height());
     painter.end();
 }
 
 void
-OSK::setOptimalFontSize()
+OSK::updateOSKGeometry()
 {
     _keyboard->setGeometry(0, 0, width(), height());
-
-//    _buttonFont = new Font("decker", (width() - 250) / 10);
-//    _buttonFont->setStyle(Font::Bold);
-//    _buttonFont->dfbFont();
-//    for (int i = 0; i < _keys.size(); i++)
-//        _keys[i]->setFont(_buttonFont);
-//    update();
 }
 
 int
