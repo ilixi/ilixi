@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+<!DOCTYPE app SYSTEM "http://www.ilixi.org/application.dtd">
+-->
+<!DOCTYPE app SYSTEM "application.dtd">
+<app>
+    <name>Dashboard</name>
+    <author>Denis Oliver Kropp</author>
+    <licence>GPL</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:andi.png</icon>
+    <exec>dashboard</exec>
+    <args>--dfb:force-windowed</args>
+    <flags>APP_NONE</flags>
+    <deps>DEP_NONE</deps>
+</app>
