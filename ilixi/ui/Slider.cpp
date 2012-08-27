@@ -44,7 +44,7 @@ Slider::Slider(Widget* parent)
     setInputMethod(KeyAndPointerInputTracking);
     setConstraints(ExpandingConstraint, FixedConstraint);
     sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Slider::updateSliderGeometry));
+            sigc::mem_fun(this, &Slider::updateIndicatorPosition));
     ILOG_TRACE_W(ILX_SLIDER);
 }
 
@@ -59,15 +59,51 @@ Slider::preferredSize() const
     Size s = stylist()->defaultSize(StyleHint::Slider);
     if (_orientation == Horizontal)
         return s;
+
     s.transpose();
     return s;
+}
+
+bool
+Slider::inverted() const
+{
+    return _inverted;
+}
+
+float
+Slider::maximum() const
+{
+    return _maximum;
+}
+
+float
+Slider::minimum() const
+{
+    return _minimum;
+}
+
+Orientation
+Slider::orientation() const
+{
+    return _orientation;
+}
+
+float
+Slider::pageStep() const
+{
+    return _pageStep;
+}
+
+float
+Slider::step() const
+{
+    return _step;
 }
 
 float
 Slider::range() const
 {
     return _range;
-
 }
 
 float
@@ -115,7 +151,6 @@ Slider::setRange(float minimum, float maximum)
 
     _range = _maximum - _minimum;
 }
-
 void
 Slider::setStep(float step)
 {
@@ -126,6 +161,64 @@ void
 Slider::setPageStep(float pageStep)
 {
     _pageStep = pageStep;
+}
+
+void
+Slider::setInverted(bool inverted)
+{
+    if (_inverted != inverted)
+    {
+        _inverted = inverted;
+        doLayout();
+    }
+}
+
+void
+Slider::setMinimum(float minimum)
+{
+    if (minimum != _maximum)
+    {
+        if (minimum >= _maximum)
+            _minimum = _maximum;
+        else
+            _minimum = minimum;
+
+        if (_value < _minimum)
+            _value = _minimum;
+
+        _range = _maximum - _minimum;
+    }
+}
+
+void
+Slider::setMaximum(float maximum)
+{
+    if (maximum != _maximum)
+    {
+        if (maximum <= _minimum)
+            _maximum = _minimum;
+        else
+            _maximum = maximum;
+
+        if (_value > _maximum)
+            _value = _maximum;
+
+        _range = _maximum - _minimum;
+    }
+}
+
+void
+Slider::setOrientation(Orientation orientation)
+{
+    if (_orientation != orientation)
+    {
+        _orientation = orientation;
+        if (_orientation == Horizontal)
+            setConstraints(ExpandingConstraint, FixedConstraint);
+        else
+            setConstraints(FixedConstraint, ExpandingConstraint);
+        doLayout();
+    }
 }
 
 void
@@ -149,6 +242,7 @@ Slider::keyUpEvent(const KeyEvent& keyEvent)
             _value += _step;
         else
             _value -= _step;
+
         break;
     case DIKS_CURSOR_RIGHT:
     case DIKS_CURSOR_DOWN:
@@ -156,18 +250,21 @@ Slider::keyUpEvent(const KeyEvent& keyEvent)
             _value -= _step;
         else
             _value += _step;
+
         break;
     case DIKS_PAGE_UP:
         if (_orientation == Vertical && !_inverted)
             _value += _pageStep;
         else
             _value -= _pageStep;
+
         break;
     case DIKS_PAGE_DOWN:
         if (_orientation == Vertical && !_inverted)
             _value -= _pageStep;
         else
             _value += _pageStep;
+
         break;
     case DIKS_HOME:
         _value = _minimum;
@@ -178,7 +275,6 @@ Slider::keyUpEvent(const KeyEvent& keyEvent)
     default:
         break;
     }
-
     if (_value < _minimum)
         _value = _minimum;
     else if (_value > _maximum)
@@ -187,16 +283,12 @@ Slider::keyUpEvent(const KeyEvent& keyEvent)
     updateIndicatorPosition();
     update();
 }
-
 void
 Slider::pointerButtonDownEvent(const PointerEvent& pointerEvent)
 {
-    Point mouseLocal = mapToSurface(Point(pointerEvent.x, pointerEvent.y));
-    if (mouseLocal.x() >= 0 && mouseLocal.x() <= width() - height())
-        setValue(_range * (mouseLocal.x() / (width() - height())));
+    setValueUsingPoint(mapToSurface(Point(pointerEvent.x, pointerEvent.y)));
     sigPressed();
 }
-
 void
 Slider::pointerButtonUpEvent(const PointerEvent& pointerEvent)
 {
@@ -208,16 +300,21 @@ void
 Slider::pointerMotionEvent(const PointerEvent& pointerEvent)
 {
     if (pressed())
-    {
-        Point mouseLocal = mapToSurface(Point(pointerEvent.x, pointerEvent.y));
-        if (mouseLocal.x() >= 0 && mouseLocal.x() <= width() - height())
-            setValue(_range * mouseLocal.x() / (width() - height()));
-    }
+        setValueUsingPoint(mapToSurface(Point(pointerEvent.x, pointerEvent.y)));
 }
+
 void
 Slider::pointerWheelEvent(const PointerEvent& event)
 {
-    setValue(_value - event.wheelStep * _pageStep);
+//    setValue(_value - event.wheelStep * _pageStep);
+    if (_orientation == Vertical)
+    {
+        if (_inverted)
+            setValue(_value - event.wheelStep * _pageStep);
+        else
+            setValue(_value + event.wheelStep * _pageStep);
+    } else
+        setValue(_value - event.wheelStep * _pageStep);
 }
 
 void
@@ -245,17 +342,74 @@ Slider::focusOutEvent()
 }
 
 void
-Slider::updateIndicatorPosition()
+Slider::setValueUsingPoint(const Point& p)
 {
-    ILOG_TRACE_W(ILX_SLIDER);
-    _indicator.moveTo((width() - height()) * (_value - _minimum) / _range, 0);
-    _indicator.setSize(height(), height());
+    int cursor = 0;
+    if (_orientation == Horizontal)
+    {
+
+        if (_inverted)
+            cursor = width() - p.x()
+                    - stylist()->defaultParameter(
+                            StyleHint::SliderIndicatorWidth);
+        else
+            cursor = p.x()
+                    - stylist()->defaultParameter(
+                            StyleHint::SliderIndicatorWidth);
+        setValue(
+                _range * cursor
+                        / (width()
+                                - stylist()->defaultParameter(
+                                        StyleHint::SliderIndicatorWidth)));
+    } else
+    {
+        if (_inverted)
+            cursor = p.y()
+                    - stylist()->defaultParameter(
+                            StyleHint::SliderIndicatorHeight);
+        else
+            cursor = height() - p.y()
+                    - stylist()->defaultParameter(
+                            StyleHint::SliderIndicatorHeight);
+        setValue(
+                _range * cursor
+                        / (height()
+                                - stylist()->defaultParameter(
+                                        StyleHint::SliderIndicatorHeight)));
+    }
 }
 
 void
-Slider::updateSliderGeometry()
+Slider::updateIndicatorPosition()
 {
-    updateIndicatorPosition();
+    ILOG_TRACE_W(ILX_SLIDER);
+    float percent;
+
+    if (_orientation == Horizontal)
+    {
+        if (_inverted)
+            percent = (_maximum - _value) / _range;
+        else
+            percent = (_value - _minimum) / _range;
+
+        _indicator.moveTo(
+                (width()
+                        - stylist()->defaultParameter(
+                                StyleHint::SliderIndicatorWidth)) * percent,
+                0);
+    } else
+    {
+        if (_inverted)
+            percent = (_value - _minimum) / _range;
+        else
+            percent = (_maximum - _value) / _range;
+
+        _indicator.moveTo(
+                0,
+                (height()
+                        - stylist()->defaultParameter(
+                                StyleHint::SliderIndicatorHeight)) * percent);
+    }
 }
 
 } /* namespace ilixi */

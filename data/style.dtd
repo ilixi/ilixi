@@ -47,25 +47,39 @@
 	<!ATTLIST radioOn w CDATA #REQUIRED>
 	<!ATTLIST radioOn h CDATA #REQUIRED>
 
-<!ELEMENT pack (PushButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, LineInput, Tab, ToolButton)>
+<!ELEMENT pack (PushButton, ToolButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, Tab, LineInput)>
 <!ATTLIST pack resource CDATA #REQUIRED>
 
-	<!ELEMENT PushButton (default, disabled, pressed, exposed, focused)>
-	<!ELEMENT CheckBox (default, disabled, pressed, exposed, focused)>
-	<!ELEMENT RadioButton (default, disabled, pressed, exposed, focused)>
-	<!ELEMENT ProgressBar (default, disabled, indicator)>
-	<!ELEMENT Slider (default, disabled, indicator)>
-	<!ELEMENT Frame (default, disabled)>
-	<!ELEMENT Tab (default, disabled)>
-	<!ELEMENT LineInput (default, disabled, pressed, exposed, focused)>
-	<!ELEMENT ToolButton (default, disabled, pressed, exposed, focused)>
-	<!ELEMENT indicator (default, disabled, pressed?, exposed?, focused?)>
-
-	<!ELEMENT default 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
-	<!ELEMENT pressed 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
-	<!ELEMENT exposed 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
-	<!ELEMENT disabled 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
-	<!ELEMENT focused 	((left) | (left, mid, right) | (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right))>
+	<!ELEMENT PushButton (def3, pre3, exp3, dis3, foc3)>
+	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1)>
+	<!ELEMENT RadioButton (def1, pre1, exp1, dis1, foc1)>
+	<!ELEMENT ProgressBar (def3, dis3, pIndicator)>
+	<!ELEMENT Slider (def3, dis3, sIndicator)>
+	<!ELEMENT Frame (def9, dis9)>
+	<!ELEMENT Tab (def9, dis9)>
+	<!ELEMENT ToolButton (def9, pre9, exp9, dis9, foc9)>
+	<!ELEMENT LineInput (def9, pre9, exp9, dis9, foc9)>
+	
+	<!ELEMENT pIndicator (def3, dis3) >
+	<!ELEMENT sIndicator (def1, pre1, exp1, dis1, foc1) >
+		
+	<!ELEMENT def1 (left) >
+	<!ELEMENT pre1 (left) >
+	<!ELEMENT exp1 (left) >
+	<!ELEMENT dis1 (left) >
+	<!ELEMENT foc1 (left) >
+	
+	<!ELEMENT def3 (left, mid, right) >
+	<!ELEMENT pre3 (left, mid, right) >
+	<!ELEMENT exp3 (left, mid, right) >
+	<!ELEMENT dis3 (left, mid, right) >
+	<!ELEMENT foc3 (left, mid, right) >
+	
+	<!ELEMENT def9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
+	<!ELEMENT pre9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
+	<!ELEMENT exp9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
+	<!ELEMENT dis9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
+	<!ELEMENT foc9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
 
 	<!ELEMENT left EMPTY>
 	<!ATTLIST left x CDATA #REQUIRED>
@@ -85,7 +99,6 @@
 	<!ATTLIST right w CDATA #REQUIRED>
 	<!ATTLIST right h CDATA #REQUIRED>
 
-
 	<!ELEMENT top-left EMPTY>
 	<!ATTLIST top-left x CDATA #REQUIRED>
 	<!ATTLIST top-left y CDATA #REQUIRED>
@@ -103,7 +116,6 @@
 	<!ATTLIST top-right y CDATA #REQUIRED>
 	<!ATTLIST top-right w CDATA #REQUIRED>
 	<!ATTLIST top-right h CDATA #REQUIRED>
-
 
 	<!ELEMENT bottom-left EMPTY>
 	<!ATTLIST bottom-left x CDATA #REQUIRED>

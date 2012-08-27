@@ -168,7 +168,9 @@ enum Parameter
     LineInputLeft,
     LineInputRight,
     LineInputLR,
-    LineInputHeight,
+    LineInputTop,
+    LineInputBottom,
+    LineInputTB,
 
     ToolButtonLeft,
     ToolButtonRight,
@@ -177,6 +179,9 @@ enum Parameter
     ToolButtonBottom,
     ToolButtonTB,
     ToolButtonIndicator,
+
+    SliderIndicatorWidth,
+    SliderIndicatorHeight
 };
 } // end StyleHint
 

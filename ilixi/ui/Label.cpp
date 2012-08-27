@@ -36,6 +36,7 @@ Label::Label(std::string text, Widget* parent)
           _margin(0)
 {
     setConstraints(MinimumConstraint, MinimumConstraint);
+    setSingleLine(true);
     ILOG_TRACE_W(ILX_LABEL);
 }
 

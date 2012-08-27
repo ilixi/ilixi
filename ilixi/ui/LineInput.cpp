@@ -56,8 +56,9 @@ LineInput::preferredSize() const
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
     Size s = font()->extents(text());
-    return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR),
-                stylist()->defaultParameter(StyleHint::LineInputHeight));
+    return Size(
+            s.width() + stylist()->defaultParameter(StyleHint::LineInputLR),
+            s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
 }
 
 int
@@ -398,11 +399,13 @@ void
 LineInput::updateTextBaseGeometry()
 {
     _layout.setBounds(
-            stylist()->defaultParameter(StyleHint::LineInputLeft), 3,
+            stylist()->defaultParameter(StyleHint::LineInputLeft),
+            stylist()->defaultParameter(StyleHint::LineInputTop),
             width() - stylist()->defaultParameter(StyleHint::LineInputLR),
-            height() - 6);
+            height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     _layout.doLayout(font());
-    _cursor.setSize(2, height() - 6);
+    _cursor.setSize(
+            2, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
 }
 
 Font*

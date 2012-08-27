@@ -48,6 +48,24 @@ public:
     Size
     preferredSize() const;
 
+    bool
+    inverted() const;
+
+    float
+    maximum() const;
+
+    float
+    minimum() const;
+
+    Orientation
+    orientation() const;
+
+    float
+    pageStep() const;
+
+    float
+    step() const;
+
     float
     range() const;
 
@@ -56,6 +74,9 @@ public:
      */
     float
     value() const;
+
+    void
+    setInverted(bool inverted);
 
     /*!
      * Sets slider's value.
@@ -86,6 +107,15 @@ public:
      */
     void
     setPageStep(float pageStep);
+
+    void
+    setMaximum(float maximum);
+
+    void
+    setMinimum(float minimum);
+
+    void
+    setOrientation(Orientation orientation);
 
     /*!
      * This signal is emitted while slider is being dragged.
@@ -121,7 +151,7 @@ protected:
     //! This property holds the orientation of the progress bar.
     Orientation _orientation;
     //! This property holds the bounding rectangle around indicator.
-    Rectangle _indicator;
+    Point _indicator;
     //! This is the difference between _maximum and _minimum. This is stored in order to simplify calculations.
     float _range;
     //! This flag specifies whether slider is inverted.
@@ -158,11 +188,13 @@ protected:
     focusOutEvent();
 
 private:
+    //! Calculates slider value using given point.
+    void
+    setValueUsingPoint(const Point& p);
+
+    //! Updates indicator geometry.
     void
     updateIndicatorPosition();
-
-    void
-    updateSliderGeometry();
 };
 
 } /* namespace ilixi */

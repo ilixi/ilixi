@@ -246,10 +246,12 @@ public:
               const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    tileImage(Image* image, int x, int y);
+    tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
+                      DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    tileImage(Image* image, int x, int y, const Rectangle& source);
+    tileImage(Image* image, int x, int y, const Rectangle& source,
+              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
     blitImage(Image* image, const Rectangle& source, int x, int y,

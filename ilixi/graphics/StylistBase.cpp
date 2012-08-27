@@ -36,9 +36,7 @@ D_DEBUG_DOMAIN( ILX_STYLISTBASE, "ilixi/graphics/StylistBase", "StylistBase");
 Image* StylistBase::_noImage = NULL;
 
 StylistBase::StylistBase()
-        : _palette(NULL),
-          _style(NULL),
-          _borderWidth(1)
+        : _palette(NULL), _style(NULL), _borderWidth(1)
 {
     _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
     initAnimations();
@@ -67,8 +65,7 @@ StylistBase::defaultSize(StyleHint::Size size) const
     switch (size)
     {
     case StyleHint::PushButton:
-        return Size(defaultParameter(StyleHint::PushButtonCorners),
-                    _style->pb.def.m.height());
+        return Size(defaultParameter(StyleHint::PushButtonCorners), _style->pb.def.m.height());
     case StyleHint::ProgressBar:
         return Size(100, _style->pr.def.m.height());
     case StyleHint::Slider:
@@ -140,8 +137,12 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->li.def.r.width();
     case StyleHint::LineInputLR:
         return _style->li.def.l.width() + _style->li.def.l.width();
-    case StyleHint::LineInputHeight:
-        return _style->li.def.l.height();
+    case StyleHint::LineInputTop:
+        return _style->li.def.tl.height();
+    case StyleHint::LineInputBottom:
+        return _style->li.def.bl.height();
+    case StyleHint::LineInputTB:
+        return _style->li.def.tl.height() + _style->li.def.bl.height();
 
     case StyleHint::ToolButtonLeft:
         return _style->tb.def.l.width();
@@ -158,6 +159,11 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 
     case StyleHint::ToolButtonIndicator:
         return 8;
+
+    case StyleHint::SliderIndicatorWidth:
+        return _style->slI.def.width();
+    case StyleHint::SliderIndicatorHeight:
+        return _style->slI.def.height();
 
     default:
         return -1;
@@ -222,16 +228,14 @@ StylistBase::initAnimations()
     _focus.in = new TweenAnimation();
     _focus.in->setDuration(500);
     _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _focus.in->sigExec.connect(
-            sigc::bind<StylistBase::StyledAnimation>(
-                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
+    _focus.in->sigExec.connect(sigc::bind<
+            StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
 
     _focus.out = new TweenAnimation();
     _focus.out->setDuration(250);
     _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
-    _focus.out->sigExec.connect(
-            sigc::bind<StylistBase::StyledAnimation>(
-                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
+    _focus.out->sigExec.connect(sigc::bind<
+            StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
 }
 
 void

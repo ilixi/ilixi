@@ -274,17 +274,25 @@ Painter::drawImage(Image* image, const Point& point,
 }
 
 void
-Painter::tileImage(Image* image, int x, int y)
-{
-    if ((_state & Active) && image)
-        dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, x, y);
-}
-
-void
-Painter::tileImage(Image* image, int x, int y, const Rectangle& source)
+Painter::tileImage(Image* image, int x, int y,
+                   const DFBSurfaceBlittingFlags& flags)
 {
     if ((_state & Active) && image)
     {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, x, y);
+    }
+}
+
+void
+Painter::tileImage(Image* image, int x, int y, const Rectangle& source,
+                   const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
         DFBRectangle r = source.dfbRect();
         dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, x, y);
     }

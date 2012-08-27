@@ -1,10 +1,6 @@
 ## Makefile.am for data/images
 miscdatadir 	=	$(ILIXI_DATADIR)/images
-miscdata_DATA 	=	arrowDown.png \
-			checkEmpty.png \
-     			checkFull.png \
-     			checkPartial.png \
-     			default.png \
+miscdata_DATA 	=	default.png \
      			ilixi_bg.jpg \
      			noImage.png \
 			pointer.png \

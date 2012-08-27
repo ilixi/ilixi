@@ -135,7 +135,7 @@ GroupBox::updateLayoutGeometry()
             " -> Canvas(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
     Size s = _title->preferredSize();
     _title->setGeometry(
-            3 * stylist()->defaultParameter(StyleHint::TabOffsetLeft),
+            2 * stylist()->defaultParameter(StyleHint::TabOffsetLeft),
             stylist()->defaultParameter(StyleHint::TabOffsetTop), s.width(),
             s.height());
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());

@@ -207,23 +207,19 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
                             get3Rectangle(state->children, pb.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
-                            get3Rectangle(state->children, pb.dis);
-
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre3") == 0)
                             get3Rectangle(state->children, pb.pre);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp3") == 0)
                             get3Rectangle(state->children, pb.exp);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
+                            get3Rectangle(state->children, pb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "foc3") == 0)
                             get3Rectangle(state->children, pb.foc);
 
                         state = state->next;
@@ -235,23 +231,19 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
                             getRectangle(state->children, cb.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
-                            getRectangle(state->children, cb.dis);
-
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
                             getRectangle(state->children, cb.pre);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
                             getRectangle(state->children, cb.exp);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                            getRectangle(state->children, cb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
                             getRectangle(state->children, cb.foc);
 
                         state = state->next;
@@ -264,23 +256,19 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
                             getRectangle(state->children, rb.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
-                            getRectangle(state->children, rb.dis);
-
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
                             getRectangle(state->children, rb.pre);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
                             getRectangle(state->children, rb.exp);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                            getRectangle(state->children, rb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
                             getRectangle(state->children, rb.foc);
 
                         state = state->next;
@@ -295,25 +283,24 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
                             get3Rectangle(state->children, pr.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
                             get3Rectangle(state->children, pr.dis);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "indicator")
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pIndicator")
                                 == 0)
                         {
                             xmlNodePtr iState = state->children;
                             while (iState != NULL)
                             {
-                                if (xmlStrcmp(iState->name,
-                                              (xmlChar*) "default") == 0)
+                                if (xmlStrcmp(iState->name, (xmlChar*) "def3")
+                                        == 0)
                                     get3Rectangle(iState->children, prI.def);
 
                                 else if (xmlStrcmp(state->name,
-                                                   (xmlChar*) "disabled") == 0)
+                                                   (xmlChar*) "dis3") == 0)
                                     get3Rectangle(iState->children, prI.dis);
 
                                 iState = iState->next;
@@ -331,36 +318,34 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
                             get3Rectangle(state->children, sl.def);
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
                             get3Rectangle(state->children, sl.dis);
-
-                        else if (xmlStrcmp(state->name, (xmlChar*) "indicator")
+                        else if (xmlStrcmp(state->name, (xmlChar*) "sIndicator")
                                 == 0)
                         {
                             xmlNodePtr iState = state->children;
                             while (iState != NULL)
                             {
 
-                                if (xmlStrcmp(iState->name,
-                                              (xmlChar*) "default") == 0)
+                                if (xmlStrcmp(iState->name, (xmlChar*) "def1")
+                                        == 0)
                                     getRectangle(iState->children, slI.def);
 
                                 else if (xmlStrcmp(iState->name,
-                                                   (xmlChar*) "disabled") == 0)
-                                    getRectangle(iState->children, slI.dis);
-                                else if (xmlStrcmp(iState->name,
-                                                   (xmlChar*) "pressed") == 0)
+                                                   (xmlChar*) "pre1") == 0)
                                     getRectangle(iState->children, slI.pre);
-
                                 else if (xmlStrcmp(iState->name,
-                                                   (xmlChar*) "exposed") == 0)
+                                                   (xmlChar*) "exp1") == 0)
                                     getRectangle(iState->children, slI.exp);
 
                                 else if (xmlStrcmp(iState->name,
-                                                   (xmlChar*) "focused") == 0)
+                                                   (xmlChar*) "dis1") == 0)
+                                    getRectangle(iState->children, slI.dis);
+
+                                else if (xmlStrcmp(iState->name,
+                                                   (xmlChar*) "foc1") == 0)
                                     getRectangle(iState->children, slI.foc);
 
                                 iState = iState->next;
@@ -376,11 +361,10 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
                             get9Rectangle(state->children, fr.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
                             get9Rectangle(state->children, fr.dis);
 
                         state = state->next;
@@ -393,24 +377,20 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
-                            get3Rectangle(state->children, li.def);
+                        if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
+                            get9Rectangle(state->children, li.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
-                            get3Rectangle(state->children, li.dis);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre9") == 0)
+                            get9Rectangle(state->children, li.pre);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
-                                == 0)
-                            get3Rectangle(state->children, li.pre);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp9") == 0)
+                            get9Rectangle(state->children, li.exp);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
-                                == 0)
-                            get3Rectangle(state->children, li.exp);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
+                            get9Rectangle(state->children, li.dis);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
-                                == 0)
-                            get3Rectangle(state->children, li.foc);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "foc9") == 0)
+                            get9Rectangle(state->children, li.foc);
 
                         state = state->next;
                     }
@@ -421,11 +401,10 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
                             get9Rectangle(state->children, tab.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
                             get9Rectangle(state->children, tab.dis);
 
                         state = state->next;
@@ -438,23 +417,19 @@ Style::parseStyle(const char* style)
                     {
                         ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        if (xmlStrcmp(state->name, (xmlChar*) "default") == 0)
+                        if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
                             get9Rectangle(state->children, tb.def);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "disabled")
-                                == 0)
-                            get9Rectangle(state->children, tb.dis);
-
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pressed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre9") == 0)
                             get9Rectangle(state->children, tb.pre);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "exposed")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp9") == 0)
                             get9Rectangle(state->children, tb.exp);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "focused")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
+                            get9Rectangle(state->children, tb.dis);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "foc9") == 0)
                             get9Rectangle(state->children, tb.foc);
 
                         state = state->next;

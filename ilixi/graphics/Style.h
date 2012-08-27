@@ -107,7 +107,7 @@ public:
         r3 exp;
         r3 dis;
         r3 foc;
-    } pb, li;
+    } pb;
 
     struct onesInput
     {
@@ -125,13 +125,21 @@ public:
         r9 exp;
         r9 dis;
         r9 foc;
-    } tb;
+    } tb, li;
 
     struct threesView
     {
         r3 def;
         r3 dis;
-    } pr, prI, sl;
+    } pr, prI;
+
+    struct threesViewV
+    {
+        r3 def;
+        r3 dis;
+        r3 defV;
+        r3 disV;
+    } sl;
 
     struct ninesView
     {
