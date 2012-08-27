@@ -27,6 +27,7 @@
 #include <core/Logger.h>
 #include <algorithm>
 #include <stdlib.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -434,10 +435,10 @@ AppBase::removeTimer(Timer* timer)
     return false;
 }
 
-long long
+int32_t
 AppBase::runCallbacks()
 {
-    long long timeout = INT_MAX;
+    int32_t timeout = INT_MAX;
 
     pthread_mutex_lock(&__cbMutex);
     CallbackList::iterator it = __callbacks.begin();
@@ -457,15 +458,19 @@ AppBase::runCallbacks()
     pthread_mutex_lock(&__timerMutex);
     if (_timers.size())
     {
-        long long now = direct_clock_get_millis();
-        long long expiry = _timers[0]->expiry();
+        int64_t now = direct_clock_get_millis();
+        int64_t expiry = _timers[0]->expiry();
 
         if (expiry <= now)
         {
-            _timers[0]->funck();
+            if (!_timers[0]->funck())
+                _timers.erase(_timers.begin());
+
             std::sort(__instance->_timers.begin(), __instance->_timers.end(),
                       timerSort);
-            timeout = _timers[0]->expiry() - now;
+
+            if (_timers.size())
+                timeout = _timers[0]->expiry() - now;
         } else
             timeout = expiry - now;
     }
@@ -685,7 +690,7 @@ AppBase::updateWindows()
 }
 
 void
-AppBase::handleEvents(long long timeout)
+AppBase::handleEvents(int32_t timeout)
 {
     DFBEvent event;
 

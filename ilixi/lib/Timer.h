@@ -25,6 +25,7 @@
 #define ILIXI_TIMER_H_
 
 #include <sigc++/signal.h>
+#include <stdint.h>
 
 namespace ilixi
 {
@@ -87,7 +88,7 @@ public:
     virtual void
     notify();
 
-    long long
+    int64_t
     expiry() const;
 
     /*!
@@ -109,7 +110,7 @@ private:
     //! Current repeat count.
     unsigned int _count;
     //! This stores next time timer fires.
-    long long _expiry;
+    int64_t _expiry;
 
     // Callback uses step()
     friend bool

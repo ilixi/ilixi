@@ -32,6 +32,7 @@
 #include <core/Window.h>
 #include <list>
 #include <map>
+#include <stdint.h>
 
 #if ILIXI_HAVE_FUSIONDALE
 extern "C"
@@ -268,7 +269,7 @@ private:
     /*!
      * Executes each callback and returns a timeout in ms.
      */
-    long long
+    int32_t
     runCallbacks();
 
     /*!
@@ -323,7 +324,7 @@ private:
      * All events are handled using this function.
      */
     void
-    handleEvents(long long timeout);
+    handleEvents(int32_t timeout);
 
     /*!
      * Attach window to event buffer.

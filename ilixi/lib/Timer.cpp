@@ -46,6 +46,7 @@ Timer::Timer()
 
 Timer::~Timer()
 {
+    AppBase::removeTimer(this);
 }
 
 unsigned int
@@ -98,7 +99,7 @@ Timer::notify()
 {
 }
 
-long long
+int64_t
 Timer::expiry() const
 {
     return _expiry;
@@ -108,10 +109,8 @@ bool
 Timer::funck()
 {
     if (_repeats && _repeats == _count)
-    {
-        AppBase::removeTimer(this);
         return false;
-    }
+
     _expiry = direct_clock_get_millis() + _interval;
 
     ILOG_DEBUG(
