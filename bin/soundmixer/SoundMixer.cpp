@@ -22,11 +22,17 @@
  */
 
 #include "SoundMixer.h"
+#include <ui/GroupBox.h>
 #include <ui/VBoxLayout.h>
+#include <ui/HBoxLayout.h>
+#include <ui/GridLayout.h>
+#include <ui/PushButton.h>
+#include <ui/CheckBox.h>
 #include <ui/Spacer.h>
 #include <core/Logger.h>
 #include <lib/Notify.h>
 #include "VolumeMeter.h"
+#include "BandSlider.h"
 
 namespace ilixi
 {
@@ -35,52 +41,104 @@ SoundMixer::SoundMixer(int argc, char* argv[])
         : Application(&argc, &argv, OptDale)
 {
     setTitle("SoundMixer");
+    setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
+    setMargin(20);
     setLayout(new VBoxLayout());
 
-    addWidget(new Spacer(Vertical));
+    HBoxLayout* volStuff = new HBoxLayout();
+    addWidget(volStuff);
 
-    VolumeMeter* meter = new VolumeMeter();
-    addWidget(meter);
+    //**********
+    GroupBox* volGroup = new GroupBox("Volume Control");
+    GridLayout* volBox = new GridLayout(6, 3);
+    volGroup->setLayout(volBox);
+    volStuff->addWidget(volGroup);
+
+    volBox->addWidget(new Label("Output:"), 0, 0, 0, 3);
 
     _volSlider = new Slider();
-    addWidget(_volSlider);
-
-    _mute = new ToolButton("Mute");
-    addWidget(_mute);
-    _mute->sigClicked.connect(sigc::mem_fun(this, &SoundMixer::mute));
-
-    addWidget(new Spacer(Vertical));
-
     _volSlider->sigValueChanged.connect(
             sigc::mem_fun(this, &SoundMixer::changeVolume));
+    volBox->addWidget(_volSlider, 1, 0, 0, 2);
+
+    _mute = new PushButton("Mute");
+    _mute->setXConstraint(FixedConstraint);
+    volBox->addWidget(_mute, 1, 2);
+    _mute->sigClicked.connect(sigc::mem_fun(this, &SoundMixer::mute));
+
+    volBox->addWidget(new Label("Balance:"), 2, 0, 0, 3);
+    volBox->addWidget(new Label("Front"), 3, 0);
+    Slider* frSlider = new Slider();
+    frSlider->setValue(50);
+    volBox->addWidget(frSlider, 3, 1);
+    volBox->addWidget(new Label("Rear"), 3, 2);
+    volBox->addWidget(new Label("Left"), 4, 0);
+    Slider* lrSlider = new Slider();
+    lrSlider->setValue(50);
+    volBox->addWidget(lrSlider, 4, 1);
+    volBox->addWidget(new Label("Right"), 4, 2);
+    volBox->addWidget(new Spacer(Vertical), 5, 0);
+
+    GroupBox* volMeter = new GroupBox("Meter");
+    volMeter->setXConstraint(FixedConstraint);
+    volStuff->addWidget(volMeter);
+    VolumeMeter* meter = new VolumeMeter();
+    volMeter->addWidget(meter);
+
+    //*********
+    GroupBox* levels = new GroupBox("Equalizer");
+    VBoxLayout* eqBox = new VBoxLayout();
+    levels->setLayout(eqBox);
+    addWidget(levels);
+
+    HBoxLayout* buttons = new HBoxLayout();
+    buttons->addWidget(new PushButton("Load Preset"));
+    buttons->addWidget(new PushButton("Save Preset"));
+    buttons->addWidget(new Spacer(Horizontal));
+    buttons->addWidget(new CheckBox("EQ Enabled"));
+    levels->addWidget(buttons);
+
+    HBoxLayout* rowLevels = new HBoxLayout();
+    rowLevels->setYConstraint(ExpandingConstraint);
+    rowLevels->addWidget(new BandSlider("50Hz"));
+    rowLevels->addWidget(new BandSlider("100Hz"));
+    rowLevels->addWidget(new BandSlider("156Hz"));
+    rowLevels->addWidget(new BandSlider("220Hz"));
+    rowLevels->addWidget(new BandSlider("311Hz"));
+    rowLevels->addWidget(new BandSlider("440Hz"));
+    rowLevels->addWidget(new BandSlider("622Hz"));
+    rowLevels->addWidget(new BandSlider("880Hz"));
+    rowLevels->addWidget(new BandSlider("1.25KHz"));
+    rowLevels->addWidget(new BandSlider("1.75KHz"));
+    rowLevels->addWidget(new BandSlider("2.5KHz"));
+    rowLevels->addWidget(new BandSlider("3.5KHz"));
+    rowLevels->addWidget(new BandSlider("5KHz"));
+    rowLevels->addWidget(new BandSlider("10KHz"));
+    rowLevels->addWidget(new BandSlider("20KHz"));
+    levels->addWidget(rowLevels);
 
     AppBase::comaGetComponent("SoundComponent", &_soundComponent);
 }
 
 SoundMixer::~SoundMixer()
 {
-    _soundComponent->Release(_soundComponent);
+    if (_soundComponent)
+        _soundComponent->Release(_soundComponent);
 }
 
 void
 SoundMixer::mute()
 {
-    Notify notify(
-            "Parmak!",
-            "Yusuf likes big parmak... Yusuf likes big parmak... Yusuf likes big parmak... Yusuf likes big parmak...");
-    notify.setIcon(ILIXI_DATADIR"images/default.png");
-    notify.show();
+    _volSlider->setValue(0);
 }
 
 void
 SoundMixer::changeVolume(int volume)
 {
     void *ptr;
-    int result;
     comaGetLocal(sizeof(int), &ptr);
     int* vol = (int*) ptr;
     *vol = volume;
-
     AppBase::comaCallComponent(_soundComponent, 0, (void*) vol);
 }
 

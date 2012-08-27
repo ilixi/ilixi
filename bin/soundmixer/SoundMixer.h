@@ -25,11 +25,11 @@
 #define SOUNDMIXER_H_
 
 #include <ui/Application.h>
-#include <ui/Slider.h>
-#include <ui/ToolButton.h>
 
 namespace ilixi
 {
+class Slider;
+class PushButton;
 
 class SoundMixer : public Application
 {
@@ -45,7 +45,7 @@ public:
 private:
     IComaComponent* _soundComponent;
     Slider* _volSlider;
-    ToolButton* _mute;
+    PushButton* _mute;
 
     void
     changeVolume(int volume);
