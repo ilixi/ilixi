@@ -40,9 +40,7 @@ class Notification : public Widget
 public:
     enum NotificationState
     {
-        Init,
-        Visible,
-        Hidden
+        Init, Visible, Hidden
     };
 
     Notification(const Notify::NotifyData& data, Compositor* parent);
@@ -59,16 +57,13 @@ public:
     void
     show(unsigned int ms);
 
-    static void
-    releaseBG();
-
 protected:
     virtual void
     compose(const PaintEvent& event);
 
 private:
     Compositor* _compositor;
-    NotificationState _state;
+    NotificationState _notState;
 
     Image* _icon;
     std::string _title;
@@ -85,8 +80,6 @@ private:
     TweenAnimation* _animZ;
     Tween* _tweenZ;
 
-    int _xStart;
-
     static Image* _bg;
 
     void
@@ -100,6 +93,9 @@ private:
 
     void
     tweenEndSlot();
+
+    static void
+    releaseBG();
 };
 
 } /* namespace ilixi */

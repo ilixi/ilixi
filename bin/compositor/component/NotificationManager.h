@@ -51,6 +51,8 @@ private:
     Compositor* _compositor;
     typedef std::vector<Notification*> NotificationVector;
     NotificationVector _notifications;
+    pthread_mutex_t _notMutex;
+
     Timer _timer;
     TweenAnimation _anim;
     Tween* _tween;

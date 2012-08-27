@@ -288,6 +288,7 @@ Compositor::showSound(bool show)
     {
         _appMan->startApplication("SoundMixer");
         _compComp->signalSound(true);
+        _compComp->signalDash(false);
     } else
     {
         if (_previousApp && _previousApp != _currentApp)
@@ -308,6 +309,7 @@ Compositor::showDash(bool show)
     {
         _appMan->startApplication("Dashboard");
         _compComp->signalDash(true);
+        _compComp->signalSound(false);
     } else
     {
         if (_previousApp && _previousApp != _currentApp)

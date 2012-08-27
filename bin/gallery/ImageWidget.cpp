@@ -24,6 +24,7 @@
 #include "ImageWidget.h"
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+#include <sstream>
 
 using namespace ilixi;
 
@@ -38,8 +39,9 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent)
     _anim.addTween(_boxSlide);
 
     setInputMethod(KeyAndPointerInput);
-
-    PushButton* button = new PushButton("text");
+    std::stringstream ss;
+    ss << "ID: " << id();
+    PushButton* button = new PushButton(ss.str());
     Size s = button->preferredSize();
     button->setGeometry(10, 10, s.width(), s.height());
     addChild(button);
@@ -72,7 +74,7 @@ ImageWidget::compose(const PaintEvent& event)
     float val2 = _boxSlide->value();
 
     // draw image
-    p.setBrush(Color(0, 0, 0, 125 + val1 * 130));
+    p.setBrush(Color(0, 0, 0, 80 + val1 * 175));
     p.stretchImage(
             _image,
             -20 * val1,

@@ -37,7 +37,7 @@ Image* Notification::_bg = NULL;
 Notification::Notification(const Notify::NotifyData& data, Compositor* parent)
         : Widget(parent),
           _compositor(parent),
-          _state(Init)
+          _notState(Init)
 {
     ILOG_TRACE_W(ILX_NOTIFICATION);
 
@@ -91,7 +91,7 @@ Notification::preferredSize() const
 Notification::NotificationState
 Notification::state() const
 {
-    return _state;
+    return _notState;
 }
 
 void
@@ -107,7 +107,6 @@ Notification::show(unsigned int ms)
         _tweenZ->setEndValue(1);
         _seq.start();
         _timer.start(5000, 1);
-        _state = Visible;
         setVisible(true);
     }
 }
@@ -151,7 +150,10 @@ Notification::compose(const PaintEvent& event)
     else
         p.drawImage(_icon, 20 + width() * _tweenX->value(), 5);
 
+    p.setBrush(Color(255, 255, 255));
+    p.setFont(*stylist()->defaultFont(StyleHint::TitleFont));
     p.drawText(_title, 90 + width() * _tweenX->value(), 15);
+    p.setFont(*stylist()->defaultFont(StyleHint::DefaultFont));
     p.drawText(_text, 90 + width() * _tweenX->value(), 35);
     p.end();
 }
@@ -175,8 +177,9 @@ Notification::tweenEndSlot()
     if (_tweenX->value() == 1)
     {
         setVisible(false);
-        _state = Hidden;
-    }
+        _notState = Hidden;
+    } else
+        _notState = Visible;
 }
 
 } /* namespace ilixi */
