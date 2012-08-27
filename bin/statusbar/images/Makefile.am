@@ -1,14 +1,16 @@
 ## Makefile.am for statusbar/images
 miscdatadir 	=	$(ILIXI_DATADIR)/statusbar
-miscdata_DATA 	=	disabled.png \
+miscdata_DATA 	=	dash.png \
+			dashG.png \
+			disabled.png \
 			home.png \
 			homeG.png \
 			statusbar_bg.png \
 			statusbar-buttons.png \
 			switch.png \
 			switchG.png \
-			temp.png \
-			tempG.png \
+			vol0.png \
+			vol0G.png \
 			vol1.png \
 			vol1G.png \
 			vol2.png \

@@ -92,23 +92,11 @@ RemoteContentArea::compose(const PaintEvent& event)
     p.begin(event);
 
     p.blitImage(_bgDef, Rectangle(0, 0, 15, 15), 0, 0);
-    p.blitImage(_bgDef, Rectangle(106, 0, 20, 15), width() - 20, 0);
 
-    // mid
-    p.setClip(15, 0, width() - 35, height());
-    p.tileImage(_bgDef, 15, 0, Rectangle(15, 0, 91, 54));
-    p.resetClip();
-
-    // left
-    p.setClip(0, 15, 15, height());
-    p.tileImage(_bgDef, 0, 0, Rectangle(0, 15, 15, 39));
-    p.resetClip();
-
-    // right
-    p.setClip(width() - 20, 15, 20, height());
-    p.tileImage(_bgDef, width() - 20, 0, Rectangle(106, 15, 20, 39));
-    p.resetClip();
-
+    p.stretchImage(_bgDef, Rectangle(15, 0, width() - 15, height()),
+                   Rectangle(15, 0, 91, 55)); // mid
+    p.stretchImage(_bgDef, Rectangle(0, 15, 15, height()),
+                   Rectangle(0, 15, 15, 39)); // left
     p.end();
 }
 

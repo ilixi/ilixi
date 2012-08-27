@@ -48,7 +48,7 @@ StatusbarButton::~StatusbarButton()
 Size
 StatusbarButton::preferredSize() const
 {
-    return Size(80, 50);
+    return Size(75, 50);
 }
 
 bool
@@ -121,32 +121,24 @@ StatusbarButton::compose(const PaintEvent& event)
 {
     int y = 0;
     if (_state & PressedState)
-        y = 54;
+        y = 55;
     else if (_state & ExposedState)
-        y = 108;
+        y = 110;
 
     Painter p(this);
     p.begin(event);
-
     p.blitImage(bgDef, Rectangle(0, y, 15, 15), 0, 0);
     p.blitImage(bgDef, Rectangle(106, y, 20, 15), width() - 20, 0);
 
-    // mid
-    p.setClip(15, 0, width() - 35, height());
-    p.tileImage(bgDef, 15, 0, Rectangle(15, y, 91, 50));
-    p.resetClip();
+    p.stretchImage(bgDef, Rectangle(15, 0, width() - 35, height()),
+                   Rectangle(15, y, 90, 55)); // mid
+    p.stretchImage(bgDef, Rectangle(0, 15, 15, height()),
+                   Rectangle(0, y + 15, 15, 39)); // left
+    p.stretchImage(bgDef, Rectangle(width() - 20, 15, 20, height()),
+                   Rectangle(106, y + 15, 20, 39)); // right
 
-    // left
-    p.setClip(0, 15, 15, height());
-    p.tileImage(bgDef, 0, 0, Rectangle(0, y + 15, 15, 39));
-    p.resetClip();
-
-    // right
-    p.setClip(width() - 20, 15, 20, height());
-    p.tileImage(bgDef, width() - 20, 0, Rectangle(106, y + 15, 20, 39));
-    p.resetClip();
-
-    p.drawImage(_images[buttonState()], 15, 0);
+    p.drawImage(_images[buttonState()], (width() - 48) / 2,
+                (height() - 48) / 2);
     p.end();
 }
 

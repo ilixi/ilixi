@@ -41,12 +41,14 @@ volumeListener(void* ctx, void* arg)
     StatusBar* bar = (StatusBar*) ctx;
     int vol = *((int*) arg);
 
-    if (vol < 30)
+    if (vol == 0)
         bar->_sound->setButtonState(0);
-    else if (vol < 60)
+    else if (vol < 30)
         bar->_sound->setButtonState(2);
-    else
+    else if (vol < 60)
         bar->_sound->setButtonState(4);
+    else
+        bar->_sound->setButtonState(6);
 
     ILOG_DEBUG(ILX_STATUSBAR, "Volume %d\n", *((int*) arg));
 }
@@ -57,7 +59,7 @@ homeShowing(void* ctx, void* arg)
     StatusBar* bar = (StatusBar*) ctx;
     bar->_home->setActive(1);
     bar->_sound->setActive(0);
-    bar->_temp->setActive(0);
+    bar->_dash->setActive(0);
 }
 
 void
@@ -99,14 +101,14 @@ void
 tempVisible(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_temp->setActive(1);
+    bar->_dash->setActive(1);
 }
 
 void
 tempHidden(void* ctx, void* arg)
 {
     StatusBar* bar = (StatusBar*) ctx;
-    bar->_temp->setActive(0);
+    bar->_dash->setActive(0);
 }
 
 //*****************************************************************
@@ -142,13 +144,17 @@ StatusBar::StatusBar(int argc, char* argv[])
             sigc::mem_fun(this, &StatusBar::clickedSwitcher));
     addWidget(_switch);
 
-    _temp = new StatusbarButton();
-    _temp->addImage(new Image(ILIXI_DATADIR"statusbar/temp.png", Size(48, 48)));
-    _temp->addImage(
-            new Image(ILIXI_DATADIR"statusbar/tempG.png", Size(48, 48)));
-    addWidget(_temp);
+    _dash = new StatusbarButton();
+    _dash->addImage(new Image(ILIXI_DATADIR"statusbar/dash.png", Size(48, 48)));
+    _dash->addImage(
+            new Image(ILIXI_DATADIR"statusbar/dashG.png", Size(48, 48)));
+    addWidget(_dash);
 
     _sound = new StatusbarButton();
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol0.png", Size(48, 48)));
+    _sound->addImage(
+            new Image(ILIXI_DATADIR"statusbar/vol0G.png", Size(48, 48)));
     _sound->addImage(
             new Image(ILIXI_DATADIR"statusbar/vol1.png", Size(48, 48)));
     _sound->addImage(
@@ -238,7 +244,7 @@ StatusBar::clickedSwitcher()
 void
 StatusBar::clickedTemp()
 {
-    if (_temp->active())
+    if (_dash->active())
         AppBase::comaCallComponent(_compComponent, 12, NULL);
     else
         AppBase::comaCallComponent(_compComponent, 11, NULL);

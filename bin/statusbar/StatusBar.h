@@ -70,7 +70,7 @@ private:
     Image* _bg;
     StatusbarButton* _home;
     StatusbarButton* _switch;
-    StatusbarButton* _temp;
+    StatusbarButton* _dash;
     StatusbarButton* _sound;
     RemoteContentArea* _rca;
 

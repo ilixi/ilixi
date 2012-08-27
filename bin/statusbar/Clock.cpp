@@ -43,12 +43,13 @@ Clock::Clock(Widget* parent)
     _box->setSpacing(0);
     _box->setHorizontalAlignment(Alignment::Center);
 
-    _time = new Label("55:55");
+    _time = new Label("00:00");
     _time->setFont(new Font("decker", 24));
     _time->setLayoutAlignment(TextLayout::Center);
 
     _date = new Label("Frii181Nov111");
     _date->setSingleLine(true);
+    _date->setLayoutAlignment(TextLayout::Center);
 
     updateTime();
     _box->addWidget(_time);
@@ -70,7 +71,8 @@ Clock::~Clock()
 Size
 Clock::preferredSize() const
 {
-    return _box->preferredSize();
+    Size s = _box->preferredSize();
+    return Size(s.width() + 10, s.height());
 }
 
 void
@@ -99,7 +101,7 @@ Clock::updateTime()
 void
 Clock::onClockGeomUpdate()
 {
-    _box->setGeometry(0, 0, width(), height());
+    _box->setGeometry(0, 0, width() , height());
 }
 
 } /* namespace ilixi */
