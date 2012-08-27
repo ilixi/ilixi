@@ -53,8 +53,10 @@ protected:
 
 private:
     static Image* _bgDef;
-    int _contentX;
     std::vector<SurfaceView*> _remoteContent;
+
+    virtual void
+    updateLayoutGeometry();
 };
 
 } /* namespace ilixi */
