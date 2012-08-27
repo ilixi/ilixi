@@ -1,8 +1,24 @@
 /*
- * DaleDFB.cpp
- *
- *  Created on: Aug 27, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <core/DaleDFB.h>
@@ -15,7 +31,7 @@ IFusionDale* DaleDFB::__dale = NULL;
 IComa* DaleDFB::__coma = NULL;
 IComaComponent* DaleDFB::__oskComp = NULL;
 
-D_DEBUG_DOMAIN( ILX_DALEDFB, "ilixi/lib/DaleDFB", "DaleDFB");
+D_DEBUG_DOMAIN( ILX_DALEDFB, "ilixi/core/DaleDFB", "DaleDFB");
 
 DaleDFB::DaleDFB()
 {
@@ -65,6 +81,10 @@ DFBResult
 DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method,
                            void* arg)
 {
+    ILOG_TRACE_F(ILX_DALEDFB);
+    if (!__coma)
+        return DFB_FAILURE;
+
     if (component)
     {
         int ret_val;
@@ -185,6 +205,9 @@ DaleDFB::releaseDale()
 DFBResult
 DaleDFB::getOSKComp()
 {
+    if (!__coma)
+        return DFB_FAILURE;
+
     if (!__oskComp)
     {
         static bool tryOnce = true;

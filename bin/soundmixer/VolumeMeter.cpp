@@ -24,6 +24,7 @@
 
 #include "VolumeMeter.h"
 #include <graphics/Painter.h>
+#include <core/SoundDFB.h>
 
 namespace ilixi
 {
@@ -79,7 +80,7 @@ VolumeMeter::drawMeterValue(Painter* p, int x, float value)
 void
 VolumeMeter::updateVolume()
 {
-    _sound.getMasterAmplitude(&_chanLeft, &_chanRight);
+    SoundDFB::getMasterAmplitude(&_chanLeft, &_chanRight);
     update();
 }
 

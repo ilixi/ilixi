@@ -25,3 +25,8 @@ libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp \
 ilixi_include_HEADERS		+=	ComaComponent.h \
 								DaleDFB.h
 endif
+
+if WITH_FUSIONSOUND
+libilixi_core_la_SOURCES 	+= 	SoundDFB.cpp
+ilixi_include_HEADERS		+=	SoundDFB.h
+endif

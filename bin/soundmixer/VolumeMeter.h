@@ -27,7 +27,6 @@
 
 #include <ui/Widget.h>
 #include <lib/Timer.h>
-#include <lib/Sound.h>
 
 namespace ilixi
 {
@@ -53,7 +52,6 @@ private:
     Image* _volumeOff;
     Image* _volumeOn;
     Timer _volTimer;
-    Sound _sound;
 
     void
     drawMeterValue(Painter* painter, int x, float value);

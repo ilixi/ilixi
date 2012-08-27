@@ -21,73 +21,50 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_DALEDFB_H_
-#define ILIXI_DALEDFB_H_
+#ifndef ILIXI_SOUND_H_
+#define ILIXI_SOUND_H_
 
 #include <directfb.h>
 extern "C"
 {
-#include <fusiondale.h>
+#include <fusionsound.h>
 }
-#include <types/Rectangle.h>
 
 namespace ilixi
 {
 
-class DaleDFB
+class SoundDFB
 {
     friend class AppBase;
 public:
-
-    /*!
-     * Returns Coma interface.
-     */
-    static IComa*
-    getComa();
+    static void
+    getMasterAmplitude(float* left, float* right);
 
     static DFBResult
-    comaGetComponent(const char* name, IComaComponent** component);
+    createBuffer(const FSBufferDescription* desc, IFusionSoundBuffer** buffer);
 
     static DFBResult
-    comaGetLocal(unsigned int bytes, void** ret);
+    createStream(const FSStreamDescription* desc, IFusionSoundStream** stream);
 
     static DFBResult
-    comaCallComponent(IComaComponent* component, ComaMethodID method,
-                      void* arg);
-
-    static DFBResult
-    showOSK(const Rectangle& rect);
-
-    static DFBResult
-    hideOSK();
+    createMusicProvider(const char* filename,
+                        IFusionSoundMusicProvider** provider);
 
 private:
-    static IFusionDale* __dale;
-    static IComa* __coma;
-    static IComaComponent* __oskComp;
+    //! Main FusionSound interface.
+    static IFusionSound* __sound;
 
-    struct OSKRequest
-    {
-        DFBRectangle inputRect;
-        int mode;
-        pid_t process;
-    };
-
-    DaleDFB();
+    SoundDFB();
 
     virtual
-    ~DaleDFB();
+    ~SoundDFB();
 
     static DFBResult
-    initDale(int* argc, char*** argv);
+    initSound(int* argc, char*** argv);
 
     static void
-    releaseDale();
-
-    static DFBResult
-    getOSKComp();
-
+    releaseSound();
 };
 
 } /* namespace ilixi */
-#endif /* DALEDFB_H_ */
+#endif /* ILIXI_SOUND_H_ */

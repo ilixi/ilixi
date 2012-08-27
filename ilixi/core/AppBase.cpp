@@ -31,6 +31,9 @@
 #if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
 #endif
+#if ILIXI_HAVE_FUSIONSOUND
+#include <core/SoundDFB.h>
+#endif
 
 using namespace std;
 
@@ -147,8 +150,16 @@ AppBase::initDFB(int* argc, char*** argv)
 #if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
-            DaleDFB::initDale(argc, argv);
-            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
+            if (DaleDFB::initDale(argc, argv) == DFB_OK)
+                ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
+        }
+#endif
+
+#if ILIXI_HAVE_FUSIONSOUND
+        if (__options & OptSound)
+        {
+            if (SoundDFB::initSound(argc, argv) == DFB_OK)
+                ILOG_INFO(ILX_APPBASE, "FusionSound interfaces are ready.\n");
         }
 #endif
     } else
@@ -161,9 +172,23 @@ AppBase::releaseDFB()
 {
     if (__dfb)
     {
+
 #if ILIXI_HAVE_FUSIONDALE
-        DaleDFB::releaseDale();
+        if (__options & OptDale)
+        {
+            DaleDFB::releaseDale();
+            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
+        }
 #endif
+
+#if ILIXI_HAVE_FUSIONSOUND
+        if (__options & OptSound)
+        {
+            SoundDFB::releaseSound();
+            ILOG_INFO(ILX_APPBASE, "FusionSound interfaces are released.\n");
+        }
+#endif
+
         ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
 
         if (__buffer)
@@ -349,7 +374,7 @@ AppBase::removeTimer(Timer* timer)
 int32_t
 AppBase::runCallbacks()
 {
-    int32_t timeout = INT_MAX;
+    int32_t timeout = 10000;
 
     pthread_mutex_lock(&__cbMutex);
     CallbackList::iterator it = __callbacks.begin();
@@ -617,9 +642,12 @@ AppBase::handleEvents(int32_t timeout)
         }
     }
 
-    if (wait)
+    if (wait) {
+        ILOG_INFO(ILX_APPBASE, "Timeout %d.%d\n", timeout / 1000,
+                                          timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000,
                                           timeout % 1000);
+    }
 
     while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
     {

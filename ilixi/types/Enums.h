@@ -258,7 +258,8 @@ enum AppOptions
     OptExclusive = 0x001, //!< Application will use layer exclusively.
     OptFullScreenUpdate = 0x002, //!< Windows will update whole surface each time.
     OptTripleAccelerated = 0x004,
-    OptDale = 0x200
+    OptDale = 0x200,    //! Enable FusionDale interfaces for Application.
+    OptSound = 0x400    //! Enable FusionSound interfaces for Application.
 };
 }
 

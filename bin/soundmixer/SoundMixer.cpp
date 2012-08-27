@@ -38,7 +38,7 @@ namespace ilixi
 {
 
 SoundMixer::SoundMixer(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale)
+        : Application(&argc, &argv, AppOptions(OptDale | OptSound))
 {
     setTitle("SoundMixer");
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");

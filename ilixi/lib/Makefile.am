@@ -31,8 +31,3 @@ if WITH_FUSIONDALE
 libilixi_lib_la_SOURCES 	+= 	Notify.cpp
 ilixi_include_HEADERS		+=	Notify.h
 endif
-
-if WITH_FUSIONSOUND
-libilixi_lib_la_SOURCES 	+= 	Sound.cpp
-ilixi_include_HEADERS		+=	Sound.h
-endif
