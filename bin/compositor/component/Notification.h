@@ -27,6 +27,8 @@
 #include <ui/SurfaceView.h>
 #include <lib/Timer.h>
 #include <lib/TweenAnimation.h>
+#include <lib/Notify.h>
+#include <lib/AnimationSequence.h>
 
 namespace ilixi
 {
@@ -38,10 +40,12 @@ class Notification : public Widget
 public:
     enum NotificationState
     {
-        Init, Visible, Hidden
+        Init,
+        Visible,
+        Hidden
     };
 
-    Notification(DFBSurfaceID id, Compositor* parent);
+    Notification(const Notify::NotifyData& data, Compositor* parent);
 
     virtual
     ~Notification();
@@ -55,19 +59,35 @@ public:
     void
     show(unsigned int ms);
 
+    static void
+    releaseBG();
+
 protected:
     virtual void
     compose(const PaintEvent& event);
 
 private:
     Compositor* _compositor;
-    SurfaceView* _surface;
     NotificationState _state;
+
+    Image* _icon;
+    std::string _title;
+    std::string _text;
+    std::string _sender;
+
     Timer _timer;
-    TweenAnimation _anim;
-    Tween* _tween;
+
+    AnimationSequence _seq;
+
+    TweenAnimation* _animX;
+    Tween* _tweenX;
+
+    TweenAnimation* _animZ;
+    Tween* _tweenZ;
 
     int _xStart;
+
+    static Image* _bg;
 
     void
     hide();

@@ -49,12 +49,13 @@ NotificationManager::NotificationManager(Compositor* compositor)
 
 NotificationManager::~NotificationManager()
 {
+    Notification::releaseBG();
 }
 
 void
-NotificationManager::addNotification(DFBSurfaceID id)
+NotificationManager::addNotification(const Notify::NotifyData& data)
 {
-    Notification* notify = new Notification(id, _compositor);
+    Notification* notify = new Notification(data, _compositor);
     _notifications.push_back(notify);
     Size s = notify->preferredSize();
     notify->setGeometry(_compositor->width() - s.width(),

@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>WebKitDFB</name>
-    <author>Denis Oliver Kropp</author>
-    <licence>LGPLv3</licence>    
+    <name>Monitor</name>
+    <author>Tarik Sekmen</author>
+    <licence>LGPL</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:webkitdfb.png</icon>
-    <exec>lite_WebKit</exec>
+	<icon>@DATADIR:widgets.png</icon>
+    <exec>ilixi_monitor</exec>
     <args></args>
-    <flags>APP_LITE, APP_ALLOW_MULTIPLE</flags>
+    <flags>APP_ILIXI</flags>
     <deps>DEP_MOUSE</deps>
 </app>

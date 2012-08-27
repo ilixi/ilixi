@@ -22,10 +22,10 @@
  */
 
 #include "CompositorComponent.h"
-#include <core/Logger.h>
 #include "Compositor.h"
 #include "NotificationManager.h"
 #include "ApplicationManager.h"
+#include <core/Logger.h>
 
 namespace ilixi
 {
@@ -159,9 +159,9 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     {
     case AddNotification:
         {
-            unsigned int surfaceID = *((unsigned int*) arg);
-            ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %u\n", surfaceID);
-            _notificationMan->addNotification(surfaceID);
+            Notify::NotifyData data = *((Notify::NotifyData*) arg);
+            ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %s\n", data.sender);
+            _notificationMan->addNotification(data);
             break;
         }
 

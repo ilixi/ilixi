@@ -77,9 +77,9 @@ AppBase::~AppBase()
 }
 
 std::string
-AppBase::title() const
+AppBase::title()
 {
-    return (__title);
+    return __instance->__title;
 }
 
 void
@@ -123,7 +123,7 @@ bool
 AppBase::comaCallComponent(IComaComponent* component, ComaMethodID method,
                            void* arg)
 {
-    if (__instance->__options & OptDale)
+    if ((__instance->__options & OptDale) && component)
     {
         int ret_val;
         if (component->Call(component, method, arg, &ret_val) != DR_OK)

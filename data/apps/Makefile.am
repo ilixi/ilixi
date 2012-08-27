@@ -7,6 +7,7 @@ miscdata_DATA 	=	clanbomber.appdef \
 					fire.appdef \
 					gallery.appdef \
 					ilixi_home.appdef \
+					ilixi_monitor.appdef \
 					ilixi_widgets.appdef \
 					knuckles.appdef \
 					lite_web.appdef \

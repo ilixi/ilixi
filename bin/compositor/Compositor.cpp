@@ -52,6 +52,9 @@ Compositor::Compositor(int argc, char* argv[])
           _statusBar(NULL),
           _osk(NULL)
 {
+    setenv("WEBKIT_IGNORE_SSL_ERRORS", "1", 0);
+    setenv("LITE_WINDOW_DOUBLEBUFFER", "1", 0);
+
     _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
     _compComp = new CompositorComponent(this);
@@ -59,6 +62,7 @@ Compositor::Compositor(int argc, char* argv[])
 
     setTitle("Compositor");
     setMargin(0);
+    setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
 
     for (int i = 1; i < argc; i++)
     {
@@ -67,7 +71,7 @@ Compositor::Compositor(int argc, char* argv[])
 
         else if (strcmp(argv[i], "fps") == 0)
         {
-            _fpsLabel = new Label("FPS");
+            _fpsLabel = new Label("FPS: 0");
             _fpsLabel->layout().setAlignment(TextLayout::Center);
             addWidget(_fpsLabel);
 
@@ -125,7 +129,7 @@ Compositor::showLauncher(bool show)
         _home->view()->show(AppView::Opacity);
         _compComp->signalHome(true);
         showSwitcher(false);
-    } else
+    } else if (_currentApp)
     {
         _home->view()->hide(
                 AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom));
@@ -138,7 +142,7 @@ Compositor::showLauncher(bool show)
 void
 Compositor::showSwitcher(bool show)
 {
-    if (_switcher->itemCount() < 2)
+    if (_switcher->itemCount() == 0)
         return;
 
     ILOG_TRACE_W(ILX_COMPOSITOR);
@@ -325,7 +329,10 @@ Compositor::onVisible()
     _quitButton->show();
 
     if (_fps)
+    {
         _fps->start();
+        _fpsLabel->bringToFront();
+    }
 
     usleep(10000);
     _appMan->startApp("StatusBar");
@@ -678,7 +685,14 @@ Compositor::windowPreEventFilter(const DFBWindowEvent& event)
 
             _switcher->scrollTo(_switcher->nextThumb());
             return true;
-        }
+        } else if (event.key_symbol == DIKS_F11)
+        {
+            Notify notify("Hey!", "Want parmak?");
+            notify.setIcon(ILIXI_DATADIR"images/default.png");
+            notify.show();
+            return true;
+        } else if (event.key_symbol == DIKS_ESCAPE)
+            return true;
         break;
 
     case DWET_KEYUP:

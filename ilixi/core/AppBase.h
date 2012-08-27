@@ -94,8 +94,8 @@ public:
     /*!
      * Returns title of application.
      */
-    std::string
-    title() const;
+    static std::string
+    title();
 
     /*!
      * Sets application title.

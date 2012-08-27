@@ -28,6 +28,7 @@
 #include <directfb.h>
 #include <lib/Timer.h>
 #include <lib/TweenAnimation.h>
+#include <lib/Notify.h>
 
 namespace ilixi
 {
@@ -43,7 +44,7 @@ public:
     ~NotificationManager();
 
     void
-    addNotification(DFBSurfaceID id);
+    addNotification(const Notify::NotifyData& data);
 
 private:
     int _deltaY;
