@@ -56,12 +56,9 @@ Slider::~Slider()
 Size
 Slider::preferredSize() const
 {
-    Size s = stylist()->defaultSize(StyleHint::Slider);
     if (_orientation == Horizontal)
-        return s;
-
-    s.transpose();
-    return s;
+        return stylist()->defaultSize(StyleHint::Slider);
+    return stylist()->defaultSize(StyleHint::SliderV);
 }
 
 bool
@@ -349,33 +346,25 @@ Slider::setValueUsingPoint(const Point& p)
     {
 
         if (_inverted)
-            cursor = width() - p.x()
-                    - stylist()->defaultParameter(
-                            StyleHint::SliderIndicatorWidth);
+            cursor = width() - p.x() - stylist()->defaultParameter(
+                    StyleHint::SliderIndicatorWidth);
         else
-            cursor = p.x()
-                    - stylist()->defaultParameter(
-                            StyleHint::SliderIndicatorWidth);
+            cursor = p.x() - stylist()->defaultParameter(
+                    StyleHint::SliderIndicatorWidth);
         setValue(
-                _range * cursor
-                        / (width()
-                                - stylist()->defaultParameter(
-                                        StyleHint::SliderIndicatorWidth)));
+                (_range * cursor / (width() - stylist()->defaultParameter(
+                        StyleHint::SliderIndicatorWidth))) + _minimum);
     } else
     {
         if (_inverted)
-            cursor = p.y()
-                    - stylist()->defaultParameter(
-                            StyleHint::SliderIndicatorHeight);
+            cursor = p.y() - stylist()->defaultParameter(
+                    StyleHint::SliderIndicatorHeight);
         else
-            cursor = height() - p.y()
-                    - stylist()->defaultParameter(
-                            StyleHint::SliderIndicatorHeight);
+            cursor = height() - p.y() - stylist()->defaultParameter(
+                    StyleHint::SliderIndicatorHeight);
         setValue(
-                _range * cursor
-                        / (height()
-                                - stylist()->defaultParameter(
-                                        StyleHint::SliderIndicatorHeight)));
+                (_range * cursor / (height() - stylist()->defaultParameter(
+                        StyleHint::SliderIndicatorHeight))) + _minimum);
     }
 }
 
@@ -393,9 +382,8 @@ Slider::updateIndicatorPosition()
             percent = (_value - _minimum) / _range;
 
         _indicator.moveTo(
-                (width()
-                        - stylist()->defaultParameter(
-                                StyleHint::SliderIndicatorWidth)) * percent,
+                (width() - stylist()->defaultParameter(
+                        StyleHint::SliderIndicatorWidth)) * percent,
                 0);
     } else
     {
@@ -406,9 +394,8 @@ Slider::updateIndicatorPosition()
 
         _indicator.moveTo(
                 0,
-                (height()
-                        - stylist()->defaultParameter(
-                                StyleHint::SliderIndicatorHeight)) * percent);
+                (height() - stylist()->defaultParameter(
+                        StyleHint::SliderIndicatorHeight)) * percent);
     }
 }
 

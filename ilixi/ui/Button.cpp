@@ -60,10 +60,10 @@ Button::click(unsigned int ms)
 {
     if (ms)
     {
-        _state = (WidgetState) (_state ^ PressedState);
-        repaint();
+        _state = (WidgetState) (_state | PressedState);
+        update();
         usleep(ms * 1000);
-        _state = (WidgetState) (_state ^ PressedState);
+        _state = (WidgetState) (_state & ~PressedState);
     }
     sigClicked();
     toggleChecked();

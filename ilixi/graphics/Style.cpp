@@ -77,8 +77,7 @@ Style::parseStyle(const char* style)
             ctxt,
             style,
             NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
-                    | XML_PARSE_NOBLANKS);
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -128,8 +127,7 @@ Style::parseStyle(const char* style)
                 {
                     _defaultFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _defaultFont->setStyle(fontStyle);
-                } else if (xmlStrcmp(element->name, (xmlChar*) "buttonFont")
-                        == 0)
+                } else if (xmlStrcmp(element->name, (xmlChar*) "buttonFont") == 0)
                 {
                     _buttonFont = new Font((char*) fileC, atoi((char*) sizeC));
                     _buttonFont->setStyle(fontStyle);
@@ -248,8 +246,7 @@ Style::parseStyle(const char* style)
 
                         state = state->next;
                     }
-                } else if (xmlStrcmp(element->name, (xmlChar*) "RadioButton")
-                        == 0)
+                } else if (xmlStrcmp(element->name, (xmlChar*) "RadioButton") == 0)
                 {
                     state = element->children;
                     while (state != NULL)
@@ -275,8 +272,7 @@ Style::parseStyle(const char* style)
                     }
                 }
 
-                else if (xmlStrcmp(element->name, (xmlChar*) "ProgressBar")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "ProgressBar") == 0)
                 {
                     state = element->children;
                     while (state != NULL)
@@ -289,14 +285,12 @@ Style::parseStyle(const char* style)
                         else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
                             get3Rectangle(state->children, pr.dis);
 
-                        else if (xmlStrcmp(state->name, (xmlChar*) "pIndicator")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pIndicator") == 0)
                         {
                             xmlNodePtr iState = state->children;
                             while (iState != NULL)
                             {
-                                if (xmlStrcmp(iState->name, (xmlChar*) "def3")
-                                        == 0)
+                                if (xmlStrcmp(iState->name, (xmlChar*) "def3") == 0)
                                     get3Rectangle(iState->children, prI.def);
 
                                 else if (xmlStrcmp(state->name,
@@ -322,15 +316,17 @@ Style::parseStyle(const char* style)
                             get3Rectangle(state->children, sl.def);
                         else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
                             get3Rectangle(state->children, sl.dis);
-                        else if (xmlStrcmp(state->name, (xmlChar*) "sIndicator")
-                                == 0)
+                        else if (xmlStrcmp(state->name, (xmlChar*) "pre3") == 0)
+                            get3Rectangle(state->children, sl.defV);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "exp3") == 0)
+                            get3Rectangle(state->children, sl.disV);
+                        else if (xmlStrcmp(state->name, (xmlChar*) "sIndicator") == 0)
                         {
                             xmlNodePtr iState = state->children;
                             while (iState != NULL)
                             {
 
-                                if (xmlStrcmp(iState->name, (xmlChar*) "def1")
-                                        == 0)
+                                if (xmlStrcmp(iState->name, (xmlChar*) "def1") == 0)
                                     getRectangle(iState->children, slI.def);
 
                                 else if (xmlStrcmp(iState->name,
@@ -369,8 +365,7 @@ Style::parseStyle(const char* style)
 
                         state = state->next;
                     }
-                } else if (xmlStrcmp(element->name, (xmlChar*) "LineInput")
-                        == 0)
+                } else if (xmlStrcmp(element->name, (xmlChar*) "LineInput") == 0)
                 {
                     state = element->children;
                     while (state != NULL)
@@ -409,8 +404,7 @@ Style::parseStyle(const char* style)
 
                         state = state->next;
                     }
-                } else if (xmlStrcmp(element->name, (xmlChar*) "ToolButton")
-                        == 0)
+                } else if (xmlStrcmp(element->name, (xmlChar*) "ToolButton") == 0)
                 {
                     state = element->children;
                     while (state != NULL)

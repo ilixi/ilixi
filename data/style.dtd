@@ -54,7 +54,7 @@
 	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1)>
 	<!ELEMENT RadioButton (def1, pre1, exp1, dis1, foc1)>
 	<!ELEMENT ProgressBar (def3, dis3, pIndicator)>
-	<!ELEMENT Slider (def3, dis3, sIndicator)>
+	<!ELEMENT Slider (def3, dis3, pre3, exp3, sIndicator)>
 	<!ELEMENT Frame (def9, dis9)>
 	<!ELEMENT Tab (def9, dis9)>
 	<!ELEMENT ToolButton (def9, pre9, exp9, dis9, foc9)>

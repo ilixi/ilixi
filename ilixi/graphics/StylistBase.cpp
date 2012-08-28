@@ -70,6 +70,8 @@ StylistBase::defaultSize(StyleHint::Size size) const
         return Size(100, _style->pr.def.m.height());
     case StyleHint::Slider:
         return Size(100, _style->sl.def.m.height());
+    case StyleHint::SliderV:
+        return Size(_style->sl.defV.m.width(), 100);
     default:
         return Size();
     }
