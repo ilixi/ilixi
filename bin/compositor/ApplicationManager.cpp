@@ -429,7 +429,7 @@ ApplicationManager::initStartup()
         if (((AppInfo*) (*it))->appFlags() & APP_AUTO_START)
         {
             usleep(10000);
-            startApp(((AppInfo*) (*it))->name());
+            startApplication(((AppInfo*) (*it))->name(), true);
         }
     }
 }
