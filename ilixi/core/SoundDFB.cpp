@@ -44,7 +44,7 @@ SoundDFB::setMasterVolume(float volume)
 {
     ILOG_TRACE_F(ILX_SOUND);
     if (__sound)
-        __sound->SetMasterVolume(volume);
+        __sound->SetMasterVolume(__sound, volume);
 }
 
 void
