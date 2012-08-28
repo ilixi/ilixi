@@ -39,3 +39,9 @@ nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
 		          					Size.h \
 		          					TextLayout.h \
 		          					WidgetLayout.h
+
+if WITH_FUSIONSOUND
+libilixi_types_la_SOURCES 		+= 	Music.cpp
+nobase_ilixi_include_HEADERS	+=	Music.h
+endif
+		          					

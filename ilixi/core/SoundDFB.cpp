@@ -40,16 +40,25 @@ SoundDFB::~SoundDFB()
 }
 
 void
+SoundDFB::setMasterVolume(float volume)
+{
+    ILOG_TRACE_F(ILX_SOUND);
+    if (__sound)
+        __sound->SetMasterVolume(volume);
+}
+
+void
 SoundDFB::getMasterAmplitude(float* left, float* right)
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (__sound)
         __sound->GetMasterFeedback(__sound, left, right);
 }
 
 DFBResult
-SoundDFB::createBuffer(const FSBufferDescription* desc,
-                       IFusionSoundBuffer** buffer)
+SoundDFB::createBuffer(const FSBufferDescription* desc, IFusionSoundBuffer** buffer)
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (!__sound)
         return DFB_FAILURE;
 
@@ -64,9 +73,9 @@ SoundDFB::createBuffer(const FSBufferDescription* desc,
 }
 
 DFBResult
-SoundDFB::createStream(const FSStreamDescription* desc,
-                       IFusionSoundStream** stream)
+SoundDFB::createStream(const FSStreamDescription* desc, IFusionSoundStream** stream)
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (!__sound)
         return DFB_FAILURE;
 
@@ -81,9 +90,9 @@ SoundDFB::createStream(const FSStreamDescription* desc,
 }
 
 DFBResult
-SoundDFB::createMusicProvider(const char* filename,
-                              IFusionSoundMusicProvider** provider)
+SoundDFB::createMusicProvider(const char* filename, IFusionSoundMusicProvider** provider)
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (!__sound)
         return DFB_FAILURE;
 
@@ -101,6 +110,7 @@ SoundDFB::createMusicProvider(const char* filename,
 DFBResult
 SoundDFB::initSound(int* argc, char*** argv)
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (FusionSoundInit(argc, argv) != DR_OK)
         ILOG_THROW(ILX_SOUND, "FusionSoundInit() failed!\n");
 
@@ -112,6 +122,7 @@ SoundDFB::initSound(int* argc, char*** argv)
 void
 SoundDFB::releaseSound()
 {
+    ILOG_TRACE_F(ILX_SOUND);
     if (__sound)
     {
         __sound->Release(__sound);

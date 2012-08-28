@@ -38,6 +38,9 @@ class SoundDFB
     friend class AppBase;
 public:
     static void
+    setMasterVolume(float volume);
+
+    static void
     getMasterAmplitude(float* left, float* right);
 
     static DFBResult
@@ -47,8 +50,7 @@ public:
     createStream(const FSStreamDescription* desc, IFusionSoundStream** stream);
 
     static DFBResult
-    createMusicProvider(const char* filename,
-                        IFusionSoundMusicProvider** provider);
+    createMusicProvider(const char* filename, IFusionSoundMusicProvider** provider);
 
 private:
     //! Main FusionSound interface.

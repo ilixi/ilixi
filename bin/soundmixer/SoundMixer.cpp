@@ -34,11 +34,15 @@
 #include "VolumeMeter.h"
 #include "BandSlider.h"
 
+#include <types/Music.h>
+
 namespace ilixi
 {
 
 SoundMixer::SoundMixer(int argc, char* argv[])
-        : Application(&argc, &argv, AppOptions(OptDale | OptSound))
+        : Application(&argc, &argv, AppOptions(OptDale | OptSound)),
+          _soundComponent(NULL),
+          _music(NULL)
 {
     setTitle("SoundMixer");
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
@@ -57,6 +61,7 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     volBox->addWidget(new Label("Output:"), 0, 0, 0, 3);
 
     _volSlider = new Slider();
+    _volSlider->setValue(100);
     _volSlider->sigValueChanged.connect(
             sigc::mem_fun(this, &SoundMixer::changeVolume));
     volBox->addWidget(_volSlider, 1, 0, 0, 2);
@@ -92,12 +97,14 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     addWidget(levels);
 
     HBoxLayout* buttons = new HBoxLayout();
+    buttons->addWidget(new CheckBox("EQ Enabled"));
+    buttons->addWidget(new Spacer(Horizontal));
     buttons->addWidget(new PushButton("Load Preset"));
     buttons->addWidget(new PushButton("Save Preset"));
     PushButton* testSound = new PushButton("Test");
+    testSound->sigClicked.connect(
+            sigc::mem_fun(this, &SoundMixer::playTestSound));
     buttons->addWidget(testSound);
-    buttons->addWidget(new Spacer(Horizontal));
-    buttons->addWidget(new CheckBox("EQ Enabled"));
     levels->addWidget(buttons);
 
     HBoxLayout* rowLevels = new HBoxLayout();
@@ -120,10 +127,14 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     levels->addWidget(rowLevels);
 
     DaleDFB::comaGetComponent("SoundComponent", &_soundComponent);
+
+    _music = new Music(ILIXI_DATADIR"soundmixer/test.wav");
+    _music->setRepeat(true);
 }
 
 SoundMixer::~SoundMixer()
 {
+    delete _music;
     if (_soundComponent)
         _soundComponent->Release(_soundComponent);
 }
@@ -135,13 +146,26 @@ SoundMixer::mute()
 }
 
 void
+SoundMixer::playTestSound()
+{
+    if (_music->status() == Music::Playing)
+        _music->stop();
+    else
+        _music->play();
+}
+
+void
 SoundMixer::changeVolume(int volume)
 {
-    void *ptr;
-    DaleDFB::comaGetLocal(sizeof(int), &ptr);
-    int* vol = (int*) ptr;
-    *vol = volume;
-    DaleDFB::comaCallComponent(_soundComponent, 0, (void*) vol);
+    if (_soundComponent)
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(sizeof(int), &ptr);
+        int* vol = (int*) ptr;
+        *vol = volume;
+        DaleDFB::comaCallComponent(_soundComponent, 0, (void*) vol);
+    }
+    _music->setVolume(_volSlider->value() / 100);
 }
 
 } /* namespace ilixi */

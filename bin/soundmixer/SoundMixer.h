@@ -31,6 +31,7 @@ namespace ilixi
 {
 class Slider;
 class PushButton;
+class Music;
 
 class SoundMixer : public Application
 {
@@ -43,8 +44,12 @@ public:
     void
     mute();
 
+    void
+    playTestSound();
+
 private:
     IComaComponent* _soundComponent;
+    Music* _music;
     Slider* _volSlider;
     PushButton* _mute;
 
