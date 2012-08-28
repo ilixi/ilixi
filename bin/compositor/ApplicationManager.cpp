@@ -275,10 +275,10 @@ ApplicationManager::startApp(const std::string& name)
 }
 
 DirectResult
-ApplicationManager::startApplication(const std::string& name)
+ApplicationManager::startApplication(const std::string& name, bool autoStart)
 {
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-               "%s( name %s )\n", __FUNCTION__, name.c_str());
+    ILOG_INFO( ILX_APPLICATIONMANAGER,
+              "%s( name %s )\n", __FUNCTION__, name.c_str());
 
     AppInfo* appInfo = infoByName(name);
     if (!appInfo)
@@ -294,7 +294,8 @@ ApplicationManager::startApplication(const std::string& name)
         ILOG_DEBUG(
                 ILX_APPLICATIONMANAGER,
                 "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
-        _compositor->handleViewRequest(instance);
+        if (!autoStart)
+            _compositor->handleViewRequest(instance);
         return DR_BUSY;
     }
 
@@ -423,13 +424,12 @@ ApplicationManager::initStartup()
     startApp("StatusBar");
     usleep(10000);
     startApp("Home");
-
     for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
     {
         if (((AppInfo*) (*it))->appFlags() & APP_AUTO_START)
         {
-            startApp(((AppInfo*) (*it))->name());
             usleep(10000);
+            startApp(((AppInfo*) (*it))->name());
         }
     }
 }

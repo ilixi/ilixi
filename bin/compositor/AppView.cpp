@@ -66,6 +66,7 @@ void
 AppView::show(AnimatedProperty props, int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
     if (_cState == APPCOMP_READY)
     {
         _animProps = props;
@@ -130,7 +131,7 @@ void
 AppView::hide(AnimatedProperty props, int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
     _animProps = props;
     _propAnim.stop();
     _propAnim.setDuration(500);
@@ -240,9 +241,10 @@ void
 AppView::madeAvailable()
 {
     ILOG_TRACE_W(ILX_APPVIEW);
-
-    if (_cState == APPCOMP_NONE)
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+    if (_cState == APPCOMP_NONE && !(_instance->appInfo()->appFlags() & APP_AUTO_START))
     {
+        ILOG_DEBUG(ILX_APPVIEW, " -> setVisible(true)\n");
         clearAnimatedProperty(Zoom);
 
         _propAnim.stop();

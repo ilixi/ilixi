@@ -75,7 +75,7 @@ public:
     startApp(const std::string& name);
 
     DirectResult
-    startApplication(const std::string& name);
+    startApplication(const std::string& name, bool autoStart = false);
 
     DirectResult
     stopApplication(pid_t pid);

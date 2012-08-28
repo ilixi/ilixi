@@ -221,11 +221,12 @@ Compositor::showCurrentApp(bool show)
         if (show)
         {
             _switcher->setNeighbour(Up, _currentApp->view());
-            _currentApp->view()->clearAnimatedProperty(AppView::Position);
             _currentApp->view()->show(_showAnimProps);
             _compComp->notifyVisible(_currentApp->pid());
 
             AppInfo* info = _currentApp->appInfo();
+            ILOG_INFO(ILX_COMPOSITOR,
+                      "NOW SHOWING: %s\n", info->name().c_str());
             if (info->appFlags() & APP_NEEDS_CLEAR)
                 _backgroundFlags = BGFAll;
             else
@@ -513,6 +514,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     break;
                 if (appInfo->appFlags() & APP_STATUSBAR)
                 {
+                    ILOG_INFO(ILX_COMPOSITOR, "APP_STATUSBAR\n");
                     _statusBar = data->instance;
                     _statusBar->setView(
                             new AppView(this, data->instance, this));
@@ -527,6 +529,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->show();
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
+                    ILOG_INFO(ILX_COMPOSITOR, "APP_OSK\n");
                     _osk = data->instance;
                     _osk->setView(new AppView(this, data->instance, this));
                     _osk->view()->setAnimatedProperty(AppView::Position);
@@ -540,6 +543,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _osk->view()->show(AppView::Position, 0, height() - 450);
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
+                    ILOG_INFO(ILX_COMPOSITOR, "APP_HOME\n");
                     _home = data->instance;
                     _home->setView(new AppView(this, _home, this));
                     _home->view()->setGeometry(0, 0, width(), height() - 50);
@@ -549,6 +553,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _home->view()->addWindow(dfbWindow);
                 } else if (appInfo->appFlags() & APP_SYSTEM)
                 {
+                    ILOG_INFO(ILX_COMPOSITOR, "APP_SYSTEM\n");
                     data->instance->setView(
                             new AppView(this, data->instance, this));
                     data->instance->view()->setGeometry(0, 0, width(),
@@ -567,6 +572,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         showLauncher(false);
                 } else
                 {
+                    ILOG_INFO(ILX_COMPOSITOR, "APP_DEFAULT\n");
                     if (data->instance->view() == NULL)
                     {
                         data->instance->setView(
@@ -596,7 +602,6 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     {
                         _previousApp = _currentApp;
                         _currentApp = data->instance;
-
                         if (_currentApp->windowCount() < 2)
                             showLauncher(false);
                     }
