@@ -416,6 +416,24 @@ ApplicationManager::stopAll()
     pthread_mutex_unlock(&_mutex);
 }
 
+void
+ApplicationManager::initStartup()
+{
+    usleep(10000);
+    startApp("StatusBar");
+    usleep(10000);
+    startApp("Home");
+
+    for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
+    {
+        if (((AppInfo*) (*it))->appFlags() & APP_AUTO_START)
+        {
+            startApp(((AppInfo*) (*it))->name());
+            usleep(10000);
+        }
+    }
+}
+
 DirectResult
 ApplicationManager::processAdded(SaWManProcess *process)
 {

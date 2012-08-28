@@ -60,6 +60,10 @@ Compositor::Compositor(int argc, char* argv[])
     _compComp = new CompositorComponent(this);
     _oskComp = new OSKComponent(this);
 
+    _showAnimProps = AppView::Opacity;
+    _hideAnimProps = AppView::AnimatedProperty(
+            AppView::Opacity | AppView::Zoom);
+
     setTitle("Compositor");
     setMargin(0);
     setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
@@ -126,13 +130,12 @@ Compositor::showLauncher(bool show)
         ILOG_TRACE_W(ILX_COMPOSITOR);
         showCurrentApp(false);
         _backgroundFlags = BGFAll;
-        _home->view()->show(AppView::Opacity);
+        _home->view()->show(_showAnimProps);
         _compComp->signalHome(true);
         showSwitcher(false);
     } else if (_currentApp)
     {
-        _home->view()->hide(
-                AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom));
+        _home->view()->hide(_hideAnimProps);
         _compComp->signalHome(false);
         showCurrentApp(true);
         showSwitcher(false);
@@ -164,7 +167,7 @@ Compositor::handleViewRequest(AppInstance* instance)
 {
     _previousApp = _currentApp;
     if (_previousApp)
-        _previousApp->view()->hide();
+        _previousApp->view()->hide(_hideAnimProps);
     _currentApp = instance;
     showLauncher(false);
 }
@@ -174,8 +177,7 @@ Compositor::handleSwitchRequest()
 {
     if (_currentApp)
     {
-        _currentApp->view()->hide(
-                AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom));
+        _currentApp->view()->hide(_hideAnimProps);
         _compComp->notifyHidden(_currentApp->pid());
     }
 
@@ -220,7 +222,7 @@ Compositor::showCurrentApp(bool show)
         {
             _switcher->setNeighbour(Up, _currentApp->view());
             _currentApp->view()->clearAnimatedProperty(AppView::Position);
-            _currentApp->view()->show();
+            _currentApp->view()->show(_showAnimProps);
             _compComp->notifyVisible(_currentApp->pid());
 
             AppInfo* info = _currentApp->appInfo();
@@ -235,13 +237,10 @@ Compositor::showCurrentApp(bool show)
                 _osk->view()->hide(AppView::Position, 0, height());
                 _currentApp->view()->hide(
                         AppView::AnimatedProperty(
-                                AppView::Opacity | AppView::Zoom
-                                        | AppView::Position),
+                                _hideAnimProps | AppView::Position),
                         0, 0);
             } else
-                _currentApp->view()->hide(
-                        AppView::AnimatedProperty(
-                                AppView::Opacity | AppView::Zoom));
+                _currentApp->view()->hide(_hideAnimProps);
             _compComp->notifyHidden(_currentApp->pid());
         }
     }
@@ -293,9 +292,9 @@ Compositor::showSound(bool show)
     {
         if (_previousApp && _previousApp != _currentApp)
         {
-            _currentApp->view()->hide();
+            _currentApp->view()->hide(_hideAnimProps);
             _currentApp = _previousApp;
-            _currentApp->view()->show();
+            _currentApp->view()->show(_showAnimProps);
         } else
             showLauncher(true);
         _compComp->signalSound(false);
@@ -314,9 +313,9 @@ Compositor::showDash(bool show)
     {
         if (_previousApp && _previousApp != _currentApp)
         {
-            _currentApp->view()->hide();
+            _currentApp->view()->hide(_hideAnimProps);
             _currentApp = _previousApp;
-            _currentApp->view()->show();
+            _currentApp->view()->show(_showAnimProps);
         } else
             showLauncher(true);
         _compComp->signalDash(false);
@@ -343,10 +342,7 @@ Compositor::onVisible()
         _fpsLabel->bringToFront();
     }
 
-    usleep(10000);
-    _appMan->startApp("StatusBar");
-    usleep(10000);
-    _appMan->startApp("Home");
+    _appMan->initStartup();
 }
 
 void
@@ -561,10 +557,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->setZ(0);
                     data->instance->view()->sendToBack();
                     data->instance->view()->addWindow(dfbWindow);
-                    data->instance->view()->show(AppView::Opacity);
+                    data->instance->view()->show(_showAnimProps);
                     _previousApp = _currentApp;
                     if (_previousApp)
-                        _previousApp->view()->hide();
+                        _previousApp->view()->hide(_hideAnimProps);
                     _currentApp = data->instance;
 
                     if (_currentApp->windowCount() < 2)
@@ -595,11 +591,15 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->addWindow(
                             dfbWindow, true,
                             !(info->appFlags() & APP_SURFACE_DONTBLOCK));
-                    _previousApp = _currentApp;
-                    _currentApp = data->instance;
 
-                    if (_currentApp->windowCount() < 2)
-                        showLauncher(false);
+                    if (!(info->appFlags() & APP_AUTO_START))
+                    {
+                        _previousApp = _currentApp;
+                        _currentApp = data->instance;
+
+                        if (_currentApp->windowCount() < 2)
+                            showLauncher(false);
+                    }
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);

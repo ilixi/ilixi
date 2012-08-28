@@ -9,6 +9,6 @@
 	<icon>@DATADIR:navit.png</icon>
     <exec>navit</exec>
     <args></args>
-    <flags>APP_SURFACE_DONTBLOCK</flags>
+    <flags>APP_SURFACE_DONTBLOCK, APP_AUTO_START</flags>
     <deps>DEP_NONE</deps>
 </app>

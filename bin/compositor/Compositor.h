@@ -176,6 +176,9 @@ private:
     AppInstance* _statusBar;
     AppInstance* _osk;
 
+    AppView::AnimatedProperty _showAnimProps;
+    AppView::AnimatedProperty _hideAnimProps;
+
     enum CompositorEventType
     {
         CET_Add, //!< Window added

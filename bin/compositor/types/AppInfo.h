@@ -54,9 +54,10 @@ enum AppFlags
     APP_SURFACE_DONTBLOCK = 0x008000,
 
     // constraints
-    APP_ALLOW_MULTIPLE = 0x010000, //!<
-    APP_NEEDS_CLEAR = 0x020000,
-    APP_NEEDS_BLENDING = 0x040000,
+    APP_ALLOW_MULTIPLE = 0x010000,  //!< Application can have multiple instances.
+    APP_NEEDS_CLEAR = 0x020000,     //!< Background will be cleared with each update.
+    APP_NEEDS_BLENDING = 0x040000,  //!< AppCompositors will set blending mode for each SurfaceView.
+    APP_AUTO_START = 0x080000,      //!< Starts application when compositor is initialised.
 
     // special
     APP_STATUSBAR = 0x100000,

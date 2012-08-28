@@ -83,6 +83,9 @@ public:
     void
     stopAll();
 
+    void
+    initStartup();
+
 protected:
 
     /*!
