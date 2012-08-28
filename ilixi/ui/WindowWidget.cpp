@@ -287,26 +287,6 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
             _eventManager->setFocusedWidget(NULL);
             pointerButtonDownEvent(pointerEvent);
         }
-//        else if (pointerEvent.eventType == PointerButtonUp)
-//        {
-//            _state = (WidgetState) (_state & ~PressedState);
-//            pointerButtonUpEvent(pointerEvent);
-//        } else if (pointerEvent.eventType == PointerWheel)
-//        {
-//            _rootWindow->_eventManager->setFocusedWidget(this);
-//            pointerWheelEvent(pointerEvent);
-//        } else if (pointerEvent.eventType == PointerMotion)
-//        {
-//            if (_inputMethod & PointerTracking)
-//            {
-//                if (_state & PressedState)
-//                    _rootWindow->_eventManager->setGrabbedWidget(this,
-//                                                                 pointerEvent);
-//                pointerMotionEvent(pointerEvent);
-//            }
-//            _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
-//        }
-//        return true;
     }
     return false;
 }

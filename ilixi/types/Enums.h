@@ -110,17 +110,24 @@ namespace StyleHint
 {
 enum AnimatedStates
 {
-    FocusIn, FocusOut
+    FocusIn,
+    FocusOut
 };
 
 enum Font
 {
-    DefaultFont, TitleFont, InputFont, ButtonFont
+    DefaultFont,
+    TitleFont,
+    InputFont,
+    ButtonFont
 };
 
 enum DefaultIcon
 {
-    Information, Question, Warning, Critical
+    Information,
+    Question,
+    Warning,
+    Critical
 };
 
 enum Size
@@ -131,6 +138,7 @@ enum Size
     RadioButton,
     ProgressBar,
     Slider,
+    SliderV,
     ScrollBar,
     ScrollBarButton,
     TabPanel,

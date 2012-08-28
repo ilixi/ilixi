@@ -172,7 +172,7 @@ AppBase::releaseDFB()
 {
     if (__dfb)
     {
-
+        ILOG_TRACE_F(ILX_APPBASE);
 #if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
@@ -380,7 +380,7 @@ AppBase::runCallbacks()
     CallbackList::iterator it = __callbacks.begin();
     while (it != __callbacks.end())
     {
-        if (!((Callback*) *it)->_funck->funck())
+        if (((Callback*) *it)->_funck->funck() == 0)
         {
             ILOG_DEBUG( ILX_APPBASE,
                        "Callback %p is removed.\n", ((Callback*) *it));
@@ -439,8 +439,7 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         for (SurfaceListenerList::iterator it = __instance->__selList.begin();
                 it != __instance->__selList.end(); ++it)
         {
-            if (sel->sourceSurface()
-                    == ((SurfaceEventListener*) *it)->sourceSurface())
+            if (sel->sourceSurface() == ((SurfaceEventListener*) *it)->sourceSurface())
                 attach = false;
         }
 
@@ -486,8 +485,7 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
         if (ret)
         {
             bool detach = true;
-            for (SurfaceListenerList::iterator it =
-                    __instance->__selList.begin();
+            for (SurfaceListenerList::iterator it = __instance->__selList.begin();
                     it != __instance->__selList.end(); ++it)
             {
                 if (source == ((SurfaceEventListener*) *it)->sourceSurface())
@@ -616,6 +614,7 @@ AppBase::removeWindow(WindowWidget* window)
 void
 AppBase::updateWindows()
 {
+    ILOG_TRACE_F(ILX_APPBASE);
     pthread_mutex_lock(&__windowMutex);
 
     for (WindowList::iterator it = __windowList.begin();
@@ -642,9 +641,10 @@ AppBase::handleEvents(int32_t timeout)
         }
     }
 
-    if (wait) {
-        ILOG_INFO(ILX_APPBASE, "Timeout %d.%d\n", timeout / 1000,
-                                          timeout % 1000);
+    if (wait)
+    {
+        ILOG_DEBUG(ILX_APPBASE,
+                   "Timeout %d.%d\n", timeout / 1000, timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000,
                                           timeout % 1000);
     }
@@ -698,6 +698,7 @@ AppBase::handleEvents(int32_t timeout)
 
         case DFEC_SURFACE:
             {
+                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
                 for (SurfaceListenerList::iterator it = __selList.begin();
                         it != __selList.end(); ++it)
                     ((SurfaceEventListener*) *it)->consumeSurfaceEvent(
@@ -763,8 +764,7 @@ AppBase::detachDFBWindow(Window* window)
 }
 
 void
-AppBase::handleKeyInputEvent(const DFBInputEvent& event,
-                             DFBWindowEventType type)
+AppBase::handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type)
 {
     DFBEvent we;
     we.clazz = DFEC_WINDOW;
@@ -784,8 +784,7 @@ AppBase::handleKeyInputEvent(const DFBInputEvent& event,
 }
 
 void
-AppBase::handleButtonInputEvent(const DFBInputEvent& event,
-                                DFBWindowEventType type)
+AppBase::handleButtonInputEvent(const DFBInputEvent& event, DFBWindowEventType type)
 {
     DFBEvent we;
     we.clazz = DFEC_WINDOW;

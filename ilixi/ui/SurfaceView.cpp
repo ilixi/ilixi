@@ -280,8 +280,7 @@ SurfaceView::renderSource(const PaintEvent& event)
         {
             dfbSurface->SetBlittingFlags(
                     dfbSurface,
-                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
-                            | DSBLIT_BLEND_COLORALPHA));
+                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, opacity());
         }
 
@@ -298,6 +297,7 @@ SurfaceView::renderSource(const PaintEvent& event)
 void
 SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 {
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
     if (!(_svState & SV_READY))
     {
         sigSourceReady();
