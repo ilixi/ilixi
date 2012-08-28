@@ -4,7 +4,7 @@
  All Rights Reserved.
 
  Written by Tarik Sekmen <tarik@ilixi.org>,
-            Denis Oliver Kropp <dok@directfb.org>.
+ Denis Oliver Kropp <dok@directfb.org>.
 
  This file is part of ilixi.
 
@@ -80,8 +80,15 @@ VolumeMeter::drawMeterValue(Painter* p, int x, float value)
 void
 VolumeMeter::updateVolume()
 {
-    SoundDFB::getMasterAmplitude(&_chanLeft, &_chanRight);
-    update();
+    float left, right;
+    SoundDFB::getMasterAmplitude(&left, &right);
+    if (left != _chanLeft || right != _chanRight)
+    {
+        _chanLeft = left;
+        _chanRight = right;
+        update();
+    }
+
 }
 
 } /* namespace ilixi */

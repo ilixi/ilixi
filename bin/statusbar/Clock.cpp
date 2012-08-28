@@ -58,7 +58,7 @@ Clock::Clock(Widget* parent)
 
     _timer = new Timer();
     _timer->sigExec.connect(sigc::mem_fun(this, &Clock::updateTime));
-    _timer->start(1000);
+    _timer->start(10000);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Clock::onClockGeomUpdate));
 }
