@@ -107,9 +107,7 @@ Image::size()
 IDirectFBSurface*
 Image::getDFBSurface()
 {
-    if (_dfbSurface)
-        return _dfbSurface;
-    else if (loadImage())
+    if (loadImage())
         return _dfbSurface;
     else
         return Stylist::_noImage->getDFBSurface();
@@ -162,6 +160,9 @@ Image::invalidateSurface()
 bool
 Image::loadImage()
 {
+    if (_dfbSurface)
+        return true;
+
     if (_imagePath == "")
     {
         ILOG_ERROR(ILX_IMAGE, "Image path is empty");
