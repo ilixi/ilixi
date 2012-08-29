@@ -35,7 +35,7 @@ class Home : public Application
 {
     struct AppData
     {
-        char name[128];
+        char name[64];
         char icon[256];
     };
 
@@ -61,11 +61,36 @@ private:
     IComaComponent* _compositor;
     Font* _font;
 
+    struct VisibilityNotification
+    {
+        char name[64];
+        pid_t pid;bool multi;
+    };
+
+    void
+    setAppStatus(VisibilityNotification notification, bool visible);
+
+    void
+    setAppStarting(VisibilityNotification notification);
+
+    void
+    requestAppList();
+
     void
     updateHomeGeometry();
 
     friend void
+    appVisible(void* ctx, void* arg);
+
+    friend void
+    appHidden(void* ctx, void* arg);
+
+    friend void
+    appStarting(void* ctx, void* arg);
+
+    friend void
     receiveAppList(void* ctx, void* arg);
+
 };
 
 }

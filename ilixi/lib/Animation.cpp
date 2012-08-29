@@ -189,7 +189,7 @@ Animation::funck()
         } else
             sigFinished();
 
-        if (_currentLoop >= _loops)
+        if (_loops && _currentLoop >= _loops)
         {
             _state = Stopped;
             return 0;

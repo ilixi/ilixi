@@ -25,6 +25,7 @@
 #define ILIXI_POPUPCOMPONENT_H_
 
 #include <core/ComaComponent.h>
+#include "AppInstance.h"
 
 namespace ilixi
 {
@@ -56,7 +57,7 @@ public:
     {
         AppVisible = 0,
         AppHidden = 1,
-        AppHasFocus = 2,
+        AppStarting = 2,
         ShowingHome = 3,
         ShowingSwitcher = 4,
         HidingHome = 5,
@@ -75,13 +76,7 @@ public:
     ~CompositorComponent();
 
     void
-    notifyVisible(pid_t pid);
-
-    void
-    notifyHidden(pid_t pid);
-
-    void
-    notifyHasFocus(pid_t pid);
+    signalInstanceChanged(AppInstance* current, AppInstance* previous);
 
     void
     signalHome(bool showing);
@@ -98,15 +93,27 @@ public:
     void
     signalDash(bool showing);
 
+    void
+    signalAppStart(AppInstance* instance);
+
 protected:
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
 
+    void
+    notifyVisibility(AppInstance* instance, bool visible);
+
 private:
     struct AppData
     {
-        char name[128];
+        char name[64];
         char icon[256];
+    };
+
+    struct VisibilityNotification
+    {
+        char name[64];
+        pid_t pid;bool multi;
     };
 
     Compositor* _compositor;

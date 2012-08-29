@@ -23,6 +23,7 @@
 
 #include "AppView.h"
 #include <core/Logger.h>
+#include "Compositor.h"
 
 namespace ilixi
 {
@@ -65,71 +66,81 @@ AppView::~AppView()
 void
 AppView::show(AnimatedProperty props, int tx, int ty)
 {
+    if (_cState != APPCOMP_READY)
+        return;
+
+    if (visible())
+        return;
+
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
-    if (_cState == APPCOMP_READY)
+
+    _animProps = props;
+    _propAnim.stop();
+    _propAnim.setDuration(300);
+
+    bool anim = false;
+    if (_animProps & Opacity)
     {
-        _animProps = props;
-        _propAnim.stop();
-        _propAnim.setDuration(300);
+        _opacityTween->setEnabled(true);
+        _opacityTween->setInitialValue(0);
+        _opacityTween->setEndValue(255);
+        setOpacity(0);
+        anim = true;
+    } else
+        _opacityTween->setEnabled(false);
 
-        bool anim = false;
-        if (_animProps & Opacity)
-        {
-            _opacityTween->setEnabled(true);
-            _opacityTween->setInitialValue(0);
-            _opacityTween->setEndValue(255);
-            setOpacity(0);
-            anim = true;
-        } else
-            _opacityTween->setEnabled(false);
-
-        if (_animProps & Zoom)
-        {
-            _zoomTween->setEnabled(true);
-            _zoomTween->setInitialValue(0.8);
-            _zoomTween->setEndValue(1);
-            setZoomFactor(0.8);
-            anim = true;
-        } else
-        {
-            _zoomTween->setEnabled(false);
-            setZoomFactor(1);
-        }
-
-        if (_animProps & Position)
-        {
-            if (x() != tx)
-            {
-                _xTween->setEnabled(true);
-                _xTween->setInitialValue(x());
-                _xTween->setEndValue(tx);
-            }
-            if (y() != ty)
-            {
-                _yTween->setEnabled(true);
-                _yTween->setInitialValue(y());
-                _yTween->setEndValue(ty);
-            }
-            anim = true;
-        } else
-        {
-            _xTween->setEnabled(false);
-            _yTween->setEnabled(false);
-        }
-
-        if (anim)
-            _propAnim.start();
-
-        setVisible(true);
-        clearAnimatedProperty(HideWhenDone);
-        setFocus();
+    if (_animProps & Zoom)
+    {
+        _zoomTween->setEnabled(true);
+        _zoomTween->setInitialValue(0.8);
+        _zoomTween->setEndValue(1);
+        setZoomFactor(0.8);
+        anim = true;
+    } else
+    {
+        _zoomTween->setEnabled(false);
+        setZoomFactor(1);
     }
+
+    if (_animProps & Position)
+    {
+        if (x() != tx)
+        {
+            _xTween->setEnabled(true);
+            _xTween->setInitialValue(x());
+            _xTween->setEndValue(tx);
+        }
+        if (y() != ty)
+        {
+            _yTween->setEnabled(true);
+            _yTween->setInitialValue(y());
+            _yTween->setEndValue(ty);
+        }
+        anim = true;
+    } else
+    {
+        _xTween->setEnabled(false);
+        _yTween->setEnabled(false);
+    }
+
+    if (anim)
+        _propAnim.start();
+
+    setVisible(true);
+    clearAnimatedProperty(HideWhenDone);
+    setFocus();
 }
 
 void
 AppView::hide(AnimatedProperty props, int tx, int ty)
 {
+    if (_cState != APPCOMP_READY)
+        return;
+
+    if (!visible())
+        return;
+
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
     _animProps = props;
@@ -242,54 +253,17 @@ AppView::madeAvailable()
 {
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
-    if (_cState == APPCOMP_NONE && !(_instance->appInfo()->appFlags() & APP_AUTO_START))
+    if (_cState == APPCOMP_NONE)
     {
-        ILOG_DEBUG(ILX_APPVIEW, " -> setVisible(true)\n");
-        clearAnimatedProperty(Zoom);
-
-        _propAnim.stop();
-        _propAnim.setDuration(300);
-
-        bool anim = false;
-        if (_animProps & Opacity)
-        {
-            _opacityTween->setInitialValue(0);
-            _opacityTween->setEndValue(255);
-            setOpacity(0);
-            anim = true;
-        } else
-            _opacityTween->setEnabled(false);
-        if (_animProps & Zoom)
-        {
-            _zoomTween->setInitialValue(0.8);
-            _zoomTween->setEndValue(1);
-            setZoomFactor(0.8);
-            anim = true;
-        } else
-            _zoomTween->setEnabled(false);
-
-//        if (_animProps & Position)
-//        {
-//            _xTween->setEnabled(true);
-//            _xTween->setInitialValue(0);
-//            _xTween->setEndValue(x());
-//            _yTween->setEnabled(true);
-//            _yTween->setInitialValue(parent()->height());
-//            _yTween->setEndValue(y());
-//            anim = true;
-//        } else
-//        {
-//            _xTween->setEnabled(false);
-//            _yTween->setEnabled(false);
-//        }
-
-        if (anim)
-            _propAnim.start();
-
-        setFocus();
-        setVisible(true);
+        _cState = APPCOMP_READY;
+        AppFlags flags = _instance->appInfo()->appFlags();
+        if (flags & APP_STATUSBAR)
+            show();
+        else if (flags & APP_OSK)
+            show();
+        else if (!(flags & APP_AUTO_START))
+            _compositor->showInstance(_instance);
     }
-    _cState = APPCOMP_READY;
 }
 
 } /* namespace ilixi */

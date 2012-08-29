@@ -68,8 +68,8 @@ ToolButtonThread* ToolButton::__tbThread = NULL;
 
 ToolButton::ToolButton(std::string text, Widget* parent)
         : Button(text, parent),
-          _toolButtonStyle(IconBeforeText),
           _icon(NULL),
+          _toolButtonStyle(IconBeforeText),
           _tbOptions(DrawFrame)
 {
     if (__tbThread == NULL)
@@ -93,20 +93,19 @@ ToolButton::preferredSize() const
     if (text().empty() && !icon())
         return stylist()->defaultSize(StyleHint::PushButton);
 
-    int w = (_tbOptions & DrawFrame) ?
-            stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
-    int h = (_tbOptions & DrawFrame) ?
-            stylist()->defaultParameter(StyleHint::ToolButtonTB) : 0;
+    int w = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(
+            StyleHint::ToolButtonLR) : 0;
+    int h = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(
+            StyleHint::ToolButtonTB) : 0;
 
     if (checkable())
     {
-        if ((_toolButtonStyle == IconBelowText)
-                || (_toolButtonStyle == IconAboveText))
-            h += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
-                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+        if ((_toolButtonStyle == IconBelowText) || (_toolButtonStyle == IconAboveText))
+            h += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
+                    StyleHint::ButtonOffset);
         else
-            w += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
-                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+            w += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
+                    StyleHint::ButtonOffset);
     }
 
     if (_toolButtonStyle == TextOnly)
@@ -138,8 +137,7 @@ ToolButton::preferredSize() const
         {
             if (_toolButtonStyle == IconBeforeText)
             {
-                w += imgW + stylist()->defaultParameter(StyleHint::ButtonOffset)
-                        + s.width();
+                w += imgW + stylist()->defaultParameter(StyleHint::ButtonOffset) + s.width();
                 h += std::max(s.height(), imgH);
                 return Size(w, h);
             } else
@@ -279,11 +277,10 @@ ToolButton::updateTextBaseGeometry()
 
     if (checkable())
     {
-        if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly)
-                || (_toolButtonStyle == IconBeforeText))
+        if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly) || (_toolButtonStyle == IconBeforeText))
         {
-            x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator)
-                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+            x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
+                    StyleHint::ButtonOffset);
             wUsed = x;
         }
     }
@@ -317,8 +314,8 @@ ToolButton::updateTextBaseGeometry()
                     x,
                     stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
             x += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
-            wUsed += iconW
-                    + stylist()->defaultParameter(StyleHint::ButtonOffset);
+            wUsed += iconW + stylist()->defaultParameter(
+                    StyleHint::ButtonOffset);
         }
 
         _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed,
@@ -333,10 +330,8 @@ ToolButton::updateTextBaseGeometry()
         {
             _icon->moveTo(
                     (width() - iconW) / 2,
-                    stylist()->defaultParameter(StyleHint::ToolButtonTop)
-                            + textHeight + 1
-                            + stylist()->defaultParameter(
-                                    StyleHint::ButtonOffset));
+                    stylist()->defaultParameter(StyleHint::ToolButtonTop) + textHeight + 1 + stylist()->defaultParameter(
+                            StyleHint::ButtonOffset));
         }
     } else //  IconAboveText
     {
@@ -345,8 +340,7 @@ ToolButton::updateTextBaseGeometry()
         if (iconW)
         {
             _icon->moveTo((width() - iconW) / 2, y + 1);
-            y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset)
-                    + 1;
+            y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset) + 1;
         }
 
         _layout.setBounds(x, y, width() - wUsed, textHeight);

@@ -28,7 +28,6 @@
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <sigc++/bind.h>
-#include "OSKView.h"
 
 using namespace std;
 
@@ -50,15 +49,18 @@ Compositor::Compositor(int argc, char* argv[])
           _oskComp(NULL),
           _home(NULL),
           _statusBar(NULL),
-          _osk(NULL)
+          _osk(NULL),
+          _dash(NULL),
+          _mixer(NULL)
 {
     setenv("WEBKIT_IGNORE_SSL_ERRORS", "1", 0);
     setenv("LITE_WINDOW_DOUBLEBUFFER", "1", 0);
 
-    _appMan = new ApplicationManager(this);
     _soundComp = new SoundComponent();
     _compComp = new CompositorComponent(this);
     _oskComp = new OSKComponent(this);
+
+    _appMan = new ApplicationManager(this);
 
     _showAnimProps = AppView::Opacity;
     _hideAnimProps = AppView::AnimatedProperty(
@@ -92,7 +94,7 @@ Compositor::Compositor(int argc, char* argv[])
         _switcher = new HorizontalSwitcher();
 
     _switcher->sigSwitchRequest.connect(
-            sigc::mem_fun(this, &Compositor::handleSwitchRequest));
+            sigc::mem_fun1(this, &Compositor::showInstance));
     addWidget(_switcher);
 
     _quitButton = new QuitButton("comp_quit.png");
@@ -123,33 +125,73 @@ Compositor::appMan() const
 }
 
 void
+Compositor::showInstance(AppInstance* instance)
+{
+    showSwitcher(false);
+    if (!instance)
+    {
+        showLauncher(true);
+        return;
+    } else if (instance == _currentApp)
+        return;
+
+    _previousApp = _currentApp;
+    _currentApp = instance;
+
+    // osk & _previousApp
+    if (_osk && _osk->view()->visible())
+    {
+        _osk->view()->hide(AppView::Position, 0, height());
+        if (_previousApp)
+            _previousApp->view()->hide(
+                    AppView::AnimatedProperty(
+                            _hideAnimProps | AppView::Position),
+                    0, 0);
+    } else if (_previousApp)
+        _previousApp->view()->hide(_hideAnimProps);
+
+    // background
+    AppInfo* info = _currentApp->appInfo();
+    if (info->appFlags() & APP_NEEDS_CLEAR)
+        _backgroundFlags = BGFAll;
+    else
+        _backgroundFlags = BGFNone;
+
+    ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
+    _currentApp->view()->show(_showAnimProps);
+    _compComp->signalInstanceChanged(_currentApp, _previousApp);
+
+    if (instance == _home)
+        _compComp->signalHome(true);
+    else
+        _compComp->signalHome(false);
+
+    if (instance == _mixer)
+        _compComp->signalSound(true);
+    else
+        _compComp->signalSound(false);
+
+    if (instance == _dash)
+        _compComp->signalDash(true);
+    else
+        _compComp->signalDash(false);
+}
+
+void
 Compositor::showLauncher(bool show)
 {
+    ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show)
-    {
-        ILOG_TRACE_W(ILX_COMPOSITOR);
-        showCurrentApp(false);
-        _backgroundFlags = BGFAll;
-        _home->view()->show(_showAnimProps);
-        _compComp->signalHome(true);
-        showSwitcher(false);
-    } else if (_currentApp)
-    {
-        _home->view()->hide(_hideAnimProps);
-        _compComp->signalHome(false);
-        showCurrentApp(true);
-        showSwitcher(false);
-    }
+        showInstance(_home);
+    else if (_previousApp)
+        showInstance(_previousApp);
 }
 
 void
 Compositor::showSwitcher(bool show)
 {
-    if (_switcher->itemCount() == 0)
-        return;
-
     ILOG_TRACE_W(ILX_COMPOSITOR);
-    if (show)
+    if (show && _switcher->itemCount() > 0)
     {
         _switcher->show();
         _compComp->signalSwitcher(true);
@@ -160,32 +202,6 @@ Compositor::showSwitcher(bool show)
         _switcher->hide();
         _compComp->signalSwitcher(false);
     }
-}
-
-void
-Compositor::handleViewRequest(AppInstance* instance)
-{
-    _previousApp = _currentApp;
-    if (_previousApp)
-        _previousApp->view()->hide(_hideAnimProps);
-    _currentApp = instance;
-    showLauncher(false);
-}
-
-void
-Compositor::handleSwitchRequest()
-{
-    if (_currentApp)
-    {
-        _currentApp->view()->hide(_hideAnimProps);
-        _compComp->notifyHidden(_currentApp->pid());
-    }
-
-    _currentApp = _switcher->currentThumb()->instance();
-    showLauncher(false);
-
-    if (_switcher->visible())
-        showSwitcher(false);
 }
 
 void
@@ -211,40 +227,6 @@ Compositor::addOverlay(DFBSurfaceID id)
 void
 Compositor::addDialog(DFBSurfaceID id)
 {
-}
-
-void
-Compositor::showCurrentApp(bool show)
-{
-    if (_currentApp)
-    {
-        if (show)
-        {
-            _switcher->setNeighbour(Up, _currentApp->view());
-            _currentApp->view()->show(_showAnimProps);
-            _compComp->notifyVisible(_currentApp->pid());
-
-            AppInfo* info = _currentApp->appInfo();
-            ILOG_INFO(ILX_COMPOSITOR,
-                      "NOW SHOWING: %s\n", info->name().c_str());
-            if (info->appFlags() & APP_NEEDS_CLEAR)
-                _backgroundFlags = BGFAll;
-            else
-                _backgroundFlags = BGFNone;
-        } else
-        {
-            if (_osk && _osk->view()->visible())
-            {
-                _osk->view()->hide(AppView::Position, 0, height());
-                _currentApp->view()->hide(
-                        AppView::AnimatedProperty(
-                                _hideAnimProps | AppView::Position),
-                        0, 0);
-            } else
-                _currentApp->view()->hide(_hideAnimProps);
-            _compComp->notifyHidden(_currentApp->pid());
-        }
-    }
 }
 
 void
@@ -286,19 +268,17 @@ Compositor::showSound(bool show)
 {
     if (show)
     {
-        _appMan->startApplication("SoundMixer");
-        _compComp->signalSound(true);
-        _compComp->signalDash(false);
+        if (!_mixer)
+            _appMan->startApplication("SoundMixer");
+        else
+            showInstance(_mixer);
+
+//        _compComp->signalSound(true);
+//        _compComp->signalDash(false);
     } else
     {
-        if (_previousApp && _previousApp != _currentApp)
-        {
-            _currentApp->view()->hide(_hideAnimProps);
-            _currentApp = _previousApp;
-            _currentApp->view()->show(_showAnimProps);
-        } else
-            showLauncher(true);
-        _compComp->signalSound(false);
+        showInstance(_previousApp);
+//        _compComp->signalSound(false);
     }
 }
 
@@ -307,19 +287,17 @@ Compositor::showDash(bool show)
 {
     if (show)
     {
-        _appMan->startApplication("Dashboard");
-        _compComp->signalDash(true);
-        _compComp->signalSound(false);
+        if (!_dash)
+            _appMan->startApplication("Dashboard");
+        else
+            showInstance(_dash);
+
+//        _compComp->signalDash(true);
+//        _compComp->signalSound(false);
     } else
     {
-        if (_previousApp && _previousApp != _currentApp)
-        {
-            _currentApp->view()->hide(_hideAnimProps);
-            _currentApp = _previousApp;
-            _currentApp->view()->show(_showAnimProps);
-        } else
-            showLauncher(true);
-        _compComp->signalDash(false);
+        showInstance(_previousApp);
+//        _compComp->signalDash(false);
     }
 }
 
@@ -407,8 +385,7 @@ Compositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 }
 
 void
-Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-                         const SaWManWindowInfo* info)
+Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -426,8 +403,7 @@ Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
 }
 
 void
-Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
-                          int order, DFBWindowID other)
+Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info, int order, DFBWindowID other)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -501,8 +477,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
     if (event.clazz == DFEC_USER)
     {
         CompositorEventData* data = (CompositorEventData*) event.data;
-        AppInfo* appInfo = _appMan->infoByInstanceID(
-                data->instance->instanceID());
+        AppInfo* appInfo = data->instance->appInfo();
 
         switch (event.type)
         {
@@ -526,7 +501,6 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->clearAnimatedProperty(AppView::Opacity);
                     _statusBar->view()->clearAnimatedProperty(AppView::Zoom);
                     _statusBar->view()->addWindow(dfbWindow);
-                    _statusBar->view()->show();
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
                     ILOG_INFO(ILX_COMPOSITOR, "APP_OSK\n");
@@ -540,7 +514,6 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _statusBar->view()->bringToFront();
                     _osk->view()->setZ(0);
                     _osk->view()->addWindow(dfbWindow);
-                    _osk->view()->show(AppView::Position, 0, height() - 450);
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
                     ILOG_INFO(ILX_COMPOSITOR, "APP_HOME\n");
@@ -554,6 +527,12 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                 } else if (appInfo->appFlags() & APP_SYSTEM)
                 {
                     ILOG_INFO(ILX_COMPOSITOR, "APP_SYSTEM\n");
+
+                    if (appInfo->name() == "Dashboard")
+                        _dash = data->instance;
+                    else if (appInfo->name() == "SoundMixer")
+                        _mixer = data->instance;
+
                     data->instance->setView(
                             new AppView(this, data->instance, this));
                     data->instance->view()->setGeometry(0, 0, width(),
@@ -562,14 +541,6 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->setZ(0);
                     data->instance->view()->sendToBack();
                     data->instance->view()->addWindow(dfbWindow);
-                    data->instance->view()->show(_showAnimProps);
-                    _previousApp = _currentApp;
-                    if (_previousApp)
-                        _previousApp->view()->hide(_hideAnimProps);
-                    _currentApp = data->instance;
-
-                    if (_currentApp->windowCount() < 2)
-                        showLauncher(false);
                 } else
                 {
                     ILOG_INFO(ILX_COMPOSITOR, "APP_DEFAULT\n");
@@ -592,19 +563,11 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                         _switcher->addThumb(data->instance->thumb());
                     }
 
-                    AppInfo* info = data->instance->appInfo();
                     data->instance->thumb()->addWindow(dfbWindow, false);
                     data->instance->view()->addWindow(
                             dfbWindow, true,
-                            !(info->appFlags() & APP_SURFACE_DONTBLOCK));
+                            !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
 
-                    if (!(info->appFlags() & APP_AUTO_START))
-                    {
-                        _previousApp = _currentApp;
-                        _currentApp = data->instance;
-                        if (_currentApp->windowCount() < 2)
-                            showLauncher(false);
-                    }
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);

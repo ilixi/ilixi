@@ -70,6 +70,9 @@ public:
     ApplicationManager*
     appMan() const;
 
+    void
+    showInstance(AppInstance* instance);
+
     /*!
      * Shows launcher screen and hides current application.
      *
@@ -85,21 +88,6 @@ public:
      */
     void
     showSwitcher(bool show);
-
-    /*!
-     * Shows given application instance and hides launcher.
-     *
-     * @param instance
-     */
-    void
-    handleViewRequest(AppInstance* instance);
-
-    /*!
-     * Hides current application and shows
-     * the selected application in switcher.
-     */
-    void
-    handleSwitchRequest();
 
     /*!
      *Terminates client application or compositor.
@@ -119,9 +107,6 @@ protected:
      */
     void
     addDialog(DFBSurfaceID id);
-
-    void
-    showCurrentApp(bool show);
 
     /*!
      * Shows OSK and centers given rect at top.
@@ -175,6 +160,8 @@ private:
     AppInstance* _home;
     AppInstance* _statusBar;
     AppInstance* _osk;
+    AppInstance* _dash;
+    AppInstance* _mixer;
 
     AppView::AnimatedProperty _showAnimProps;
     AppView::AnimatedProperty _hideAnimProps;
@@ -226,12 +213,10 @@ private:
     removeWindow(AppInstance* instance, const SaWManWindowInfo* info);
 
     void
-    configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig,
-                 const SaWManWindowInfo* info);
+    configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info);
 
     void
-    restackWindow(AppInstance* instance, const SaWManWindowInfo* info,
-                  int order, DFBWindowID other);
+    restackWindow(AppInstance* instance, const SaWManWindowInfo* info, int order, DFBWindowID other);
 
     void
     stateWindow(DFBWindowID id, const DFBWindowState* state);

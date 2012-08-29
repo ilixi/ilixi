@@ -22,7 +22,7 @@
  */
 
 #include "Home.h"
-#include <ui/ToolButton.h>
+#include "AppButton.h"
 #include <core/Logger.h>
 #include <sigc++/bind.h>
 
@@ -30,6 +30,33 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_HOMEAPP, "ilixi/Home", "Home");
+
+void
+appVisible(void* ctx, void* arg)
+{
+    ILOG_TRACE_F(ILX_HOMEAPP);
+    Home* home = (Home*) ctx;
+    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
+    home->setAppStatus(notification, 1);
+}
+
+void
+appHidden(void* ctx, void* arg)
+{
+    ILOG_TRACE_F(ILX_HOMEAPP);
+    Home* home = (Home*) ctx;
+    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
+    home->setAppStatus(notification, 0);
+}
+
+void
+appStarting(void* ctx, void* arg)
+{
+    ILOG_TRACE_F(ILX_HOMEAPP);
+    Home* home = (Home*) ctx;
+    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
+    home->setAppStarting(notification);
+}
 
 void
 receiveAppList(void* ctx, void* arg)
@@ -47,7 +74,7 @@ receiveAppList(void* ctx, void* arg)
         ILOG_DEBUG(ILX_HOMEAPP, "%s - %s\n", srcdata[i].name, srcdata[i].icon);
 
         Home::AppData data;
-        snprintf(data.name, 128, "%s", srcdata[i].name);
+        snprintf(data.name, 64, "%s", srcdata[i].name);
         snprintf(data.icon, 128, "%s", srcdata[i].icon);
         vec.push_back(data);
     }
@@ -67,10 +94,9 @@ Home::Home(int argc, char* argv[])
     _font->setStyle(Font::Bold);
 
     DaleDFB::comaGetComponent("CompositorComponent", &_compositor);
-    _compositor->Listen(_compositor, 7, receiveAppList, this);
-    DaleDFB::comaCallComponent(_compositor, 8, NULL);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
+    requestAppList();
 }
 
 Home::~Home()
@@ -95,12 +121,15 @@ Home::initButtons(const AppDataVector& dataVector)
     for (AppDataVector::const_iterator it = dataVector.begin();
             it != dataVector.end(); ++it)
         addButton(((AppData) *it).name, ((AppData) *it).icon);
+    updateHomeGeometry();
+    update();
 }
 
 void
 Home::addButton(const char* name, const char* icon)
 {
-    ToolButton* button = new ToolButton(name);
+    ILOG_TRACE_W(ILX_HOMEAPP);
+    AppButton* button = new AppButton(name);
     button->setToolButtonStyle(ToolButton::IconAboveText);
     button->setDrawFrame(false);
     button->setFont(_font);
@@ -108,7 +137,58 @@ Home::addButton(const char* name, const char* icon)
     addChild(button);
 
     button->sigClicked.connect(
-            sigc::bind<const char*>(sigc::mem_fun(this, &Home::runApp), button->text().c_str()));
+            sigc::bind<const char*>(sigc::mem_fun(this, &Home::runApp),
+                                    button->text().c_str()));
+    update();
+}
+
+void
+Home::setAppStatus(VisibilityNotification notification, bool visible)
+{
+    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_DEBUG(
+            ILX_HOMEAPP,
+            "%s - %d - %d\n", notification.name, notification.pid, notification.multi);
+    for (WidgetList::iterator it = _children.begin(); it != _children.end();
+            ++it)
+    {
+        AppButton* button = dynamic_cast<AppButton*>(*it);
+        if (button && button->text() == notification.name)
+        {
+            if (visible)
+                button->setAppVisible(1);
+            else
+                button->setAppVisible(0);
+        }
+    }
+}
+
+void
+Home::setAppStarting(VisibilityNotification notification)
+{
+    ILOG_TRACE_W(ILX_HOMEAPP);
+    for (WidgetList::iterator it = _children.begin(); it != _children.end();
+            ++it)
+    {
+        AppButton* button = dynamic_cast<AppButton*>(*it);
+        if (button && button->text() == notification.name)
+        {
+            button->appStarting();
+        }
+    }
+}
+
+void
+Home::requestAppList()
+{
+    if (_compositor)
+    {
+        _compositor->Listen(_compositor, 0, appVisible, this);
+        _compositor->Listen(_compositor, 1, appHidden, this);
+        _compositor->Listen(_compositor, 2, appStarting, this);
+        _compositor->Listen(_compositor, 7, receiveAppList, this);
+        DaleDFB::comaCallComponent(_compositor, 8, NULL);
+    }
 }
 
 void
@@ -124,7 +204,7 @@ Home::updateHomeGeometry()
         for (WidgetList::iterator it = _children.begin(); it != _children.end();
                 ++it)
         {
-            ToolButton* button = dynamic_cast<ToolButton*>(*it);
+            AppButton* button = dynamic_cast<AppButton*>(*it);
             if (button)
             {
                 if (i % wC == 0)
