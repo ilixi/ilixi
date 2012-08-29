@@ -36,7 +36,7 @@ LineInput::LineInput(const std::string& text, Widget* parent)
           _cursorOn(false),
           _selecting(false),
           _maxLength(-1),
-          _cursorIndex(text.length()),
+          _cursorIndex(0),
           _selectedIndex(0)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
