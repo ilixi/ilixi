@@ -235,6 +235,8 @@ Compositor::showOSK(DFBRectangle rect)
     if (rect.y > height() - 450)
         _oskTarget.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
                                 rect.w, rect.h);
+    else
+        _oskTarget.setRectangle(rect.x, 0, rect.w, rect.h);
 
     if (!_osk)
         _appMan->startApp("OnScreenKeyboard");
