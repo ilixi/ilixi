@@ -38,8 +38,6 @@ using namespace ilixi;
 Demo3::Demo3(int argc, char* argv[])
         : Application(&argc, &argv, OptDale)
 {
-
-    sleep(2);
     setTitle("Forms Demo");
     setMargins(5, 5, 5, 5);
 //    setBackgroundFilled(true);

@@ -127,10 +127,10 @@ Compositor::appMan() const
 void
 Compositor::showInstance(AppInstance* instance)
 {
-    showSwitcher(false);
+    toggleSwitcher(false);
     if (!instance)
     {
-        showLauncher(true);
+        toggleLauncher(true);
         return;
     } else if (instance == _currentApp)
         return;
@@ -178,7 +178,7 @@ Compositor::showInstance(AppInstance* instance)
 }
 
 void
-Compositor::showLauncher(bool show)
+Compositor::toggleLauncher(bool show)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show)
@@ -188,7 +188,7 @@ Compositor::showLauncher(bool show)
 }
 
 void
-Compositor::showSwitcher(bool show)
+Compositor::toggleSwitcher(bool show)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show && _switcher->itemCount() > 0)
@@ -196,7 +196,7 @@ Compositor::showSwitcher(bool show)
         _switcher->show();
         _compComp->signalSwitcher(true);
         eventManager()->setGrabbedWidget(NULL);
-        hideOSK();
+        toggleOSK(false);
     } else
     {
         _switcher->hide();
@@ -215,7 +215,7 @@ Compositor::handleQuit()
         _switcher->removeThumb(_currentApp->thumb());
         _appMan->stopApplication(_currentApp->pid());
         _currentApp = NULL;
-        showLauncher(true);
+        toggleLauncher(true);
     }
 }
 
@@ -232,27 +232,30 @@ Compositor::addDialog(DFBSurfaceID id)
 void
 Compositor::showOSK(DFBRectangle rect)
 {
+    if (rect.y > height() - 450)
+        _oskTarget.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
+                                rect.w, rect.h);
+
     if (!_osk)
         _appMan->startApp("OnScreenKeyboard");
-    else if (!_osk->view()->visible())
-        _osk->view()->show(AppView::Position, 0, height() - 450);
     else
-        update();
-
-    if (rect.y > height() - 450)
-    {
-        rect.y = rect.y + rect.h - (height() - 450);
-        _currentApp->view()->slideTo(0, -rect.y);
-    }
+        toggleOSK(true);
 }
 
 void
-Compositor::hideOSK()
+Compositor::toggleOSK(bool show)
 {
     if (_osk)
     {
-        _currentApp->view()->slideTo(0, 0);
-        _osk->view()->hide(AppView::Position, 0, height());
+        if (show)
+        {
+            _currentApp->view()->slideTo(0, -_oskTarget.y());
+            _osk->view()->show(AppView::Position, 0, height() - 450);
+        } else
+        {
+            _currentApp->view()->slideTo(0, 0);
+            _osk->view()->hide(AppView::Position, 0, height());
+        }
     }
 }
 
@@ -489,7 +492,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     break;
                 if (appInfo->appFlags() & APP_STATUSBAR)
                 {
-                    ILOG_INFO(ILX_COMPOSITOR, "APP_STATUSBAR\n");
+                    ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_STATUSBAR\n");
                     _statusBar = data->instance;
                     _statusBar->setView(
                             new AppView(this, data->instance, this));
@@ -498,25 +501,20 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     addWidget(_statusBar->view());
                     _statusBar->view()->setZ(0);
                     _statusBar->view()->bringToFront();
-                    _statusBar->view()->clearAnimatedProperty(AppView::Opacity);
-                    _statusBar->view()->clearAnimatedProperty(AppView::Zoom);
                     _statusBar->view()->addWindow(dfbWindow);
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
-                    ILOG_INFO(ILX_COMPOSITOR, "APP_OSK\n");
+                    ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_OSK\n");
                     _osk = data->instance;
                     _osk->setView(new AppView(this, data->instance, this));
-                    _osk->view()->setAnimatedProperty(AppView::Position);
-                    _osk->view()->clearAnimatedProperty(AppView::Opacity);
-                    _osk->view()->clearAnimatedProperty(AppView::Zoom);
-                    _osk->view()->setGeometry(0, height() - 450, width(), 400);
+                    _osk->view()->setGeometry(0, height(), width(), 400);
                     addWidget(_osk->view());
                     _statusBar->view()->bringToFront();
                     _osk->view()->setZ(0);
                     _osk->view()->addWindow(dfbWindow);
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
-                    ILOG_INFO(ILX_COMPOSITOR, "APP_HOME\n");
+                    ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_HOME\n");
                     _home = data->instance;
                     _home->setView(new AppView(this, _home, this));
                     _home->view()->setGeometry(0, 0, width(), height() - 50);
@@ -526,7 +524,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     _home->view()->addWindow(dfbWindow);
                 } else if (appInfo->appFlags() & APP_SYSTEM)
                 {
-                    ILOG_INFO(ILX_COMPOSITOR, "APP_SYSTEM\n");
+                    ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_SYSTEM\n");
 
                     if (appInfo->name() == "Dashboard")
                         _dash = data->instance;
@@ -543,7 +541,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     data->instance->view()->addWindow(dfbWindow);
                 } else
                 {
-                    ILOG_INFO(ILX_COMPOSITOR, "APP_DEFAULT\n");
+                    ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_DEFAULT\n");
                     if (data->instance->view() == NULL)
                     {
                         data->instance->setView(
@@ -630,7 +628,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     removeWidget(data->instance->view());
                 if (data->instance->thumb())
                     _switcher->removeThumb(data->instance->thumb());
-                showLauncher(true);
+                toggleLauncher(true);
             }
             break;
 
@@ -650,7 +648,7 @@ Compositor::windowPreEventFilter(const DFBWindowEvent& event)
     case DWET_KEYDOWN:
         if (event.key_symbol == DIKS_HOME)
         {
-            showLauncher(true); // show launcher
+            toggleLauncher(true); // show launcher
             return true;
         } else if (event.key_symbol == DIKS_TAB && event.modifiers == DIMM_ALT)
         {
@@ -658,7 +656,7 @@ Compositor::windowPreEventFilter(const DFBWindowEvent& event)
                 return true;
 
             if (!_switcher->visible())
-                showSwitcher(true);
+                toggleSwitcher(true);
 
             _switcher->scrollTo(_switcher->nextThumb());
             return true;
@@ -680,7 +678,7 @@ Compositor::windowPreEventFilter(const DFBWindowEvent& event)
                     return true;
 
                 if (_switcher->visible())
-                    showSwitcher(false);
+                    toggleSwitcher(false);
                 return true;
             }
         }

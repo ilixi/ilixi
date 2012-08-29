@@ -260,7 +260,7 @@ AppView::madeAvailable()
         if (flags & APP_STATUSBAR)
             show();
         else if (flags & APP_OSK)
-            show();
+            _compositor->toggleOSK(true);
         else if (!(flags & APP_AUTO_START))
             _compositor->showInstance(_instance);
     }

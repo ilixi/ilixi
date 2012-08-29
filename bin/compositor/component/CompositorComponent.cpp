@@ -177,19 +177,19 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         }
 
     case ShowHome:
-        _compositor->showLauncher(true);
+        _compositor->toggleLauncher(true);
         break;
 
     case ShowSwitcher:
-        _compositor->showSwitcher(true);
+        _compositor->toggleSwitcher(true);
         break;
 
     case HideHome:
-        _compositor->showLauncher(false);
+        _compositor->toggleLauncher(false);
         break;
 
     case HideSwither:
-        _compositor->showSwitcher(false);
+        _compositor->toggleSwitcher(false);
         break;
 
     case StartApp:

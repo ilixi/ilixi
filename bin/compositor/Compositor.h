@@ -70,6 +70,9 @@ public:
     ApplicationManager*
     appMan() const;
 
+    /*!
+     * Hide current application, if any, and makes given instance visible.
+     */
     void
     showInstance(AppInstance* instance);
 
@@ -79,7 +82,7 @@ public:
      * @param show launcher if true, hide otherwise.
      */
     void
-    showLauncher(bool show);
+    toggleLauncher(bool show);
 
     /*!
      * Shows application switcher.
@@ -87,7 +90,13 @@ public:
      * @param show switcher if true, hide otherwise.
      */
     void
-    showSwitcher(bool show);
+    toggleSwitcher(bool show);
+
+    /*!
+     * Hides or shows OSK.
+     */
+    void
+    toggleOSK(bool show);
 
     /*!
      *Terminates client application or compositor.
@@ -113,12 +122,6 @@ protected:
      */
     void
     showOSK(DFBRectangle rect);
-
-    /*!
-     * Hides OSK.
-     */
-    void
-    hideOSK();
 
     void
     sendOSKInput(uint32_t key);
@@ -165,6 +168,8 @@ private:
 
     AppView::AnimatedProperty _showAnimProps;
     AppView::AnimatedProperty _hideAnimProps;
+
+    Rectangle _oskTarget;
 
     enum CompositorEventType
     {
