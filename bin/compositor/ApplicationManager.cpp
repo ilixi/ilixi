@@ -385,7 +385,7 @@ ApplicationManager::stopApplication(pid_t pid)
             }
         }
 
-        kill(instance->pid(), SIGTERM);
+        kill(instance->pid(), SIGKILL);
         delete instance;
         pthread_mutex_unlock(&_mutex);
         return DR_OK;
