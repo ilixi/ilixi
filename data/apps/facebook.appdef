@@ -8,7 +8,7 @@
     <version>1.0</version>
 	<icon>@DATADIR:facebook.png</icon>
     <exec>lite_WebKit</exec>
-    <args>http://m.facebook.com/</args>
+    <args>http://m.facebook.com/ -f</args>
     <flags>APP_LITE</flags>
     <deps>DEP_MOUSE</deps>
 </app>
