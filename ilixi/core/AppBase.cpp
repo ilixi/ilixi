@@ -631,6 +631,12 @@ AppBase::handleEvents(int32_t timeout)
 
     bool wait = true;
 
+    if (timeout > 1000)
+        timeout = 1000;
+
+    if (timeout < 1)
+        timeout = 1;
+
     for (WindowList::iterator it = __windowList.begin();
             it != __windowList.end(); ++it)
     {
