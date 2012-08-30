@@ -2,7 +2,8 @@
 SUBDIRS			=	icons
 miscdatadir 	=	$(ILIXI_DATADIR)/apps
 
-miscdata_DATA 	=	clanbomber.appdef \
+miscdata_DATA 	=	bbc.appdef \
+					clanbomber.appdef \
 					dashboard.appdef \
 					dfbterm.appdef \
 					facebook.appdef \

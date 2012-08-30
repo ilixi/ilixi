@@ -78,8 +78,7 @@ Keyboard::parseLayoutFile(const char* file)
             ctxt,
             file,
             NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
-                    | XML_PARSE_NOBLANKS);
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -262,11 +261,9 @@ Keyboard::release()
 void
 Keyboard::updateKeyboardGeometry()
 {
-    // TODO calculate row heights.
-
     if (!_buttonFont)
     {
-        _buttonFont = new Font("decker", (width() - 500) / 10);
+        _buttonFont = new Font("Sans", (width() - 500) / 10);
         _buttonFont->setStyle(Font::Bold);
     }
 

@@ -282,7 +282,7 @@ Font::loadFont()
     {
         release();
         ILOG_TRACE(ILX_FONT);
-        _font = FontCache::Instance()->getEntry(_name.c_str(), _size, _attr);
+        _font = FontCache::Instance()->getEntry(_name, _size, _attr);
         ILOG_DEBUG(ILX_FONT, " -> Font: %p\n", _font);
         _modified = false;
     }

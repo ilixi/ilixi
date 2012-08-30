@@ -15,5 +15,6 @@ Description: Lightweight C++ user interface toolkit for embedded Linux systems.
 Version: @VERSION@
 URL: @PACKAGE_URL@
 Requires: directfb >= @DIRECTFB_REQ_VERSION@ sawman >= @SAWMAN_REQ_VERSION@ sigc++-2.0 >= @SIGC_REQ_VERSION@ libxml-2.0 >= @LIBXML_REQ_VERSION@ @FUSION_DALE_DEP@ @FUSION_SOUND_DEP@
+Requires.private: fontconfig >= @FONTCONFIG_REQ_VERSION@
 Libs: -L${libdir} -l@PACKAGE@-@VERSION@
 Cflags: -I${includedir}/@PACKAGE@-@VERSION@ -I${libdir}/@PACKAGE@-@VERSION@/include

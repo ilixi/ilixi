@@ -89,7 +89,7 @@ Home::Home(int argc, char* argv[])
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
     setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
 
-    _font = new Font("decker");
+    _font = new Font("sans");
     _font->setSize(18);
     _font->setStyle(Font::Bold);
 

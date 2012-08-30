@@ -57,13 +57,13 @@
         <key id="N9">
             <symbol states="1, 2, 3">9</symbol>
             <symbol states="4">[</symbol>
-            <symbol states="5">;o)</symbol>
+            <symbol states="5">☺</symbol>
         </key>
         
         <key id="N0">
             <symbol states="1, 2, 3">0</symbol>
             <symbol states="4">]</symbol>
-            <symbol states="5">:(</symbol>
+            <symbol states="5">☹</symbol>
         </key>
     </row>
             
@@ -159,7 +159,7 @@
             <symbol states="2">A</symbol>
             <symbol states="3">¤</symbol>
             <symbol states="4">•</symbol>
-            <symbol states="5">:-[</symbol>
+            <symbol states="5">:-$</symbol>
         </key>
 		
 		<key id="s">
@@ -167,7 +167,7 @@
             <symbol states="2">S</symbol>
             <symbol states="3">?</symbol>
             <symbol states="4">※</symbol>
-            <symbol states="5">lol</symbol>
+            <symbol states="5">:-!</symbol>
         </key>
         
         <key id="d">
@@ -175,7 +175,7 @@
             <symbol states="2">D</symbol>
             <symbol states="3">!</symbol>
             <symbol states="4">¿</symbol>
-            <symbol states="5">:-)</symbol>
+            <symbol states="5">o:-)</symbol>
         </key>
 
         <key id="f">
@@ -183,7 +183,7 @@
             <symbol states="2">F</symbol>
             <symbol states="3">"</symbol>
             <symbol states="4">¡</symbol>
-            <symbol states="5">:-(</symbol>
+            <symbol states="5">:-\</symbol>
         </key>
         
         <key id="g">
@@ -191,7 +191,7 @@
             <symbol states="2">G</symbol>
             <symbol states="3">'</symbol>
             <symbol states="4">\</symbol>
-            <symbol states="5">;-)</symbol>
+            <symbol states="5">:'(</symbol>
         </key>
         
         <key id="h">
@@ -199,7 +199,7 @@
             <symbol states="2">H</symbol>
             <symbol states="3">:</symbol>
             <symbol states="4">«</symbol>
-            <symbol states="5">:-P</symbol>
+            <symbol states="5">:-X</symbol>
         </key>
         
         <key id="j">
@@ -207,7 +207,7 @@
             <symbol states="2">J</symbol>
             <symbol states="3">;</symbol>
             <symbol states="4">»</symbol>
-            <symbol states="5">=-o</symbol>
+            <symbol states="5">:-D</symbol>
         </key>
         
         <key id="k">
@@ -215,15 +215,15 @@
             <symbol states="2">K</symbol>
             <symbol states="3">,</symbol>
             <symbol states="4">®</symbol>
-            <symbol states="5">:-*</symbol>
+            <symbol states="5">o_O</symbol>
         </key>
         
         <key id="l">
             <symbol states="1">l</symbol>
             <symbol states="2">L</symbol>
-            <symbol states="3">˥</symbol>
+            <symbol states="3">∑</symbol>
             <symbol states="4">©</symbol>
-            <symbol states="5">:o</symbol>
+            <symbol states="5">X-(</symbol>
         </key>
  
     </row>
@@ -238,9 +238,9 @@
         <key id="z">
             <symbol states="1">z</symbol>
             <symbol states="2">Z</symbol>
-            <symbol states="3">˩</symbol>
+            <symbol states="3">∈</symbol>
             <symbol states="4">†</symbol>
-            <symbol states="5">:-[</symbol>
+            <symbol states="5">:-|</symbol>
         </key>
         
 		<key id="x">
@@ -248,7 +248,7 @@
             <symbol states="2">X</symbol>
             <symbol states="3">¦</symbol>
             <symbol states="4">‡</symbol>
-            <symbol states="5">lol</symbol>
+            <symbol states="5">&lt;3</symbol>
         </key>
         
         <key id="c">
@@ -256,7 +256,7 @@
             <symbol states="2">C</symbol>
             <symbol states="3">¨</symbol>
             <symbol states="4">‥</symbol>
-            <symbol states="5">:-)</symbol>
+            <symbol states="5">:-V</symbol>
         </key>
 
         <key id="v">
@@ -264,7 +264,7 @@
             <symbol states="2">V</symbol>
             <symbol states="3">°</symbol>
             <symbol states="4">…</symbol>
-            <symbol states="5">:-(</symbol>
+            <symbol states="5">xD</symbol>
         </key>
         
         <key id="b">
@@ -272,7 +272,7 @@
             <symbol states="2">B</symbol>
             <symbol states="3">±</symbol>
             <symbol states="4">‰</symbol>
-            <symbol states="5">;-)</symbol>
+            <symbol states="5">:-Q</symbol>
         </key>
         
         <key id="n">
@@ -280,7 +280,7 @@
             <symbol states="2">N</symbol>
             <symbol states="3">÷</symbol>
             <symbol states="4">≒</symbol>
-            <symbol states="5">:-P</symbol>
+            <symbol states="5">:)</symbol>
         </key>
         
         <key id="m">
@@ -288,7 +288,7 @@
             <symbol states="2">M</symbol>
             <symbol states="3">µ</symbol>
             <symbol states="4">≠</symbol>
-            <symbol states="5">=-o</symbol>
+            <symbol states="5">:(</symbol>
         </key>
 
         <key id="BackSpace" constraint="extend" repeatable="yes" special="yes">

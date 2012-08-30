@@ -1,7 +1,7 @@
 ## Makefile.am for /ilixi/types
 INCLUDES 					= 	-I$(top_srcdir)/ilixi
 noinst_LTLIBRARIES 			= 	libilixi_types.la
-libilixi_types_la_CPPFLAGS 	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ 
+libilixi_types_la_CPPFLAGS 	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ -I/usr/include/fontconfig
 libilixi_types_la_CFLAGS 	= 	$(AM_CFLAGS)
 libilixi_types_la_LIBADD 	= 	@DEPS_LIBS@
 libilixi_types_la_SOURCES 	=	Affine2D.cpp \
