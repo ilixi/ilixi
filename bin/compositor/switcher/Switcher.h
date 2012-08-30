@@ -132,7 +132,7 @@ public:
     /*!
      * This signal is used to notify compositor.
      */
-    sigc::signal<void> sigSwitchRequest;
+    sigc::signal<void, AppInstance*> sigSwitchRequest;
 
 protected:
     //! This property stores the current thumbnail.

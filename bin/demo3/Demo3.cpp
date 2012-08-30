@@ -59,6 +59,9 @@ Demo3::Demo3(int argc, char* argv[])
     cb2->setTriState(true);
     frame->addWidget(cb2);
 
+    LineInput *li1 = new LineInput("Line input has some text...");
+    frame->addWidget(li1);
+
     RadioButton* rb1 = new RadioButton("Radio 1");
     frame->addWidget(rb1);
 
@@ -70,17 +73,21 @@ Demo3::Demo3(int argc, char* argv[])
     frame->addWidget(bar1);
 
     Slider* slider1 = new Slider();
+//    slider1->setInverted(true);
+    slider1->setRange(-30 , 30);
     slider1->sigValueChanged.connect(
             sigc::mem_fun(bar1, &ProgressBar::setValue));
     frame->addWidget(slider1);
 
-    Label *lipLabel = new Label("LineInput:");
-    frame->addWidget(lipLabel);
+    Slider* slider2 = new Slider();
+    slider2->setRange(-30 , 30);
+    slider2->setOrientation(Vertical);
+    slider2->sigValueChanged.connect(
+            sigc::mem_fun(bar1, &ProgressBar::setValue));
+    frame->addWidget(slider2);
 
-    LineInput *lip = new LineInput("Line input has some text...");
-//    lip->setMaximumSize(120, 100);
-//  lip->setMaxLength(15);
-    frame->addWidget(lip);
+    LineInput *li2 = new LineInput("Line input has some text...");
+    frame->addWidget(li2);
 
     PushButton* pb1 = new PushButton("PushButton 1");
     frame->addWidget(pb1);
@@ -88,9 +95,18 @@ Demo3::Demo3(int argc, char* argv[])
     PushButton* pb2 = new PushButton("PushButton 1");
     frame->addWidget(pb2);
 
+    Label *lipLabel = new Label("LineInput:");
+    frame->addWidget(lipLabel);
+
+    LineInput *li3 = new LineInput("Line input has some text...");
+    frame->addWidget(li3);
+
     ToolButton* tb = new ToolButton("ToolButton");
     tb->setToolButtonStyle(ToolButton::TextOnly);
     addWidget(tb);
+
+    LineInput *li4 = new LineInput("Line input has some text...");
+    addWidget(li4);
 
 //    ComboBox::StringList list;
 //

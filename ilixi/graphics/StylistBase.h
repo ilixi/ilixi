@@ -29,11 +29,11 @@
 #include <types/Image.h>
 #include <types/Font.h>
 #include <graphics/Style.h>
+#include <graphics/Palette.h>
 
 namespace ilixi
 {
 
-class Palette;
 class TweenAnimation;
 class Painter;
 class Widget;
@@ -63,7 +63,10 @@ class StylistBase
 public:
     enum StyledAnimation
     {
-        ExposeIn, ExposeOut, FocusIn, FocusOut
+        ExposeIn,
+        ExposeOut,
+        FocusIn,
+        FocusOut
     };
 
     /*!
@@ -100,6 +103,9 @@ public:
      */
     Image*
     defaultIcon(StyleHint::DefaultIcon icon) const;
+
+    Palette*
+    palette() const;
 
     /*!
      * Animated drawing for given widget.
@@ -209,8 +215,7 @@ public:
      * Draws a frame using given coordinates.
      */
     virtual void
-    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners =
-                      AllCorners)=0;
+    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners = AllCorners)=0;
 
 protected:
     //! This property stores the palette.

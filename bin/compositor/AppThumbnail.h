@@ -44,7 +44,7 @@ namespace ilixi
     Size
     preferredSize() const;
 
-    sigc::signal<void> sigSelected;
+    sigc::signal<void, AppInstance*> sigSelected;
     sigc::signal<void, AppThumbnail*> sigFocused;
 
   protected:

@@ -36,7 +36,7 @@ LineInput::LineInput(const std::string& text, Widget* parent)
           _cursorOn(false),
           _selecting(false),
           _maxLength(-1),
-          _cursorIndex(text.length()),
+          _cursorIndex(0),
           _selectedIndex(0)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
@@ -93,8 +93,7 @@ LineInput::updateCursorPosition()
     if (x < stylist()->defaultParameter(StyleHint::LineInputLeft))
     {
         int dif = x - _layout.x();
-        if (dif <= stylist()->defaultParameter(StyleHint::LineInputLeft)
-                && _layout.text().length())
+        if (dif <= stylist()->defaultParameter(StyleHint::LineInputLeft) && _layout.text().length())
             _layout.setX(dif);
 
         ILOG_DEBUG(
@@ -218,7 +217,7 @@ LineInput::pointerMotionEvent(const PointerEvent& mouseEvent)
 void
 LineInput::keyDownEvent(const KeyEvent& keyEvent)
 {
-    _cursorTimer.stop();
+//    _cursorTimer.stop();
     switch (keyEvent.keySymbol)
     {
     case DIKS_CURSOR_LEFT:
@@ -313,30 +312,41 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
         break;
 
     default:
-        if (keyEvent.keySymbol >= DIKS_SPACE
-                && keyEvent.keySymbol <= DIKS_TILDE)
-        {
-            _selecting = false;
-            if (maxLength() > 0 && text().length() == maxLength())
-                return;
+        char c;
+        if (keyEvent.keySymbol < 0x80)
+            c = keyEvent.keySymbol;
+        else if (keyEvent.keySymbol < 0x800)
+            c = 192 + keyEvent.keySymbol / 64, c = 128 + keyEvent.keySymbol % 64;
+        else if (keyEvent.keySymbol - 0xd800u < 0x800)
+            break;
+        else if (keyEvent.keySymbol < 0x10000)
+            c = 224 + c / 4096, c = 128 + keyEvent.keySymbol / 64 % 64, c = 128 + keyEvent.keySymbol % 64;
+        else if (keyEvent.keySymbol < 0x110000)
+            c = 240 + c / 262144, c = 128 + keyEvent.keySymbol / 4096 % 64, c = 128 + keyEvent.keySymbol / 64 % 64, c = 128 + keyEvent.keySymbol % 64;
+        else
+            break;
 
-            if (_selection.isNull())
-            {
-                ILOG_DEBUG(
-                        ILX_LINEINPUT,
-                        "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
-                _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
-                sigCursorMoved(_cursorIndex, ++_cursorIndex);
-            } else
-            {
-                int pos1 = std::min(_selectedIndex, _cursorIndex);
-                int n1 = abs(_selectedIndex - _cursorIndex);
-                _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
-                _selection.setSize(0, 0);
-                sigCursorMoved(_cursorIndex, pos1 + 1);
-                _cursorIndex = pos1 + 1;
-            }
+        _selecting = false;
+        if (maxLength() > 0 && text().length() == maxLength())
+            return;
+
+        if (_selection.isNull())
+        {
+            ILOG_DEBUG(
+                    ILX_LINEINPUT,
+                    "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
+            _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
+            sigCursorMoved(_cursorIndex, ++_cursorIndex);
+        } else
+        {
+            int pos1 = std::min(_selectedIndex, _cursorIndex);
+            int n1 = abs(_selectedIndex - _cursorIndex);
+            _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
+            _selection.setSize(0, 0);
+            sigCursorMoved(_cursorIndex, pos1 + 1);
+            _cursorIndex = pos1 + 1;
         }
+//        }
         break;
     }
     updateCursorPosition();
@@ -348,7 +358,7 @@ void
 LineInput::keyUpEvent(const KeyEvent& keyEvent)
 {
     _cursorOn = true;
-    _cursorTimer.start(500);
+//    _cursorTimer.start(500);
     update();
 }
 

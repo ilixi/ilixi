@@ -28,6 +28,7 @@
 #include <core/Logger.h>
 #include <ilixiConfig.h>
 #include <sstream>
+#include <fontconfig.h>
 
 namespace ilixi
 {
@@ -72,24 +73,21 @@ FontCache::getKey(const char* name, int size, DFBFontAttributes attr)
 }
 
 IDirectFBFont*
-FontCache::getEntry(const char* name, int size, DFBFontAttributes attr)
+FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr)
 {
-    int len = strlen(ILIXI_FONTDIR) + 1 + strlen(name) + 6 + 1;
-    char filename[len];
-    IDirectFBFont *font;
+    char* fileName;
+    std::string style = "regular";
+    int slant = 0;
 
-    D_ASSERT(name != NULL);
+    if (attr & DFFA_STYLE_BOLD)
+        style = "bold";
 
-    snprintf(filename, len, ILIXI_FONTDIR"%s.otf", name);
-    font = getEntryFromFile(filename, size, attr);
+    if (attr & DFFA_STYLE_ITALIC)
+        slant = FC_SLANT_ITALIC;
 
-    if (font == NULL)
-    {
-        snprintf(filename, len, ILIXI_FONTDIR"%s.ttf", name);
-        font = getEntryFromFile(filename, size, attr);
-    }
+    getFCFileName(name.c_str(), style.c_str(), size, slant, &fileName);
 
-    return font;
+    return getEntryFromFile(fileName, size, attr);
 }
 
 void
@@ -134,8 +132,7 @@ FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
         IDirectFBFont* font;
         DFBFontDescription desc;
 
-        desc.flags = (DFBFontDescriptionFlags) (DFDESC_HEIGHT
-                | DFDESC_ATTRIBUTES);
+        desc.flags = (DFBFontDescriptionFlags) (DFDESC_HEIGHT | DFDESC_ATTRIBUTES);
         desc.height = size;
         desc.attributes = attr;
 
@@ -167,6 +164,33 @@ FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
         it->second->AddRef(it->second);
         return it->second;
     }
+}
+
+void
+FontCache::getFCFileName(const char* name, const char* style, double size, int slant, char** fileName)
+{
+    ILOG_TRACE(ILX_FONTCACHE);
+    FcPattern *pat, *match;
+    FcResult result;
+
+    ILOG_DEBUG(ILX_FONTCACHE, " -> name: %s\n", name);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> style: %s\n", style);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> size: %f\n", size);
+    pat = FcPatternCreate();
+    FcPatternAddString(pat, FC_FAMILY, (const FcChar8 *) name);
+    FcPatternAddString(pat, FC_STYLE, (const FcChar8 *) style);
+    FcPatternAddDouble(pat, FC_SIZE, size);
+    FcPatternAddInteger(pat, FC_SLANT, slant);
+
+    FcConfigSubstitute(NULL, pat, FcMatchPattern);
+    FcDefaultSubstitute(pat);
+    match = FcFontMatch(NULL, pat, &result);
+
+    FcPatternGetString(match, FC_FILE, 0, (FcChar8 **) fileName);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> Matched: %s\n", *fileName);
+
+    FcPatternDestroy(match);
+    FcPatternDestroy(pat);
 }
 
 } /* namespace ilixi */

@@ -55,7 +55,7 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
 
     case HideOSK:
         ILOG_DEBUG(ILX_OSKCOMP, "HideOSK\n");
-        _compositor->hideOSK();
+        _compositor->toggleOSK(false);
         break;
     case ConsumeKey:
         {

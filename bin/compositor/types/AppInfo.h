@@ -34,49 +34,29 @@ typedef unsigned long AppID;
 
 enum AppFlags
 {
-    APP_NONE = 0x000000, //!<
-
-    // ui toolkits
-    APP_LITE = 0x000001, //!<
-    APP_ILIXI = 0x000002, //!<
-    APP_QT = 0x000004, //!<
-    APP_ANDROID = 0x000008, //!<
-    APP_FLASH = 0x000010,
-    APP_WEB = 0x000020,
-    APP_FLTK = 0x000040, //!<
-    APP_GTK = 0x000080, //!<
-    APP_X11 = 0x000100,
-
-    // capabilities
-    APP_NO_MAINWINDOW = 0x001000,
-    APP_SPLASH_WINDOW = 0x002000,
-    APP_ALLOW_WINDOW_CONFIG = 0x004000,
-    APP_SURFACE_DONTBLOCK = 0x008000,
-
-    // constraints
-    APP_ALLOW_MULTIPLE = 0x010000,  //!< Application can have multiple instances.
-    APP_NEEDS_CLEAR = 0x020000,     //!< Background will be cleared with each update.
-    APP_NEEDS_BLENDING = 0x040000,  //!< AppCompositors will set blending mode for each SurfaceView.
-    APP_AUTO_START = 0x080000,      //!< Starts application when compositor is initialised.
-
-    // special
-    APP_STATUSBAR = 0x100000,
-    APP_OSK = 0x200000,
-    APP_HOME = 0x400000,
-    APP_SYSTEM = 0x800000
+    APP_NONE                = 0x000000, //!<
+    APP_NO_MAINWINDOW       = 0x000001, //!< Application uses a surface instead.
+    APP_SPLASH_WINDOW       = 0x000002, //!< Application has a splash window.
+    APP_ALLOW_WINDOW_CONFIG = 0x000004, //!< Application can modify its windows.
+    APP_SURFACE_DONTBLOCK   = 0x000008, //!< Application is not blocked when hidden.
+    APP_ALLOW_MULTIPLE      = 0x000100, //!< Application can have multiple instances.
+    APP_NEEDS_CLEAR         = 0x000200, //!< Background will be cleared with each update.
+    APP_NEEDS_BLENDING      = 0x000400, //!< AppCompositors will set blending mode for each SurfaceView.
+    APP_AUTO_START          = 0x000800, //!< Starts application when compositor is initialised.
+    APP_STATUSBAR           = 0x010000, //!< Statusbar application.
+    APP_OSK                 = 0x020000, //!< OSK application.
+    APP_HOME                = 0x040000, //!< Home application.
+    APP_SYSTEM              = 0x080000  //!< System application (not shown on home).
 };
 
 enum DependencyFlags
 {
-    DEP_NONE = 0x0000,
+    DEP_NONE    = 0x0000,
+    DEP_3D      = 0x0001, //!< Application requires stereoscopy support.
+    DEP_RC      = 0x0002, //!< Application requires RC navigation.
+    DEP_TOUCH   = 0x0004, //!< Application requires touch or pointer input.
+    DEP_NETWORK = 0x0008  //!< Application needs network access.
 
-    // Requirements
-    DEP_3D = 0x0001, //!<
-    DEP_RC = 0x0002, //!<
-    DEP_TOUCH = 0x0004, //!<
-    DEP_MOUSE = 0x0008 //!<
-
-// Recommended
 };
 
 class AppInfo

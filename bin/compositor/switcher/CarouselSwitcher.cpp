@@ -129,7 +129,7 @@ namespace ilixi
   {
     _current = dynamic_cast<AppThumbnail*>(item->source());
     if (_current)
-      sigSwitchRequest();
+      sigSwitchRequest(_current->instance());
   }
 
 } /* namespace ilixi */

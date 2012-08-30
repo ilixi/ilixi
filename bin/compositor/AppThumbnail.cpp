@@ -61,14 +61,14 @@ namespace ilixi
   AppThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
   {
     sigFocused(this);
-    sigSelected();
+    sigSelected(_instance);
   }
 
   void
   AppThumbnail::keyUpEvent(const KeyEvent& keyEvent)
   {
     if (keyEvent.keySymbol == DIKS_SPACE)
-      sigSelected();
+      sigSelected(_instance);
   }
 
   void

@@ -132,6 +132,8 @@ public:
     setRepeatable(bool repeatable);
 
 protected:
+    //! This property holds button's icon.
+    Icon* _icon;
     /*!
      * Emits sigPressed.
      */
@@ -147,8 +149,6 @@ protected:
 private:
     //! This property holds tool button's style.
     ToolButtonStyle _toolButtonStyle;
-    //! This property holds button's icon.
-    Icon* _icon;
     //! This flag specifies options for tool button.
     ToolButtonOptions _tbOptions;
     //! This thread helps create repeated clicks.

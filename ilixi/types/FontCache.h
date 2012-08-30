@@ -4,7 +4,7 @@
  All Rights Reserved.
 
  Written by Tarik Sekmen <tarik@ilixi.org>,
-            Denis Oliver Kropp <dok@directfb.org>.
+ Denis Oliver Kropp <dok@directfb.org>.
 
  This file is part of ilixi.
 
@@ -28,6 +28,7 @@
 #include <pthread.h>
 #include <map>
 #include <directfb.h>
+#include <string>
 
 namespace ilixi
 {
@@ -42,7 +43,7 @@ public:
     getKey(const char* name, int size, DFBFontAttributes attr);
 
     IDirectFBFont*
-    getEntry(const char* name, int size, DFBFontAttributes attr);
+    getEntry(const std::string& name, int size, DFBFontAttributes attr);
 
     void
     releaseEntry(unsigned int key);
@@ -67,6 +68,9 @@ private:
 
     IDirectFBFont*
     getEntryFromFile(const char* name, int size, DFBFontAttributes attr);
+
+    void
+    getFCFileName(const char* name, const char* style, double size, int slant, char** fileName);
 
     static FontCache* __instance;
 

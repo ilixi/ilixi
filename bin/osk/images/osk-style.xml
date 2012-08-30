@@ -3,23 +3,23 @@
 <style>
 	<fonts>
 		<buttonFont>
-			<file>decker</file>
+			<file>Sans</file>
 			<size>16</size>
 			<fontStyle>bold</fontStyle>
 		</buttonFont>
 
 		<defaultFont>
-			<file>Armata-Regular</file>
+			<file>Sans</file>
 			<size>14</size>
 		</defaultFont>
 
 		<inputFont>
-			<file>Armata-Regular</file>
+			<file>Sans</file>
 			<size>14</size>
 		</inputFont>
 
 		<titleFont>
-			<file>Armata-Regular</file>
+			<file>Sans</file>
 			<size>18</size>
 			<fontStyle>bold</fontStyle>
 		</titleFont>

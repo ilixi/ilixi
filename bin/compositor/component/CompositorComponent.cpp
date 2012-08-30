@@ -39,18 +39,18 @@ CompositorComponent::CompositorComponent(Compositor* compositor)
           _notificationMan(NULL)
 {
     init();
-    createNotification(0, NULL);
-    createNotification(1, NULL);
-    createNotification(2, NULL);
-    createNotification(3, NULL, CNF_NONE);
-    createNotification(4, NULL, CNF_NONE);
-    createNotification(5, NULL, CNF_NONE);
-    createNotification(6, NULL, CNF_NONE);
-    createNotification(7, NULL);
-    createNotification(8, NULL, CNF_NONE);
-    createNotification(9, NULL, CNF_NONE);
-    createNotification(10, NULL, CNF_NONE);
-    createNotification(11, NULL, CNF_NONE);
+    createNotification(AppVisible, NULL);
+    createNotification(AppHidden, NULL);
+    createNotification(AppStarting, NULL);
+    createNotification(ShowingHome, NULL, CNF_NONE);
+    createNotification(ShowingSwitcher, NULL, CNF_NONE);
+    createNotification(HidingHome, NULL, CNF_NONE);
+    createNotification(HidingSwitcher, NULL, CNF_NONE);
+    createNotification(SendingAppList, NULL);
+    createNotification(SoundVisible, NULL, CNF_NONE);
+    createNotification(SoundHidden, NULL, CNF_NONE);
+    createNotification(DashVisible, NULL, CNF_NONE);
+    createNotification(DashHidden, NULL, CNF_NONE);
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -60,33 +60,13 @@ CompositorComponent::~CompositorComponent()
 }
 
 void
-CompositorComponent::notifyVisible(pid_t pid)
+CompositorComponent::signalInstanceChanged(AppInstance* cur, AppInstance* pre)
 {
-    int* tPid;
-    allocate(sizeof(tPid), (void**) &tPid);
-    *tPid = pid;
-    notify(AppVisible, tPid);
-    ILOG_DEBUG(ILX_COMPCOMP, "%d is now visible!\n", pid);
-}
+    if (cur)
+        notifyVisibility(cur, true);
 
-void
-CompositorComponent::notifyHidden(pid_t pid)
-{
-    int* tPid;
-    allocate(sizeof(tPid), (void**) &tPid);
-    *tPid = pid;
-    notify(AppHidden, tPid);
-    ILOG_DEBUG(ILX_COMPCOMP, "%d is now hidden!\n", pid);
-}
-
-void
-CompositorComponent::notifyHasFocus(pid_t pid)
-{
-    int* tPid;
-    allocate(sizeof(tPid), (void**) &tPid);
-    *tPid = pid;
-    notify(AppHasFocus, tPid);
-    ILOG_DEBUG(ILX_COMPCOMP, "%d is now focused!\n", pid);
+    if (pre)
+        notifyVisibility(pre, false);
 }
 
 void
@@ -119,7 +99,7 @@ CompositorComponent::sendAppList()
         if (!(((AppInfo*) *it)->appFlags() & APP_SYSTEM))
         {
             AppData data;
-            snprintf(data.name, 128, "%s", ((AppInfo*) *it)->name().c_str());
+            snprintf(data.name, 64, "%s", ((AppInfo*) *it)->name().c_str());
             snprintf(data.icon, 256, "%s", ((AppInfo*) *it)->icon().c_str());
             dataVector.push_back(data);
         }
@@ -149,6 +129,21 @@ CompositorComponent::signalDash(bool showing)
         notify(DashVisible, NULL);
     else
         notify(DashHidden, NULL);
+}
+
+void
+CompositorComponent::signalAppStart(AppInstance* instance)
+{
+    VisibilityNotification vNo;
+    snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
+    vNo.pid = instance->pid();
+    vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
+
+    VisibilityNotification* tPid;
+    allocate(sizeof(VisibilityNotification), (void**) &tPid);
+    *tPid = vNo;
+
+    notify(AppStarting, tPid);
 }
 
 DirectResult
@@ -182,25 +177,25 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         }
 
     case ShowHome:
-        _compositor->showLauncher(true);
+        _compositor->toggleLauncher(true);
         break;
 
     case ShowSwitcher:
-        _compositor->showSwitcher(true);
+        _compositor->toggleSwitcher(true);
         break;
 
     case HideHome:
-        _compositor->showLauncher(false);
+        _compositor->toggleLauncher(false);
         break;
 
     case HideSwither:
-        _compositor->showSwitcher(false);
+        _compositor->toggleSwitcher(false);
         break;
 
     case StartApp:
         {
-            char name[128];
-            snprintf(name, 128, "%s", ((char*) arg));
+            char name[64];
+            snprintf(name, 64, "%s", ((char*) arg));
             _compositor->appMan()->startApp(name);
         }
         break;
@@ -231,6 +226,31 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         break;
     }
     return ret;
+}
+
+void
+CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
+{
+    VisibilityNotification vNo;
+    snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
+    vNo.pid = instance->pid();
+    vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
+
+    VisibilityNotification* tPid;
+    allocate(sizeof(VisibilityNotification), (void**) &tPid);
+    *tPid = vNo;
+
+    if (visible)
+    {
+        notify(AppVisible, tPid);
+        ILOG_DEBUG(ILX_COMPCOMP,
+                   "%s is now visible!\n", instance->appInfo()->name().c_str());
+    } else
+    {
+        notify(AppHidden, tPid);
+        ILOG_DEBUG(ILX_COMPCOMP,
+                   "%s is now hidden!\n", instance->appInfo()->name().c_str());
+    }
 }
 
 } /* namespace ilixi */

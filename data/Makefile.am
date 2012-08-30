@@ -1,5 +1,5 @@
 ## Makefile.am for data
-SUBDIRS			= 	apps fonts images
+SUBDIRS			= 	apps images
 miscdatadir 	=	$(ILIXI_DATADIR)
 miscdata_DATA 	=	application.dtd \
 					def_palette.xml \

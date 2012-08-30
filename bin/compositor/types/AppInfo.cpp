@@ -142,24 +142,6 @@ AppInfo::setAppFlags(const std::string& appFlags)
         ILOG_DEBUG(ILX_APPINFO, " Token: %s\n", pch);
         if (strcmp(pch, "APP_NONE") == 0)
             _appFlags = APP_NONE;
-        else if (strcmp(pch, "APP_LITE") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_LITE);
-        else if (strcmp(pch, "APP_ILIXI") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_ILIXI);
-        else if (strcmp(pch, "APP_QT") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_QT);
-        else if (strcmp(pch, "APP_ANDROID") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_ANDROID);
-        else if (strcmp(pch, "APP_FLASH") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_FLASH);
-        else if (strcmp(pch, "APP_WEB") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_WEB);
-        else if (strcmp(pch, "APP_FLTK") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_FLTK);
-        else if (strcmp(pch, "APP_GTK") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_GTK);
-        else if (strcmp(pch, "APP_X11") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_X11);
         else if (strcmp(pch, "APP_NO_MAINWINDOW") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_NO_MAINWINDOW);
         else if (strcmp(pch, "APP_SPLASH_WINDOW") == 0)
@@ -226,8 +208,8 @@ AppInfo::setDepFlags(const std::string& depFlags)
             _depFlags = (DependencyFlags) (_depFlags | DEP_RC);
         else if (strcmp(pch, "DEP_TOUCH") == 0)
             _depFlags = (DependencyFlags) (_depFlags | DEP_TOUCH);
-        else if (strcmp(pch, "DEP_MOUSE") == 0)
-            _depFlags = (DependencyFlags) (_depFlags | DEP_MOUSE);
+        else if (strcmp(pch, "DEP_NETWORK") == 0)
+            _depFlags = (DependencyFlags) (_depFlags | DEP_NETWORK);
         pch = strtok(NULL, " ,");
     }
     ILOG_DEBUG(ILX_APPINFO, " _depFlags: %x\n", _depFlags);

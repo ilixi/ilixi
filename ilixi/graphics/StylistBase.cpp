@@ -22,8 +22,6 @@
  */
 
 #include <graphics/StylistBase.h>
-#include <graphics/Palette.h>
-#include <graphics/Style.h>
 #include <lib/TweenAnimation.h>
 #include <sigc++/bind.h>
 #include <ui/Widget.h>
@@ -36,7 +34,9 @@ D_DEBUG_DOMAIN( ILX_STYLISTBASE, "ilixi/graphics/StylistBase", "StylistBase");
 Image* StylistBase::_noImage = NULL;
 
 StylistBase::StylistBase()
-        : _palette(NULL), _style(NULL), _borderWidth(1)
+        : _palette(NULL),
+          _style(NULL),
+          _borderWidth(1)
 {
     _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
     initAnimations();
@@ -65,7 +65,8 @@ StylistBase::defaultSize(StyleHint::Size size) const
     switch (size)
     {
     case StyleHint::PushButton:
-        return Size(defaultParameter(StyleHint::PushButtonCorners), _style->pb.def.m.height());
+        return Size(defaultParameter(StyleHint::PushButtonCorners),
+                    _style->pb.def.m.height());
     case StyleHint::ProgressBar:
         return Size(100, _style->pr.def.m.height());
     case StyleHint::Slider:
@@ -206,6 +207,12 @@ StylistBase::defaultIcon(StyleHint::DefaultIcon icon) const
     }
 }
 
+Palette*
+StylistBase::palette() const
+{
+    return _palette;
+}
+
 void
 StylistBase::animate(StyledAnimation type, Widget* target)
 {
@@ -230,14 +237,16 @@ StylistBase::initAnimations()
     _focus.in = new TweenAnimation();
     _focus.in->setDuration(500);
     _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _focus.in->sigExec.connect(sigc::bind<
-            StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
+    _focus.in->sigExec.connect(
+            sigc::bind<StylistBase::StyledAnimation>(
+                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
 
     _focus.out = new TweenAnimation();
     _focus.out->setDuration(250);
     _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
-    _focus.out->sigExec.connect(sigc::bind<
-            StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
+    _focus.out->sigExec.connect(
+            sigc::bind<StylistBase::StyledAnimation>(
+                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
 }
 
 void

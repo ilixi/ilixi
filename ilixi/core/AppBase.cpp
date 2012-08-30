@@ -374,7 +374,7 @@ AppBase::removeTimer(Timer* timer)
 int32_t
 AppBase::runCallbacks()
 {
-    int32_t timeout = 10000;
+    int32_t timeout = 1000;
 
     pthread_mutex_lock(&__cbMutex);
     CallbackList::iterator it = __callbacks.begin();

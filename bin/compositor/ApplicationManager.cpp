@@ -116,8 +116,7 @@ window_reconfig(void *context, SaWManWindowReconfig *reconfig)
 }
 
 DirectResult
-window_restack(void *context, SaWManWindowHandle handle,
-               SaWManWindowHandle relative, SaWManWindowRelation relation)
+window_restack(void *context, SaWManWindowHandle handle, SaWManWindowHandle relative, SaWManWindowRelation relation)
 {
     ApplicationManager* appMan = (ApplicationManager*) context;
     return appMan->windowRestack(handle, relative, relation);
@@ -288,14 +287,14 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
 
     AppInstance* instance = instanceByAppID(appInfo->appID());
 
-    if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE)
-            && !waitpid(instance->pid(), NULL, WNOHANG))
+    if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE) && !waitpid(
+            instance->pid(), NULL, WNOHANG))
     {
         ILOG_DEBUG(
                 ILX_APPLICATIONMANAGER,
                 "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
         if (!autoStart)
-            _compositor->handleViewRequest(instance);
+            _compositor->showInstance(instance);
         return DR_BUSY;
     }
 
@@ -361,6 +360,7 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
         instance->setPid(pid);
         _instances.push_back(instance);
         pthread_mutex_unlock(&_mutex);
+        _compositor->_compComp->signalAppStart(instance);
         break;
     }
     return DR_OK;
@@ -535,8 +535,8 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER,
                    " -> setting window config for Default.\n");
-        DFBRectangle r = { 0, 0, _compositor->width(), _compositor->height()
-                - 50 };
+        DFBRectangle r = { 0, 0, _compositor->width(),
+                           _compositor->height() - 50 };
         info->config.bounds = r;
         _manager->SetWindowConfig(_manager, info->handle,
                                   (SaWManWindowConfigFlags) (SWMCF_SIZE),
@@ -592,13 +592,11 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
     {
         AppInfo* info = instance->appInfo();
 
-        if (!(info->appFlags() & APP_ALLOW_WINDOW_CONFIG)
-                && (reconfig->flags & SWMCF_POSITION))
+        if (!(info->appFlags() & APP_ALLOW_WINDOW_CONFIG) && (reconfig->flags & SWMCF_POSITION))
         {
             ILOG_WARNING(ILX_APPLICATIONMANAGER,
                          "SWMCF_POSITION not allowed!\n");
-            reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags
-                    & ~SWMCF_POSITION);
+            reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags & ~SWMCF_POSITION);
         }
 
         _manager->Lock(_manager);
@@ -609,9 +607,7 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 }
 
 DirectResult
-ApplicationManager::windowRestack(SaWManWindowHandle handle,
-                                  SaWManWindowHandle relative,
-                                  SaWManWindowRelation relation)
+ApplicationManager::windowRestack(SaWManWindowHandle handle, SaWManWindowHandle relative, SaWManWindowRelation relation)
 {
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, handle, &process);
@@ -674,8 +670,7 @@ ApplicationManager::parseAppDef(const char* file)
             ctxt,
             filePath.c_str(),
             NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
-                    | XML_PARSE_NOBLANKS);
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -772,11 +767,7 @@ ApplicationManager::parseAppDef(const char* file)
 }
 
 void
-ApplicationManager::addApplication(const char* name, const char* author,
-                                   const char* licence, const char* category,
-                                   const char* version, const char* icon,
-                                   const char* exec, const char* args,
-                                   const char* appFlags, const char* depFlags)
+ApplicationManager::addApplication(const char* name, const char* author, const char* licence, const char* category, const char* version, const char* icon, const char* exec, const char* args, const char* appFlags, const char* depFlags)
 {
     if (infoByName(name))
         return;

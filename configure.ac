@@ -112,22 +112,23 @@ FUSIONDALE_REQ_VERSION=1.6.0
 FUSIONSOUND_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
+FONTCONFIG_REQ_VERSION=2.8.0
 
-PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION"
+PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
 AS_IF([test "x$enable_dale" = "xyes"], [
-	PACKAGES="$PACKAGES fusiondale >= $FUSIONDALE_REQ_VERSION"
-	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 	FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
+	PACKAGES="$PACKAGES $FUSION_DALE_DEP"
+	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 ], [
 
 ])
 
 AS_IF([test "x$enable_sound" = "xyes"], [
-	PACKAGES="$PACKAGES fusionsound >= $FUSIONSOUND_REQ_VERSION"
-	AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
 	FUSION_SOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
+	PACKAGES="$PACKAGES $FUSION_SOUND_DEP"
+	AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
 ], [
 
 ])
@@ -138,6 +139,7 @@ AC_SUBST(DIRECTFB_REQ_VERSION)
 AC_SUBST(SAWMAN_REQ_VERSION)
 AC_SUBST(SIGC_REQ_VERSION)
 AC_SUBST(LIBXML_REQ_VERSION)
+AC_SUBST(FONTCONFIG_REQ_VERSION)
 AC_SUBST(FUSION_DALE_DEP)
 AC_SUBST(FUSION_SOUND_DEP)
 
@@ -162,7 +164,6 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 CXXFLAGS="$CFLAGS"
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
-AC_DEFINE_UNQUOTED([FONTDIR], ["$prefix/share/$PACKAGE-$VERSION/fonts/"], [ilixi font directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
@@ -170,12 +171,29 @@ AC_SUBST(ILIXI_DATADIR)
 
 AC_CONFIG_FILES([ \
 		Makefile  \
+		bin/Makefile \
+		bin/carousel/Makefile \
+		bin/compositor/images/Makefile \
+		bin/compositor/Makefile \
+		bin/demo2/Makefile \
+		bin/demo3/Makefile \
+		bin/demo4/Makefile \
+		bin/gallery/images/Makefile \
+		bin/gallery/Makefile \
+		bin/home/Makefile \
+		bin/navigation/Makefile \
+		bin/osk/images/Makefile \
+		bin/osk/Makefile \
+		bin/soundmixer/images/Makefile \
+		bin/soundmixer/Makefile \
+		bin/stacking/Makefile \
+		bin/statusbar/images/Makefile \
+		bin/statusbar/Makefile \
 		data/Makefile \
-		data/fonts/Makefile \
-		data/images/Makefile \
-		data/apps/Makefile \
 		data/apps/icons/Makefile \
+		data/apps/Makefile \
 		data/ilixi_catalog.xml \
+		data/images/Makefile \
 		doc/Makefile \
 		doc/resources/Makefile \
 		ilixi/Makefile \
@@ -184,24 +202,6 @@ AC_CONFIG_FILES([ \
 		ilixi/lib/Makefile \
 		ilixi/types/Makefile \
 		ilixi/ui/Makefile \
-		bin/Makefile \
-		bin/statusbar/Makefile \
-		bin/statusbar/images/Makefile \
-		bin/soundmixer/Makefile \
-		bin/soundmixer/images/Makefile \
-		bin/home/Makefile \
-		bin/gallery/Makefile \
-		bin/gallery/images/Makefile \
-		bin/demo2/Makefile \
-		bin/demo3/Makefile \
-		bin/demo4/Makefile \
-		bin/stacking/Makefile \
-		bin/navigation/Makefile \
-		bin/compositor/Makefile \
-		bin/compositor/images/Makefile \
-		bin/carousel/Makefile \
-		bin/osk/Makefile \
-		bin/osk/images/Makefile \
 		ilixi.pc:ilixi.pc.in
 ])
 AC_OUTPUT
