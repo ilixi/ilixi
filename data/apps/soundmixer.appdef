@@ -9,6 +9,6 @@
 	<icon>@DATADIR:gallery.png</icon>
     <exec>ilixi_mixer</exec>
     <args></args>
-    <flags>APP_ILIXI, APP_SYSTEM</flags>
+    <flags>APP_ILIXI, APP_SYSTEM, APP_AUTO_START</flags>
     <deps>DEP_MOUSE</deps>
 </app>
