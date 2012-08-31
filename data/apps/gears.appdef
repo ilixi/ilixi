@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+    <name>Gears</name>
+    <author>Andreas Shimokawa</author>
+    <licence>MIT</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:andi.png</icon>
+    <exec>dfbtest_old_gl2</exec>
+    <args>--dfb:force-windowed,window-surface-policy=videoonly</args>
+    <flags>APP_NONE</flags>
+    <deps>DEP_NONE</deps>
+</app>
