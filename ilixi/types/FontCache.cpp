@@ -28,7 +28,7 @@
 #include <core/Logger.h>
 #include <ilixiConfig.h>
 #include <sstream>
-#include <fontconfig.h>
+#include <fontconfig/fontconfig.h>
 
 namespace ilixi
 {
