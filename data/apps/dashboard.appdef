@@ -8,7 +8,7 @@
     <version>1.0</version>
 	<icon></icon>
     <exec>dashboard</exec>
-    <args>--dfb:force-windowed</args>
+    <args>--dfb:force-windowed,window-surface-policy=videoonly</args>
     <flags>APP_SYSTEM</flags>
     <deps>DEP_NONE</deps>
 </app>
