@@ -85,7 +85,6 @@ StatusbarComponent::sendNotification(DFBSurfaceID id)
     *idValue = id;
     notify(0, idValue);
     ILOG_DEBUG(ILX_STATCOMP, "Notification sent for surface %d\n", id);
-    deallocate((void*) idValue);
 }
 
 void
