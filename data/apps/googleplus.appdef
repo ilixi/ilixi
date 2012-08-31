@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+    <name>Google+</name>
+    <author>Denis Oliver Kropp</author>
+    <licence>LGPLv3</licence>    
+    <category>Default</category>
+    <version>1.0</version>
+	<icon>@DATADIR:facebook.png</icon>
+    <exec>lite_WebKit</exec>
+    <args>http://plus.google.com/ -f</args>
+    <flags>APP_LITE</flags>
+    <deps>DEP_MOUSE</deps>
+</app>
