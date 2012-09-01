@@ -6,9 +6,9 @@
     <licence>LGPLv3</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:facebook.png</icon>
+	<icon>@DATADIR:youtube.png</icon>
     <exec>lite_WebKit</exec>
-    <args>http://m.youtube.com/html5 -f</args>
+    <args>http://youtube.com/html5 -f</args>
     <flags>APP_LITE</flags>
     <deps>DEP_MOUSE</deps>
 </app>

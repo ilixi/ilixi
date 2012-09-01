@@ -1,6 +1,7 @@
 ## Makefile.am for data/apps/icons
 miscdatadir 	=	$(ILIXI_DATADIR)/apps/icons
-miscdata_DATA 	=	andi.png \
+miscdata_DATA 	=	8tracks.png \
+					andi.png \
 					bbc.png \
 					clanbomber2.png \
 					dfbterm.png \

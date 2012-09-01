@@ -9,6 +9,9 @@ miscdata_DATA 	=	bbc.appdef \
 					facebook.appdef \
 					fire.appdef \
 					gallery.appdef \
+					google.appdef \
+					googlemaps.appdef \
+					googleplus.appdef \
 					ilixi_home.appdef \
 					ilixi_monitor.appdef \
 					ilixi_widgets.appdef \
@@ -23,6 +26,8 @@ miscdata_DATA 	=	bbc.appdef \
 					soundmixer.appdef \
 					statusbar.appdef \
 					texture.appdef \
-					windows.appdef
+					twitter.appdef \
+					windows.appdef \
+					youtube.appdef
 					
 EXTRA_DIST 		= 	$(miscdata_DATA)
