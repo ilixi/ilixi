@@ -6,7 +6,7 @@
     <licence>MIT</licence>    
     <category>Default</category>
     <version>1.0</version>
-	<icon>@DATADIR:andi.png</icon>
+	<icon>@DATADIR:gears.png</icon>
     <exec>dfbtest_old_gl2</exec>
     <args>--dfb:force-windowed,window-surface-policy=videoonly</args>
     <flags>APP_NONE</flags>
