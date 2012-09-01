@@ -7,6 +7,9 @@ miscdata_DATA 	=	andi.png \
 					facebook.png \
 					fire.png \
 					gallery.png \
+					google.png \
+					googlemaps.png \
+					googleplus.png \
 					input.png \
 					knuckles.png \
 					matrix.png \
@@ -14,7 +17,9 @@ miscdata_DATA 	=	andi.png \
 					neo.png \
 					particle.png \
 					texture.png \
+					twitter.png \
 					webkitdfb.png \
 					widgets.png \
-					windows.png
+					windows.png \
+					youtube.png
 EXTRA_DIST 		= 	$(miscdata_DATA)
