@@ -7,6 +7,7 @@ miscdata_DATA 	=	andi.png \
 					facebook.png \
 					fire.png \
 					gallery.png \
+					gears.png \
 					google.png \
 					googlemaps.png \
 					googleplus.png \
