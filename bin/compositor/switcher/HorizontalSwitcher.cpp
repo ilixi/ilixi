@@ -143,22 +143,28 @@ HorizontalSwitcher::scrollTo(AppThumbnail* thumb)
 void
 HorizontalSwitcher::show()
 {
-    ILOG_TRACE_W(ILX_HSWITCHER);
-    _anim.stop();
-    setVisible(true);
-    _tween->setInitialValue(height());
-    _tween->setEndValue(0);
-    _anim.start();
+    if (!visible())
+    {
+        ILOG_TRACE_W(ILX_HSWITCHER);
+        _anim.stop();
+        setVisible(true);
+        _tween->setInitialValue(height());
+        _tween->setEndValue(0);
+        _anim.start();
+    }
 }
 
 void
 HorizontalSwitcher::hide()
 {
-    ILOG_TRACE_W(ILX_HSWITCHER);
-    _anim.stop();
-    _tween->setInitialValue(0);
-    _tween->setEndValue(height());
-    _anim.start();
+    if (visible())
+    {
+        ILOG_TRACE_W(ILX_HSWITCHER);
+        _anim.stop();
+        _tween->setInitialValue(0);
+        _tween->setEndValue(height());
+        _anim.start();
+    }
 }
 
 void

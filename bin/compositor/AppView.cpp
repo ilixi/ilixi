@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
+D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/comp/AppView", "AppView");
 
 int AppView::_animDuration = 500;
 
@@ -69,7 +69,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
     if (_cState != APPCOMP_READY)
         return;
 
-    if (visible())
+    if (_animProps & AnimShowing)
         return;
 
     ILOG_TRACE_W(ILX_APPVIEW);
@@ -129,6 +129,8 @@ AppView::show(AnimatedProperty props, int tx, int ty)
 
     setVisible(true);
     clearAnimatedProperty(HideWhenDone);
+    setAnimatedProperty(AnimShowing);
+    clearAnimatedProperty(AnimHiding);
     setFocus();
 }
 
@@ -138,7 +140,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     if (_cState != APPCOMP_READY)
         return;
 
-    if (!visible())
+    if (_animProps & AnimHiding)
         return;
 
     ILOG_TRACE_W(ILX_APPVIEW);
@@ -192,7 +194,8 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     }
 
     setAnimatedProperty(HideWhenDone);
-
+    setAnimatedProperty(AnimHiding);
+    clearAnimatedProperty(AnimShowing);
     if (anim)
         _propAnim.start();
 }

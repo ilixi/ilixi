@@ -33,7 +33,7 @@ using namespace std;
 
 namespace ilixi
 {
-D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/compositor", "Compositor");
+D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/comp/Compositor", "Compositor");
 
 Compositor::Compositor(int argc, char* argv[])
         : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale)),

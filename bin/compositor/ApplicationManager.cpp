@@ -33,7 +33,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/compositor/AppMan",
+D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/comp/AppMan",
                "ApplicationManager");
 
 bool

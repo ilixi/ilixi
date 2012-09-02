@@ -40,7 +40,9 @@ public:
         Zoom = 0x001,
         Opacity = 0x002,
         Position = 0x004,
-        HideWhenDone = 0x008
+        HideWhenDone = 0x008,
+        AnimShowing = 0x010,
+        AnimHiding = 0x020
     };
 
     AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);

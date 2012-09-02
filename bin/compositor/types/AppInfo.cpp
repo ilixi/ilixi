@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPINFO, "ilixi/compositor/AppInfo", "AppInfo");
+D_DEBUG_DOMAIN( ILX_APPINFO, "ilixi/comp/AppInfo", "AppInfo");
 
 unsigned int AppInfo::__appCounter = 0;
 
