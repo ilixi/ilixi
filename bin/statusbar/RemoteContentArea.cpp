@@ -94,7 +94,7 @@ RemoteContentArea::compose(const PaintEvent& event)
 void
 RemoteContentArea::updateLayoutGeometry()
 {
-    _layout->setGeometry(15, 0, width() - 15, height());
+    _layout->setGeometry(15, 5, width() - 15, 50);
 }
 
 } /* namespace ilixi */
