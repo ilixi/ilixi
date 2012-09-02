@@ -96,12 +96,12 @@ public:
     void
     signalAppStart(AppInstance* instance);
 
+    void
+    notifyVisibility(AppInstance* instance, bool visible);
+
 protected:
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
-
-    void
-    notifyVisibility(AppInstance* instance, bool visible);
 
 private:
     struct AppData

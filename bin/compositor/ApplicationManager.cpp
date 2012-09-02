@@ -295,6 +295,8 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
                 "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
         if (!autoStart)
             _compositor->showInstance(instance);
+        else
+            _compositor->_compComp->notifyVisibility(instance, false);
         return DR_BUSY;
     }
 
