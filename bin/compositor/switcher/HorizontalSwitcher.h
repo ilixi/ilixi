@@ -70,6 +70,18 @@ public:
     virtual void
     setOptimalGeometry(int width, int height);
 
+    /*!
+     * Scrolls to next thumbnail.
+     */
+    virtual void
+    scrollToNext();
+
+    /*!
+     * Scrolls to previous thumbnail.
+     */
+    virtual void
+    scrollToPrevious();
+
 protected:
     Image* _bg;
     ToolButton* _left;
@@ -79,6 +91,7 @@ protected:
     TweenAnimation _anim;
     Tween* _tween;
     int _anchorY;
+    int _num2Slide;
 
     virtual void
     compose(const PaintEvent& event);

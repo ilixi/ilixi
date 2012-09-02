@@ -56,6 +56,7 @@ HorizontalSwitcher::HorizontalSwitcher(Widget* parent)
     _left->sigClicked.connect(
             sigc::mem_fun(this, &HorizontalSwitcher::scrollToPrevious));
     addChild(_left);
+    _left->setVisible(false);
 
     _right = new ToolButton("right");
     _right->setDrawFrame(false);
@@ -64,6 +65,7 @@ HorizontalSwitcher::HorizontalSwitcher(Widget* parent)
     _right->sigClicked.connect(
             sigc::mem_fun(this, &HorizontalSwitcher::scrollToNext));
     addChild(_right);
+    _right->setVisible(false);
 
     _scroller->setOffset(Point(100, 0));
 }
@@ -87,19 +89,18 @@ HorizontalSwitcher::addThumb(AppThumbnail* thumb)
     ILOG_TRACE_W(ILX_HSWITCHER);
     if (_scroller->addWidget(thumb))
     {
+        if (_scroller->_selectedWidget == NULL)
+            _scroller->_selectedWidget = thumb;
+
         _scroller->setSize(_scroller->preferredSize());
         _thumbs.push_back(thumb);
         thumb->setVisible(true);
-//        thumb->setZ(5);
-        thumb->sigFocused.connect(
-                sigc::mem_fun(this, &Switcher::setCurrentThumb));
         thumb->sigSelected.connect(sigSwitchRequest);
 
-        if (!_current)
+        if (_thumbs.size() > _num2Slide)
         {
-            _current = thumb;
-            _currentID = 0;
-            _scroller->scrollTo(thumb);
+            _left->setVisible(true);
+            _right->setVisible(true);
         }
 
         update();
@@ -111,6 +112,12 @@ HorizontalSwitcher::removeThumb(AppThumbnail* thumb)
 {
     ILOG_TRACE_W(ILX_HSWITCHER);
     _scroller->removeWidget(thumb);
+
+    if (_thumbs.size() < _num2Slide)
+    {
+        _left->setVisible(false);
+        _right->setVisible(false);
+    }
 }
 
 void
@@ -118,9 +125,8 @@ HorizontalSwitcher::scrollTo(AppThumbnail* thumb)
 {
     ILOG_TRACE_W(ILX_HSWITCHER);
     ILOG_DEBUG(ILX_HSWITCHER, " -> thumb: %p\n", thumb);
-    _scroller->scrollTo(thumb);
-    //    thumb->setFocus();
     setCurrentThumb(thumb);
+    _scroller->scrollTo(thumb);
 }
 
 void
@@ -145,11 +151,40 @@ HorizontalSwitcher::hide()
 }
 
 void
-HorizontalSwitcher::setOptimalGeometry(int width, int height)
+HorizontalSwitcher::scrollToNext()
 {
     ILOG_TRACE_W(ILX_HSWITCHER);
-    _anchorY = height - 196;
-    setGeometry(0, _anchorY, width, 196);
+    if (_thumbs.size() == 0)
+        return;
+
+    _currentIndex += _num2Slide;
+    if (_currentIndex > _thumbs.size() - 1)
+        _currentIndex = 0;
+
+    scrollTo(currentThumb());
+}
+
+void
+HorizontalSwitcher::scrollToPrevious()
+{
+    ILOG_TRACE_W(ILX_HSWITCHER);
+    if (_thumbs.size() == 0)
+        return;
+
+    _currentIndex -= _num2Slide;
+    if (_currentIndex < 0)
+        _currentIndex = _thumbs.size() - _thumbs.size() % _num2Slide;
+
+    scrollTo(currentThumb());
+}
+
+void
+HorizontalSwitcher::setOptimalGeometry(int w, int h)
+{
+    ILOG_TRACE_W(ILX_HSWITCHER);
+    _anchorY = h - 196;
+    setGeometry(0, _anchorY, w, 196);
+    _num2Slide = (width() - 200) / 196.0;
 }
 
 void
@@ -164,13 +199,10 @@ HorizontalSwitcher::compose(const PaintEvent& event)
 void
 HorizontalSwitcher::updateSwitcherGeometry()
 {
-//    if (_anim.state() != Animation::Running)
-    {
-        ILOG_TRACE_W(ILX_HSWITCHER);
-        _scroller->setGeometry(0, 20, width(), height() - 40);
-        _left->setGeometry(0, 0, 100, 200);
-        _right->setGeometry(width() - 100, 0, 100, 200);
-    }
+    ILOG_TRACE_W(ILX_HSWITCHER);
+    _scroller->setGeometry(0, 20, width(), height() - 40);
+    _left->setGeometry(0, 0, 100, 200);
+    _right->setGeometry(width() - 100, 0, 100, 200);
 }
 
 void

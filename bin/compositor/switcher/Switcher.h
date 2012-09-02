@@ -93,13 +93,13 @@ public:
     /*!
      * Scrolls to next thumbnail.
      */
-    void
+    virtual void
     scrollToNext();
 
     /*!
      * Scrolls to previous thumbnail.
      */
-    void
+    virtual void
     scrollToPrevious();
 
     /*!
@@ -135,15 +135,11 @@ public:
     sigc::signal<void, AppInstance*> sigSwitchRequest;
 
 protected:
-    //! This property stores the current thumbnail.
-    AppThumbnail* _current;
-
-    //! This stores the current thumbnail index.
-    unsigned int _currentID;
-
     typedef std::vector<AppThumbnail*> Thumbnails;
     //! Thumbnails are also stored in a vector for ease of access.
     Thumbnails _thumbs;
+
+    int _currentIndex;
 
 };
 

@@ -23,6 +23,7 @@
 
 #include "Switcher.h"
 #include <core/Logger.h>
+#include <algorithm>
 
 namespace ilixi
 {
@@ -31,8 +32,7 @@ D_DEBUG_DOMAIN( ILX_SWITCHER, "ilixi/comp/Switcher", "Switcher");
 
 Switcher::Switcher(Widget* parent)
         : Widget(parent),
-          _current(NULL),
-          _currentID(-1)
+          _currentIndex(0)
 {
     ILOG_TRACE_W(ILX_SWITCHER);
     setInputMethod(PointerInput);
@@ -76,7 +76,7 @@ void
 Switcher::scrollToNext()
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    if (_thumbs.size() > 1)
+    if (_thumbs.size())
         scrollTo(nextThumb());
 }
 
@@ -84,7 +84,7 @@ void
 Switcher::scrollToPrevious()
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    if (_thumbs.size() > 1)
+    if (_thumbs.size())
         scrollTo(previousThumb());
 }
 
@@ -92,45 +92,47 @@ AppThumbnail*
 Switcher::currentThumb()
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    return _current;
+    return _thumbs[_currentIndex];
 }
 
 AppThumbnail*
 Switcher::nextThumb()
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    if (_currentID >= 0)
-    {
-        if (++_currentID == _thumbs.size())
-            _currentID = 0;
+    if (_thumbs.size() == 0)
+        return NULL;
 
-        return _thumbs[_currentID];
-    }
-    return NULL;
+    _currentIndex++;
+    if (_currentIndex > _thumbs.size() - 1)
+        _currentIndex = 0;
+    return _thumbs[_currentIndex];
 }
 
 AppThumbnail*
 Switcher::previousThumb()
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    if (_currentID >= 0)
-    {
-        if (--_currentID == -1)
-            _currentID = _thumbs.size() - 1;
+    if (_thumbs.size() == 0)
+        return NULL;
 
-        return _thumbs[_currentID];
-    }
-    return NULL;
+    _currentIndex--;
+    if (_currentIndex < 0)
+        _currentIndex = _thumbs.size() - 1;
+    return _thumbs[_currentIndex];
 }
 
 void
 Switcher::setCurrentThumb(AppThumbnail* thumb)
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    _current = thumb;
-    for (unsigned int i = 0; i < _thumbs.size(); ++i)
-        if (_thumbs[i] == thumb)
-            _currentID = i;
+    for (int i = 0; i < _thumbs.size(); ++i)
+    {
+        if (thumb == _thumbs[i])
+        {
+            _currentIndex = i;
+            break;
+        }
+    }
 }
 
 } /* namespace ilixi */

@@ -9,6 +9,7 @@ namespace ilixi
 
 class HorizontalScroller : public ContainerBase
 {
+    friend class HorizontalSwitcher;
 public:
     HorizontalScroller(Widget* parent = 0);
 

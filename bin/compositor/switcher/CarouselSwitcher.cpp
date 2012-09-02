@@ -28,108 +28,108 @@
 namespace ilixi
 {
 
-  CarouselSwitcherItem::CarouselSwitcherItem(Carousel* parent) :
-      CarouselItem(parent)
-  {
-  }
+CarouselSwitcherItem::CarouselSwitcherItem(Carousel* parent)
+        : CarouselItem(parent)
+{
+}
 
-  CarouselSwitcherItem::~CarouselSwitcherItem()
-  {
-  }
+CarouselSwitcherItem::~CarouselSwitcherItem()
+{
+}
 
-  void
-  CarouselSwitcherItem::compose(const PaintEvent& event)
-  {
+void
+CarouselSwitcherItem::compose(const PaintEvent& event)
+{
     Painter p(this);
     p.begin(event);
     p.setBrush(Color(0, 0, 0, 128));
     p.fillRectangle(0, 0, width(), height());
     p.end();
-  }
+}
 
-  void
-  CarouselSwitcherItem::updateCarouselItemGeometry()
-  {
+void
+CarouselSwitcherItem::updateCarouselItemGeometry()
+{
     if (source())
-      source()->setGeometry(5, 5, width() - 10, height() - 10);
-  }
+        source()->setGeometry(5, 5, width() - 10, height() - 10);
+}
 
-  //****************************************************************************
+//****************************************************************************
 
-  CarouselSwitcher::CarouselSwitcher(Widget* parent) :
-      Switcher(parent)
-  {
+CarouselSwitcher::CarouselSwitcher(Widget* parent)
+        : Switcher(parent)
+{
     _carousel = new Carousel();
     addChild(_carousel);
 
     _carousel->sigItemSelected.connect(
-        sigc::mem_fun(this, &CarouselSwitcher::carouselItemSelected));
+            sigc::mem_fun(this, &CarouselSwitcher::carouselItemSelected));
 
     sigGeometryUpdated.connect(
-        sigc::mem_fun(this, &CarouselSwitcher::updateSwitcherGeometry));
-  }
+            sigc::mem_fun(this, &CarouselSwitcher::updateSwitcherGeometry));
+}
 
-  CarouselSwitcher::~CarouselSwitcher()
-  {
-  }
+CarouselSwitcher::~CarouselSwitcher()
+{
+}
 
-  Size
-  CarouselSwitcher::preferredSize() const
-  {
+Size
+CarouselSwitcher::preferredSize() const
+{
     return _carousel->preferredSize();
-  }
+}
 
-  void
-  CarouselSwitcher::addThumb(AppThumbnail* thumb)
-  {
+void
+CarouselSwitcher::addThumb(AppThumbnail* thumb)
+{
     thumb->setVisible(true);
     CarouselSwitcherItem* item = new CarouselSwitcherItem(_carousel);
     item->setSource(thumb);
     _carousel->addItem(item);
     _thumbs.push_back(thumb);
     update();
-  }
+}
 
-  void
-  CarouselSwitcher::removeThumb(AppThumbnail* thumb)
-  {
+void
+CarouselSwitcher::removeThumb(AppThumbnail* thumb)
+{
     _carousel->removeWidget(thumb);
     update();
-  }
+}
 
-  void
-  CarouselSwitcher::scrollTo(AppThumbnail* thumb)
-  {
-  }
+void
+CarouselSwitcher::scrollTo(AppThumbnail* thumb)
+{
+}
 
-  void
-  CarouselSwitcher::setOptimalGeometry(int width, int height)
-  {
+void
+CarouselSwitcher::setOptimalGeometry(int width, int height)
+{
     setGeometry(0, 0, width, height);
-  }
+}
 
-  void
-  CarouselSwitcher::compose(const PaintEvent& event)
-  {
+void
+CarouselSwitcher::compose(const PaintEvent& event)
+{
     Painter p(this);
     p.begin(event);
     p.setBrush(Color(0, 0, 0, 80));
     p.fillRectangle(0, 0, width(), height());
     p.end();
-  }
+}
 
-  void
-  CarouselSwitcher::updateSwitcherGeometry()
-  {
+void
+CarouselSwitcher::updateSwitcherGeometry()
+{
     _carousel->setGeometry(0, 0, width(), height());
-  }
+}
 
-  void
-  CarouselSwitcher::carouselItemSelected(CarouselItem* item)
-  {
-    _current = dynamic_cast<AppThumbnail*>(item->source());
-    if (_current)
-      sigSwitchRequest(_current->instance());
-  }
+void
+CarouselSwitcher::carouselItemSelected(CarouselItem* item)
+{
+    AppThumbnail* current = dynamic_cast<AppThumbnail*>(item->source());
+    if (current)
+        sigSwitchRequest(current->instance());
+}
 
 } /* namespace ilixi */

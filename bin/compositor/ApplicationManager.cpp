@@ -741,7 +741,7 @@ ApplicationManager::parseAppDef(const char* file)
         group = group->next;
     }
 
-    ILOG_INFO(ILX_APPLICATIONMANAGER, "Parsed appdef file: %s\n", file);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Parsed appdef file: %s\n", file);
 
     addApplication((const char*) name, (const char*) author,
                    (const char*) licence, (const char*) category,
