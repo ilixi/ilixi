@@ -9,6 +9,6 @@
 	<icon>@DATADIR:bbc.png</icon>
     <exec>lite_WebKit</exec>
     <args>http://bbc.co.uk/ -f</args>
-    <flags>APP_LITE</flags>
+    <flags>APP_LITE, APP_USE_BACK</flags>
     <deps>DEP_MOUSE</deps>
 </app>

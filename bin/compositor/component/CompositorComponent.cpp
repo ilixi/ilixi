@@ -51,6 +51,8 @@ CompositorComponent::CompositorComponent(Compositor* compositor)
     createNotification(SoundHidden, NULL, CNF_NONE);
     createNotification(DashVisible, NULL, CNF_NONE);
     createNotification(DashHidden, NULL, CNF_NONE);
+    createNotification(BackVisible, NULL, CNF_NONE);
+    createNotification(BackHidden, NULL, CNF_NONE);
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -146,6 +148,15 @@ CompositorComponent::signalAppStart(AppInstance* instance)
     notify(AppStarting, tPid);
 }
 
+void
+CompositorComponent::signalBack(bool showing)
+{
+    if (showing)
+        notify(BackVisible, NULL);
+    else
+        notify(BackHidden, NULL);
+}
+
 DirectResult
 CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 {
@@ -219,6 +230,12 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 
     case DashHide:
         _compositor->showDash(false);
+        break;
+
+    case SendBackKey:
+        ILOG_TRACE_F(ILX_COMPCOMP);
+        ILOG_DEBUG(ILX_COMPCOMP, "SendBackKey\n");
+        _compositor->sendOSKInput(DIKS_BACK);
         break;
 
     default:

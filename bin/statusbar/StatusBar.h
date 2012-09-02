@@ -67,12 +67,16 @@ public:
     void
     clickedSound();
 
+    void
+    clickedBack();
+
 private:
     Image* _bg;
     StatusbarButton* _home;
     StatusbarButton* _switch;
     StatusbarButton* _dash;
     StatusbarButton* _sound;
+    StatusbarButton* _back;
     RemoteContentArea* _rca;
 
     IComaComponent* _soundComponent;
@@ -105,6 +109,12 @@ private:
 
     friend void
     dashHidden(void* ctx, void* arg);
+
+    friend void
+    backVisible(void* ctx, void* arg);
+
+    friend void
+    backHidden(void* ctx, void* arg);
 };
 
 }

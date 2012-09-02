@@ -38,9 +38,9 @@ class CompositorComponent : public ilixi::ComaComponent
 public:
     enum CompositorComaMethods
     {
-        AddNotification = 0, // e.g. song changed.
-        AddOverlay = 1, // No input
-        AddDialog = 2,     // Alerts with OK button.
+        AddNotification = 0,    // e.g. song changed.
+        AddOverlay = 1,         // No input
+        AddDialog = 2,          // Alerts with OK button.
         ShowHome = 3,
         ShowSwitcher = 4,
         HideHome = 5,
@@ -50,7 +50,8 @@ public:
         SoundShow = 9,
         SoundHide = 10,
         DashShow = 11,
-        DashHide = 12
+        DashHide = 12,
+        SendBackKey = 13
     };
 
     enum CompositorNotifications
@@ -67,6 +68,8 @@ public:
         SoundHidden = 9,
         DashVisible = 10,
         DashHidden = 11,
+        BackVisible = 12,
+        BackHidden = 13,
         CompositorNumNotifications
     };
 
@@ -95,6 +98,9 @@ public:
 
     void
     signalAppStart(AppInstance* instance);
+
+    void
+    signalBack(bool showing);
 
     void
     notifyVisibility(AppInstance* instance, bool visible);

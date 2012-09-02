@@ -158,6 +158,8 @@ AppInfo::setAppFlags(const std::string& appFlags)
             _appFlags = (AppFlags) (_appFlags | APP_NEEDS_BLENDING);
         else if (strcmp(pch, "APP_AUTO_START") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_AUTO_START);
+        else if (strcmp(pch, "APP_USE_BACK") == 0)
+            _appFlags = (AppFlags) (_appFlags | APP_USE_BACK);
         else if (strcmp(pch, "APP_STATUSBAR") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
         else if (strcmp(pch, "APP_OSK") == 0)

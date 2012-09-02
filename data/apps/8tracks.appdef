@@ -9,6 +9,6 @@
 	<icon>@DATADIR:8tracks.png</icon>
     <exec>lite_WebKit</exec>
     <args>http://m.8tracks.com/ -f</args>
-    <flags>APP_LITE</flags>
+    <flags>APP_LITE, APP_USE_BACK</flags>
     <deps>DEP_MOUSE</deps>
 </app>

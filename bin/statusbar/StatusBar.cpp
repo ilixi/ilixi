@@ -111,6 +111,22 @@ dashHidden(void* ctx, void* arg)
     bar->_dash->setActive(0);
 }
 
+void
+backVisible(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_back->setVisible(true);
+    bar->update();
+}
+
+void
+backHidden(void* ctx, void* arg)
+{
+    StatusBar* bar = (StatusBar*) ctx;
+    bar->_back->setVisible(false);
+    bar->update();
+}
+
 //*****************************************************************
 
 StatusBar::StatusBar(int argc, char* argv[])
@@ -171,6 +187,13 @@ StatusBar::StatusBar(int argc, char* argv[])
     _sound->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSound));
     addWidget(_sound);
 
+    _back = new StatusbarButton();
+    _back->setVisible(false);
+    _back->addImage(
+            new Image(ILIXI_DATADIR"statusbar/back0.png", Size(48, 48)));
+    _back->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedBack));
+    addWidget(_back);
+
     addWidget(new Clock());
 
     _rca = new RemoteContentArea();
@@ -209,6 +232,9 @@ StatusBar::onShow()
     _compComponent->Listen(_compComponent, 9, soundHidden, this);
     _compComponent->Listen(_compComponent, 10, dashVisible, this);
     _compComponent->Listen(_compComponent, 11, dashHidden, this);
+
+    _compComponent->Listen(_compComponent, 12, backVisible, this);
+    _compComponent->Listen(_compComponent, 13, backHidden, this);
 
 }
 
@@ -258,6 +284,12 @@ StatusBar::clickedSound()
         DaleDFB::comaCallComponent(_compComponent, 10, NULL);
     else
         DaleDFB::comaCallComponent(_compComponent, 9, NULL);
+}
+
+void
+StatusBar::clickedBack()
+{
+    DaleDFB::comaCallComponent(_compComponent, 13, NULL);
 }
 
 }

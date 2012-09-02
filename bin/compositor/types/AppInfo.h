@@ -43,6 +43,7 @@ enum AppFlags
     APP_NEEDS_CLEAR         = 0x000200, //!< Background will be cleared with each update.
     APP_NEEDS_BLENDING      = 0x000400, //!< AppCompositors will set blending mode for each SurfaceView.
     APP_AUTO_START          = 0x000800, //!< Starts application when compositor is initialised.
+    APP_USE_BACK            = 0x001000, //!< Application can use a Back button.
     APP_STATUSBAR           = 0x010000, //!< Statusbar application.
     APP_OSK                 = 0x020000, //!< OSK application.
     APP_HOME                = 0x040000, //!< Home application.

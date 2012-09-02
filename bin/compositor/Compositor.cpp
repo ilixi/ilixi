@@ -175,6 +175,11 @@ Compositor::showInstance(AppInstance* instance)
         _compComp->signalDash(true);
     else
         _compComp->signalDash(false);
+
+    if (info->appFlags() & APP_USE_BACK)
+        _compComp->signalBack(true);
+    else
+        _compComp->signalBack(false);
 }
 
 void
