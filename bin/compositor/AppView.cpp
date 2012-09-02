@@ -261,7 +261,9 @@ AppView::madeAvailable()
             show();
         else if (flags & APP_OSK)
             _compositor->toggleOSK(true);
-        else if (!(flags & APP_AUTO_START))
+        else if (flags & APP_AUTO_START)
+            _compositor->_compComp->notifyVisibility(_instance, false);
+        else
             _compositor->showInstance(_instance);
     }
 }

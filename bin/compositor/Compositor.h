@@ -47,6 +47,7 @@ class Compositor : public Application
     friend class CompositorComponent;
     friend class NotificationManager;
     friend class OSKComponent;
+    friend class AppView;
 
 public:
     /*!
