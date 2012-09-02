@@ -113,8 +113,19 @@ HorizontalSwitcher::removeThumb(AppThumbnail* thumb)
     ILOG_TRACE_W(ILX_HSWITCHER);
     _scroller->removeWidget(thumb);
 
-    if (_thumbs.size() < _num2Slide)
+    for (Thumbnails::iterator it = _thumbs.begin(); it != _thumbs.end(); ++it)
     {
+        if (*it == thumb)
+        {
+            _thumbs.erase(it);
+            break;
+        }
+    }
+
+    if (_thumbs.size() == _num2Slide)
+    {
+        _currentIndex = 0;
+        scrollTo(currentThumb());
         _left->setVisible(false);
         _right->setVisible(false);
     }
