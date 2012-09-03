@@ -271,6 +271,8 @@ Compositor::sendOSKInput(uint32_t key)
 {
     _currentApp->view()->consumeKeyEvent(
             KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
+    if (key == DIKS_ENTER)
+        toggleOSK(false);
 }
 
 void
