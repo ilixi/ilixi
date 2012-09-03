@@ -229,6 +229,8 @@ AppView::clearAnimatedProperty(AnimatedProperty prop)
 void
 AppView::slideTo(int tx, int ty)
 {
+    ILOG_TRACE_W(ILX_APPVIEW);
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
     _propAnim.stop();
     bool anim = false;
     if (x() != tx)
@@ -237,6 +239,7 @@ AppView::slideTo(int tx, int ty)
         _xTween->setInitialValue(x());
         _xTween->setEndValue(tx);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> x=%d\n", tx);
     }
 
     if (y() != ty)
@@ -245,28 +248,29 @@ AppView::slideTo(int tx, int ty)
         _yTween->setInitialValue(y());
         _yTween->setEndValue(ty);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> y=%d\n", ty);
     }
 
     _opacityTween->setEnabled(false);
     _zoomTween->setEnabled(false);
 
-    if (anim)
+    if (anim) {
+        ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
+        _propAnim.setDuration(300);
         _propAnim.start();
+    }
 }
 
 void
 AppView::tweenSlot()
 {
-    ILOG_TRACE_W(ILX_APPVIEW);
-    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
-    ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
     if (_opacityTween->enabled())
         setOpacity(_opacityTween->value());
 
     if (_zoomTween->enabled())
         setZoomFactor(_zoomTween->value());
 
-    if (_xTween->enabled())
+    if (_xTween->enabled() || _yTween->enabled())
         moveTo(_xTween->value(), _yTween->value());
 
     update();

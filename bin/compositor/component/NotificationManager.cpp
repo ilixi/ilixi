@@ -39,7 +39,7 @@ NotificationManager::NotificationManager(Compositor* compositor)
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
     _timer.sigExec.connect(
             sigc::mem_fun(this, &NotificationManager::removeNotifications));
-//    _timer.start(30000);
+    _timer.start(10000);
 
     _anim.setDuration(500);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
