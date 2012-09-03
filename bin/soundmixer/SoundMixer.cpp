@@ -39,6 +39,8 @@
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_MIXERAPP, "ilixi/Mixer", "SoundMixer");
+
 SoundMixer::SoundMixer(int argc, char* argv[])
         : Application(&argc, &argv, AppOptions(OptDale | OptSound)),
           _soundComponent(NULL),
@@ -85,6 +87,9 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     volBox->addWidget(new Spacer(Vertical), 5, 0);
 
     GroupBox* volMeter = new GroupBox("Meter");
+    VBoxLayout* volMeterLayout = new VBoxLayout();
+    volMeterLayout->setHorizontalAlignment(Alignment::Center);
+    volMeter->setLayout(volMeterLayout);
     volMeter->setXConstraint(FixedConstraint);
     volStuff->addWidget(volMeter);
     VolumeMeter* meter = new VolumeMeter();
@@ -165,7 +170,8 @@ SoundMixer::changeVolume(int volume)
         *vol = volume;
         DaleDFB::comaCallComponent(_soundComponent, 0, (void*) vol);
     }
-    _music->setVolume(_volSlider->value() / 100);
+
+    SoundDFB::setMasterVolume(_volSlider->value() / 100);
 }
 
 } /* namespace ilixi */
