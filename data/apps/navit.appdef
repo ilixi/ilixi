@@ -10,5 +10,5 @@
     <exec>navit</exec>
     <args></args>
     <flags>APP_SURFACE_DONTBLOCK, APP_AUTO_START</flags>
-    <deps>DEP_NONE</deps>
+    <deps>DEP_MOUSE</deps>
 </app>

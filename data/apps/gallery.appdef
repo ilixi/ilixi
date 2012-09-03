@@ -8,7 +8,5 @@
     <version>1.0</version>
 	<icon>@DATADIR:gallery.png</icon>
     <exec>ilixi_demo1</exec>
-    <args></args>
-    <flags>APP_ILIXI</flags>
     <deps>DEP_MOUSE</deps>
 </app>

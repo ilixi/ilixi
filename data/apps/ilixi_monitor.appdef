@@ -9,6 +9,4 @@
 	<icon>@DATADIR:widgets.png</icon>
     <exec>ilixi_monitor</exec>
     <args></args>
-    <flags>APP_ILIXI</flags>
-    <deps>DEP_MOUSE</deps>
 </app>

@@ -9,6 +9,5 @@
 	<icon>@DATADIR:andi.png</icon>
     <exec>df_andi</exec>
     <args>--dfb:force-windowed -a</args>
-    <flags>APP_NONE</flags>
-    <deps>DEP_NONE</deps>
+    <flags>APP_ALLOW_MULTIPLE</flags>
 </app>

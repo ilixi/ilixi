@@ -9,6 +9,6 @@
 	<icon></icon>
     <exec>ilixi_osk</exec>
     <args></args>
-    <flags>APP_ILIXI, APP_OSK, APP_SYSTEM</flags>
+    <flags>APP_OSK, APP_SYSTEM</flags>
     <deps>DEP_MOUSE</deps>
 </app>
