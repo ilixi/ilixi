@@ -39,7 +39,7 @@ Icon::Icon(Widget* parent)
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
+//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const std::string& path, Widget* parent)
@@ -51,7 +51,7 @@ Icon::Icon(const std::string& path, Widget* parent)
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
+//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const Image& image, Widget* parent)
@@ -63,7 +63,7 @@ Icon::Icon(const Image& image, Widget* parent)
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
+//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::~Icon()
