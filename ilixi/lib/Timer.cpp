@@ -40,6 +40,7 @@ Timer::Timer()
         : _interval(500),
           _repeats(0),
           _count(0),
+          _running(false),
           _expiry(0)
 {
 }
@@ -47,6 +48,12 @@ Timer::Timer()
 Timer::~Timer()
 {
     AppBase::removeTimer(this);
+}
+
+bool
+Timer::running() const
+{
+    return _running;
 }
 
 unsigned int
@@ -64,6 +71,7 @@ Timer::repeats() const
 void
 Timer::start(unsigned int msec, unsigned int repeats)
 {
+    _running = true;
     _interval = msec;
     _count = 0;
     _repeats = repeats;
@@ -79,6 +87,7 @@ void
 Timer::stop()
 {
     ILOG_TRACE_F(ILX_TIMER);
+    _running = false;
     AppBase::removeTimer(this);
 }
 
@@ -109,8 +118,10 @@ bool
 Timer::funck()
 {
     if (_repeats && _repeats == _count)
+    {
+        _running = false;
         return false;
-
+    }
     _expiry = direct_clock_get_millis() + _interval;
 
     ILOG_DEBUG(

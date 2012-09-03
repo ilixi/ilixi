@@ -47,6 +47,12 @@ public:
     ~Timer();
 
     /*!
+     * Returns true if timer is active.
+     */
+    bool
+    running() const;
+
+    /*!
      * Returns interval in milliseconds.
      */
     unsigned int
@@ -88,6 +94,9 @@ public:
     virtual void
     notify();
 
+    /*!
+     * Returns next timeout.
+     */
     int64_t
     expiry() const;
 
@@ -109,7 +118,9 @@ private:
     unsigned int _repeats;
     //! Current repeat count.
     unsigned int _count;
-    //! This stores next time timer fires.
+    //! This property stores whether timer is active.
+    bool _running;
+    //! This property stores when timer will fire next.
     int64_t _expiry;
 
     // Callback uses step()
