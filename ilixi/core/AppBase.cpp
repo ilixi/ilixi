@@ -833,9 +833,9 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
     } else if (event.flags & DIEF_AXISABS)
     {
         if (event.axis == DIAI_X)
-            __cursorNew.x = event.axisabs;
+            __cursorNew.x = (event.axisabs - event.min) * __layerSize.w / (event.max - event.min);
         else if (event.axis == DIAI_Y)
-            __cursorNew.y = event.axisabs;
+            __cursorNew.y = (event.axisabs - event.min) * __layerSize.h / (event.max - event.min);
     }
 
     if (__cursorNew.x < 0)
