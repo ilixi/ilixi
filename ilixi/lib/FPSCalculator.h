@@ -24,7 +24,6 @@
 #ifndef ILIXI_FPSCALC_H_
 #define ILIXI_FPSCALC_H_
 
-#include <core/Callback.h>
 #include <sigc++/signal.h>
 #include <string>
 
@@ -34,7 +33,7 @@ namespace ilixi
 /*!
  * Calculates FPS using given interval.
  */
-class FPSCalculator : public sigc::trackable, public Functionoid
+class FPSCalculator : public sigc::trackable
 {
 public:
     /*!
@@ -61,32 +60,17 @@ public:
     fpsText();
 
     /*!
-     * Start calculation.
+     * Callback method which actually calculated FPS.
      */
-    void
-    start();
-
-    /*!
-     * Stop calculation.
-     */
-    void
-    stop();
+    bool
+    funck();
 
     /*!
      * This signal is emitted when FPS value is updated.
      */
     sigc::signal<void, float> sigUpdated;
 
-protected:
-    /*!
-     * Callback method which actually calculated FPS.
-     */
-    bool
-    funck();
-
 private:
-    //! Callback for FPS calculation.
-    Callback _cb;
     //! Number of frames since last calculation.
     int _frames;
     //! Current FPS.
