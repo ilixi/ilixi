@@ -118,4 +118,10 @@ RadioButton::updateTextBaseGeometry()
     _layout.doLayout(font());
 }
 
+Font*
+RadioButton::defaultFont() const
+{
+    return stylist()->defaultFont(StyleHint::DefaultFont);
+}
+
 } /* namespace ilixi */

@@ -95,6 +95,9 @@ private:
 
     virtual void
     updateTextBaseGeometry();
+
+    virtual Font*
+    defaultFont() const;
 };
 
 } /* namespace ilixi */
