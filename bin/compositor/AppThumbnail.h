@@ -27,6 +27,7 @@
 #include "AppCompositor.h"
 #include <ui/Label.h>
 #include <lib/TweenAnimation.h>
+#include <ui/ToolButton.h>
 
 namespace ilixi
 {
@@ -46,6 +47,7 @@ namespace ilixi
 
     sigc::signal<void, AppInstance*> sigSelected;
     sigc::signal<void, AppThumbnail*> sigFocused;
+    ToolButton* _close;
 
   protected:
     virtual void

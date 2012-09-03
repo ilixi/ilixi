@@ -40,7 +40,7 @@ HorizontalSwitcher::HorizontalSwitcher(Widget* parent)
     _scroller = new HorizontalScroller();
     addChild(_scroller);
 
-    _anim.setDuration(500);
+    _anim.setDuration(300);
     _anim.sigExec.connect(sigc::mem_fun(this, &HorizontalSwitcher::tweenSlot));
     _anim.sigFinished.connect(
             sigc::mem_fun(this, &HorizontalSwitcher::tweenEndSlot));
@@ -101,6 +101,10 @@ HorizontalSwitcher::addThumb(AppThumbnail* thumb)
         {
             _left->setVisible(true);
             _right->setVisible(true);
+        } else if (_thumbs.size() == 1)
+        {
+            _currentIndex = 0;
+            scrollTo(currentThumb());
         }
 
         update();
@@ -216,7 +220,7 @@ HorizontalSwitcher::compose(const PaintEvent& event)
 void
 HorizontalSwitcher::updateSwitcherGeometry()
 {
-    ILOG_TRACE_W(ILX_HSWITCHER);
+//    ILOG_TRACE_W(ILX_HSWITCHER);
     _scroller->setGeometry(0, 20, width(), height() - 40);
     _left->setGeometry(0, 0, 100, 200);
     _right->setGeometry(width() - 100, 0, 100, 200);

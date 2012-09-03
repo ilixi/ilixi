@@ -24,77 +24,87 @@
 #include "AppThumbnail.h"
 #include "Compositor.h"
 #include <graphics/Painter.h>
+#include <sigc++/bind.h>
 
 namespace ilixi
 {
 
-  AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance,
-      Widget* parent) :
-      AppCompositor(compositor, instance, parent)
-  {
+AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance, Widget* parent)
+        : AppCompositor(compositor, instance, parent)
+{
     setInputMethod(KeyAndPointerInput);
     setConstraints(FixedConstraint, FixedConstraint);
     _ani.setDuration(300);
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);
     _ani.addTween(_opacityTween);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppThumbnail::tweenSlot));
+    _close = new ToolButton("");
+    _close->setToolButtonStyle(ToolButton::IconOnly);
+    _close->setIcon(ILIXI_DATADIR"compositor/close.png", Size(32, 32));
+    _close->setDrawFrame(false);
+    _close->setGeometry(164, 0, 32, 32);
+    _close->sigPressed.connect(
+            sigc::bind<AppInstance*>(
+                    sigc::mem_fun(_compositor, &Compositor::killApp),
+                    _instance));
+    addChild(_close);
 
     setVisible(false);
-  }
+}
 
-  AppThumbnail::~AppThumbnail()
-  {
-  }
+AppThumbnail::~AppThumbnail()
+{
+}
 
-  Size
-  AppThumbnail::preferredSize() const
-  {
+Size
+AppThumbnail::preferredSize() const
+{
     return Size(196, 156);
-  }
+}
 
-  void
-  AppThumbnail::compose(const PaintEvent& event)
-  {
-  }
+void
+AppThumbnail::compose(const PaintEvent& event)
+{
+}
 
-  void
-  AppThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
-  {
+void
+AppThumbnail::pointerButtonUpEvent(const PointerEvent& pointerEvent)
+{
     sigFocused(this);
     sigSelected(_instance);
-  }
+}
 
-  void
-  AppThumbnail::keyUpEvent(const KeyEvent& keyEvent)
-  {
+void
+AppThumbnail::keyUpEvent(const KeyEvent& keyEvent)
+{
     if (keyEvent.keySymbol == DIKS_SPACE)
-      sigSelected(_instance);
-  }
+        sigSelected(_instance);
+}
 
-  void
-  AppThumbnail::focusInEvent()
-  {
+void
+AppThumbnail::focusInEvent()
+{
     sigFocused(this);
 //    _ani.stop();
 //    _opacityTween->setInitialValue(128);
 //    _opacityTween->setEndValue(255);
 //    _ani.start();
-  }
+}
 
-  void
-  AppThumbnail::focusOutEvent()
-  {
+void
+AppThumbnail::focusOutEvent()
+{
 //    _ani.stop();
 //    _opacityTween->setInitialValue(255);
 //    _opacityTween->setEndValue(128);
 //    _ani.start();
-  }
+}
 
-  void
-  AppThumbnail::tweenSlot()
-  {
+void
+AppThumbnail::tweenSlot()
+{
 //    setOpacity(_opacityTween->value());
     update();
-  }
+}
 
 } /* namespace ilixi */

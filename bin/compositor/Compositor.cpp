@@ -41,7 +41,6 @@ Compositor::Compositor(int argc, char* argv[])
           _currentApp(NULL),
           _previousApp(NULL),
           _switcher(NULL),
-          _quitButton(NULL),
           _fpsLabel(NULL),
           _fps(NULL),
           _compComp(NULL),
@@ -65,11 +64,10 @@ Compositor::Compositor(int argc, char* argv[])
     _showAnimProps = AppView::Opacity;
     _hideAnimProps = AppView::AnimatedProperty(
             AppView::Opacity | AppView::Zoom);
-
     setTitle("Compositor");
     setMargin(0);
     setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
-
+    _backgroundFlags = BGFNone;
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "carousel") == 0)
@@ -77,6 +75,7 @@ Compositor::Compositor(int argc, char* argv[])
 
         else if (strcmp(argv[i], "fps") == 0)
         {
+            _backgroundFlags = BGFFill;
             _fpsLabel = new Label("FPS: 0");
             _fpsLabel->layout().setAlignment(TextLayout::Center);
             addWidget(_fpsLabel);
@@ -96,12 +95,6 @@ Compositor::Compositor(int argc, char* argv[])
     _switcher->sigSwitchRequest.connect(
             sigc::mem_fun1(this, &Compositor::showInstance));
     addWidget(_switcher);
-
-    _quitButton = new QuitButton("comp_quit.png");
-    _quitButton->setZ(5);
-    _quitButton->sigPressed.connect(
-            sigc::mem_fun(this, &Compositor::handleQuit));
-    addWidget(_quitButton);
 
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
@@ -153,9 +146,9 @@ Compositor::showInstance(AppInstance* instance)
     // background
     AppInfo* info = _currentApp->appInfo();
     if (info->appFlags() & APP_NEEDS_CLEAR)
-        _backgroundFlags = BGFAll;
+        _backgroundFlags |= BGFClear;
     else
-        _backgroundFlags = BGFNone;
+        _backgroundFlags &= ~BGFClear;
 
     ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
     _currentApp->view()->show(_showAnimProps);
@@ -210,18 +203,19 @@ Compositor::toggleSwitcher(bool show)
 }
 
 void
-Compositor::handleQuit()
+Compositor::killApp(AppInstance* instance)
 {
-    if (_home->view()->visible())
-        quit();
-    else if (_currentApp)
+    if (instance == _currentApp)
     {
-        removeWidget(_currentApp->view());
-        _switcher->removeThumb(_currentApp->thumb());
-        _appMan->stopApplication(_currentApp->pid());
+        _previousApp = NULL;
         _currentApp = NULL;
         toggleLauncher(true);
     }
+
+    CompositorEventData* data = new CompositorEventData;
+    data->instance = instance;
+
+    postUserEvent(CET_Term, data);
 }
 
 void
@@ -258,6 +252,7 @@ Compositor::toggleOSK(bool show)
         {
             _currentApp->view()->slideTo(0, -_oskTarget.y());
             _osk->view()->show(AppView::Position, 0, height() - 450);
+            toggleSwitcher(false);
         } else
         {
             _currentApp->view()->slideTo(0, 0);
@@ -282,14 +277,8 @@ Compositor::showSound(bool show)
             _appMan->startApplication("SoundMixer");
         else
             showInstance(_mixer);
-
-//        _compComp->signalSound(true);
-//        _compComp->signalDash(false);
     } else
-    {
         showInstance(_previousApp);
-//        _compComp->signalSound(false);
-    }
 }
 
 void
@@ -301,30 +290,20 @@ Compositor::showDash(bool show)
             _appMan->startApplication("Dashboard");
         else
             showInstance(_dash);
-
-//        _compComp->signalDash(true);
-//        _compComp->signalSound(false);
     } else
-    {
         showInstance(_previousApp);
-//        _compComp->signalDash(false);
-    }
 }
 
 void
 Compositor::compose(const PaintEvent& event)
 {
-    Painter painter(this);
-    painter.begin(event);
-    painter.stretchImage(background(), 0, 0, width(), height() - 50);
-    painter.end();
+    if (_fps)
+        _fps->funck();
 }
 
 void
 Compositor::onVisible()
 {
-    _quitButton->show();
-
     if (_fps)
     {
         _fps->start();
@@ -476,7 +455,7 @@ void
 Compositor::updateCompositorGeometry()
 {
     _switcher->setOptimalGeometry(width(), height() - 50);
-    _quitButton->moveTo(width() - 80, 0);
+
     if (_fpsLabel)
         _fpsLabel->setGeometry((width() - 100) / 2, 0, 100, height());
 }
@@ -569,10 +548,10 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     }
 
                     data->instance->thumb()->addWindow(dfbWindow, false);
+                    data->instance->thumb()->_close->bringToFront();
                     data->instance->view()->addWindow(
                             dfbWindow, true,
                             !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
-
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);
@@ -630,12 +609,34 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
 
         case CET_Quit:
             {
+                ILOG_DEBUG(
+                        ILX_COMPOSITOR,
+                        "CET_Quit (%s)\n", data->instance->appInfo()->name().c_str());
                 _currentApp = NULL;
+
                 if (data->instance->view())
                     removeWidget(data->instance->view());
+
                 if (data->instance->thumb())
                     _switcher->removeThumb(data->instance->thumb());
+
                 toggleLauncher(true);
+            }
+            break;
+
+        case CET_Term:
+            {
+                ILOG_DEBUG(
+                        ILX_COMPOSITOR,
+                        "CET_Term (%s)\n", data->instance->appInfo()->name().c_str());
+
+                if (data->instance->view())
+                    removeWidget(data->instance->view());
+
+                if (data->instance->thumb())
+                    _switcher->removeThumb(data->instance->thumb());
+
+                _appMan->stopApplication(data->instance->pid());
             }
             break;
 
@@ -675,6 +676,8 @@ Compositor::windowPreEventFilter(const DFBWindowEvent& event)
             return true;
         } else if (event.key_symbol == DIKS_ESCAPE)
             return true;
+        else if (event.key_symbol == DIKS_F12)
+            quit();
         break;
 
     case DWET_KEYUP:

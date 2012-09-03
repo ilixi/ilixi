@@ -14,10 +14,6 @@ ilixi_comp_SOURCES	= 	AppCompositor.h \
 						AppView.cpp \
 						Compositor.cpp \
 						Compositor.h \
-						buttons/CompositorButton.h \
-						buttons/CompositorButton.cpp \
-						buttons/QuitButton.h \
-						buttons/QuitButton.cpp \
 						component/CompositorComponent.h \
 						component/CompositorComponent.cpp \
 						component/Notification.h \
