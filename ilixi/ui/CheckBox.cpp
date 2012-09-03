@@ -148,4 +148,10 @@ CheckBox::updateTextBaseGeometry()
     _layout.doLayout(font());
 }
 
+Font*
+CheckBox::defaultFont() const
+{
+    return stylist()->defaultFont(StyleHint::DefaultFont);
+}
+
 } /* namespace ilixi */

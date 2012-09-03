@@ -207,10 +207,12 @@ Compositor::killApp(AppInstance* instance)
 {
     if (instance == _currentApp)
     {
-        _previousApp = NULL;
         _currentApp = NULL;
         toggleLauncher(true);
     }
+
+    if (instance == _previousApp)
+        _previousApp = NULL;
 
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
@@ -239,10 +241,8 @@ Compositor::showOSK(DFBRectangle rect)
         _oskTarget.setRectangle(rect.x, 0, rect.w, rect.h);
 
     if (!_osk)
-    {
         _appMan->startApp("OnScreenKeyboard");
-        _currentApp->view()->slideTo(0, -_oskTarget.y());
-    } else
+    else
         toggleOSK(true);
 }
 

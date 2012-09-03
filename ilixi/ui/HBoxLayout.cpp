@@ -39,6 +39,7 @@ HBoxLayout::HBoxLayout(Widget* parent)
 
 HBoxLayout::~HBoxLayout()
 {
+    ILOG_TRACE_W(ILX_HBOX);
 }
 
 Alignment::Vertical
@@ -177,9 +178,7 @@ HBoxLayout::tile()
     ElementList::iterator it = l.begin();
     while (it != l.end())
     {
-        if (((LayoutElement) *it).widget->xConstraint() == FixedConstraint
-                && ((LayoutElement) *it).widget->minWidth() < 0
-                && ((LayoutElement) *it).widget->maxWidth() < 0)
+        if (((LayoutElement) *it).widget->xConstraint() == FixedConstraint && ((LayoutElement) *it).widget->minWidth() < 0 && ((LayoutElement) *it).widget->maxWidth() < 0)
         {
             usedSpace += ((LayoutElement) *it).size.width();
             it = l.erase(it);
@@ -223,8 +222,7 @@ HBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average > ((LayoutElement) *it).widget->maxWidth()
-                && ((LayoutElement) *it).widget->maxWidth() > 0)
+        if (average > ((LayoutElement) *it).widget->maxWidth() && ((LayoutElement) *it).widget->maxWidth() > 0)
         {
             usedSpace += ((LayoutElement) *it).widget->maxWidth();
             it = l.erase(it);
@@ -246,8 +244,7 @@ HBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average < ((LayoutElement) *it).size.width()
-                && !(((LayoutElement) *it).widget->xConstraint() & ShrinkPolicy))
+        if (average < ((LayoutElement) *it).size.width() && !(((LayoutElement) *it).widget->xConstraint() & ShrinkPolicy))
         {
             usedSpace += ((LayoutElement) *it).size.width();
             it = l.erase(it);
@@ -269,8 +266,7 @@ HBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average > ((LayoutElement) *it).size.width()
-                && !(((LayoutElement) *it).widget->xConstraint() & GrowPolicy))
+        if (average > ((LayoutElement) *it).size.width() && !(((LayoutElement) *it).widget->xConstraint() & GrowPolicy))
         {
             usedSpace += ((LayoutElement) *it).widget->width();
             it = l.erase(it);
@@ -298,11 +294,9 @@ HBoxLayout::tile()
             ++expanding;
         else
         {
-            if (((LayoutElement) *it).widget->minWidth() > 0
-                    && average > ((LayoutElement) *it).widget->minWidth())
+            if (((LayoutElement) *it).widget->minWidth() > 0 && average > ((LayoutElement) *it).widget->minWidth())
             {
-                expandSpace += average
-                        - ((LayoutElement) *it).widget->minWidth();
+                expandSpace += average - ((LayoutElement) *it).widget->minWidth();
                 ((LayoutElement) *it).size.setWidth(
                         ((LayoutElement) *it).widget->minWidth());
             } else if (average > ((LayoutElement) *it).size.width())
@@ -325,8 +319,8 @@ HBoxLayout::tile()
     Widget* up = getNeighbour(Up);
     Widget* down = getNeighbour(Down);
     ElementList::iterator itNext, itLast;
-    for (ElementList::iterator it = list.begin(), end = list.end(), itLast =
-            (++list.rbegin()).base(); it != end; ++it)
+    for (ElementList::iterator it = list.begin(), end = list.end(),
+            itLast = (++list.rbegin()).base(); it != end; ++it)
     {
         widget = ((LayoutElement) *it).widget;
 
@@ -341,8 +335,7 @@ HBoxLayout::tile()
                     artifact = 0;
                 } else
                     widget->setWidth(average + expandAverage);
-            } else if (widget->xConstraint() & ShrinkPolicy
-                    && average < ((LayoutElement) *it).size.width())
+            } else if (widget->xConstraint() & ShrinkPolicy && average < ((LayoutElement) *it).size.width())
                 widget->setWidth(average);
             else
                 widget->setWidth(((LayoutElement) *it).size.width());
@@ -350,11 +343,9 @@ HBoxLayout::tile()
         {
             if (widget->minWidth() > 0 || widget->maxWidth() > 0)
                 widget->setWidth(average);
-            else if ((widget->xConstraint() & ShrinkPolicy)
-                    && ((LayoutElement) *it).size.width() > average)
+            else if ((widget->xConstraint() & ShrinkPolicy) && ((LayoutElement) *it).size.width() > average)
                 widget->setWidth(average);
-            else if ((widget->xConstraint() & GrowPolicy)
-                    && ((LayoutElement) *it).size.width() < average)
+            else if ((widget->xConstraint() & GrowPolicy) && ((LayoutElement) *it).size.width() < average)
             {
                 if (artifact)
                 {
@@ -371,11 +362,9 @@ HBoxLayout::tile()
             widget->setHeight(((LayoutElement) *it).size.height());
         else if (widget->yConstraint() & ExpandPolicy)
             widget->setHeight(height());
-        else if (widget->height() < height()
-                && (widget->yConstraint() & GrowPolicy))
+        else if (widget->height() < height() && (widget->yConstraint() & GrowPolicy))
             widget->setHeight(height());
-        else if (widget->height() >= height()
-                && (widget->yConstraint() & ShrinkPolicy))
+        else if (widget->height() >= height() && (widget->yConstraint() & ShrinkPolicy))
             widget->setHeight(height());
 
         // check if widget provides a height for width, if not use
