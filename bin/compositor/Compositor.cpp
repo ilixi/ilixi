@@ -305,10 +305,7 @@ void
 Compositor::onVisible()
 {
     if (_fps)
-    {
-        _fps->start();
         _fpsLabel->bringToFront();
-    }
 
     _appMan->initStartup();
 }
