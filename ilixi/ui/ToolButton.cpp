@@ -301,7 +301,7 @@ ToolButton::updateTextBaseGeometry()
 
     else if (_toolButtonStyle == IconOnly)
     {
-        _icon->moveTo((width() - iconW) / 2, (height() - iconH) / 2 + 1);
+        _icon->moveTo((width() - iconW) / 2, (height() - iconH) / 2);
         _layout.setBounds(0, 0, 0, 0);
         return;
     }

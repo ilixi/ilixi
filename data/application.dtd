@@ -1,4 +1,4 @@
-<!ELEMENT app (name, author, licence, category, version, icon, exec, args, flags, deps)>
+<!ELEMENT app (name, author, licence, category, version, icon, exec, args?, flags?, deps?)>
 	<!ELEMENT name 		(#PCDATA)>
 	<!ELEMENT author 	(#PCDATA)>
 	<!ELEMENT licence 	(#PCDATA)>

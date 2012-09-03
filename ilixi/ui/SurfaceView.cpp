@@ -244,13 +244,10 @@ SurfaceView::renderSource(const PaintEvent& event)
     {
         ILOG_TRACE_W(ILX_SURFACEVIEW);
 #ifdef ILIXI_STEREO_OUTPUT
-        if (_flipCount && event.eye == PaintEvent::RightEye)
-#else
-        if (_flipCount)
+        if (event.eye == PaintEvent::RightEye)
 #endif
         {
             _sourceSurface->FrameAck(_sourceSurface, _flipCount);
-            _flipCount = 0;
         }
 
 #ifdef ILIXI_STEREO_OUTPUT
@@ -298,6 +295,7 @@ void
 SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
+
     if (!(_svState & SV_READY))
     {
         sigSourceReady();

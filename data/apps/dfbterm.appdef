@@ -9,6 +9,5 @@
 	<icon>@DATADIR:dfbterm.png</icon>
     <exec>dfbterm</exec>
     <args></args>
-    <flags>APP_LITE, APP_ALLOW_MULTIPLE, APP_NEEDS_CLEAR</flags>
-    <deps>DEP_NONE</deps>
+    <flags>APP_ALLOW_MULTIPLE, APP_NEEDS_CLEAR</flags>
 </app>

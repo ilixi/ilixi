@@ -699,9 +699,9 @@ ApplicationManager::parseAppDef(const char* file)
     xmlChar* version;
     xmlChar* icon;
     xmlChar* exec;
-    xmlChar* args;
-    xmlChar* appFlags;
-    xmlChar* depFlags;
+    xmlChar* args = NULL;
+    xmlChar* appFlags = NULL;
+    xmlChar* depFlags = NULL;
 
     while (group != NULL)
     {
@@ -756,9 +756,12 @@ ApplicationManager::parseAppDef(const char* file)
     xmlFree(version);
     xmlFree(icon);
     xmlFree(exec);
-    xmlFree(args);
-    xmlFree(appFlags);
-    xmlFree(depFlags);
+    if (args)
+        xmlFree(args);
+    if (appFlags)
+        xmlFree(appFlags);
+    if (depFlags)
+        xmlFree(depFlags);
 
     xmlFreeDoc(doc);
     xmlFreeParserCtxt(ctxt);
@@ -791,8 +794,10 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
         app->setPath(exec);
     if (args)
         app->setArgs(args);
-    app->setAppFlags(appFlags);
-    app->setDepFlags(depFlags);
+    if (appFlags)
+        app->setAppFlags(appFlags);
+    if (depFlags)
+        app->setDepFlags(depFlags);
     _infos.push_back(app);
 }
 

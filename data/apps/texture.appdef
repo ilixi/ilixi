@@ -9,6 +9,4 @@
 	<icon>@DATADIR:texture.png</icon>
     <exec>df_texture</exec>
     <args>--dfb:force-windowed</args>
-    <flags>APP_NONE</flags>
-    <deps>DEP_NONE</deps>
 </app>

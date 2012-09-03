@@ -28,7 +28,6 @@
 #include <directfb_windows.h>
 #include <lib/FPSCalculator.h>
 #include <ui/Application.h>
-#include "QuitButton.h"
 #include "AppView.h"
 #include "ApplicationManager.h"
 #include "Switcher.h"
@@ -100,10 +99,10 @@ public:
     toggleOSK(bool show);
 
     /*!
-     *Terminates client application or compositor.
+     * Terminates client application.
      */
     void
-    handleQuit();
+    killApp(AppInstance* instance);
 
 protected:
     /*!
@@ -146,9 +145,6 @@ private:
     //! Switcher instance.
     Switcher* _switcher;
 
-    //! Buttons
-    QuitButton* _quitButton;
-
     //! FPS stuff
     Label* _fpsLabel;
     FPSCalculator* _fps;
@@ -174,13 +170,14 @@ private:
 
     enum CompositorEventType
     {
-        CET_Add, //!< Window added
-        CET_Remove, //!< Window removed
-        CET_Config, //!< Window configured
-        CET_Focus, //!< Window focused
-        CET_Restack, //!< Window restack
-        CET_State, //!< Window state
-        CET_Quit //!< Application terminated
+        CET_Add,        //!< Window added
+        CET_Remove,     //!< Window removed
+        CET_Config,     //!< Window configured
+        CET_Focus,      //!< Window focused
+        CET_Restack,    //!< Window restack
+        CET_State,      //!< Window state
+        CET_Quit,       //!< Application terminated
+        CET_Term        //!< Terminate application.
     };
 
     struct CompositorEvent

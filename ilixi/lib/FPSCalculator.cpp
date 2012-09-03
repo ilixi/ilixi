@@ -32,8 +32,7 @@ namespace ilixi
 {
 
 FPSCalculator::FPSCalculator()
-        : _cb(this),
-          _frames(0),
+        : _frames(0),
           _fps(0),
           _fpsTime(direct_clock_get_millis())
 {
@@ -41,7 +40,6 @@ FPSCalculator::FPSCalculator()
 
 FPSCalculator::~FPSCalculator()
 {
-    _cb.stop();
 }
 
 float
@@ -55,18 +53,6 @@ FPSCalculator::fpsText()
 {
     snprintf(_fpsText, sizeof(_fpsText), "FPS: %.1f\0", _fps);
     return _fpsText;
-}
-
-void
-FPSCalculator::start()
-{
-    _cb.start();
-}
-
-void
-FPSCalculator::stop()
-{
-    _cb.stop();
 }
 
 bool

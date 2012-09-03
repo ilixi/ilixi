@@ -9,6 +9,4 @@
 	<icon>@DATADIR:particle.png</icon>
     <exec>df_particle</exec>
     <args>--dfb:force-windowed</args>
-    <flags>APP_NONE</flags>
-    <deps>DEP_NONE</deps>
 </app>

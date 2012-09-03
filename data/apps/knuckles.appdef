@@ -10,5 +10,4 @@
     <exec>df_knuckles</exec>
     <args>--dfb:force-windowed</args>
     <flags>APP_NEEDS_CLEAR</flags>
-    <deps>DEP_NONE</deps>
 </app>

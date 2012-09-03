@@ -102,7 +102,7 @@ WindowWidget::update()
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        AppBase::__buffer->WakeUp( AppBase::__buffer);
+        AppBase::__buffer->WakeUp(AppBase::__buffer);
         _updates._updateQueue.push_back(frameGeometry());
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(frameGeometry());
@@ -117,7 +117,7 @@ WindowWidget::update(const PaintEvent& event)
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        AppBase::__buffer->WakeUp( AppBase::__buffer);
+        AppBase::__buffer->WakeUp(AppBase::__buffer);
         _updates._updateQueue.push_back(event.rect);
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(event.right);
@@ -214,12 +214,10 @@ WindowWidget::paint(const PaintEvent& event)
                 surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
 #else
                 surface()->clip(evt.rect);
+                if (_backgroundFlags & BGFClear)
+                    surface()->clear(evt.rect);
                 if (_backgroundFlags & BGFFill)
-                {
-                    surface()->clear(evt.rect);
                     compose(evt);
-                } else if (_backgroundFlags & BGFClear)
-                    surface()->clear(evt.rect);
 
                 paintChildren(evt);
 
@@ -234,8 +232,7 @@ WindowWidget::paint(const PaintEvent& event)
                                             AppBase::cursorPosition().y);
 
                 }
-                if ((AppBase::appOptions() & OptExclusive)
-                        && (AppBase::appOptions() & OptTripleAccelerated))
+                if ((AppBase::appOptions() & OptExclusive) && (AppBase::appOptions() & OptTripleAccelerated))
                     surface()->flip(evt.rect, DSFLIP_ONSYNC);
                 else
                     surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
@@ -270,17 +267,15 @@ WindowWidget::setBackgroundFilled(bool fill)
 bool
 WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    if (visible()
-            && (_rootWindow->_eventManager->grabbedWidget() == this
-                    || _frameGeometry.contains(pointerEvent.x, pointerEvent.y,
-                                               true)))
+    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(
+            pointerEvent.x, pointerEvent.y, true)))
     {
         if (_children.size())
         {
             for (WidgetListReverseIterator it = _children.rbegin();
                     it != _children.rend(); ++it)
-                if (((Widget*) *it)->acceptsPointerInput()
-                        && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(
+                        pointerEvent))
                     return true;
         }
 
@@ -303,14 +298,12 @@ WindowWidget::showWindow()
         IDirectFBImageProvider* provider;
         DFBSurfaceDescription desc;
         if (AppBase::getDFB()->CreateImageProvider(
-                AppBase::getDFB(), ILIXI_DATADIR"images/pointer.png", &provider)
-                != DFB_OK)
+                AppBase::getDFB(), ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
                        "Error while creating cursor image provider!\n");
 
         provider->GetSurfaceDescription(provider, &desc);
-        desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
-                | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+        desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
         desc.caps = DSCAPS_PREMULTIPLIED;
         desc.pixelformat = DSPF_ARGB;
 
@@ -328,13 +321,10 @@ WindowWidget::showWindow()
         DFBScreenEncoderDescription sEncoderDesc;
 
         AppBase::__layer->GetScreen(AppBase::__layer, &pScreen);
-        sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD
-                | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS
-                | DSECONF_RESOLUTION | DSECONF_FRAMING);
+        sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS | DSECONF_RESOLUTION | DSECONF_FRAMING);
 
         sEncoderCfg.tv_standard = DSETV_DIGITAL;
-        sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT
-                | DSOC_HDMI);
+        sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT | DSOC_HDMI);
         sEncoderCfg.scanmode = DSESM_PROGRESSIVE;
         sEncoderCfg.resolution = DSOR_1280_720;
         sEncoderCfg.frequency = DSEF_60HZ;
@@ -367,8 +357,7 @@ WindowWidget::showWindow()
         AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
 
         DFBDisplayLayerConfig config;
-        config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE
-                | DLCONF_OPTIONS);
+        config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE | DLCONF_OPTIONS);
         if (deviceDesc.acceleration_mask == DFXL_NONE)
         {
             config.buffermode = DLBM_BACKSYSTEM;
@@ -386,21 +375,18 @@ WindowWidget::showWindow()
         config.options = DLOP_NONE;
 #endif
 
-        if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
-                != DFB_OK)
+        if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config) != DFB_OK)
         {
             ILOG_WARNING(ILX_WINDOWWIDGET,
                          "Cannot set layer buffer mode to TRIPLE!\n");
             AppBase::unSetAppOption(OptTripleAccelerated);
             config.buffermode = DLBM_BACKVIDEO;
-            if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config)
-                    != DFB_OK)
+            if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config) != DFB_OK)
                 ILOG_THROW(ILX_WINDOWWIDGET,
                            "Error while setting layer configuration!\n");
         }
 
-        if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface)
-                != DFB_OK)
+        if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface) != DFB_OK)
             ILOG_THROW(ILX_WINDOWWIDGET,
                        "Error while getting layer surface!\n");
 

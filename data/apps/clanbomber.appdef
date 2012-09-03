@@ -9,6 +9,4 @@
 	<icon>@DATADIR:clanbomber2.png</icon>
     <exec>clanbomber2</exec>
     <args>--dfb:force-windowed</args>
-    <flags>APP_NONE</flags>
-    <deps>DEP_NONE</deps>
 </app>

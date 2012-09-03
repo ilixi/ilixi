@@ -9,6 +9,6 @@
 	<icon>@DATADIR:facebook.png</icon>
     <exec>lite_WebKit</exec>
     <args>http://m.facebook.com/ -f</args>
-    <flags>APP_LITE, APP_USE_BACK</flags>
+    <flags>APP_USE_BACK</flags>
     <deps>DEP_MOUSE</deps>
 </app>
