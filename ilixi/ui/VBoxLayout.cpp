@@ -142,11 +142,9 @@ VBoxLayout::preferredSize() const
             e.size = e.widget->preferredSize();
 
             // satisfy min-max width
-            if (e.widget->minWidth() > 0
-                    && e.size.width() < e.widget->minWidth())
+            if (e.widget->minWidth() > 0 && e.size.width() < e.widget->minWidth())
                 e.size.setWidth(e.widget->minWidth());
-            else if (e.widget->maxWidth() > 0
-                    && e.size.width() > e.widget->maxWidth())
+            else if (e.widget->maxWidth() > 0 && e.size.width() > e.widget->maxWidth())
                 e.size.setWidth(e.widget->maxWidth());
 
             if (e.size.width() > w)
@@ -259,9 +257,7 @@ VBoxLayout::tile()
     ElementList::iterator it = l.begin();
     while (it != l.end())
     {
-        if (((LayoutElement) *it).widget->yConstraint() == FixedConstraint
-                && ((LayoutElement) *it).widget->minHeight() < 0
-                && ((LayoutElement) *it).widget->maxHeight() < 0)
+        if (((LayoutElement) *it).widget->yConstraint() == FixedConstraint && ((LayoutElement) *it).widget->minHeight() < 0 && ((LayoutElement) *it).widget->maxHeight() < 0)
         {
             usedSpace += ((LayoutElement) *it).size.height();
             it = l.erase(it);
@@ -282,8 +278,7 @@ VBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average > ((LayoutElement) *it).widget->maxHeight()
-                && ((LayoutElement) *it).widget->maxHeight() > 0)
+        if (average > ((LayoutElement) *it).widget->maxHeight() && ((LayoutElement) *it).widget->maxHeight() > 0)
         {
             usedSpace += ((LayoutElement) *it).widget->maxHeight();
             it = l.erase(it);
@@ -325,8 +320,7 @@ VBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average < ((LayoutElement) *it).size.height()
-                && !(((LayoutElement) *it).widget->yConstraint() & ShrinkPolicy))
+        if (average < ((LayoutElement) *it).size.height() && !(((LayoutElement) *it).widget->yConstraint() & ShrinkPolicy))
         {
             usedSpace += ((LayoutElement) *it).size.height();
             it = l.erase(it);
@@ -347,8 +341,7 @@ VBoxLayout::tile()
     it = l.begin();
     while (it != l.end())
     {
-        if (average > ((LayoutElement) *it).size.height()
-                && !(((LayoutElement) *it).widget->yConstraint() & GrowPolicy))
+        if (average > ((LayoutElement) *it).size.height() && !(((LayoutElement) *it).widget->yConstraint() & GrowPolicy))
         {
             usedSpace += ((LayoutElement) *it).widget->height();
             it = l.erase(it);
@@ -375,11 +368,9 @@ VBoxLayout::tile()
             ++expanding;
         else
         {
-            if (((LayoutElement) *it).widget->minHeight() > 0
-                    && average > ((LayoutElement) *it).widget->minHeight())
+            if (((LayoutElement) *it).widget->minHeight() > 0 && average > ((LayoutElement) *it).widget->minHeight())
             {
-                expandSpace += average
-                        - ((LayoutElement) *it).widget->minHeight();
+                expandSpace += average - ((LayoutElement) *it).widget->minHeight();
                 ((LayoutElement) *it).size.setHeight(
                         ((LayoutElement) *it).widget->minHeight());
             } else if (average > ((LayoutElement) *it).size.height())
@@ -401,8 +392,8 @@ VBoxLayout::tile()
     Widget* up = getNeighbour(Up);
     Widget* down = getNeighbour(Down);
     ElementList::iterator itNext, itLast;
-    for (ElementList::iterator it = list.begin(), end = list.end(), itLast =
-            (++list.rbegin()).base(); it != end; ++it)
+    for (ElementList::iterator it = list.begin(), end = list.end(),
+            itLast = (++list.rbegin()).base(); it != end; ++it)
     {
         widget = ((LayoutElement) *it).widget;
 
@@ -417,8 +408,7 @@ VBoxLayout::tile()
                     artifact = 0;
                 } else
                     widget->setHeight(average + expandAverage);
-            } else if (widget->yConstraint() & ShrinkPolicy
-                    && average < ((LayoutElement) *it).size.height())
+            } else if (widget->yConstraint() & ShrinkPolicy && average < ((LayoutElement) *it).size.height())
                 widget->setHeight(average);
             else
                 widget->setHeight(((LayoutElement) *it).size.height());
@@ -426,11 +416,9 @@ VBoxLayout::tile()
         {
             if (widget->minHeight() > 0 || widget->maxHeight() > 0)
                 widget->setHeight(average);
-            else if ((widget->yConstraint() & ShrinkPolicy)
-                    && ((LayoutElement) *it).size.height() > average)
+            else if ((widget->yConstraint() & ShrinkPolicy) && ((LayoutElement) *it).size.height() > average)
                 widget->setHeight(average);
-            else if ((widget->yConstraint() & GrowPolicy)
-                    && ((LayoutElement) *it).size.height() < average)
+            else if ((widget->yConstraint() & GrowPolicy) && ((LayoutElement) *it).size.height() < average)
             {
                 if (artifact)
                 {
@@ -447,18 +435,16 @@ VBoxLayout::tile()
             widget->setWidth(((LayoutElement) *it).size.width());
         else if (widget->xConstraint() & ExpandPolicy)
             widget->setWidth(width());
-        else if (widget->width() < width()
-                && (widget->xConstraint() & GrowPolicy))
+        else if (widget->width() < width() && (widget->xConstraint() & GrowPolicy))
             widget->setWidth(width());
-        else if (widget->width() >= width()
-                && (widget->xConstraint() & ShrinkPolicy))
+        else if (widget->width() >= width() && (widget->xConstraint() & ShrinkPolicy))
             widget->setWidth(width());
 
         // Set top-left using alignment.
         int x = 0;
-        if (_alignment == Alignment::Right)
+        if (_alignment & Alignment::Right)
             x = (width() - widget->width());
-        else if (_alignment == Alignment::Center)
+        else if (_alignment & Alignment::Center)
             x = (width() - widget->width()) / 2;
 
         widget->moveTo(x, currentY);
