@@ -207,10 +207,12 @@ Compositor::killApp(AppInstance* instance)
 {
     if (instance == _currentApp)
     {
-        _previousApp = NULL;
         _currentApp = NULL;
         toggleLauncher(true);
     }
+
+    if (instance == _previousApp)
+        _previousApp = NULL;
 
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
