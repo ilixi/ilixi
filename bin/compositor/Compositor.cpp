@@ -231,6 +231,7 @@ Compositor::addDialog(DFBSurfaceID id)
 void
 Compositor::showOSK(DFBRectangle rect)
 {
+    ILOG_TRACE_W(ILX_COMPOSITOR);
     if (rect.y > height() - 450)
         _oskTarget.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
                                 rect.w, rect.h);
@@ -238,8 +239,10 @@ Compositor::showOSK(DFBRectangle rect)
         _oskTarget.setRectangle(rect.x, 0, rect.w, rect.h);
 
     if (!_osk)
+    {
         _appMan->startApp("OnScreenKeyboard");
-    else
+        _currentApp->view()->slideTo(0, -_oskTarget.y());
+    } else
         toggleOSK(true);
 }
 
@@ -248,6 +251,7 @@ Compositor::toggleOSK(bool show)
 {
     if (_osk)
     {
+        ILOG_TRACE_W(ILX_COMPOSITOR);
         if (show)
         {
             _currentApp->view()->slideTo(0, -_oskTarget.y());

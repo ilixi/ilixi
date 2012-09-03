@@ -76,10 +76,8 @@ AppView::show(AnimatedProperty props, int tx, int ty)
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
 
     _animProps = props;
-    _propAnim.stop();
-    _propAnim.setDuration(300);
-
     bool anim = false;
+    _propAnim.stop();
     if (_animProps & Opacity)
     {
         _opacityTween->setEnabled(true);
@@ -87,6 +85,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         _opacityTween->setEndValue(255);
         setOpacity(0);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> Opacity\n");
     } else
         _opacityTween->setEnabled(false);
 
@@ -97,6 +96,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         _zoomTween->setEndValue(1);
         setZoomFactor(0.8);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> Zoom\n");
     } else
     {
         _zoomTween->setEnabled(false);
@@ -110,28 +110,35 @@ AppView::show(AnimatedProperty props, int tx, int ty)
             _xTween->setEnabled(true);
             _xTween->setInitialValue(x());
             _xTween->setEndValue(tx);
+            anim = true;
+            ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
         }
         if (y() != ty)
         {
             _yTween->setEnabled(true);
             _yTween->setInitialValue(y());
             _yTween->setEndValue(ty);
+            anim = true;
+            ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
         }
-        anim = true;
     } else
     {
         _xTween->setEnabled(false);
         _yTween->setEnabled(false);
     }
 
-    if (anim)
-        _propAnim.start();
-
     setVisible(true);
     clearAnimatedProperty(HideWhenDone);
-    setAnimatedProperty(AnimShowing);
     clearAnimatedProperty(AnimHiding);
+    setAnimatedProperty(AnimShowing);
     setFocus();
+
+    if (anim)
+    {
+        ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
+        _propAnim.setDuration(300);
+        _propAnim.start();
+    }
 }
 
 void
@@ -145,11 +152,10 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
 
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
-    _animProps = props;
-    _propAnim.stop();
-    _propAnim.setDuration(500);
 
+    _animProps = props;
     bool anim = false;
+    _propAnim.stop();
     if (_animProps & Opacity)
     {
         _opacityTween->setEnabled(true);
@@ -157,6 +163,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
         _opacityTween->setEndValue(0);
         setOpacity(255);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> Opacity\n");
     } else
         _opacityTween->setEnabled(false);
 
@@ -167,6 +174,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
         _zoomTween->setEndValue(2);
         setZoomFactor(1);
         anim = true;
+        ILOG_DEBUG(ILX_APPVIEW, " -> Zoom\n");
     } else
         _zoomTween->setEnabled(false);
 
@@ -177,16 +185,17 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
             _xTween->setEnabled(true);
             _xTween->setInitialValue(x());
             _xTween->setEndValue(tx);
+            anim = true;
+            ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
         }
-
         if (y() != ty)
         {
             _yTween->setEnabled(true);
             _yTween->setInitialValue(y());
             _yTween->setEndValue(ty);
+            anim = true;
+            ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
         }
-
-        anim = true;
     } else
     {
         _xTween->setEnabled(false);
@@ -196,8 +205,13 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     setAnimatedProperty(HideWhenDone);
     setAnimatedProperty(AnimHiding);
     clearAnimatedProperty(AnimShowing);
+
     if (anim)
+    {
+        ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
+        _propAnim.setDuration(500);
         _propAnim.start();
+    }
 }
 
 void
@@ -215,23 +229,37 @@ AppView::clearAnimatedProperty(AnimatedProperty prop)
 void
 AppView::slideTo(int tx, int ty)
 {
-    _xTween->setEnabled(true);
-    _xTween->setInitialValue(x());
-    _xTween->setEndValue(tx);
+    _propAnim.stop();
+    bool anim = false;
+    if (x() != tx)
+    {
+        _xTween->setEnabled(true);
+        _xTween->setInitialValue(x());
+        _xTween->setEndValue(tx);
+        anim = true;
+    }
 
-    _yTween->setEnabled(true);
-    _yTween->setInitialValue(y());
-    _yTween->setEndValue(ty);
+    if (y() != ty)
+    {
+        _yTween->setEnabled(true);
+        _yTween->setInitialValue(y());
+        _yTween->setEndValue(ty);
+        anim = true;
+    }
 
     _opacityTween->setEnabled(false);
     _zoomTween->setEnabled(false);
 
-    _propAnim.start();
+    if (anim)
+        _propAnim.start();
 }
 
 void
 AppView::tweenSlot()
 {
+    ILOG_TRACE_W(ILX_APPVIEW);
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+    ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
     if (_opacityTween->enabled())
         setOpacity(_opacityTween->value());
 
