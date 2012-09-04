@@ -27,12 +27,19 @@ AppButton::AppButton(const std::string& text, Widget* parent)
     _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &AppButton::updateIconGeometry));
+    setConstraints(MinimumConstraint, MinimumConstraint);
 }
 
 AppButton::~AppButton()
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
     delete _anim;
+}
+
+Size
+AppButton::preferredSize() const
+{
+    return Size(150, 150);
 }
 
 bool

@@ -25,8 +25,8 @@
 #define HOME_H_
 
 #include <ui/Application.h>
-#include <types/Font.h>
 #include <core/DaleDFB.h>
+#include "NumPages.h"
 
 namespace ilixi
 {
@@ -50,28 +50,16 @@ public:
     void
     runApp(const char* name);
 
+    static Image* _circle;
+    static Image* _circle_sm;
+
 protected:
     void
     initButtons(const AppDataVector& dataVector);
 
-    void
-    addButton(const char* name, const char* icon);
-
 private:
     IComaComponent* _compositor;
-    Font* _font;
-
-    struct VisibilityNotification
-    {
-        char name[64];
-        pid_t pid;bool multi;
-    };
-
-    void
-    setAppStatus(VisibilityNotification notification, bool visible);
-
-    void
-    setAppStarting(VisibilityNotification notification);
+    NumPages* _pages;
 
     void
     requestAppList();

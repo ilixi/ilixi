@@ -22,22 +22,23 @@
  */
 
 #include "Home.h"
-#include "AppButton.h"
 #include <core/Logger.h>
-#include <sigc++/bind.h>
 
 namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_HOMEAPP, "ilixi/Home", "Home");
 
+Image* Home::_circle = NULL;
+Image* Home::_circle_sm = NULL;
+
 void
 appVisible(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
-    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
-    home->setAppStatus(notification, 1);
+    VisibilityNotification notification = *((VisibilityNotification*) arg);
+    home->_pages->setAppStatus(notification, 1);
 }
 
 void
@@ -45,8 +46,8 @@ appHidden(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
-    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
-    home->setAppStatus(notification, 0);
+    VisibilityNotification notification = *((VisibilityNotification*) arg);
+    home->_pages->setAppStatus(notification, 0);
 }
 
 void
@@ -54,8 +55,8 @@ appStarting(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
-    Home::VisibilityNotification notification = *((Home::VisibilityNotification*) arg);
-    home->setAppStarting(notification);
+    VisibilityNotification notification = *((VisibilityNotification*) arg);
+    home->_pages->setAppStarting(notification);
 }
 
 void
@@ -82,36 +83,51 @@ receiveAppList(void* ctx, void* arg)
 }
 
 Home::Home(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale)
+        : Application(&argc, &argv, OptDale),
+          _compositor(NULL)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
     setTitle("Home");
     setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
     setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
 
-    _font = new Font("sans");
-    _font->setSize(18);
-    _font->setStyle(Font::Bold);
+    if (!_circle)
+    {
+        _circle = new Image(ILIXI_DATADIR"home/circle.png", Size(48, 48));
+        _circle_sm = new Image(ILIXI_DATADIR"home/circle_small.png",
+                               Size(38, 38));
+    }
+
+    _pages = new NumPages();
+    _pages->sigAppStart.connect(sigc::mem_fun(this, &Home::runApp));
+    addWidget(_pages);
 
     DaleDFB::comaGetComponent("CompositorComponent", &_compositor);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
-    requestAppList();
+    sigVisible.connect(sigc::mem_fun(this, &Home::requestAppList));
+//    requestAppList();
 }
 
 Home::~Home()
 {
-    delete _font;
+    delete _circle;
+    delete _circle_sm;
+    if (_compositor)
+        _compositor->Release(_compositor);
 }
 
 void
 Home::runApp(const char* name)
 {
-    void *ptr;
-    DaleDFB::comaGetLocal(128, &ptr);
-    char* n = (char*) ptr;
-    snprintf(n, 128, "%s", name);
-    DaleDFB::comaCallComponent(_compositor, 7, (void*) n);
+    if (_compositor)
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(128, &ptr);
+        char* n = (char*) ptr;
+        snprintf(n, 128, "%s", name);
+        DaleDFB::comaCallComponent(_compositor, 7, (void*) n);
+    }
 }
 
 void
@@ -120,62 +136,8 @@ Home::initButtons(const AppDataVector& dataVector)
     ILOG_TRACE_W(ILX_HOMEAPP);
     for (AppDataVector::const_iterator it = dataVector.begin();
             it != dataVector.end(); ++it)
-        addButton(((AppData) *it).name, ((AppData) *it).icon);
-    updateHomeGeometry();
-    update();
-}
-
-void
-Home::addButton(const char* name, const char* icon)
-{
-    ILOG_TRACE_W(ILX_HOMEAPP);
-    AppButton* button = new AppButton(name);
-    button->setToolButtonStyle(ToolButton::IconAboveText);
-    button->setDrawFrame(false);
-    button->setFont(_font);
-    button->setIcon(icon, Size(96, 96));
-    addChild(button);
-
-    button->sigClicked.connect(
-            sigc::bind<const char*>(sigc::mem_fun(this, &Home::runApp),
-                                    button->text().c_str()));
-    update();
-}
-
-void
-Home::setAppStatus(VisibilityNotification notification, bool visible)
-{
-    ILOG_TRACE_W(ILX_HOMEAPP);
-    ILOG_DEBUG(
-            ILX_HOMEAPP,
-            "%s - %d - %d\n", notification.name, notification.pid, notification.multi);
-    for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it)
-    {
-        AppButton* button = dynamic_cast<AppButton*>(*it);
-        if (button && button->text() == notification.name)
-        {
-            if (visible)
-                button->setAppVisible(1);
-            else
-                button->setAppVisible(0);
-        }
-    }
-}
-
-void
-Home::setAppStarting(VisibilityNotification notification)
-{
-    ILOG_TRACE_W(ILX_HOMEAPP);
-    for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it)
-    {
-        AppButton* button = dynamic_cast<AppButton*>(*it);
-        if (button && button->text() == notification.name)
-        {
-            button->appStarting();
-        }
-    }
+        _pages->addItem(((AppData) *it).name, ((AppData) *it).icon);
+    _pages->initPages();
 }
 
 void
@@ -194,28 +156,8 @@ Home::requestAppList()
 void
 Home::updateHomeGeometry()
 {
-    int hOffset = (height() - 450) / 2;
-    int wC = width() / 150.0;
-    int xOffset = (width() - (wC * 150)) / 2;
-    if (wC)
-    {
-        int y = -1;
-        int i = 0;
-        for (WidgetList::iterator it = _children.begin(); it != _children.end();
-                ++it)
-        {
-            AppButton* button = dynamic_cast<AppButton*>(*it);
-            if (button)
-            {
-                if (i % wC == 0)
-                    y++;
-
-                button->moveTo(xOffset + i % wC * 150, hOffset + y * 150);
-                button->setSize(145, 145);
-                i++;
-            }
-        }
-    }
+    ILOG_TRACE_W(ILX_HOMEAPP);
+    _pages->setGeometry(0, 50, width(), height() - 100);
 }
 
 }

@@ -23,6 +23,9 @@ public:
     virtual
     ~AppButton();
 
+    Size
+    preferredSize() const;
+
     bool
     appVisible() const;
 

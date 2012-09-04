@@ -6,4 +6,12 @@ ilixi_home_CFLAGS	=	$(AM_CFLAGS)
 ilixi_home_SOURCES	= 	AppButton.cpp \
 						AppButton.h \
 						Home.cpp \
-						Home.h
+						Home.h \
+						NumPages.cpp \
+						NumPages.h \
+						PageButton.cpp \
+						PageButton.h
+
+miscdatadir 		=	$(ILIXI_DATADIR)/home
+miscdata_DATA 		=	circle.png circle_small.png
+EXTRA_DIST 			= 	$(miscdata_DATA)
