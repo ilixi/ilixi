@@ -479,6 +479,7 @@ SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
+        event.step = pointerEvent.wheelStep;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
