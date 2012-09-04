@@ -272,8 +272,10 @@ ToolButton::updateTextBaseGeometry()
     int textHeight = textExtents().height();
     int iconW = 0;
     int iconH = 0;
-    int wUsed = stylist()->defaultParameter(StyleHint::ToolButtonLR);
-    int x = stylist()->defaultParameter(StyleHint::ToolButtonLeft);
+    int wUsed =
+            drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
+    int x = drawFrame() ? stylist()->defaultParameter(
+            StyleHint::ToolButtonLeft) : 0;
 
     if (checkable())
     {
