@@ -50,7 +50,8 @@ Compositor::Compositor(int argc, char* argv[])
           _statusBar(NULL),
           _osk(NULL),
           _dash(NULL),
-          _mixer(NULL)
+          _mixer(NULL),
+          _oskTargetPID(0)
 {
     setenv("WEBKIT_IGNORE_SSL_ERRORS", "1", 0);
     setenv("LITE_WINDOW_DOUBLEBUFFER", "1", 0);
@@ -120,6 +121,7 @@ Compositor::appMan() const
 void
 Compositor::showInstance(AppInstance* instance)
 {
+    ILOG_TRACE_W(ILX_COMPOSITOR);
     toggleSwitcher(false);
     if (!instance)
     {
@@ -130,6 +132,9 @@ Compositor::showInstance(AppInstance* instance)
 
     _previousApp = _currentApp;
     _currentApp = instance;
+
+    ILOG_DEBUG(ILX_COMPOSITOR,
+               " -> instance: %s\n", instance->appInfo()->name().c_str());
 
     // osk & _previousApp
     if (_osk && _osk->view()->visible())
@@ -231,15 +236,17 @@ Compositor::addDialog(DFBSurfaceID id)
 }
 
 void
-Compositor::showOSK(DFBRectangle rect)
+Compositor::showOSK(DFBRectangle rect, pid_t process)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
     if (rect.y > height() - 450)
-        _oskTarget.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
-                                rect.w, rect.h);
+        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
+                                    rect.w, rect.h);
     else
-        _oskTarget.setRectangle(rect.x, 0, rect.w, rect.h);
+        _oskTargetRect.setRectangle(rect.x, 0, rect.w, rect.h);
 
+    _oskTargetPID = process;
     if (!_osk)
         _appMan->startApp("OnScreenKeyboard");
     else
@@ -249,18 +256,19 @@ Compositor::showOSK(DFBRectangle rect)
 void
 Compositor::toggleOSK(bool show)
 {
-    if (_osk)
+    if (_osk && _currentApp->pid() == _oskTargetPID)
     {
         ILOG_TRACE_W(ILX_COMPOSITOR);
         if (show)
         {
-            _currentApp->view()->slideTo(0, -_oskTarget.y());
+            _currentApp->view()->slideTo(0, -_oskTargetRect.y());
             _osk->view()->show(AppView::Position, 0, height() - 450);
             toggleSwitcher(false);
         } else
         {
             _currentApp->view()->slideTo(0, 0);
             _osk->view()->hide(AppView::Position, 0, height());
+            _oskTargetPID = 0;
         }
     }
 }

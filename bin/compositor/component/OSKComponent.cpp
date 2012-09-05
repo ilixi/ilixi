@@ -49,7 +49,7 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
                         " -> Rectangle (%d, %d, %d, %d)\n", request.inputRect.x, request.inputRect.y, request.inputRect.w, request.inputRect.h);
                 ILOG_DEBUG(ILX_OSKCOMP, " -> PID (%d) \n", request.process);
             }
-            _compositor->showOSK(request.inputRect);
+            _compositor->showOSK(request.inputRect, request.process);
         }
         break;
 

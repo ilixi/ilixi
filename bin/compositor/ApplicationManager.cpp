@@ -306,6 +306,7 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
     switch (pid)
     {
     case -1:
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, " -> Error vfork!");
         perror("vfork");
         return DR_FAILURE;
 

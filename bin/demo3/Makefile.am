@@ -4,6 +4,4 @@ ilixi_demo3_LDADD		=	@DEPS_LIBS@ $(top_srcdir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSIO
 ilixi_demo3_CPPFLAGS 	= 	-I$(top_srcdir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
 ilixi_demo3_CFLAGS		=	$(AM_CFLAGS)
 ilixi_demo3_SOURCES		= 	Demo3.h \
-                              Demo3.cpp \
-						WebView.h \
-						WebView.cpp
+							Demo3.cpp

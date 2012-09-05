@@ -23,6 +23,8 @@
 
 #include <core/DaleDFB.h>
 #include <core/Logger.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace ilixi
 {
@@ -110,7 +112,7 @@ DaleDFB::showOSK(const Rectangle& rect)
     OSKRequest request;
     request.inputRect = rect.dfbRect();
     request.mode = 0;
-    request.process = 0;
+    request.process = getpid();
 
     void *ptr;
     __coma->GetLocal(__coma, sizeof(OSKRequest), &ptr);

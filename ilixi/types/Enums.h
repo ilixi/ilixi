@@ -218,17 +218,17 @@ namespace Alignment
 //! Horizontal alignment
 enum Horizontal
 {
-    Left,   //!< Align left
-    Center, //!< Align center
-    Right   //!< Align top
+    Left = 0x01,    //!< Align left
+    Center = 0x02,  //!< Align center
+    Right = 0x04    //!< Align top
 };
 
 //! Vertical alignment
 enum Vertical
 {
-    Top,    //!< Align top
-    Middle, //!< Align middle
-    Bottom  //!< Align bottom
+    Top = 0x01,     //!< Align top
+    Middle = 0x02,  //!< Align middle
+    Bottom = 0x04   //!< Align bottom
 };
 }
 
@@ -262,8 +262,8 @@ enum Corners
 
 enum AppOptions
 {
-    OptNone = 0x000, //!< Default application option.
-    OptExclusive = 0x001, //!< Application will use layer exclusively.
+    OptNone = 0x000,                //!< Default application option.
+    OptExclusive = 0x001,           //!< Application will use layer exclusively.
     OptFullScreenUpdate = 0x002, //!< Windows will update whole surface each time.
     OptTripleAccelerated = 0x004,
     OptDale = 0x200,    //! Enable FusionDale interfaces for Application.

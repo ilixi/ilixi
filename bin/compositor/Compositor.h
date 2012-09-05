@@ -121,7 +121,7 @@ protected:
      * Shows OSK and centers given rect at top.
      */
     void
-    showOSK(DFBRectangle rect);
+    showOSK(DFBRectangle rect, pid_t process);
 
     void
     sendOSKInput(uint32_t key);
@@ -163,10 +163,12 @@ private:
     AppInstance* _dash;
     AppInstance* _mixer;
 
+    pid_t _oskTargetPID;
+
     AppView::AnimatedProperty _showAnimProps;
     AppView::AnimatedProperty _hideAnimProps;
 
-    Rectangle _oskTarget;
+    Rectangle _oskTargetRect;
 
     enum CompositorEventType
     {

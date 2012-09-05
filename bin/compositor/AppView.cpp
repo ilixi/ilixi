@@ -231,6 +231,10 @@ AppView::slideTo(int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+
+    if ((_cState != APPCOMP_READY) || (_animProps & AnimShowing) || (_animProps & AnimHiding))
+        return;
+
     _propAnim.stop();
     bool anim = false;
     if (x() != tx)
@@ -254,7 +258,8 @@ AppView::slideTo(int tx, int ty)
     _opacityTween->setEnabled(false);
     _zoomTween->setEnabled(false);
 
-    if (anim) {
+    if (anim)
+    {
         ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
         _propAnim.setDuration(300);
         _propAnim.start();
