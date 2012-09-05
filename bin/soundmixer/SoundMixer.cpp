@@ -135,6 +135,7 @@ SoundMixer::SoundMixer(int argc, char* argv[])
 
     _music = new Music(ILIXI_DATADIR"soundmixer/test.wav");
     _music->setRepeat(true);
+    SoundDFB::setMasterVolume(1);
 }
 
 SoundMixer::~SoundMixer()
