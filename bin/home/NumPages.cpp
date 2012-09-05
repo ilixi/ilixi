@@ -55,7 +55,6 @@ NumPages::addItem(const char* name, const char* icon)
     button->sigClicked.connect(
             sigc::bind<std::string>(sigc::mem_fun(this, &NumPages::runApp),
                                     button->text()));
-
 }
 
 void
@@ -115,7 +114,8 @@ NumPages::initPages()
                 grid->addWidget(new Spacer(Vertical), rows - 1, cols - 1, 1, 1);
                 break;
             }
-            ILOG_DEBUG(ILX_NUMPAGES, "   -> item: %d\n", j);
+            ILOG_DEBUG(ILX_NUMPAGES,
+                       "   -> item: %d (%s)\n", j, _items[j]->text().c_str());
             grid->addWidget(_items[j]);
         }
 
@@ -140,7 +140,8 @@ NumPages::initPages()
         }
     }
     _tween->setEndValue(width());
-    _buttons[0]->setDisabled();
+    if (numPages > 1)
+        _buttons[0]->setDisabled();
     update();
 }
 

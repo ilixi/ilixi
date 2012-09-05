@@ -106,7 +106,6 @@ Home::Home(int argc, char* argv[])
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Home::requestAppList));
-//    requestAppList();
 }
 
 Home::~Home()

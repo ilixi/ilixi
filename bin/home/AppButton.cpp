@@ -27,7 +27,7 @@ AppButton::AppButton(const std::string& text, Widget* parent)
     _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &AppButton::updateIconGeometry));
-    setConstraints(MinimumConstraint, MinimumConstraint);
+    setConstraints(MinimumConstraint, FixedConstraint);
 }
 
 AppButton::~AppButton()
