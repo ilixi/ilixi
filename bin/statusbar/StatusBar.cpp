@@ -185,6 +185,7 @@ StatusBar::StatusBar(int argc, char* argv[])
     _sound->addImage(
             new Image(ILIXI_DATADIR"statusbar/vol3G.png", Size(48, 48)));
     _sound->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSound));
+    _sound->setButtonState(6);
     addWidget(_sound);
 
     _back = new StatusbarButton();
