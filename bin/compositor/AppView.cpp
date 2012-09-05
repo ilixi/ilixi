@@ -286,6 +286,8 @@ AppView::tweenEndSlot()
 {
     if (_animProps & HideWhenDone)
         setVisible(false);
+    clearAnimatedProperty(AnimShowing);
+    clearAnimatedProperty(AnimHiding);
 }
 
 void
