@@ -49,6 +49,9 @@ public:
     void
     forwardKeyData(const std::vector<uint32_t>& ucs32);
 
+    void
+    setModifier(Key* modifier);
+
 protected:
     void
     compose(const PaintEvent& event);
@@ -60,6 +63,8 @@ private:
     IComaComponent* _oskComponent;
     //! This stores rows for ease of access.
     std::vector<Row*> _rows;
+    //! Current modifier key.
+    Key* _modifier;
 
     Key*
     getKey(xmlNodePtr node);

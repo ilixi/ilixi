@@ -134,6 +134,19 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
 
         DaleDFB::comaCallComponent(_oskComponent, 2, (void*) key);
     }
+
+    if (_modifier)
+    {
+        ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
+        setSymbolState(_modifier->getNextState());
+        _modifier = NULL;
+    }
+}
+
+void
+Keyboard::setModifier(Key* modifier)
+{
+    _modifier = modifier;
 }
 
 void
@@ -263,7 +276,7 @@ Keyboard::updateKeyboardGeometry()
 {
     if (!_buttonFont)
     {
-        _buttonFont = new Font("Sans", (width() - 500) / 10);
+        _buttonFont = new Font("Sans", 36);
         _buttonFont->setStyle(Font::Bold);
     }
 

@@ -80,8 +80,15 @@ Key::setSymbolState(unsigned char state)
         {
             _keyState = state;
             setEnabled();
+            if (_keyState == _rollStates[1])
+                setChecked(true);
+            else
+                setChecked(false);
         } else
+        {
             setDisabled();
+            setChecked(false);
+        }
     } else
     {
         _keyState = state;
@@ -110,7 +117,6 @@ Key::setKeyMode(KeyMode keyMode)
 void
 Key::addSymbol(const std::string& states, const std::string& symbol)
 {
-
     char* pch = strtok(const_cast<char*>(states.c_str()), " ,");
     while (pch != NULL)
     {
@@ -123,7 +129,6 @@ Key::addSymbol(const std::string& states, const std::string& symbol)
             for (int i = 0; i < D_ARRAY_SIZE(symbol_names); i++)
                 if (symbol_names[i].name == symbol)
                     keyData.ucs32.push_back(symbol_names[i].symbol);
-
         } else
             decode((uint8_t*) symbol.c_str(), keyData.ucs32);
         keyData.str = symbol;
@@ -142,8 +147,16 @@ Key::setRollStates(const std::string& rollStates)
     while (pch != NULL)
     {
         _rollStates.push_back(atoi(pch));
+        if ((_keyMode & Modifier) && _rollStates.size() == 2)
+            break;
         pch = strtok(NULL, " ,");
     }
+}
+
+void
+Key::toggleChecked()
+{
+    update();
 }
 
 void
@@ -152,6 +165,8 @@ Key::pressSlot()
     if (_keyMode & Modifier)
     {
         ILOG_DEBUG(ILX_KEY, "Modifier state: %d\n", _keyState);
+        if (_keyState == _rollStates[0])
+            _keyboard->setModifier(this);
         _keyboard->setSymbolState(getNextState());
     } else if (_keyMode & Sticky)
     {

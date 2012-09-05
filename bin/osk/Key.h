@@ -40,11 +40,12 @@ class Keyboard;
  */
 class Key : public ToolButton
 {
+    friend class Keyboard;
 public:
     enum KeyMode
     {
         Default = 0x001,    //!< Default key behavior.
-        Modifier = 0x002,   //!< Checkable modifier key, e.g. SHIFT on/off.
+        Modifier = 0x002,   //!< Checkable modifier key will return back to previous state after key press, e.g. SHIFT on/off. A modifier can only have two states.
         Sticky = 0x004,     //!< Toggles key states.
         Special = 0x008     //!< Key can symbol is set to a DIKS_XX.
     };
@@ -106,6 +107,9 @@ public:
      */
     void
     setRollStates(const std::string& rollStates);
+
+    virtual void
+    toggleChecked();
 
 private:
     //! This property stores the xmlID of key.
