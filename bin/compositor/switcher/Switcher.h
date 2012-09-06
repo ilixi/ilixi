@@ -134,6 +134,12 @@ public:
      */
     sigc::signal<void, AppInstance*> sigSwitchRequest;
 
+    /*!
+     * This signal is emitted for each application which requires a
+     * visibility feedback.
+     */
+    sigc::signal<void, AppInstance*, bool> sigFeedbackRequest;
+
 protected:
     typedef std::vector<AppThumbnail*> Thumbnails;
     //! Thumbnails are also stored in a vector for ease of access.

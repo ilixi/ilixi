@@ -150,6 +150,11 @@ HorizontalSwitcher::show()
     if (!visible())
     {
         ILOG_TRACE_W(ILX_HSWITCHER);
+
+        for (int i = 0; i < _thumbs.size(); ++i)
+            if (_thumbs[i]->instance()->appInfo()->appFlags() & APP_VIS_NOTIFY)
+                sigFeedbackRequest(_thumbs[i]->instance(), true);
+
         _anim.stop();
         setVisible(true);
         _tween->setInitialValue(height());
@@ -164,6 +169,11 @@ HorizontalSwitcher::hide()
     if (visible())
     {
         ILOG_TRACE_W(ILX_HSWITCHER);
+
+        for (int i = 0; i < _thumbs.size(); ++i)
+            if (_thumbs[i]->instance()->appInfo()->appFlags() & APP_VIS_NOTIFY)
+                sigFeedbackRequest(_thumbs[i]->instance(), false);
+
         _anim.stop();
         _tween->setInitialValue(0);
         _tween->setEndValue(height());

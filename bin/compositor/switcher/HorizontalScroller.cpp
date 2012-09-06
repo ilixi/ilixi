@@ -14,7 +14,7 @@ HorizontalScroller::HorizontalScroller(Widget* parent)
     setLayout(new HBoxLayout());
     _anim.setDuration(500);
     _anim.sigExec.connect(sigc::mem_fun(this, &HorizontalScroller::tweenSlot));
-    _tween = new Tween(Tween::QUAD, Tween::EASE_OUT, 0, 1);
+    _tween = new Tween(Tween::CIRCLE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_tween);
 }
 

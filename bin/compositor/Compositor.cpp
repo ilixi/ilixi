@@ -95,6 +95,8 @@ Compositor::Compositor(int argc, char* argv[])
 
     _switcher->sigSwitchRequest.connect(
             sigc::mem_fun1(this, &Compositor::showInstance));
+    _switcher->sigFeedbackRequest.connect(
+            sigc::mem_fun(_compComp, &CompositorComponent::notifyVisibility));
     addWidget(_switcher);
 
     sigGeometryUpdated.connect(
