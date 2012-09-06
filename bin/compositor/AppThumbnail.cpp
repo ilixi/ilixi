@@ -30,7 +30,8 @@ namespace ilixi
 {
 
 AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance, Widget* parent)
-        : AppCompositor(compositor, instance, parent)
+        : AppCompositor(compositor, instance, parent),
+          _close(NULL)
 {
     setInputMethod(KeyAndPointerInput);
     setConstraints(FixedConstraint, FixedConstraint);
@@ -38,16 +39,19 @@ AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance, Widget
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);
     _ani.addTween(_opacityTween);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppThumbnail::tweenSlot));
-    _close = new ToolButton("");
-    _close->setToolButtonStyle(ToolButton::IconOnly);
-    _close->setIcon(ILIXI_DATADIR"compositor/close.png", Size(32, 32));
-    _close->setDrawFrame(false);
-    _close->setGeometry(164, 0, 32, 32);
-    _close->sigPressed.connect(
-            sigc::bind<AppInstance*>(
-                    sigc::mem_fun(_compositor, &Compositor::killApp),
-                    _instance));
-    addChild(_close);
+    if (!(instance->appInfo()->appFlags() & APP_AUTO_START))
+    {
+        _close = new ToolButton("");
+        _close->setToolButtonStyle(ToolButton::IconOnly);
+        _close->setIcon(ILIXI_DATADIR"compositor/close.png", Size(32, 32));
+        _close->setDrawFrame(false);
+        _close->setGeometry(164, 0, 32, 32);
+        _close->sigPressed.connect(
+                sigc::bind<AppInstance*>(
+                        sigc::mem_fun(_compositor, &Compositor::killApp),
+                        _instance));
+        addChild(_close);
+    }
 
     setVisible(false);
 }

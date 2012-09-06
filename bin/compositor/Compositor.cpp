@@ -561,7 +561,8 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
                     }
 
                     data->instance->thumb()->addWindow(dfbWindow, false);
-                    data->instance->thumb()->_close->bringToFront();
+                    if (data->instance->thumb()->_close)
+                        data->instance->thumb()->_close->bringToFront();
                     data->instance->view()->addWindow(
                             dfbWindow, true,
                             !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
