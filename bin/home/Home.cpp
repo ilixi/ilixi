@@ -156,7 +156,7 @@ void
 Home::updateHomeGeometry()
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    _pages->setGeometry(0, 50, width(), height() - 100);
+    _pages->setGeometry(0, 100, width(), height() - 200);
 }
 
 }
