@@ -27,7 +27,8 @@
 #include <unistd.h>
 #include <errno.h>
 
-namespace ilixi {
+namespace ilixi
+{
 
 D_DEBUG_DOMAIN( ILX_THREAD, "ilixi/lib/Thread", "Thread");
 
@@ -59,14 +60,14 @@ Thread::start()
     rc = pthread_attr_init(&attr);
     if (rc != 0)
     {
-        ILOG_ERROR(ILX_THREAD, "pthread_attr_init: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "pthread_attr_init: %d\n", rc);
         return false;
     }
 
     rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
     if (rc != 0)
     {
-        ILOG_ERROR(ILX_THREAD, "pthread_attr_setdetachstate: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "pthread_attr_setdetachstate: %d\n", rc);
         return false;
     }
 
@@ -77,15 +78,15 @@ Thread::start()
         rc = posix_memalign(&sp, sysconf(_SC_PAGESIZE), _stackSize);
         if (rc != 0)
         {
-            ILOG_ERROR(ILX_THREAD, "posix_memalign: %d", rc);
+            ILOG_ERROR(ILX_THREAD, "posix_memalign: %d\n", rc);
             return false;
         }
-        ILOG_DEBUG(ILX_THREAD, "posix_memalign() allocated at %p", sp);
+        ILOG_DEBUG(ILX_THREAD, "posix_memalign() allocated at %p\n", sp);
 
         rc = pthread_attr_setstack(&attr, sp, _stackSize);
         if (rc != 0)
         {
-            ILOG_ERROR(ILX_THREAD, "pthread_attr_setstack: %d", rc);
+            ILOG_ERROR(ILX_THREAD, "pthread_attr_setstack: %d\n", rc);
             return false;
         }
     }
@@ -93,14 +94,14 @@ Thread::start()
     rc = pthread_create(&_pThread, &attr, Thread::wrapper, (void*) this);
     if (rc != 0)
     {
-        ILOG_ERROR(ILX_THREAD, "Unable to create thread: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "Unable to create thread: %d\n", rc);
         return false;
     }
 
     rc = pthread_attr_destroy(&attr);
     if (rc != 0)
     {
-        ILOG_ERROR(ILX_THREAD, "pthread_attr_destroy: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "pthread_attr_destroy: %d\n", rc);
         return false;
     }
 
@@ -120,18 +121,18 @@ Thread::cancel()
     int rc = 0;
     rc = pthread_cancel(_pThread);
     if (rc)
-        ILOG_ERROR(ILX_THREAD, "pthread_cancel error: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "pthread_cancel error: %d\n", rc);
 
     pthread_join(_pThread, &status);
-    if (status != PTHREAD_CANCELED)
+    if (status != PTHREAD_CANCELED )
     {
         ILOG_ERROR(ILX_THREAD,
-                   "Thread (id: %lu) returned unexpected result!", _pThread);
+                   "Thread (id: %lu) returned unexpected result!\n", _pThread);
         return false;
     }
 
     sigTerminated();
-    ILOG_INFO(ILX_THREAD, "Thread (id: %lu) cancelled.", _pThread);
+    ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) cancelled.\n", _pThread);
     return true;
 }
 
@@ -152,20 +153,20 @@ Thread::join()
     {
     case EDEADLK:
         ILOG_ERROR(ILX_THREAD,
-                   "Thread (id: %lu) A deadlock was detected.", _pThread);
+                   "Thread (id: %lu) A deadlock was detected.\n", _pThread);
         return false;
     case EINVAL:
-        ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) is not joinable.", _pThread);
+        ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) is not joinable.\n", _pThread);
         return false;
     case ESRCH:
         ILOG_ERROR(ILX_THREAD,
-                   "No thread with the id (%lu) could be found.", _pThread);
+                   "No thread with the id (%lu) could be found.\n", _pThread);
         return false;
     case 0:
-        ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) joined.", _pThread);
+        ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) joined.\n", _pThread);
         return true;
     default:
-        ILOG_ERROR(ILX_THREAD, "pthread_join error: %d", rc);
+        ILOG_ERROR(ILX_THREAD, "pthread_join error: %d\n", rc);
         return false;
     }
 }
@@ -196,7 +197,7 @@ Thread::executeRun()
     _running = true;
     pthread_mutex_unlock(&_runMutex);
 
-    ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) is running.", _pThread);
+    ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) is running.\n", _pThread);
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
@@ -207,7 +208,7 @@ Thread::executeRun()
     pthread_mutex_unlock(&_runMutex);
     ILOG_DEBUG(
             ILX_THREAD,
-            "Thread (id: %lu) completed its execution with code: %d.", _pThread, _code);
+            "Thread (id: %lu) completed its execution with code: %d.\n", _pThread, _code);
     sigFinished();
 }
 
