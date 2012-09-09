@@ -25,6 +25,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							ScrollArea.cpp \
 							Slider.cpp \
 							Spacer.cpp \
+							SpinBox.cpp \
 							SurfaceView.cpp \
 							TabPanel.cpp \
 							TextBase.cpp \
@@ -55,6 +56,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							ScrollArea.h \
 							Slider.h \
 							Spacer.h \
+							SpinBox.h \
 							SurfaceView.h \
 							TabPanel.h \
 							TextBase.h \

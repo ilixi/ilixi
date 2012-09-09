@@ -37,7 +37,8 @@ LineInput::LineInput(const std::string& text, Widget* parent)
           _selecting(false),
           _maxLength(-1),
           _cursorIndex(0),
-          _selectedIndex(0)
+          _selectedIndex(0),
+          _margin(0)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
     setConstraints(ExpandingConstraint, FixedConstraint);
@@ -57,8 +58,8 @@ LineInput::preferredSize() const
     ILOG_TRACE_W(ILX_LINEINPUT);
     Size s = font()->extents(text());
     return Size(
-            s.width() + stylist()->defaultParameter(StyleHint::LineInputLR),
-            s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
+            s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + _margin.hSum(),
+            s.height() + stylist()->defaultParameter(StyleHint::LineInputTB) + _margin.vSum());
 }
 
 int
@@ -84,11 +85,47 @@ LineInput::clear()
     update();
 }
 
+const Margin&
+LineInput::margin() const
+{
+    return _margin;
+}
+
+const std::string&
+LineInput::postfix() const
+{
+    return _postfix;
+}
+
+const std::string&
+LineInput::prefix() const
+{
+    return _prefix;
+}
+
+void
+LineInput::setMargin(const Margin& margin)
+{
+    _margin = margin;
+}
+
+void
+LineInput::setPostfix(const std::string& postfix)
+{
+    _postfix = postfix;
+}
+
+void
+LineInput::setPrefix(const std::string& prefix)
+{
+    _prefix = prefix;
+}
+
 void
 LineInput::updateCursorPosition()
 {
     // FIXME should not move to 0 for left.
-    int x = _layout.cursorPositon(font(), _cursorIndex).x();
+    int x = _layout.cursorPositon(font(), _cursorIndex).x() + _margin.left();
 
     if (x < stylist()->defaultParameter(StyleHint::LineInputLeft))
     {
@@ -409,10 +446,10 @@ void
 LineInput::updateTextBaseGeometry()
 {
     _layout.setBounds(
-            stylist()->defaultParameter(StyleHint::LineInputLeft),
-            stylist()->defaultParameter(StyleHint::LineInputTop),
-            width() - stylist()->defaultParameter(StyleHint::LineInputLR),
-            height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+            stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left(),
+            stylist()->defaultParameter(StyleHint::LineInputTop) + _margin.top(),
+            width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum(),
+            height() - stylist()->defaultParameter(StyleHint::LineInputTB) - _margin.vSum());
     _layout.doLayout(font());
     _cursor.setSize(
             2, height() - stylist()->defaultParameter(StyleHint::LineInputTB));

@@ -26,6 +26,7 @@
 
 #include <ui/TextBase.h>
 #include <lib/Timer.h>
+#include <types/Margin.h>
 
 namespace ilixi
 {
@@ -62,16 +63,52 @@ public:
     maxLength() const;
 
     /*!
-     * Sets number of maximum characters to store.
-     */
-    void
-    setMaxLength(int maxLen);
-
-    /*!
      * Clears text.
      */
     void
     clear();
+
+    /*!
+     * Returns margin around text.
+     */
+    const Margin&
+    margin() const;
+
+    /*!
+     * Returns text appended to the start of text.
+     */
+    const std::string&
+    postfix() const;
+
+    /*!
+     * Returns text prepended to the start of text.
+     */
+    const std::string&
+    prefix() const;
+
+    /*!
+     * Sets margin around text.
+     */
+    void
+    setMargin(const Margin& margin);
+
+    /*!
+     * Sets text appended at the end.
+     */
+    void
+    setPostfix(const std::string& postfix);
+
+    /*!
+     * Sets text prepended at the start.
+     */
+    void
+    setPrefix(const std::string& prefix);
+
+    /*!
+     * Sets number of maximum characters to store.
+     */
+    void
+    setMaxLength(int maxLen);
 
     /*!
      * This signal is emitted once cursor is moved.
@@ -95,6 +132,13 @@ private:
     int _cursorIndex;
     //! Selection start index.
     int _selectedIndex;
+    //! Margin around text.
+    Margin _margin;
+
+    //! Prefix for line input.
+    std::string _prefix;
+    //! Postfix for line input.
+    std::string _postfix;
 
     //! Cursor position and size.
     Rectangle _cursor;

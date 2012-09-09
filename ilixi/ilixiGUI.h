@@ -36,6 +36,7 @@
 #include <ui/PushButton.h>
 #include <ui/RadioButton.h>
 #include <ui/Slider.h>
+#include <ui/SpinBox.h>
 #include <ui/TabPanel.h>
 #include <ui/ToolButton.h>
 

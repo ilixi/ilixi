@@ -55,8 +55,8 @@ ToolButtonThread::run()
     {
         pthread_testcancel();
         _target->click(sleepNS);
-        if (sleepNS > 100)
-            sleepNS -= 100;
+        if (sleepNS > 50)
+            sleepNS -= 50;
     }
     return 1;
 }
