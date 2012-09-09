@@ -168,18 +168,6 @@ Style::parseStyle(const char* style)
                 else if (xmlStrcmp(element->name, (xmlChar*) "minus") == 0)
                     getRectangle(element, minus);
 
-                else if (xmlStrcmp(element->name, (xmlChar*) "check") == 0)
-                    getRectangle(element, check);
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "tri-check") == 0)
-                    getRectangle(element, tri_check);
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "radioOff") == 0)
-                    getRectangle(element, radioOff);
-
-                else if (xmlStrcmp(element->name, (xmlChar*) "radioOn") == 0)
-                    getRectangle(element, radioOn);
-
                 element = element->next;
             } // end while(element)
 
@@ -244,6 +232,12 @@ Style::parseStyle(const char* style)
                         else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
                             getRectangle(state->children, cb.foc);
 
+                        else if (xmlStrcmp(state->name, (xmlChar*) "check") == 0)
+                            getRectangle(state, check);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "tri-check") == 0)
+                            getRectangle(state, tri_check);
+
                         state = state->next;
                     }
                 } else if (xmlStrcmp(element->name, (xmlChar*) "RadioButton") == 0)
@@ -267,6 +261,12 @@ Style::parseStyle(const char* style)
 
                         else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
                             getRectangle(state->children, rb.foc);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "radioOff") == 0)
+                            getRectangle(state, radioOff);
+
+                        else if (xmlStrcmp(state->name, (xmlChar*) "radioOn") == 0)
+                            getRectangle(state, radioOn);
 
                         state = state->next;
                     }

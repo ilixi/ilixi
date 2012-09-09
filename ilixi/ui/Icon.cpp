@@ -66,6 +66,16 @@ Icon::Icon(const Image& image, Widget* parent)
 //    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
+Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
+        : Widget(parent),
+          _default(stylist()->defaultIcon(packedIcon)),
+          _disabled(NULL),
+          _exposed(NULL),
+          _focused(NULL)
+{
+
+}
+
 Icon::~Icon()
 {
     delete _default;

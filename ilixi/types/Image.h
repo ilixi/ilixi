@@ -26,7 +26,7 @@
 
 #include <directfb.h>
 #include <string>
-#include <types/Size.h>
+#include <types/Rectangle.h>
 
 namespace ilixi
 {
@@ -63,6 +63,14 @@ public:
      * constrained by size parameter.
      */
     Image(const std::string& path, const Size& size);
+
+    /*!
+     * Creates a sub-image using the given image and sourceRect.
+     *
+     * SourceRect specifies a bounding box, content is copied
+     * to create a new image. If sourceRect is null then whole image is used.
+     */
+    Image(Image* source, const Rectangle& sourceRect);
 
     /*!
      * Copy constructor.
@@ -112,21 +120,29 @@ public:
 
     /*!
      * Sets image path.
+     *
+     * \warning This method does not have any effect if image is a sub-image.
      */
     void
     setImagePath(const std::string& path);
 
     /*!
      * Sets image size.
+     *
      * @param width
      * @param height
+     *
+     * \warning This method does not have any effect if image is a sub-image.
      */
     void
     setSize(int width, int height);
 
     /*!
      * Sets image size.
+     *
      * @param size
+     *
+     * \warning This method does not have any effect if image is a sub-image.
      */
     void
     setSize(const Size& size);
@@ -138,6 +154,8 @@ private:
     std::string _imagePath;
     //! This property stores the size of the image.
     Size _size;
+    //! This flag stores whether the image is a sub-image.
+    bool _subImage;
 
     /*!
      * Release surface and set it to NULL.
@@ -152,6 +170,9 @@ private:
      */
     bool
     loadImage();
+
+    bool
+    loadSubImage(Image* source, const Rectangle& sourceRect);
 };
 }
 

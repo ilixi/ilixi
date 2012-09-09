@@ -39,6 +39,8 @@ public:
 
     Icon(const Image& image, Widget* parent = 0);
 
+    Icon(StyleHint::PackedIcon packedIcon, Widget* parent = 0);
+
     virtual
     ~Icon();
 

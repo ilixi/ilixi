@@ -102,7 +102,7 @@ public:
      * Returns the default icon for given type.
      */
     Image*
-    defaultIcon(StyleHint::DefaultIcon icon) const;
+    defaultIcon(StyleHint::PackedIcon icon) const;
 
     Palette*
     palette() const;

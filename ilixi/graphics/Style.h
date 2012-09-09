@@ -70,10 +70,6 @@ public:
     Image* _icons;
     Rectangle plus;
     Rectangle minus;
-    Rectangle check;
-    Rectangle tri_check;
-    Rectangle radioOff;
-    Rectangle radioOn;
 
     //--------------------------------------------------------------
     // Pack
@@ -146,6 +142,11 @@ public:
         r9 def;
         r9 dis;
     } fr, tab;
+
+    Rectangle check;
+    Rectangle tri_check;
+    Rectangle radioOff;
+    Rectangle radioOn;
 
 protected:
     void

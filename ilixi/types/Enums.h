@@ -122,12 +122,14 @@ enum Font
     ButtonFont
 };
 
-enum DefaultIcon
+enum PackedIcon
 {
-    Information,
-    Question,
-    Warning,
-    Critical
+    Plus,
+    Minus,
+    Up,
+    Down,
+    Left,
+    Right
 };
 
 enum Size

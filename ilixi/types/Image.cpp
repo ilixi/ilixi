@@ -34,7 +34,8 @@ D_DEBUG_DOMAIN( ILX_IMAGE, "ilixi/types/Image", "Image");
 Image::Image()
         : _dfbSurface(NULL),
           _imagePath(""),
-          _size()
+          _size(),
+          _subImage(false)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -42,7 +43,8 @@ Image::Image()
 Image::Image(const std::string& path)
         : _dfbSurface(NULL),
           _imagePath(path),
-          _size()
+          _size(),
+          _subImage(false)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -50,7 +52,8 @@ Image::Image(const std::string& path)
 Image::Image(const std::string& path, int width, int height)
         : _dfbSurface(NULL),
           _imagePath(path),
-          _size(width, height)
+          _size(width, height),
+          _subImage(false)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -58,17 +61,33 @@ Image::Image(const std::string& path, int width, int height)
 Image::Image(const std::string& path, const Size& size)
         : _dfbSurface(NULL),
           _imagePath(path),
-          _size(size)
+          _size(size),
+          _subImage(false)
 {
     ILOG_TRACE(ILX_IMAGE);
+}
+
+Image::Image(Image* source, const Rectangle& sourceRect)
+        : _dfbSurface(NULL),
+          _imagePath(""),
+          _size(),
+          _subImage(true)
+{
+    loadSubImage(source, sourceRect);
 }
 
 Image::Image(const Image& img)
         : _dfbSurface(NULL),
           _imagePath(img._imagePath),
-          _size(img._size)
+          _size(img._size),
+          _subImage(img._subImage)
 {
     ILOG_TRACE(ILX_IMAGE);
+    if (_subImage)
+    {
+        _dfbSurface = img._dfbSurface;
+        _dfbSurface->AddRef(_dfbSurface);
+    }
 }
 
 Image::~Image()
@@ -122,6 +141,9 @@ Image::getImagePath() const
 void
 Image::setImagePath(const std::string& path)
 {
+    if (_subImage)
+        return;
+
     if (path != _imagePath)
     {
         invalidateSurface();
@@ -138,6 +160,9 @@ Image::setSize(int width, int height)
 void
 Image::setSize(const Size& s)
 {
+    if (_subImage)
+        return;
+
     if (s.isValid() && s != _size)
     {
         invalidateSurface();
@@ -150,7 +175,6 @@ Image::invalidateSurface()
 {
     if (_dfbSurface)
     {
-        _dfbSurface->ReleaseSource(_dfbSurface);
         _dfbSurface->Release(_dfbSurface);
         _dfbSurface = NULL;
         ILOG_TRACE(ILX_IMAGE);
@@ -162,6 +186,9 @@ Image::loadImage()
 {
     if (_dfbSurface)
         return true;
+
+    if (_subImage)
+        return false;
 
     if (_imagePath == "")
     {
@@ -182,8 +209,7 @@ Image::loadImage()
 
     IDirectFBImageProvider* provider;
     if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-                                               _imagePath.c_str(), &provider)
-            != DFB_OK)
+                                               _imagePath.c_str(), &provider) != DFB_OK)
     {
         invalidateSurface();
         ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
@@ -193,8 +219,7 @@ Image::loadImage()
     if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
         ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
 
-    desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH
-            | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+    desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
     desc.caps = DSCAPS_PREMULTIPLIED;
     desc.pixelformat = DSPF_ARGB;
 
@@ -226,6 +251,19 @@ Image::loadImage()
         ILOG_DEBUG(ILX_IMAGE, "Image [%s] is loaded.\n", _imagePath.c_str());
         return true;
     }
+}
+
+bool
+Image::loadSubImage(Image* source, const Rectangle& sourceRect)
+{
+    ILOG_TRACE(ILX_IMAGE);
+
+    IDirectFBSurface* src = source->getDFBSurface();
+    DFBRectangle srcRect = sourceRect.dfbRect();
+    if (src->GetSubSurface(src, &srcRect, &_dfbSurface) != DFB_OK)
+        return false;
+
+    return true;
 }
 
 } /* namespace ilixi */

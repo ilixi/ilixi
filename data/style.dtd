@@ -9,7 +9,7 @@
 		<!ELEMENT size (#PCDATA)>
 		<!ELEMENT fontStyle (#PCDATA)>
 
-<!ELEMENT icons (plus, minus, check, tri-check, radioOff, radioOn)>
+<!ELEMENT icons (plus, minus)>
 <!ATTLIST icons resource CDATA #REQUIRED>
 	<!ELEMENT plus EMPTY>
 	<!ATTLIST plus x CDATA #REQUIRED>
@@ -23,36 +23,12 @@
 	<!ATTLIST minus w CDATA #REQUIRED>
 	<!ATTLIST minus h CDATA #REQUIRED>
 
-	<!ELEMENT check EMPTY>
-	<!ATTLIST check x CDATA #REQUIRED>
-	<!ATTLIST check y CDATA #REQUIRED>
-	<!ATTLIST check w CDATA #REQUIRED>
-	<!ATTLIST check h CDATA #REQUIRED>
-
-	<!ELEMENT tri-check EMPTY>
-	<!ATTLIST tri-check x CDATA #REQUIRED>
-	<!ATTLIST tri-check y CDATA #REQUIRED>
-	<!ATTLIST tri-check w CDATA #REQUIRED>
-	<!ATTLIST tri-check h CDATA #REQUIRED>
-
-	<!ELEMENT radioOff EMPTY>
-	<!ATTLIST radioOff x CDATA #REQUIRED>
-	<!ATTLIST radioOff y CDATA #REQUIRED>
-	<!ATTLIST radioOff w CDATA #REQUIRED>
-	<!ATTLIST radioOff h CDATA #REQUIRED>
-
-	<!ELEMENT radioOn EMPTY>
-	<!ATTLIST radioOn x CDATA #REQUIRED>
-	<!ATTLIST radioOn y CDATA #REQUIRED>
-	<!ATTLIST radioOn w CDATA #REQUIRED>
-	<!ATTLIST radioOn h CDATA #REQUIRED>
-
 <!ELEMENT pack (PushButton, ToolButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, Tab, LineInput)>
 <!ATTLIST pack resource CDATA #REQUIRED>
 
 	<!ELEMENT PushButton (def3, pre3, exp3, dis3, foc3)>
-	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1)>
-	<!ELEMENT RadioButton (def1, pre1, exp1, dis1, foc1)>
+	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1, check, tri-check)>
+	<!ELEMENT RadioButton (def1, pre1, exp1, dis1, foc1, radioOff, radioOn)>
 	<!ELEMENT ProgressBar (def3, dis3, pIndicator)>
 	<!ELEMENT Slider (def3, dis3, pre3, exp3, sIndicator)>
 	<!ELEMENT Frame (def9, dis9)>
@@ -134,3 +110,27 @@
 	<!ATTLIST bottom-right y CDATA #REQUIRED>
 	<!ATTLIST bottom-right w CDATA #REQUIRED>
 	<!ATTLIST bottom-right h CDATA #REQUIRED>
+
+	<!ELEMENT check EMPTY>
+	<!ATTLIST check x CDATA #REQUIRED>
+	<!ATTLIST check y CDATA #REQUIRED>
+	<!ATTLIST check w CDATA #REQUIRED>
+	<!ATTLIST check h CDATA #REQUIRED>
+
+	<!ELEMENT tri-check EMPTY>
+	<!ATTLIST tri-check x CDATA #REQUIRED>
+	<!ATTLIST tri-check y CDATA #REQUIRED>
+	<!ATTLIST tri-check w CDATA #REQUIRED>
+	<!ATTLIST tri-check h CDATA #REQUIRED>
+
+	<!ELEMENT radioOff EMPTY>
+	<!ATTLIST radioOff x CDATA #REQUIRED>
+	<!ATTLIST radioOff y CDATA #REQUIRED>
+	<!ATTLIST radioOff w CDATA #REQUIRED>
+	<!ATTLIST radioOff h CDATA #REQUIRED>
+
+	<!ELEMENT radioOn EMPTY>
+	<!ATTLIST radioOn x CDATA #REQUIRED>
+	<!ATTLIST radioOn y CDATA #REQUIRED>
+	<!ATTLIST radioOn w CDATA #REQUIRED>
+	<!ATTLIST radioOn h CDATA #REQUIRED>

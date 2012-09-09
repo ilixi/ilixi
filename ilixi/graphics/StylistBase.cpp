@@ -190,18 +190,19 @@ StylistBase::defaultFont(StyleHint::Font font) const
 }
 
 Image*
-StylistBase::defaultIcon(StyleHint::DefaultIcon icon) const
+StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
 {
     switch (icon)
     {
-//    case StyleHint::Information:
-//        return _style->_info;
-//    case StyleHint::Question:
-//        return _style->_question;
-//    case StyleHint::Warning:
-//        return _style->_warning;
-//    case StyleHint::Critical:
-//        return _style->_critical;
+    case StyleHint::Plus:
+        return new Image(_style->_icons, _style->plus);
+    case StyleHint::Minus:
+        return new Image(_style->_icons, _style->minus);
+    case StyleHint::Up:
+    case StyleHint::Down:
+    case StyleHint::Left:
+    case StyleHint::Right:
+        return NULL;
     default:
         return NULL;
     }

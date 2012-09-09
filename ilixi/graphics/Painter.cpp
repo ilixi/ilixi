@@ -97,6 +97,7 @@ Painter::end()
             delete tmp;
             delete _affine;
         }
+        dfbSurface->ReleaseSource(dfbSurface);
         _myWidget->surface()->unlock();
     }
 }
