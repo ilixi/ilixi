@@ -197,6 +197,14 @@ ToolButton::setIcon(const std::string& iconPath, const Size& size)
 }
 
 void
+ToolButton::setIcon(StyleHint::PackedIcon icon)
+{
+    removeChild(_icon);
+    _icon = new Icon(icon, this);
+    addChild(_icon);
+}
+
+void
 ToolButton::setIconSize(const Size& size)
 {
     if (_icon)

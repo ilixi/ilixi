@@ -114,6 +114,12 @@ public:
     setIcon(const std::string& path, const Size& size = Size(48, 48));
 
     /*!
+     * Sets icon using stock icons.
+     */
+    void
+    setIcon(StyleHint::PackedIcon icon);
+
+    /*!
      * Sets the size of button icon.
      */
     void

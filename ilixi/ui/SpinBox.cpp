@@ -35,7 +35,7 @@ SpinBox::SpinBox(int value, Widget* parent)
     _plus->setRepeatable(true);
     _plus->setDrawFrame(false);
     _plus->setToolButtonStyle(ToolButton::IconOnly);
-    _plus->setIcon(new Icon(StyleHint::Plus));
+    _plus->setIcon(StyleHint::Plus);
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
     _plus->setDisabled();
     addChild(_plus);
@@ -44,7 +44,7 @@ SpinBox::SpinBox(int value, Widget* parent)
     _minus->setRepeatable(true);
     _minus->setDrawFrame(false);
     _minus->setToolButtonStyle(ToolButton::IconOnly);
-    _minus->setIcon(new Icon(StyleHint::Minus));
+    _minus->setIcon(StyleHint::Minus);
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
     addChild(_minus);
 
