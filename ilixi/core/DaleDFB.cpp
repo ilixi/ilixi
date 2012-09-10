@@ -80,8 +80,7 @@ DaleDFB::comaGetLocal(unsigned int bytes, void** ret)
 }
 
 DFBResult
-DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method,
-                           void* arg)
+DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg)
 {
     ILOG_TRACE_F(ILX_DALEDFB);
     if (!__coma)
@@ -106,7 +105,7 @@ DaleDFB::showOSK(const Rectangle& rect)
 {
     ILOG_TRACE_F(ILX_DALEDFB);
 
-    if (!__oskComp && getOSKComp() == DFB_FAILURE)
+    if (getOSKComp() == DFB_FAILURE)
         return DFB_FAILURE;
 
     OSKRequest request;
@@ -134,7 +133,7 @@ DaleDFB::hideOSK()
 {
     ILOG_TRACE_F(ILX_DALEDFB);
 
-    if (!__oskComp && getOSKComp() == DFB_FAILURE)
+    if (getOSKComp() == DFB_FAILURE)
         return DFB_FAILURE;
 
     int ret_val;
@@ -215,14 +214,14 @@ DaleDFB::getOSKComp()
         static bool tryOnce = true;
         if (tryOnce)
         {
-            DirectResult ret = __coma->GetComponent(__coma, "OSKComponent",
-                                                    1000, &__oskComp);
+            tryOnce = false;
+            DirectResult ret = __coma->GetComponent(__coma, "OSKComponent", 500,
+                                                    &__oskComp);
             if (ret)
             {
                 ILOG_ERROR( ILX_DALEDFB, "Cannot get OSK component!\n");
                 return DFB_FAILURE;
             }
-            tryOnce = false;
         } else
             return DFB_FAILURE;
     }
