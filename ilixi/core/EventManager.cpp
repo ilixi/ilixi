@@ -78,18 +78,15 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
 
     if (_exposedWidget)
     {
-        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state
-                & ~ExposedState);
-        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state
-                & ~PressedState);
+        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~ExposedState);
+        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
         _exposedWidget->leaveEvent(pointerEvent);
     }
 
     _exposedWidget = widget;
     if (_exposedWidget)
     {
-        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state
-                | ExposedState);
+        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state | ExposedState);
         _exposedWidget->enterEvent(pointerEvent);
     }
 
@@ -107,8 +104,7 @@ EventManager::setFocusedWidget(Widget* widget)
 
     if (_focusedWidget)
     {
-        _focusedWidget->_state = (WidgetState) (_focusedWidget->_state
-                & ~FocusedState);
+        _focusedWidget->_state = (WidgetState) (_focusedWidget->_state & ~FocusedState);
         _focusedWidget->focusOutEvent();
     }
 
@@ -119,8 +115,7 @@ EventManager::setFocusedWidget(Widget* widget)
         if (widget->_parent)
             widget->_parent->_preSelectedWidget = _focusedWidget;
 
-        _focusedWidget->_state = (WidgetState) (_focusedWidget->_state
-                | FocusedState);
+        _focusedWidget->_state = (WidgetState) (_focusedWidget->_state | FocusedState);
         _focusedWidget->focusInEvent();
     }
 
@@ -150,7 +145,7 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setOSKWidget(Widget* widget)
 {
-    if(widget == _oskWidget)
+    if (widget == _oskWidget)
         return false;
 
     if (widget == NULL || (!(widget->inputMethod() & OSKInput) && _oskWidget))
@@ -249,8 +244,8 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
                 return true;
         }
     else
-        for (Widget::WidgetListIterator it = target->_children.begin(), end =
-                target->_children.end(); it != end; ++it)
+        for (Widget::WidgetListIterator it = target->_children.begin(),
+                end = target->_children.end(); it != end; ++it)
         {
             targetChild = (Widget*) *it;
             // check children of child recursively...
@@ -285,8 +280,8 @@ EventManager::selectNext(Widget* target, Widget* startFrom, int iter)
     if (target->_children.size())
     {
         Widget* targetChild;
-        for (Widget::WidgetListIterator it = target->_children.begin(), end =
-                target->_children.end(); it != end; ++it)
+        for (Widget::WidgetListIterator it = target->_children.begin(),
+                end = target->_children.end(); it != end; ++it)
         {
             targetChild = (Widget*) *it;
 

@@ -449,9 +449,9 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
     // handle all other events...
     Widget* target = this;
-//  Widget* grabbed = _eventManager->grabbedWidget();
-//  if (grabbed && grabbed->visible())
-//    target = grabbed;
+    Widget* grabbed = _eventManager->grabbedWidget();
+    if (grabbed && grabbed->acceptsPointerInput())
+        target = grabbed;
 
     switch (event.type)
     {
@@ -467,11 +467,6 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return true;
 
     case DWET_BUTTONUP:
-        _eventManager->setGrabbedWidget(
-                NULL,
-                PointerEvent(PointerButtonUp, event.x, event.y, 0,
-                             (PointerButton) event.button,
-                             (PointerButtonMask) event.buttons));
         return target->consumePointerEvent(
                 PointerEvent(PointerButtonUp, event.x, event.y, 0,
                              (PointerButton) event.button,

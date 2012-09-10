@@ -359,8 +359,7 @@ Widget::setZ(int z)
     if (z != _z)
     {
         if (_parent)
-            _parent->_surfaceDesc = (SurfaceDescription) (_parent->_surfaceDesc
-                    | DoZSort);
+            _parent->_surfaceDesc = (SurfaceDescription) (_parent->_surfaceDesc | DoZSort);
         _z = z;
         setSurfaceGeometryModified();
     }
@@ -643,9 +642,9 @@ Widget::repaint(const PaintEvent& event)
 void
 Widget::update()
 {
-    if (_rootWindow && !(_state & InvisibleState)) // FIXME move invis check above
+    if (_rootWindow && !(_state & InvisibleState)) // FIXME invis check
         _rootWindow->update(PaintEvent(_frameGeometry, z()));
-    else
+    else if ((_surfaceDesc & HasOwnSurface) || (_surfaceDesc & RootSurface))
         paint(PaintEvent(_frameGeometry, z()));
 }
 
@@ -660,7 +659,7 @@ Widget::update(const PaintEvent& event)
             _parent->update(PaintEvent(this, event));
         } else
             _parent->update(event);
-    } else
+    } else if ((_surfaceDesc & HasOwnSurface) || (_surfaceDesc & RootSurface))
         paint(event);
 }
 
@@ -744,24 +743,18 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    if (visible()
-            && (_rootWindow->_eventManager->grabbedWidget() == this
-                    || _frameGeometry.contains(pointerEvent.x, pointerEvent.y,
-                                               true)))
+    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(
+            pointerEvent.x, pointerEvent.y, true)))
     {
-        if ((_inputMethod & PointerTracking)
-                && (pointerEvent.buttonMask & ButtonMaskLeft)
-                && (pointerEvent.eventType == PointerMotion))
+        if ((_inputMethod & PointerTracking) && (pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion))
         {
             if (!(_state & PressedState))
             {
                 _state = (WidgetState) (_state | PressedState);
-                ILOG_DEBUG(ILX_WIDGET, "grabbed %p\n", this);
                 _rootWindow->_eventManager->setGrabbedWidget(this,
                                                              pointerEvent);
             }
-        } else if ((_inputMethod & PointerTracking)
-                && (pointerEvent.eventType == PointerWheel))
+        } else if ((_inputMethod & PointerTracking) && (pointerEvent.eventType == PointerWheel))
         {
             pointerWheelEvent(pointerEvent);
             return true;
@@ -769,8 +762,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         {
             for (WidgetListReverseIterator it = _children.rbegin();
                     it != _children.rend(); ++it)
-                if (((Widget*) *it)->acceptsPointerInput()
-                        && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(
+                        pointerEvent))
                     return true;
         }
 
@@ -783,19 +776,17 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         {
             _state = (WidgetState) (_state & ~PressedState);
             pointerButtonUpEvent(pointerEvent);
+            _rootWindow->_eventManager->setGrabbedWidget(NULL, pointerEvent);
         } else if (pointerEvent.eventType == PointerWheel)
         {
             _rootWindow->_eventManager->setFocusedWidget(this);
             pointerWheelEvent(pointerEvent);
         } else if (pointerEvent.eventType == PointerMotion)
         {
-            if (_inputMethod & PointerTracking)
-            {
-                if (_state & PressedState)
-                    _rootWindow->_eventManager->setGrabbedWidget(this,
-                                                                 pointerEvent);
-                pointerMotionEvent(pointerEvent);
-            }
+            if (_state & PressedState)
+                _rootWindow->_eventManager->setGrabbedWidget(this,
+                                                             pointerEvent);
+            pointerMotionEvent(pointerEvent);
             _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
         }
         return true;
@@ -1069,8 +1060,7 @@ Widget::updateSurface(const PaintEvent& event)
         }
 
         if (ret)
-            _surfaceDesc = (SurfaceDescription) (_surfaceDesc
-                    & ~InitialiseSurface);
+            _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
     }
 #endif
 
