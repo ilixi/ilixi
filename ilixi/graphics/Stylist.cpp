@@ -164,26 +164,39 @@ Stylist::drawLineInput(Painter* p, LineInput* input)
     const WidgetState state = input->state();
 
     // Frame
-    if (state & DisabledState)
-        draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.dis);
-    else if (state & PressedState)
-        draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.pre);
-    else if (state & ExposedState)
-        draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.exp);
-    else
-        draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.def);
+    if (input->drawFrame())
+    {
+        if (state & DisabledState)
+            draw9Frame(p, 0, 0, input->width(), input->height(),
+                       _style->li.dis);
+        else if (state & PressedState)
+            draw9Frame(p, 0, 0, input->width(), input->height(),
+                       _style->li.pre);
+        else if (state & ExposedState)
+            draw9Frame(p, 0, 0, input->width(), input->height(),
+                       _style->li.exp);
+        else
+            draw9Frame(p, 0, 0, input->width(), input->height(),
+                       _style->li.def);
 
-    if (state & FocusedState)
-        draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.foc);
+        if (state & FocusedState)
+            draw9Frame(p, 0, 0, input->width(), input->height(),
+                       _style->li.foc);
+    }
 
-    p->setBrush(Color(0, 0, 0));
-    p->setClip(
-            _style->li.def.l.width(),
-            3,
-            input->width() - _style->li.def.l.width() - _style->li.def.r.width(),
-            input->height() - 6);
-    p->drawLayout(input->layout());
-    p->resetClip();
+    // layout
+    if (input->layout().text().size())
+    {
+        p->setFont(*input->font());
+        p->setBrush(_palette->getGroup(state).baseText);
+        p->setClip(
+                _style->li.def.l.width(),
+                3,
+                input->width() - _style->li.def.l.width() - _style->li.def.r.width(),
+                input->height() - 6);
+        p->drawLayout(input->layout());
+        p->resetClip();
+    }
 
     if (input->_cursorOn)
     {
@@ -488,6 +501,39 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         p->blitImage(_style->_pack, _style->slI.foc, bar->_indicator.x(),
                      bar->_indicator.y());
 
+}
+
+void
+Stylist::drawSpinBox(Painter* p, SpinBox* box)
+{
+    const WidgetState state = box->state();
+
+    //Frame
+    if (state & DisabledState)
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.dis);
+    else if (state & PressedState)
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.pre);
+    else if (state & ExposedState)
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.exp);
+    else
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.def);
+
+    if (state & FocusedState)
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.foc);
+
+
+    if (box->layout().text().size())
+    {
+        p->setFont(*defaultFont(StyleHint::DefaultFont));
+        p->setBrush(_palette->getGroup(state).baseText);
+        p->setClip(
+                _style->li.def.l.width(),
+                3,
+                box->width() - _style->li.def.l.width() - _style->li.def.r.width(),
+                box->height() - 6);
+        p->drawLayout(box->layout());
+        p->resetClip();
+    }
 }
 
 void

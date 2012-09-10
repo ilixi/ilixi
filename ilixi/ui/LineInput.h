@@ -69,6 +69,12 @@ public:
     clear();
 
     /*!
+     * Returns true if line input draws frame.
+     */
+    bool
+    drawFrame() const;
+
+    /*!
      * Returns margin around text.
      */
     const Margin&
@@ -93,22 +99,16 @@ public:
     setMargin(const Margin& margin);
 
     /*!
-     * Sets text appended at the end.
-     */
-    void
-    setPostfix(const std::string& postfix);
-
-    /*!
-     * Sets text prepended at the start.
-     */
-    void
-    setPrefix(const std::string& prefix);
-
-    /*!
      * Sets number of maximum characters to store.
      */
     void
     setMaxLength(int maxLen);
+
+    /*!
+     * Enable/Disable drawing frame.
+     */
+    void
+    setDrawFrame(bool drawFrame);
 
     /*!
      * This signal is emitted once cursor is moved.
@@ -121,7 +121,26 @@ public:
      */
     sigc::signal<void> sigSelectionChanged;
 
+    /*!
+     * This signal is emitted if text is edited.
+     */
+    sigc::signal<void> sigTextEdited;
+
 private:
+    enum LineInputFlags
+    {
+        DrawFrame = 0x001, //!< This flag controls whether line input draws frame.
+        ReadOnly = 0x002, //!< Text can not be edited.
+        Password = 0x004, //!< Asterisks are displayed instead of characters.
+        PasswordEdit = 0x008, //!< Display characters as entered, otherwise display asterisks.
+        NoText = 0x010,  //!< Text is not displayed at all.
+        Numeric = 0x100, //!< Only accepts numbers.
+        Alphabetic = 0x200, //!< Only accepts letters.
+        AlphaNumeric = 0x300 //!< Accept characters and numbers.
+    };
+
+    //! This flag controls whether line input draws frame.
+    LineInputFlags _lineInputFlags;
     //! Cursor display flag.
     bool _cursorOn;
     //! Selection active flag.
@@ -134,11 +153,6 @@ private:
     int _selectedIndex;
     //! Margin around text.
     Margin _margin;
-
-    //! Prefix for line input.
-    std::string _prefix;
-    //! Postfix for line input.
-    std::string _postfix;
 
     //! Cursor position and size.
     Rectangle _cursor;

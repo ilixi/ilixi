@@ -24,6 +24,7 @@
 #include <ui/LineInput.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+#include <sstream>
 
 namespace ilixi
 {
@@ -33,6 +34,7 @@ D_DEBUG_DOMAIN( ILX_LINEINPUT, "ilixi/ui/LineInput", "LineInput");
 LineInput::LineInput(const std::string& text, Widget* parent)
         : Widget(parent),
           TextBase(text, this),
+          _lineInputFlags(DrawFrame),
           _cursorOn(false),
           _selecting(false),
           _maxLength(-1),
@@ -69,38 +71,26 @@ LineInput::maxLength() const
 }
 
 void
-LineInput::setMaxLength(int maxLen)
-{
-    _maxLength = maxLen;
-}
-
-void
 LineInput::clear()
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
-    _layout.setText("");
+    setText("");
     _cursorIndex = 0;
     updateCursorPosition();
     updateSelectionRect();
     update();
 }
 
+bool
+LineInput::drawFrame() const
+{
+    return (_lineInputFlags & DrawFrame);
+}
+
 const Margin&
 LineInput::margin() const
 {
     return _margin;
-}
-
-const std::string&
-LineInput::postfix() const
-{
-    return _postfix;
-}
-
-const std::string&
-LineInput::prefix() const
-{
-    return _prefix;
 }
 
 void
@@ -110,15 +100,18 @@ LineInput::setMargin(const Margin& margin)
 }
 
 void
-LineInput::setPostfix(const std::string& postfix)
+LineInput::setMaxLength(int maxLen)
 {
-    _postfix = postfix;
+    _maxLength = maxLen;
 }
 
 void
-LineInput::setPrefix(const std::string& prefix)
+LineInput::setDrawFrame(bool drawFrame)
 {
-    _prefix = prefix;
+    if (drawFrame)
+        _lineInputFlags = (LineInputFlags) (_lineInputFlags | DrawFrame);
+    else
+        _lineInputFlags = (LineInputFlags) (_lineInputFlags & ~DrawFrame);
 }
 
 void
@@ -321,6 +314,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             int n1 = abs(_selectedIndex - _cursorIndex);
             _layout.erase(pos1, n1);
             _selection.setSize(0, 0);
+            sigTextEdited();
             sigSelectionChanged();
             sigCursorMoved(_cursorIndex, pos1);
             _cursorIndex = pos1;
@@ -335,6 +329,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             {
                 sigCursorMoved(_cursorIndex, --_cursorIndex);
                 _layout.erase(_cursorIndex, 1);
+                sigTextEdited();
             }
         } else
         {
@@ -342,6 +337,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             int n1 = abs(_selectedIndex - _cursorIndex);
             _layout.erase(pos1, n1);
             _selection.setSize(0, 0);
+            sigTextEdited();
             sigSelectionChanged();
             sigCursorMoved(_cursorIndex, pos1);
             _cursorIndex = pos1;
@@ -374,6 +370,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
                     "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
             _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
+            sigTextEdited();
         } else
         {
             int pos1 = std::min(_selectedIndex, _cursorIndex);
@@ -381,6 +378,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
             _selection.setSize(0, 0);
             sigCursorMoved(_cursorIndex, pos1 + 1);
+            sigTextEdited();
             _cursorIndex = pos1 + 1;
         }
 //        }

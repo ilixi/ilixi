@@ -51,6 +51,7 @@ class ProgressBar;
 class PushButton;
 class RadioButton;
 class Slider;
+class SpinBox;
 class TabPanel;
 class TabPanelButton;
 class ToolButton;
@@ -186,6 +187,12 @@ public:
      */
     virtual void
     drawSlider(Painter* painter, Slider* slider)=0;
+
+    /*!
+     * Draws a spinbox.
+     */
+    virtual void
+    drawSpinBox(Painter* painter, SpinBox* spinBox)=0;
 
     /*!
      * Draws a tab panel button.

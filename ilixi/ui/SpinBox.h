@@ -8,7 +8,6 @@
 #ifndef ILIXI_SPINBOX_H_
 #define ILIXI_SPINBOX_H_
 
-#include <ui/LineInput.h>
 #include <ui/ToolButton.h>
 
 namespace ilixi
@@ -37,8 +36,26 @@ public:
     int
     value() const;
 
+    /*!
+     * Returns text appended to the start of text.
+     */
+    const std::string&
+    postfix() const;
+
+    /*!
+     * Returns text prepended to the start of text.
+     */
+    const std::string&
+    prefix() const;
+
     bool
     wrapping() const;
+
+    /*!
+     * Returns text layout.
+     */
+    TextLayout
+    layout() const;
 
     void
     setMax(int max);
@@ -58,6 +75,18 @@ public:
     void
     setWrapping(bool wrapping);
 
+    /*!
+     * Sets text appended at the end.
+     */
+    void
+    setPostfix(const std::string& postfix);
+
+    /*!
+     * Sets text prepended at the start.
+     */
+    void
+    setPrefix(const std::string& prefix);
+
     sigc::signal<void, int> sigValueChanged;
 
 protected:
@@ -65,12 +94,17 @@ protected:
     compose(const PaintEvent& event);
 
 private:
-    //! line input is used for input.
-    LineInput* _lineInput;
     //! Button for increments.
     ToolButton* _plus;
     //! Button for decrements.
     ToolButton* _minus;
+
+    //! Prefix for input.
+    std::string _prefix;
+    //! Postfix for input.
+    std::string _postfix;
+    //! TextLayout for this widget.
+    TextLayout _layout;
 
     //! This property stores the minimum value.
     int _min;

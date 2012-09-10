@@ -124,6 +124,12 @@ public:
     drawSlider(Painter* painter, Slider* slider);
 
     /*!
+     * Draws a SpinBox.
+     */
+    virtual void
+    drawSpinBox(Painter* painter, SpinBox* spinBox);
+
+    /*!
      * Draws a tab panel button.
      */
     virtual void

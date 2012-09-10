@@ -1,11 +1,11 @@
 <!ELEMENT style (fonts, icons, pack)>
 
 <!ELEMENT fonts (buttonFont, defaultFont, inputFont, titleFont) >
-	<!ELEMENT buttonFont (file, size, fontStyle*)>
-	<!ELEMENT defaultFont (file, size, fontStyle*)>
-	<!ELEMENT inputFont (file, size, fontStyle*)>
-	<!ELEMENT titleFont (file, size, fontStyle*)>
-		<!ELEMENT file (#PCDATA)>
+	<!ELEMENT buttonFont (name, size, fontStyle*)>
+	<!ELEMENT defaultFont (name, size, fontStyle*)>
+	<!ELEMENT inputFont (name, size, fontStyle*)>
+	<!ELEMENT titleFont (name, size, fontStyle*)>
+		<!ELEMENT name (#PCDATA)>
 		<!ELEMENT size (#PCDATA)>
 		<!ELEMENT fontStyle (#PCDATA)>
 

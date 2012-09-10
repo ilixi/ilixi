@@ -6,14 +6,17 @@
  */
 
 #include <ui/SpinBox.h>
+#include <graphics/Painter.h>
+#include <core/Logger.h>
 #include <sstream>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_SPINBOX, "ilixi/ui/SpinBox", "SpinBox");
+
 SpinBox::SpinBox(int value, Widget* parent)
         : Widget(parent),
-          _lineInput(NULL),
           _plus(NULL),
           _minus(NULL),
           _min(0),
@@ -22,14 +25,9 @@ SpinBox::SpinBox(int value, Widget* parent)
           _step(1),
           _wrapping(true)
 {
+    ILOG_TRACE_W(ILX_SPINBOX);
     setConstraints(FixedConstraint, FixedConstraint);
     setInputMethod(PointerInput);
-
-    std::stringstream ss;
-    ss << _value;
-    _lineInput = new LineInput(ss.str());
-    _lineInput->setMargin(Margin(0, 0, 40, 40));
-    addChild(_lineInput);
 
     _plus = new ToolButton("+");
     _plus->setRepeatable(true);
@@ -48,6 +46,12 @@ SpinBox::SpinBox(int value, Widget* parent)
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
     addChild(_minus);
 
+    std::stringstream ss;
+    ss << _prefix << _value << _postfix;
+    _layout.setSingleLine(true);
+    _layout.setText(ss.str());
+    _layout.setAlignment(TextLayout::Center);
+
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &SpinBox::updateSpinBoxGeometry));
 }
@@ -59,8 +63,11 @@ SpinBox::~SpinBox()
 Size
 SpinBox::preferredSize() const
 {
-    Size s = _lineInput->preferredSize();
-    return Size(s.width(), s.height());
+    Font* font = stylist()->defaultFont(StyleHint::InputFont);
+    std::stringstream ss;
+    ss << _prefix << _value << _postfix;
+    Size text = font->extents(ss.str());
+    return Size(text.width() + 80, _plus->preferredSize().height());
 }
 
 int
@@ -87,10 +94,28 @@ SpinBox::value() const
     return _value;
 }
 
+const std::string&
+SpinBox::postfix() const
+{
+    return _postfix;
+}
+
+const std::string&
+SpinBox::prefix() const
+{
+    return _prefix;
+}
+
 bool
 SpinBox::wrapping() const
 {
     return _wrapping;
+}
+
+TextLayout
+SpinBox::layout() const
+{
+    return _layout;
 }
 
 void
@@ -121,8 +146,16 @@ SpinBox::setStep(int step)
 void
 SpinBox::setValue(int value)
 {
-    if (value != _value && value >= _min && value <= _max)
+    ILOG_TRACE_W(ILX_SPINBOX);
+    if (value != _value)
     {
+        ILOG_DEBUG(ILX_SPINBOX, " -> value: %d\n", value);
+
+        if (value < _min)
+            value = _min;
+        if (value > _max)
+            value = _max;
+
         _value = value;
 
         if (_value == _min)
@@ -136,8 +169,9 @@ SpinBox::setValue(int value)
             _plus->setEnabled();
 
         std::stringstream ss;
-        ss << _value;
-        _lineInput->setText(ss.str());
+        ss << _prefix << _value << _postfix;
+        _layout.setText(ss.str());
+
         sigValueChanged(_value);
         update();
     }
@@ -150,8 +184,38 @@ SpinBox::setWrapping(bool wrapping)
 }
 
 void
+SpinBox::setPostfix(const std::string& postfix)
+{
+    if (_postfix != postfix)
+    {
+        _postfix = postfix;
+        std::stringstream ss;
+        ss << _prefix << _value << _postfix;
+        _layout.setText(ss.str());
+        update();
+    }
+}
+
+void
+SpinBox::setPrefix(const std::string& prefix)
+{
+    if (_prefix != prefix)
+    {
+        _prefix = prefix;
+        std::stringstream ss;
+        ss << _prefix << _value << _postfix;
+        _layout.setText(ss.str());
+        update();
+    }
+}
+
+void
 SpinBox::compose(const PaintEvent& event)
 {
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawSpinBox(&p, this);
+    p.end();
 }
 
 void
@@ -169,9 +233,14 @@ SpinBox::increment()
 void
 SpinBox::updateSpinBoxGeometry()
 {
-    _lineInput->setGeometry(0, 0, width(), height());
+    ILOG_TRACE_W(ILX_SPINBOX);
     _minus->setGeometry(0, 0, 40, height());
     _plus->setGeometry(width() - 40, 0, 40, height());
+    Size s = stylist()->defaultFont(StyleHint::InputFont)->extents(
+            _layout.text());
+    int y = (height() - s.height()) / 2;
+    _layout.setBounds(40, y, width() - 80, s.height());
+    _layout.doLayout(stylist()->defaultFont(StyleHint::InputFont));
 }
 
 } /* namespace ilixi */

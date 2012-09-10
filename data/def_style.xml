@@ -3,23 +3,23 @@
 <style>
 	<fonts>
 		<buttonFont>
-			<file>Sans</file>
+			<name>Sans</name>
 			<size>16</size>
 			<fontStyle>bold</fontStyle>
 		</buttonFont>
 
 		<defaultFont>
-			<file>Sans</file>
+			<name>Sans</name>
 			<size>14</size>
 		</defaultFont>
 
 		<inputFont>
-			<file>Sans</file>
+			<name>Serif</name>
 			<size>14</size>
 		</inputFont>
 
 		<titleFont>
-			<file>Sans</file>
+			<name>Sans</name>
 			<size>18</size>
 			<fontStyle>bold</fontStyle>
 		</titleFont>
