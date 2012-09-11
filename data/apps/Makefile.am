@@ -11,6 +11,7 @@ miscdata_DATA 	=	\
 					facebook.appdef \
 					fire.appdef \
 					gallery.appdef \
+					gears.appdef \
 					google.appdef \
 					googlemaps.appdef \
 					googleplus.appdef \
