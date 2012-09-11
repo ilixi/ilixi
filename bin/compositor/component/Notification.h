@@ -27,12 +27,12 @@
 #include <ui/SurfaceView.h>
 #include <lib/Timer.h>
 #include <lib/TweenAnimation.h>
-#include <lib/Notify.h>
+#include <core/ComponentData.h>
 #include <lib/AnimationSequence.h>
 
 namespace ilixi
 {
-class Compositor;
+class ILXCompositor;
 
 class Notification : public Widget
 {
@@ -43,7 +43,7 @@ public:
         Init, Visible, Hidden
     };
 
-    Notification(const Notify::NotifyData& data, Compositor* parent);
+    Notification(const Compositor::NotificationData& data, ILXCompositor* parent);
 
     virtual
     ~Notification();
@@ -62,13 +62,13 @@ protected:
     compose(const PaintEvent& event);
 
 private:
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
     NotificationState _notState;
 
     Image* _icon;
     std::string _title;
     std::string _text;
-    std::string _sender;
+    pid_t _client;
 
     Timer _timer;
 

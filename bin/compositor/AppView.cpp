@@ -32,13 +32,13 @@ D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/comp/AppView", "AppView");
 
 int AppView::_animDuration = 500;
 
-AppView::AppView(Compositor* compositor, AppInstance* instance, Widget* parent)
+AppView::AppView(ILXCompositor* compositor, AppInstance* instance, Widget* parent)
         : AppCompositor(compositor, instance, parent),
           _animProps((AnimatedProperty) (Opacity))
 {
     setInputMethod(PointerInput);
 
-    _propAnim.setDuration(_animDuration);
+    _propAnim.setDuration(_compositor->settings.durationShow);
     _propAnim.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
     _propAnim.sigFinished.connect(sigc::mem_fun(this, &AppView::tweenEndSlot));
 
@@ -87,7 +87,10 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> Opacity\n");
     } else
+    {
         _opacityTween->setEnabled(false);
+        setOpacity(255);
+    }
 
     if (_animProps & Zoom)
     {
@@ -136,8 +139,11 @@ AppView::show(AnimatedProperty props, int tx, int ty)
     if (anim)
     {
         ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
-        _propAnim.setDuration(300);
+        _propAnim.setDuration(_compositor->settings.durationShow);
         _propAnim.start();
+    } else
+    {
+        update();
     }
 }
 
@@ -209,8 +215,12 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     if (anim)
     {
         ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
-        _propAnim.setDuration(500);
+        _propAnim.setDuration(_compositor->settings.durationHide);
         _propAnim.start();
+    } else
+    {
+        setVisible(false);
+        update();
     }
 }
 
@@ -284,6 +294,8 @@ AppView::tweenSlot()
 void
 AppView::tweenEndSlot()
 {
+    ILOG_TRACE_W(ILX_APPVIEW);
+    ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
     if (_animProps & HideWhenDone)
         setVisible(false);
     clearAnimatedProperty(AnimShowing);

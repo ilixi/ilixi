@@ -33,26 +33,24 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_COMPCOMP, "ilixi/Coma/CompositorComponent",
                "CompositorComponent");
 
-CompositorComponent::CompositorComponent(Compositor* compositor)
-        : ComaComponent("CompositorComponent", CompositorNumNotifications),
+CompositorComponent::CompositorComponent(ILXCompositor* compositor)
+        : ComaComponent("Compositor", Compositor::CNumNotifications),
           _compositor(compositor),
           _notificationMan(NULL)
 {
     init();
-    createNotification(AppVisible, NULL);
-    createNotification(AppHidden, NULL);
-    createNotification(AppStarting, NULL);
-    createNotification(ShowingHome, NULL, CNF_NONE);
-    createNotification(ShowingSwitcher, NULL, CNF_NONE);
-    createNotification(HidingHome, NULL, CNF_NONE);
-    createNotification(HidingSwitcher, NULL, CNF_NONE);
-    createNotification(SendingAppList, NULL);
-    createNotification(SoundVisible, NULL, CNF_NONE);
-    createNotification(SoundHidden, NULL, CNF_NONE);
-    createNotification(DashVisible, NULL, CNF_NONE);
-    createNotification(DashHidden, NULL, CNF_NONE);
-    createNotification(BackVisible, NULL, CNF_NONE);
-    createNotification(BackHidden, NULL, CNF_NONE);
+
+    createNotification(Compositor::AppStarting, NULL);
+    createNotification(Compositor::AppVisibilty, NULL);
+
+    createNotification(Compositor::BackKeyVisible, NULL, CNF_NONE);
+    createNotification(Compositor::BackKeyHidden, NULL, CNF_NONE);
+
+    createNotification(Compositor::SendingAppList, NULL);
+
+    createNotification(Compositor::SwitcherHidden, NULL, CNF_NONE);
+    createNotification(Compositor::SwitcherVisible, NULL, CNF_NONE);
+
     _notificationMan = new NotificationManager(compositor);
 }
 
@@ -72,21 +70,12 @@ CompositorComponent::signalInstanceChanged(AppInstance* cur, AppInstance* pre)
 }
 
 void
-CompositorComponent::signalHome(bool showing)
-{
-    if (showing)
-        notify(ShowingHome, NULL);
-    else
-        notify(HidingHome, NULL);
-}
-
-void
 CompositorComponent::signalSwitcher(bool showing)
 {
     if (showing)
-        notify(ShowingSwitcher, NULL);
+        notify(Compositor::SwitcherVisible, NULL);
     else
-        notify(HidingSwitcher, NULL);
+        notify(Compositor::SwitcherHidden, NULL);
 }
 
 void
@@ -94,13 +83,13 @@ CompositorComponent::sendAppList()
 {
     ILOG_TRACE_F(ILX_COMPCOMP);
     AppInfoList list = _compositor->appMan()->applicationList();
-    std::vector<AppData> dataVector;
+    std::vector<Compositor::AppData> dataVector;
 
     for (AppInfoList::iterator it = list.begin(); it != list.end(); ++it)
     {
         if (!(((AppInfo*) *it)->appFlags() & APP_SYSTEM))
         {
-            AppData data;
+            Compositor::AppData data;
             snprintf(data.name, 64, "%s", ((AppInfo*) *it)->name().c_str());
             snprintf(data.icon, 256, "%s", ((AppInfo*) *it)->icon().c_str());
             dataVector.push_back(data);
@@ -108,53 +97,37 @@ CompositorComponent::sendAppList()
     }
 
     int* vec;
-    allocate(sizeof(int) + dataVector.size() * sizeof(AppData), (void**) &vec);
+    allocate(sizeof(int) + dataVector.size() * sizeof(Compositor::AppData),
+             (void**) &vec);
     *vec = dataVector.size();
-    memcpy(vec + 1, &dataVector[0], dataVector.size() * sizeof(AppData));
-    notify(SendingAppList, vec);
+    memcpy(vec + 1, &dataVector[0],
+           dataVector.size() * sizeof(Compositor::AppData));
+    notify(Compositor::SendingAppList, vec);
     ILOG_DEBUG(ILX_COMPCOMP, "Sent application vector.\n");
-}
-
-void
-CompositorComponent::signalSound(bool showing)
-{
-    if (showing)
-        notify(SoundVisible, NULL);
-    else
-        notify(SoundHidden, NULL);
-}
-
-void
-CompositorComponent::signalDash(bool showing)
-{
-    if (showing)
-        notify(DashVisible, NULL);
-    else
-        notify(DashHidden, NULL);
 }
 
 void
 CompositorComponent::signalAppStart(AppInstance* instance)
 {
-    VisibilityNotification vNo;
+    Compositor::VisibilityData vNo;
     snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
     vNo.pid = instance->pid();
     vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
 
-    VisibilityNotification* tPid;
-    allocate(sizeof(VisibilityNotification), (void**) &tPid);
+    Compositor::VisibilityData* tPid;
+    allocate(sizeof(Compositor::VisibilityData), (void**) &tPid);
     *tPid = vNo;
 
-    notify(AppStarting, tPid);
+    notify(Compositor::AppStarting, tPid);
 }
 
 void
 CompositorComponent::signalBack(bool showing)
 {
     if (showing)
-        notify(BackVisible, NULL);
+        notify(Compositor::BackKeyVisible, NULL);
     else
-        notify(BackHidden, NULL);
+        notify(Compositor::BackKeyHidden, NULL);
 }
 
 DirectResult
@@ -163,47 +136,32 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     DirectResult ret = DR_OK;
     switch (method)
     {
-    case AddNotification:
+    case Compositor::AddNotification:
         {
-            Notify::NotifyData data = *((Notify::NotifyData*) arg);
-            ILOG_DEBUG(ILX_COMPCOMP, "AddNotification for %s\n", data.sender);
+            Compositor::NotificationData data = *((Compositor::NotificationData*) arg);
+            ILOG_DEBUG(ILX_COMPCOMP,
+                       "AddNotification for PID[%d]\n", data.client);
             _notificationMan->addNotification(data);
             break;
         }
 
-    case AddOverlay:
-        {
-            unsigned int surfaceID = *((unsigned int*) arg);
-            ILOG_DEBUG(ILX_COMPCOMP, "AddOverlay for %u\n", surfaceID);
-            _compositor->addOverlay(surfaceID);
-            break;
-        }
-
-    case AddDialog:
-        {
-            unsigned int surfaceID = *((unsigned int*) arg);
-            ILOG_DEBUG(ILX_COMPCOMP, "AddDialog for %u\n", surfaceID);
-            _compositor->addDialog(surfaceID);
-            break;
-        }
-
-    case ShowHome:
+    case Compositor::ShowHome:
         _compositor->toggleLauncher(true);
         break;
 
-    case ShowSwitcher:
+    case Compositor::ShowSwitcher:
         _compositor->toggleSwitcher(true);
         break;
 
-    case HideHome:
+    case Compositor::HideHome:
         _compositor->toggleLauncher(false);
         break;
 
-    case HideSwither:
+    case Compositor::HideSwitcher:
         _compositor->toggleSwitcher(false);
         break;
 
-    case StartApp:
+    case Compositor::StartApp:
         {
             char name[64];
             snprintf(name, 64, "%s", ((char*) arg));
@@ -211,32 +169,49 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         }
         break;
 
-    case SendAppList:
+    case Compositor::GetAppList:
         ILOG_TRACE_F(ILX_COMPCOMP);
         sendAppList();
         break;
 
-    case SoundShow:
+    case Compositor::ShowSoundMixer:
         _compositor->showSound(true);
         break;
 
-    case SoundHide:
+    case Compositor::HideSoundMixer:
         _compositor->showSound(false);
         break;
 
-    case DashShow:
+    case Compositor::ShowDashboard:
         _compositor->showDash(true);
         break;
 
-    case DashHide:
+    case Compositor::HideDashboard:
         _compositor->showDash(false);
         break;
 
-    case SendBackKey:
+    case Compositor::SendBackKey:
         ILOG_TRACE_F(ILX_COMPCOMP);
         ILOG_DEBUG(ILX_COMPCOMP, "SendBackKey\n");
         _compositor->sendOSKInput(DIKS_BACK);
         break;
+
+    case Compositor::SetOptions:
+        {
+            const char* opts = ((const char*) arg);
+            printf("Received Options:\n%s\n", opts);
+
+            xmlDocPtr doc = xmlReadDoc((xmlChar*) opts, "noname.xml", NULL, 0);
+            if (doc == NULL)
+            {
+                ILOG_ERROR(ILX_COMPCOMP, "Failed to parse options\n");
+                return DR_FAILURE;
+            }
+            parseOptions(doc);
+            xmlFreeDoc(doc);
+
+            break;
+        }
 
     default:
         ret = DR_NOIMPL;
@@ -248,26 +223,120 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 void
 CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
 {
-    VisibilityNotification vNo;
+    if (!instance->view()->visible())
+        return;
+
+    Compositor::VisibilityData vNo;
     snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
     vNo.pid = instance->pid();
     vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
+    vNo.visible = visible;
 
-    VisibilityNotification* tPid;
-    allocate(sizeof(VisibilityNotification), (void**) &tPid);
+    Compositor::VisibilityData* tPid;
+    allocate(sizeof(Compositor::VisibilityData), (void**) &tPid);
     *tPid = vNo;
 
-    if (visible)
+    notify(Compositor::AppVisibilty, tPid);
+    ILOG_DEBUG(ILX_COMPCOMP,
+               "%s is now visible!\n", instance->appInfo()->name().c_str());
+}
+
+void
+CompositorComponent::parseOptions(xmlDocPtr doc)
+{
+    xmlNodePtr root = xmlDocGetRootElement(doc);
+    xmlNodePtr child = root->xmlChildrenNode;
+    xmlNodePtr element = NULL;
+    while (child != NULL)
     {
-        notify(AppVisible, tPid);
-        ILOG_DEBUG(ILX_COMPCOMP,
-                   "%s is now visible!\n", instance->appInfo()->name().c_str());
-    } else
-    {
-        notify(AppHidden, tPid);
-        ILOG_DEBUG(ILX_COMPCOMP,
-                   "%s is now hidden!\n", instance->appInfo()->name().c_str());
+        ILOG_DEBUG(ILX_COMPCOMP, " Parsing %s...\n", child->name);
+
+        if (xmlStrcmp(child->name, (xmlChar*) "ClickToFocus") == 0)
+        {
+            xmlChar* enabled = xmlGetProp(child, (xmlChar*) "enabled");
+            _compositor->settings.clickFocus = atoi((const char*) enabled);
+            xmlFree(enabled);
+        } else if (xmlStrcmp(child->name, (xmlChar*) "Animations") == 0)
+        {
+            xmlChar* enabled = xmlGetProp(child, (xmlChar*) "enabled");
+            _compositor->settings.animations = atoi((const char*) enabled);
+            xmlFree(enabled);
+            element = child->children;
+            while (element != NULL)
+            {
+                if (xmlStrcmp(element->name, (xmlChar*) "Showing") == 0)
+                {
+                    xmlChar* duration = xmlGetProp(element,
+                                                   (xmlChar*) "duration");
+                    _compositor->settings.durationShow = atoi(
+                            (const char*) duration);
+                    xmlFree(duration);
+
+                    xmlChar* zoom = xmlGetProp(element, (xmlChar*) "zoom");
+                    bool zoomF = atoi((const char*) zoom);
+                    if (zoomF)
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.showAnimProps | AppView::Zoom);
+                    else
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.showAnimProps & ~AppView::Zoom);
+                    xmlFree(zoom);
+
+                    xmlChar* opacity = xmlGetProp(element,
+                                                  (xmlChar*) "opacity");
+                    bool opacityF = atoi((const char*) opacity);
+                    if (opacityF)
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.showAnimProps | AppView::Opacity);
+                    else
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.showAnimProps & ~AppView::Opacity);
+                    xmlFree(opacity);
+                } else if (xmlStrcmp(element->name, (xmlChar*) "Hiding") == 0)
+                {
+                    xmlChar* duration = xmlGetProp(element,
+                                                   (xmlChar*) "duration");
+                    _compositor->settings.durationHide = atoi(
+                            (const char*) duration);
+                    xmlFree(duration);
+
+                    // Zoom flag
+                    xmlChar* zoom = xmlGetProp(element, (xmlChar*) "zoom");
+                    bool zoomF = atoi((const char*) zoom);
+                    if (zoomF)
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.hideAnimProps | AppView::Zoom);
+                    else
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.hideAnimProps & ~AppView::Zoom);
+                    xmlFree(zoom);
+
+                    // Opacity flag
+                    xmlChar* opacity = xmlGetProp(element,
+                                                  (xmlChar*) "opacity");
+                    bool opacityF = atoi((const char*) opacity);
+                    if (opacityF)
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.hideAnimProps | AppView::Opacity);
+                    else
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
+                                _compositor->settings.hideAnimProps & ~AppView::Opacity);
+                    xmlFree(opacity);
+                }
+
+                element = element->next;
+            }
+
+        } else if (xmlStrcmp(child->name, (xmlChar*) "Brightness") == 0)
+        {
+            xmlChar* value = xmlGetProp(child, (xmlChar*) "value");
+            _compositor->setLayerOpacity(atoi((const char*) value));
+            xmlFree(value);
+        }
+
+        child = child->next;
     }
+
 }
 
 } /* namespace ilixi */

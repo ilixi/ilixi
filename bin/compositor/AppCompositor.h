@@ -34,13 +34,13 @@ extern "C"
 
 namespace ilixi
 {
-class Compositor;
+class ILXCompositor;
 //! Arranges SurfaceView(s) which belong to an Application.
 class AppCompositor : public Widget
 {
-    friend class Compositor;
+    friend class ILXCompositor;
 public:
-    AppCompositor(Compositor* compositor, AppInstance* instance,
+    AppCompositor(ILXCompositor* compositor, AppInstance* instance,
                   Widget* parent = 0);
 
     virtual
@@ -68,7 +68,7 @@ protected:
         APPCOMP_NONE, APPCOMP_READY
     };
 
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
     AppInstance* _instance;
     AppCompState _cState;
 

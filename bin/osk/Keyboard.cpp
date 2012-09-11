@@ -22,6 +22,7 @@
  */
 
 #include "Keyboard.h"
+#include <core/ComponentData.h>
 #include <core/Logger.h>
 #include <libxml/parser.h>
 
@@ -40,7 +41,7 @@ Keyboard::Keyboard(Widget* parent)
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
-    DaleDFB::comaGetComponent("OSKComponent", &_oskComponent);
+    DaleDFB::comaGetComponent("OSK", &_oskComponent);
 }
 
 Keyboard::~Keyboard()
@@ -132,7 +133,7 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
         uint32_t* key = (uint32_t*) ptr;
         *key = ucs32[i];
 
-        DaleDFB::comaCallComponent(_oskComponent, 2, (void*) key);
+        DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
     }
 
     if (_modifier)

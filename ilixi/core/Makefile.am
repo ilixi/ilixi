@@ -23,6 +23,7 @@ if WITH_FUSIONDALE
 libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp \
 								DaleDFB.cpp
 ilixi_include_HEADERS		+=	ComaComponent.h \
+								ComponentData.h \
 								DaleDFB.h
 endif
 

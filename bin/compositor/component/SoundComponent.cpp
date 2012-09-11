@@ -22,21 +22,22 @@
  */
 
 #include "SoundComponent.h"
+#include <core/SoundDFB.h>
+#include <core/ComponentData.h>
 #include <core/Logger.h>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_SOUNDCOMP, "ilixi/Coma/SoundComponent", "SoundComponent");
+D_DEBUG_DOMAIN( ILX_SOUNDCOMP, "ilixi/Coma/SoundMixer", "SoundComponent");
 
 SoundComponent::SoundComponent()
-        : ComaComponent("SoundComponent", SoundCompNumNotifications),
-          _volume(50)
+        : ComaComponent("SoundMixer", SoundMixer::SMNumNotifications),
+          _volume(1)
 {
     init();
-    createNotification(0, NULL);
-    createNotification(1, NULL);
-    createNotification(2, NULL);
+    createNotification(SoundMixer::VolumeChanged, NULL);
+    SoundDFB::setMasterVolume(1);
 }
 
 SoundComponent::~SoundComponent()
@@ -46,23 +47,25 @@ SoundComponent::~SoundComponent()
 DirectResult
 SoundComponent::comaMethod(ComaMethodID method, void *arg)
 {
+    ILOG_TRACE_F(ILX_SOUNDCOMP);
     DirectResult ret = DR_OK;
-    int volume = *((int*) arg);
     switch (method)
     {
-    case SetVolume:
-        ILOG_DEBUG(ILX_SOUNDCOMP, "SetVolume\n");
-        setVolume(volume);
+    case SoundMixer::SetVolume:
+        {
+            float volume = *((float*) arg);
+            _volume = volume;
+            ILOG_DEBUG(ILX_SOUNDCOMP, " -> SetVolume ( %f )\n", volume);
+            setVolume(volume);
+        }
         break;
 
-    case Mute:
-        ILOG_DEBUG(ILX_SOUNDCOMP, "Mute\n");
-        setVolume(0);
-        break;
-
-    case UnMute:
-        ILOG_DEBUG(ILX_SOUNDCOMP, "UnMute\n");
-        setVolume(50);
+    case SoundMixer::ToggleMute:
+        ILOG_DEBUG(ILX_SOUNDCOMP, " -> ToggleMute: %d\n", _volume);
+        if (SoundDFB::getMasterVolume() == 0)
+            setVolume(_volume);
+        else
+            setVolume(0);
         break;
 
     default:
@@ -73,14 +76,17 @@ SoundComponent::comaMethod(ComaMethodID method, void *arg)
 }
 
 void
-SoundComponent::setVolume(unsigned int volume)
+SoundComponent::setVolume(float volume)
 {
-    _volume = volume;
-    int* vol;
+    ILOG_TRACE_F(ILX_SOUNDCOMP);
+    ILOG_DEBUG(ILX_SOUNDCOMP, " -> volume: %f\n", volume);
+
+    SoundDFB::setMasterVolume(volume);
+
+    float* vol;
     allocate(sizeof(vol), (void**) &vol);
     *vol = volume;
     notify(0, vol);
-    ILOG_DEBUG(ILX_SOUNDCOMP, "Volume is %d\n", _volume);
 }
 
 } /* namespace ilixi */

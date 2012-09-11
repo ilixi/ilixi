@@ -28,7 +28,7 @@
 #include <ui/VBoxLayout.h>
 #include <ilixiConfig.h>
 
-OSK::OSK(int argc, char* argv[])
+ILXOSK::ILXOSK(int argc, char* argv[])
         : Application(&argc, &argv, OptDale),
           _bg(NULL),
           _keyboard(NULL)
@@ -42,20 +42,20 @@ OSK::OSK(int argc, char* argv[])
 
     setLayout(new VBoxLayout());
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &OSK::updateOSKGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &ILXOSK::updateOSKGeometry));
 
     _keyboard = new Keyboard(this);
     _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
     addWidget(_keyboard);
 }
 
-OSK::~OSK()
+ILXOSK::~ILXOSK()
 {
     delete _bg;
 }
 
 void
-OSK::compose(const PaintEvent& event)
+ILXOSK::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
@@ -64,7 +64,7 @@ OSK::compose(const PaintEvent& event)
 }
 
 void
-OSK::updateOSKGeometry()
+ILXOSK::updateOSKGeometry()
 {
     _keyboard->setGeometry(0, 0, width(), height());
 }
@@ -72,7 +72,7 @@ OSK::updateOSKGeometry()
 int
 main(int argc, char* argv[])
 {
-    OSK app(argc, argv);
+    ILXOSK app(argc, argv);
     app.exec();
     return 0;
 }

@@ -38,83 +38,66 @@ namespace ilixi
 void
 volumeListener(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
-    int vol = *((int*) arg);
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
+    float vol = *((float*) arg);
 
     if (vol == 0)
         bar->_sound->setButtonState(0);
-    else if (vol < 30)
+    else if (vol < .30)
         bar->_sound->setButtonState(2);
-    else if (vol < 60)
+    else if (vol < .60)
         bar->_sound->setButtonState(4);
     else
         bar->_sound->setButtonState(6);
-
-    ILOG_DEBUG(ILX_STATUSBAR, "Volume %d\n", *((int*) arg));
 }
 
 void
-homeShowing(void* ctx, void* arg)
+appVisibilty(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_home->setActive(1);
-    bar->_sound->setActive(0);
-    bar->_dash->setActive(0);
-}
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
+    Compositor::VisibilityData data = *((Compositor::VisibilityData*) arg);
 
-void
-homeHidden(void* ctx, void* arg)
-{
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_home->setActive(0);
+    ILOG_INFO(ILX_STATUSBAR, "App: %s - %d\n", data.name, data.visible);
+    if (strcmp(data.name, "Home") == 0)
+    {
+        if (data.visible)
+            bar->_home->setActive(1);
+        else
+            bar->_home->setActive(0);
+    } else if (strcmp(data.name, "SoundMixer") == 0)
+    {
+        if (data.visible)
+            bar->_sound->setActive(1);
+        else
+            bar->_sound->setActive(0);
+
+    } else if (strcmp(data.name, "Dashboard") == 0)
+    {
+        if (data.visible)
+            bar->_dash->setActive(1);
+        else
+            bar->_dash->setActive(0);
+    }
 }
 
 void
 switcherShowing(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
     bar->_switch->setActive(1);
 }
 
 void
 switcherHidden(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
     bar->_switch->setActive(0);
-}
-
-void
-soundVisible(void* ctx, void* arg)
-{
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_sound->setActive(1);
-}
-
-void
-soundHidden(void* ctx, void* arg)
-{
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_sound->setActive(0);
-}
-
-void
-dashVisible(void* ctx, void* arg)
-{
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_dash->setActive(1);
-}
-
-void
-dashHidden(void* ctx, void* arg)
-{
-    StatusBar* bar = (StatusBar*) ctx;
-    bar->_dash->setActive(0);
 }
 
 void
 backVisible(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
     bar->_back->setVisible(true);
     bar->update();
 }
@@ -122,14 +105,14 @@ backVisible(void* ctx, void* arg)
 void
 backHidden(void* ctx, void* arg)
 {
-    StatusBar* bar = (StatusBar*) ctx;
+    ILXStatusBar* bar = (ILXStatusBar*) ctx;
     bar->_back->setVisible(false);
     bar->update();
 }
 
 //*****************************************************************
 
-StatusBar::StatusBar(int argc, char* argv[])
+ILXStatusBar::ILXStatusBar(int argc, char* argv[])
         : Application(&argc, &argv, (AppOptions) (OptDale))
 {
     setTitle("StatusBar");
@@ -148,7 +131,7 @@ StatusBar::StatusBar(int argc, char* argv[])
     _home->addImage(
             new Image(ILIXI_DATADIR"statusbar/homeG.png", Size(48, 48)));
     _home->setActive(1);
-    _home->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedHome));
+    _home->sigClicked.connect(sigc::mem_fun(this, &ILXStatusBar::clickedHome));
     addWidget(_home);
 
     _switch = new StatusbarButton();
@@ -157,14 +140,14 @@ StatusBar::StatusBar(int argc, char* argv[])
     _switch->addImage(
             new Image(ILIXI_DATADIR"statusbar/switchG.png", Size(48, 48)));
     _switch->sigClicked.connect(
-            sigc::mem_fun(this, &StatusBar::clickedSwitcher));
+            sigc::mem_fun(this, &ILXStatusBar::clickedSwitcher));
     addWidget(_switch);
 
     _dash = new StatusbarButton();
     _dash->addImage(new Image(ILIXI_DATADIR"statusbar/dash.png", Size(48, 48)));
     _dash->addImage(
             new Image(ILIXI_DATADIR"statusbar/dashG.png", Size(48, 48)));
-    _dash->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedDash));
+    _dash->sigClicked.connect(sigc::mem_fun(this, &ILXStatusBar::clickedDash));
     addWidget(_dash);
 
     _sound = new StatusbarButton();
@@ -184,7 +167,8 @@ StatusBar::StatusBar(int argc, char* argv[])
             new Image(ILIXI_DATADIR"statusbar/vol3.png", Size(48, 48)));
     _sound->addImage(
             new Image(ILIXI_DATADIR"statusbar/vol3G.png", Size(48, 48)));
-    _sound->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedSound));
+    _sound->sigClicked.connect(
+            sigc::mem_fun(this, &ILXStatusBar::clickedSound));
     _sound->setButtonState(6);
     addWidget(_sound);
 
@@ -192,7 +176,7 @@ StatusBar::StatusBar(int argc, char* argv[])
     _back->setVisible(false);
     _back->addImage(
             new Image(ILIXI_DATADIR"statusbar/back0.png", Size(48, 48)));
-    _back->sigClicked.connect(sigc::mem_fun(this, &StatusBar::clickedBack));
+    _back->sigClicked.connect(sigc::mem_fun(this, &ILXStatusBar::clickedBack));
     addWidget(_back);
 
     addWidget(new Clock());
@@ -200,97 +184,105 @@ StatusBar::StatusBar(int argc, char* argv[])
     _rca = new RemoteContentArea();
     addWidget(_rca);
 
-    sigVisible.connect(sigc::mem_fun(this, &StatusBar::onShow));
-    sigHidden.connect(sigc::mem_fun(this, &StatusBar::onHide));
+    sigVisible.connect(sigc::mem_fun(this, &ILXStatusBar::onShow));
+    sigHidden.connect(sigc::mem_fun(this, &ILXStatusBar::onHide));
 
     _statComp = new StatusbarComponent(this);
 
 }
 
-StatusBar::~StatusBar()
+ILXStatusBar::~ILXStatusBar()
 {
     delete _bg;
 }
 
 void
-StatusBar::onHide()
+ILXStatusBar::onHide()
 {
     _soundComponent->Release(_soundComponent);
 }
 
 void
-StatusBar::onShow()
+ILXStatusBar::onShow()
 {
-    DaleDFB::comaGetComponent("SoundComponent", &_soundComponent);
-    _soundComponent->Listen(_soundComponent, 0, volumeListener, this);
-    DaleDFB::comaGetComponent("CompositorComponent", &_compComponent);
-    _compComponent->Listen(_compComponent, 3, homeShowing, this);
-    _compComponent->Listen(_compComponent, 4, switcherShowing, this);
-    _compComponent->Listen(_compComponent, 5, homeHidden, this);
-    _compComponent->Listen(_compComponent, 6, switcherHidden, this);
+    DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
+    DaleDFB::comaGetComponent("Compositor", &_compComponent);
 
-    _compComponent->Listen(_compComponent, 8, soundVisible, this);
-    _compComponent->Listen(_compComponent, 9, soundHidden, this);
-    _compComponent->Listen(_compComponent, 10, dashVisible, this);
-    _compComponent->Listen(_compComponent, 11, dashHidden, this);
+    _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged,
+                            volumeListener, this);
 
-    _compComponent->Listen(_compComponent, 12, backVisible, this);
-    _compComponent->Listen(_compComponent, 13, backHidden, this);
+    _compComponent->Listen(_compComponent, Compositor::AppVisibilty,
+                           appVisibilty, this);
 
+    _compComponent->Listen(_compComponent, Compositor::SwitcherVisible,
+                           switcherShowing, this);
+    _compComponent->Listen(_compComponent, Compositor::SwitcherHidden,
+                           switcherHidden, this);
+
+    _compComponent->Listen(_compComponent, Compositor::BackKeyVisible,
+                           backVisible, this);
+    _compComponent->Listen(_compComponent, Compositor::BackKeyHidden,
+                           backHidden, this);
 }
 
 bool
-StatusBar::addRemoteContent(DFBSurfaceID id)
+ILXStatusBar::addRemoteContent(DFBSurfaceID id)
 {
     return _rca->addRemoteContent(id);
 }
 
 bool
-StatusBar::removeRemoteContent(DFBSurfaceID id)
+ILXStatusBar::removeRemoteContent(DFBSurfaceID id)
 {
     return _rca->removeRemoteContent(id);
 }
 
 void
-StatusBar::clickedHome()
+ILXStatusBar::clickedHome()
 {
     if (_home->active())
-        DaleDFB::comaCallComponent(_compComponent, 5, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideHome, NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, 3, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowHome, NULL);
 }
 
 void
-StatusBar::clickedSwitcher()
+ILXStatusBar::clickedSwitcher()
 {
     if (_switch->active())
-        DaleDFB::comaCallComponent(_compComponent, 6, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideSwitcher,
+                                   NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, 4, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowSwitcher,
+                                   NULL);
 }
 
 void
-StatusBar::clickedDash()
+ILXStatusBar::clickedDash()
 {
     if (_dash->active())
-        DaleDFB::comaCallComponent(_compComponent, 12, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideDashboard,
+                                   NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, 11, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowDashboard,
+                                   NULL);
 }
 
 void
-StatusBar::clickedSound()
+ILXStatusBar::clickedSound()
 {
     if (_sound->active())
-        DaleDFB::comaCallComponent(_compComponent, 10, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideSoundMixer,
+                                   NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, 9, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowSoundMixer,
+                                   NULL);
 }
 
 void
-StatusBar::clickedBack()
+ILXStatusBar::clickedBack()
 {
-    DaleDFB::comaCallComponent(_compComponent, 13, NULL);
+    DaleDFB::comaCallComponent(_compComponent, Compositor::SendBackKey, NULL);
 }
 
 }
@@ -298,7 +290,7 @@ StatusBar::clickedBack()
 int
 main(int argc, char* argv[])
 {
-    ilixi::StatusBar app(argc, argv);
+    ilixi::ILXStatusBar app(argc, argv);
     app.exec();
     return 0;
 }

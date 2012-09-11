@@ -25,27 +25,18 @@
 #define SOUNDCOMPONENT_H_
 
 #include <core/ComaComponent.h>
+#include <core/ComponentData.h>
 #include <directfb.h>
 
 namespace ilixi
 {
 
-class StatusBar;
+class ILXStatusBar;
 
 class StatusbarComponent : public ComaComponent
 {
 public:
-    enum StatCompMethods
-    {
-        GetOptimalSize, AddContent, RemoveContent
-    };
-
-    enum StatCompNotifications
-    {
-        ContentAdded, ContentRemoved, StatCompNumNotifications
-    };
-
-    StatusbarComponent(StatusBar* statusbar);
+    StatusbarComponent(ILXStatusBar* statusbar);
 
     virtual
     ~StatusbarComponent();
@@ -58,16 +49,7 @@ protected:
     sendNotification(DFBSurfaceID id);
 
 private:
-    StatusBar* _statusbar;
-
-    void
-    addContentDispatchCallback(void *ctx, ComaNotificationID notification,
-                               void *arg);
-
-    void
-    removeContentDispatchCallback(void *ctx, ComaNotificationID notification,
-                                  void *arg);
-
+    ILXStatusBar* _statusbar;
 };
 
 } /* namespace ilixi */

@@ -176,6 +176,7 @@ AppBase::releaseDFB()
 #if ILIXI_HAVE_FUSIONDALE
         if (__options & OptDale)
         {
+            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale...");
             DaleDFB::releaseDale();
             ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
         }
@@ -184,6 +185,7 @@ AppBase::releaseDFB()
 #if ILIXI_HAVE_FUSIONSOUND
         if (__options & OptSound)
         {
+            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionSound...");
             SoundDFB::releaseSound();
             ILOG_INFO(ILX_APPBASE, "FusionSound interfaces are released.\n");
         }

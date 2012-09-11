@@ -30,7 +30,7 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_APPCOMPOSITOR, "ilixi/comp/appcomp", "AppCompositor");
 
-AppCompositor::AppCompositor(Compositor* compositor, AppInstance* instance,
+AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance,
                              Widget* parent)
         : Widget(parent),
           _compositor(compositor),

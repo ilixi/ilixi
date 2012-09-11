@@ -40,7 +40,7 @@ namespace ilixi
 /*!
  * Main application.
  */
-class Compositor : public Application
+class ILXCompositor : public Application
 {
     friend class ApplicationManager;
     friend class CompositorComponent;
@@ -54,7 +54,7 @@ public:
      *
      * Creates ApplicationManager and Coma components.
      */
-    Compositor(int argc, char* argv[]);
+    ILXCompositor(int argc, char* argv[]);
 
     /*!
      * Destructor.
@@ -62,7 +62,7 @@ public:
      * Deletes all components.
      */
     virtual
-    ~Compositor();
+    ~ILXCompositor();
 
     /*!
      * Returns the application manager instance.
@@ -106,18 +106,6 @@ public:
 
 protected:
     /*!
-     * Adds a overlay on top.
-     */
-    void
-    addOverlay(DFBSurfaceID id);
-
-    /*!
-     * Adds a dialog on top.
-     */
-    void
-    addDialog(DFBSurfaceID id);
-
-    /*!
      * Shows OSK and centers given rect at top.
      */
     void
@@ -131,6 +119,9 @@ protected:
 
     void
     showDash(bool show);
+
+    void
+    setLayerOpacity(u8 opacity);
 
     void
     compose(const PaintEvent& event);
@@ -165,9 +156,6 @@ private:
 
     pid_t _oskTargetPID;
 
-    AppView::AnimatedProperty _showAnimProps;
-    AppView::AnimatedProperty _hideAnimProps;
-
     Rectangle _oskTargetRect;
 
     enum CompositorEventType
@@ -201,6 +189,19 @@ private:
         DFBWindowID windowID;
         SaWManWindowReconfig* reconfig;
     };
+
+    struct CompositorSettings
+    {
+        bool clickFocus;          //!< Click to focus application in foreground.
+        bool animations;
+        AppView::AnimatedProperty hideAnimProps; //!< Animated properties for hiding application.
+        AppView::AnimatedProperty showAnimProps; //!< Animated properties for visible application.
+        unsigned int durationShow;             //!< Animation duration for show.
+        unsigned int durationHide;              //!< Animation duration for hide.
+        DFBConvolutionFilter filter;                //!< Convolution filter.
+    };
+
+    static CompositorSettings settings;
 
     void
     onVisible();

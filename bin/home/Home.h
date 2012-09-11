@@ -33,13 +33,7 @@ namespace ilixi
 
 class Home : public Application
 {
-    struct AppData
-    {
-        char name[64];
-        char icon[256];
-    };
-
-    typedef std::vector<AppData> AppDataVector;
+    typedef std::vector<Compositor::AppData> AppDataVector;
 
 public:
     Home(int argc, char* argv[]);
@@ -55,7 +49,7 @@ public:
 
 protected:
     void
-    initButtons(const AppDataVector& dataVector);
+    initButtons(const Home::AppDataVector& dataVector);
 
 private:
     IComaComponent* _compositor;
@@ -68,10 +62,7 @@ private:
     updateHomeGeometry();
 
     friend void
-    appVisible(void* ctx, void* arg);
-
-    friend void
-    appHidden(void* ctx, void* arg);
+    appVisibility(void* ctx, void* arg);
 
     friend void
     appStarting(void* ctx, void* arg);

@@ -32,14 +32,14 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_NOTIFICATIONMAN, "ilixi/comp/NotificationMan",
                "NotificationMan");
 
-NotificationManager::NotificationManager(Compositor* compositor)
+NotificationManager::NotificationManager(ILXCompositor* compositor)
         : _deltaY(0),
           _compositor(compositor)
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
     _timer.sigExec.connect(
             sigc::mem_fun(this, &NotificationManager::removeNotifications));
-    _timer.start(10000);
+    _timer.start(300);
 
     _anim.setDuration(500);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
@@ -57,28 +57,27 @@ NotificationManager::~NotificationManager()
 }
 
 void
-NotificationManager::addNotification(const Notify::NotifyData& data)
+NotificationManager::addNotification(const Compositor::NotificationData& data)
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
     Notification* notify = new Notification(data, _compositor);
-    pthread_mutex_lock(&_notMutex);
-    _notifications.push_back(notify);
     Size s = notify->preferredSize();
     notify->setGeometry(_compositor->width() - s.width(), 10, s.width(),
                         s.height());
-
     _compositor->addWidget(notify);
     notify->bringToFront();
-    arrangeNotifications(s.height());
     notify->show(500);
-    pthread_mutex_unlock(&_notMutex);
+//    pthread_mutex_lock(&_notMutex);
+    _notifications.push_back(notify);
+//    pthread_mutex_unlock(&_notMutex);
+    arrangeNotifications(s.height());
 }
 
 void
 NotificationManager::removeNotifications()
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-    pthread_mutex_lock(&_notMutex);
+//    pthread_mutex_lock(&_notMutex);
     NotificationVector::iterator it = _notifications.begin();
     while (it != _notifications.end())
     {
@@ -91,7 +90,7 @@ NotificationManager::removeNotifications()
         } else
             ++it;
     }
-    pthread_mutex_unlock(&_notMutex);
+//    pthread_mutex_unlock(&_notMutex);
 }
 
 void
@@ -113,7 +112,7 @@ void
 NotificationManager::tweenSlot()
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-    pthread_mutex_lock(&_notMutex);
+//    pthread_mutex_lock(&_notMutex);
     int deltaY = _tween->value() * _deltaY;
     ILOG_DEBUG(ILX_NOTIFICATIONMAN, "DeltaY: %d\n", deltaY);
     for (unsigned int i = 0; i < _notifications.size() - 1; ++i)
@@ -123,7 +122,7 @@ NotificationManager::tweenSlot()
     }
 
     _deltaY -= deltaY;
-    pthread_mutex_unlock(&_notMutex);
+//    pthread_mutex_unlock(&_notMutex);
 }
 
 } /* namespace ilixi */

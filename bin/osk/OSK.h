@@ -34,13 +34,13 @@
 
 using namespace ilixi;
 
-class OSK : public Application
+class ILXOSK : public Application
 {
 public:
-    OSK(int argc, char* argv[]);
+    ILXOSK(int argc, char* argv[]);
 
     virtual
-    ~OSK();
+    ~ILXOSK();
 
 private:
     Image* _bg;

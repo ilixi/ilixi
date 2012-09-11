@@ -29,7 +29,7 @@
 namespace ilixi
 {
 
-AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance, Widget* parent)
+AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent)
         : AppCompositor(compositor, instance, parent),
           _close(NULL)
 {
@@ -48,7 +48,7 @@ AppThumbnail::AppThumbnail(Compositor* compositor, AppInstance* instance, Widget
         _close->setGeometry(164, 0, 32, 32);
         _close->sigPressed.connect(
                 sigc::bind<AppInstance*>(
-                        sigc::mem_fun(_compositor, &Compositor::killApp),
+                        sigc::mem_fun(_compositor, &ILXCompositor::killApp),
                         _instance));
         addChild(_close);
     }

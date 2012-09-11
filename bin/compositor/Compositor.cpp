@@ -27,6 +27,7 @@
 #include "component/Notification.h"
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+#include <lib/Notify.h>
 #include <sigc++/bind.h>
 
 using namespace std;
@@ -35,8 +36,11 @@ namespace ilixi
 {
 D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/comp/Compositor", "Compositor");
 
-Compositor::Compositor(int argc, char* argv[])
-        : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale)),
+ILXCompositor::CompositorSettings ILXCompositor::settings;
+
+ILXCompositor::ILXCompositor(int argc, char* argv[])
+        : Application(&argc, &argv,
+                      (AppOptions) (OptExclusive | OptDale | OptSound)),
           _appMan(NULL),
           _currentApp(NULL),
           _previousApp(NULL),
@@ -62,9 +66,14 @@ Compositor::Compositor(int argc, char* argv[])
 
     _appMan = new ApplicationManager(this);
 
-    _showAnimProps = AppView::Opacity;
-    _hideAnimProps = AppView::AnimatedProperty(
+    settings.clickFocus = true;
+    settings.animations = true;
+    settings.showAnimProps = AppView::Opacity;
+    settings.hideAnimProps = AppView::AnimatedProperty(
             AppView::Opacity | AppView::Zoom);
+    settings.durationShow = 300;
+    settings.durationHide = 500;
+
     setTitle("Compositor");
     setMargin(0);
     setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
@@ -83,7 +92,7 @@ Compositor::Compositor(int argc, char* argv[])
 
             _fps = new FPSCalculator();
             _fps->sigUpdated.connect(
-                    sigc::mem_fun(this, &Compositor::onFPSUpdate));
+                    sigc::mem_fun(this, &ILXCompositor::onFPSUpdate));
         }
 
         else if (strcmp(argv[i], "fsu") == 0)
@@ -94,34 +103,34 @@ Compositor::Compositor(int argc, char* argv[])
         _switcher = new HorizontalSwitcher();
 
     _switcher->sigSwitchRequest.connect(
-            sigc::mem_fun1(this, &Compositor::showInstance));
+            sigc::mem_fun1(this, &ILXCompositor::showInstance));
     _switcher->sigFeedbackRequest.connect(
             sigc::mem_fun(_compComp, &CompositorComponent::notifyVisibility));
     addWidget(_switcher);
 
     sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Compositor::updateCompositorGeometry));
-    sigVisible.connect(sigc::mem_fun(this, &Compositor::onVisible));
+            sigc::mem_fun(this, &ILXCompositor::updateCompositorGeometry));
+    sigVisible.connect(sigc::mem_fun(this, &ILXCompositor::onVisible));
 }
 
-Compositor::~Compositor()
+ILXCompositor::~ILXCompositor()
 {
+    ILOG_TRACE_W(ILX_COMPOSITOR);
+    delete _appMan;
     delete _fps;
     delete _compComp;
     delete _soundComp;
     delete _oskComp;
-    delete _appMan;
-    ILOG_TRACE_W(ILX_COMPOSITOR);
 }
 
 ApplicationManager*
-Compositor::appMan() const
+ILXCompositor::appMan() const
 {
     return _appMan;
 }
 
 void
-Compositor::showInstance(AppInstance* instance)
+ILXCompositor::showInstance(AppInstance* instance)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     toggleSwitcher(false);
@@ -145,10 +154,10 @@ Compositor::showInstance(AppInstance* instance)
         if (_previousApp)
             _previousApp->view()->hide(
                     AppView::AnimatedProperty(
-                            _hideAnimProps | AppView::Position),
+                            settings.hideAnimProps | AppView::Position),
                     0, 0);
     } else if (_previousApp)
-        _previousApp->view()->hide(_hideAnimProps);
+        _previousApp->view()->hide(settings.hideAnimProps);
 
     // background
     AppInfo* info = _currentApp->appInfo();
@@ -158,23 +167,8 @@ Compositor::showInstance(AppInstance* instance)
         _backgroundFlags &= ~BGFClear;
 
     ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
-    _currentApp->view()->show(_showAnimProps);
+    _currentApp->view()->show(settings.showAnimProps);
     _compComp->signalInstanceChanged(_currentApp, _previousApp);
-
-    if (instance == _home)
-        _compComp->signalHome(true);
-    else
-        _compComp->signalHome(false);
-
-    if (instance == _mixer)
-        _compComp->signalSound(true);
-    else
-        _compComp->signalSound(false);
-
-    if (instance == _dash)
-        _compComp->signalDash(true);
-    else
-        _compComp->signalDash(false);
 
     if (info->appFlags() & APP_USE_BACK)
         _compComp->signalBack(true);
@@ -183,7 +177,7 @@ Compositor::showInstance(AppInstance* instance)
 }
 
 void
-Compositor::toggleLauncher(bool show)
+ILXCompositor::toggleLauncher(bool show)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show)
@@ -193,7 +187,7 @@ Compositor::toggleLauncher(bool show)
 }
 
 void
-Compositor::toggleSwitcher(bool show)
+ILXCompositor::toggleSwitcher(bool show)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     if (show && _switcher->itemCount() > 0)
@@ -210,7 +204,7 @@ Compositor::toggleSwitcher(bool show)
 }
 
 void
-Compositor::killApp(AppInstance* instance)
+ILXCompositor::killApp(AppInstance* instance)
 {
     if (instance == _currentApp)
     {
@@ -228,17 +222,7 @@ Compositor::killApp(AppInstance* instance)
 }
 
 void
-Compositor::addOverlay(DFBSurfaceID id)
-{
-}
-
-void
-Compositor::addDialog(DFBSurfaceID id)
-{
-}
-
-void
-Compositor::showOSK(DFBRectangle rect, pid_t process)
+ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
@@ -256,7 +240,7 @@ Compositor::showOSK(DFBRectangle rect, pid_t process)
 }
 
 void
-Compositor::toggleOSK(bool show)
+ILXCompositor::toggleOSK(bool show)
 {
     if (_osk && _currentApp->pid() == _oskTargetPID)
     {
@@ -276,7 +260,7 @@ Compositor::toggleOSK(bool show)
 }
 
 void
-Compositor::sendOSKInput(uint32_t key)
+ILXCompositor::sendOSKInput(uint32_t key)
 {
     _currentApp->view()->consumeKeyEvent(
             KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
@@ -285,7 +269,7 @@ Compositor::sendOSKInput(uint32_t key)
 }
 
 void
-Compositor::showSound(bool show)
+ILXCompositor::showSound(bool show)
 {
     if (show)
     {
@@ -298,7 +282,7 @@ Compositor::showSound(bool show)
 }
 
 void
-Compositor::showDash(bool show)
+ILXCompositor::showDash(bool show)
 {
     if (show)
     {
@@ -311,14 +295,25 @@ Compositor::showDash(bool show)
 }
 
 void
-Compositor::compose(const PaintEvent& event)
+ILXCompositor::setLayerOpacity(u8 opacity)
+{
+    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_DEBUG(ILX_COMPOSITOR, " -> %d\n", opacity);
+    IDirectFBDisplayLayer* layer;
+    DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY, &layer);
+    layer->SetOpacity(layer, opacity);
+    layer->Release(layer);
+}
+
+void
+ILXCompositor::compose(const PaintEvent& event)
 {
     if (_fps)
         _fps->funck();
 }
 
 void
-Compositor::onVisible()
+ILXCompositor::onVisible()
 {
     if (_fps)
         _fpsLabel->bringToFront();
@@ -327,13 +322,13 @@ Compositor::onVisible()
 }
 
 void
-Compositor::onFPSUpdate(float fps)
+ILXCompositor::onFPSUpdate(float fps)
 {
     _fpsLabel->setText(_fps->fpsText());
 }
 
 IDirectFBWindow*
-Compositor::getWindow(DFBWindowID id)
+ILXCompositor::getWindow(DFBWindowID id)
 {
     if (id)
     {
@@ -363,7 +358,7 @@ Compositor::getWindow(DFBWindowID id)
 }
 
 void
-Compositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
+ILXCompositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
 {
     ILOG_DEBUG( ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -375,7 +370,7 @@ Compositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
 }
 
 void
-Compositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
+ILXCompositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -387,7 +382,7 @@ Compositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 }
 
 void
-Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info)
+ILXCompositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -405,7 +400,7 @@ Compositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, 
 }
 
 void
-Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info, int order, DFBWindowID other)
+ILXCompositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info, int order, DFBWindowID other)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, info->win_id);
 
@@ -424,7 +419,7 @@ Compositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info, i
 }
 
 void
-Compositor::stateWindow(DFBWindowID id, const DFBWindowState* state)
+ILXCompositor::stateWindow(DFBWindowID id, const DFBWindowState* state)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
 
@@ -439,7 +434,7 @@ Compositor::stateWindow(DFBWindowID id, const DFBWindowState* state)
 }
 
 void
-Compositor::focusWindow(DFBWindowID id)
+ILXCompositor::focusWindow(DFBWindowID id)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( ID %u )\n", __FUNCTION__, id);
 
@@ -454,7 +449,7 @@ Compositor::focusWindow(DFBWindowID id)
 }
 
 void
-Compositor::processRemoved(AppInstance* instance)
+ILXCompositor::processRemoved(AppInstance* instance)
 {
     ILOG_DEBUG(ILX_COMPOSITOR, "%s( PID %u )\n", __FUNCTION__, instance->pid());
 
@@ -465,7 +460,7 @@ Compositor::processRemoved(AppInstance* instance)
 }
 
 void
-Compositor::updateCompositorGeometry()
+ILXCompositor::updateCompositorGeometry()
 {
     _switcher->setOptimalGeometry(width(), height() - 50);
 
@@ -474,7 +469,7 @@ Compositor::updateCompositorGeometry()
 }
 
 void
-Compositor::handleUserEvent(const DFBUserEvent& event)
+ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 {
     if (event.clazz == DFEC_USER)
     {
@@ -663,7 +658,7 @@ Compositor::handleUserEvent(const DFBUserEvent& event)
 }
 
 bool
-Compositor::windowPreEventFilter(const DFBWindowEvent& event)
+ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
 {
     switch (event.type)
     {
@@ -721,7 +716,7 @@ main(int argc, char* argv[])
 {
     try
     {
-        ilixi::Compositor app(argc, argv);
+        ilixi::ILXCompositor app(argc, argv);
         app.exec();
     } catch (const std::exception& e)
     {

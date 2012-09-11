@@ -8,37 +8,19 @@
 #ifndef ILIXI_OSKCOMPONENT_H_
 #define ILIXI_OSKCOMPONENT_H_
 
+#include <core/ComponentData.h>
 #include <core/ComaComponent.h>
 #include <directfb.h>
 
 namespace ilixi
 {
 
-class Compositor;
+class ILXCompositor;
 
 class OSKComponent : public ilixi::ComaComponent
 {
-    enum OSKMethods
-    {
-        ShowOSK = 0,
-        HideOSK = 1,
-        ConsumeKey = 2
-    };
-
-    enum LayoutMode
-    {
-        Standard, Numeric, Internet
-    };
-
-    struct OSKRequest
-    {
-        DFBRectangle inputRect;
-        LayoutMode mode;
-        pid_t process;
-    };
-
 public:
-    OSKComponent(Compositor* compositor);
+    OSKComponent(ILXCompositor* compositor);
 
     virtual
     ~OSKComponent();
@@ -48,7 +30,7 @@ protected:
     comaMethod(ComaMethodID method, void *arg);
 
 private:
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
 };
 
 } /* namespace ilixi */

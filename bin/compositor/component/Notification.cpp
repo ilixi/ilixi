@@ -34,7 +34,7 @@ D_DEBUG_DOMAIN( ILX_NOTIFICATION, "ilixi/comp/Notification", "Notification");
 
 Image* Notification::_bg = NULL;
 
-Notification::Notification(const Notify::NotifyData& data, Compositor* parent)
+Notification::Notification(const Compositor::NotificationData& data, ILXCompositor* parent)
         : Widget(parent),
           _compositor(parent),
           _notState(Init)
@@ -45,13 +45,13 @@ Notification::Notification(const Notify::NotifyData& data, Compositor* parent)
         _bg = new Image(ILIXI_DATADIR"compositor/notify.png");
 
     _title = data.title;
-    _text = data.text;
-    _sender = data.sender;
-    if (data.path)
-        _icon = new Image(data.path, 64, 64);
+    _text = data.body;
+    _client = data.client;
+    if (data.icon)
+        _icon = new Image(data.icon, 64, 64);
     else
-        _icon = new Image(_compositor->appMan()->infoByName(_sender)->icon(),
-                          64, 64);
+        _icon = new Image(_compositor->appMan()->infoByPID(_client)->icon(), 64,
+                          64);
 
     _timer.sigExec.connect(sigc::mem_fun(this, &Notification::hide));
 

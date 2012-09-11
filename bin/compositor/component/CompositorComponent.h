@@ -27,53 +27,18 @@
 #include <core/ComaComponent.h>
 #include "AppInstance.h"
 
+#include <libxml/tree.h>
+
 namespace ilixi
 {
 
-class Compositor;
+class ILXCompositor;
 class NotificationManager;
 
 class CompositorComponent : public ilixi::ComaComponent
 {
 public:
-    enum CompositorComaMethods
-    {
-        AddNotification = 0,    // e.g. song changed.
-        AddOverlay = 1,         // No input
-        AddDialog = 2,          // Alerts with OK button.
-        ShowHome = 3,
-        ShowSwitcher = 4,
-        HideHome = 5,
-        HideSwither = 6,
-        StartApp = 7,
-        SendAppList = 8,
-        SoundShow = 9,
-        SoundHide = 10,
-        DashShow = 11,
-        DashHide = 12,
-        SendBackKey = 13
-    };
-
-    enum CompositorNotifications
-    {
-        AppVisible = 0,
-        AppHidden = 1,
-        AppStarting = 2,
-        ShowingHome = 3,
-        ShowingSwitcher = 4,
-        HidingHome = 5,
-        HidingSwitcher = 6,
-        SendingAppList = 7,
-        SoundVisible = 8,
-        SoundHidden = 9,
-        DashVisible = 10,
-        DashHidden = 11,
-        BackVisible = 12,
-        BackHidden = 13,
-        CompositorNumNotifications
-    };
-
-    CompositorComponent(Compositor* compositor);
+    CompositorComponent(ILXCompositor* compositor);
 
     virtual
     ~CompositorComponent();
@@ -82,19 +47,10 @@ public:
     signalInstanceChanged(AppInstance* current, AppInstance* previous);
 
     void
-    signalHome(bool showing);
-
-    void
     signalSwitcher(bool showing);
 
     void
     sendAppList();
-
-    void
-    signalSound(bool showing);
-
-    void
-    signalDash(bool showing);
 
     void
     signalAppStart(AppInstance* instance);
@@ -110,20 +66,11 @@ protected:
     comaMethod(ComaMethodID method, void *arg);
 
 private:
-    struct AppData
-    {
-        char name[64];
-        char icon[256];
-    };
-
-    struct VisibilityNotification
-    {
-        char name[64];
-        pid_t pid;bool multi;
-    };
-
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
     NotificationManager* _notificationMan;
+
+    void
+    parseOptions(xmlDocPtr doc);
 };
 
 } /* namespace ilixi */

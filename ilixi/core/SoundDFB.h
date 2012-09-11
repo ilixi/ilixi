@@ -37,6 +37,9 @@ class SoundDFB
 {
     friend class AppBase;
 public:
+    static float
+    getMasterVolume();
+
     static void
     setMasterVolume(float volume);
 

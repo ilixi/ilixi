@@ -33,13 +33,13 @@ class Slider;
 class PushButton;
 class Music;
 
-class SoundMixer : public Application
+class ILXSoundMixer : public Application
 {
 public:
-    SoundMixer(int argc, char* argv[]);
+    ILXSoundMixer(int argc, char* argv[]);
 
     virtual
-    ~SoundMixer();
+    ~ILXSoundMixer();
 
     void
     mute();
@@ -54,7 +54,10 @@ private:
     PushButton* _mute;
 
     void
-    changeVolume(int volume);
+    changeVolume(float volume);
+
+    friend void
+    volumeListener(void* ctx, void* arg);
 };
 
 } /* namespace ilixi */

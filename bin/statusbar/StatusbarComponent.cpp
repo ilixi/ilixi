@@ -30,14 +30,14 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_STATCOMP, "ilixi/StatusBar/StatComp", "StatusbarComponent");
 
-StatusbarComponent::StatusbarComponent(StatusBar* statusbar)
-        : ComaComponent("StatusbarComponent", StatCompNumNotifications),
+StatusbarComponent::StatusbarComponent(ILXStatusBar* statusbar)
+        : ComaComponent("StatusBar", StatusBar::SBNumNotifications),
           _statusbar(statusbar)
 {
     ILOG_TRACE_F(ILX_STATCOMP);
     init();
-    createNotification(0, NULL);
-    createNotification(1, NULL);
+    createNotification(StatusBar::ContentAdded, NULL);
+    createNotification(StatusBar::ContentRemoved, NULL);
 }
 
 StatusbarComponent::~StatusbarComponent()
@@ -53,18 +53,13 @@ StatusbarComponent::comaMethod(ComaMethodID method, void *arg)
 
     switch (method)
     {
-    case GetOptimalSize:
-        ILOG_DEBUG(ILX_STATCOMP, "GetOptimalSize %u\n", idValue);
-        sendNotification(idValue);
-        break;
-
-    case AddContent:
+    case StatusBar::AddContent:
         ILOG_DEBUG(ILX_STATCOMP, "AddContent %u\n", idValue);
         if (_statusbar->addRemoteContent(idValue))
             sendNotification(idValue);
         break;
 
-    case RemoveContent:
+    case StatusBar::RemoveContent:
         ILOG_DEBUG(ILX_STATCOMP, "RemoveContent %u\n", idValue);
         if (_statusbar->removeRemoteContent(idValue))
             sendNotification(idValue);
@@ -85,25 +80,6 @@ StatusbarComponent::sendNotification(DFBSurfaceID id)
     *idValue = id;
     notify(0, idValue);
     ILOG_DEBUG(ILX_STATCOMP, "Notification sent for surface %d\n", id);
-}
-
-void
-StatusbarComponent::addContentDispatchCallback(void *ctx,
-                                               ComaNotificationID notification,
-                                               void *arg)
-{
-    ILOG_DEBUG(
-            ILX_STATCOMP,
-            "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
-}
-
-void
-StatusbarComponent::removeContentDispatchCallback(
-        void *ctx, ComaNotificationID notification, void *arg)
-{
-    ILOG_DEBUG(
-            ILX_STATCOMP,
-            "%s( %p, %lu, %p ) called!\n", __FUNCTION__, ctx, notification, arg);
 }
 
 } /* namespace ilixi */

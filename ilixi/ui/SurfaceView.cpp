@@ -272,7 +272,31 @@ SurfaceView::renderSource(const PaintEvent& event)
                 dfbSurface->SetBlittingFlags(dfbSurface,
                                              DSBLIT_BLEND_ALPHACHANNEL);
             else
-                dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
+            {
+                char *conv = getenv("ILIXI_COMP_CONVOLUTION");
+
+                if (conv)
+                {
+                    DFBConvolutionFilter filter = { { -65536, -65536 * 2,
+                                                      -65536, 0, 65536, 0,
+                                                      65536, 65536 * 2, 65536 },
+                                                    65536, 0 };
+
+                    sscanf(conv, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+                           &filter.kernel[0], &filter.kernel[1],
+                           &filter.kernel[2], &filter.kernel[3],
+                           &filter.kernel[4], &filter.kernel[5],
+                           &filter.kernel[6], &filter.kernel[7],
+                           &filter.kernel[8], &filter.scale, &filter.bias);
+
+                    //filter.scale += sin(direct_clock_get_millis()/1000.0) * 20000;
+
+                    dfbSurface->SetSrcConvolution(dfbSurface, &filter);
+                    dfbSurface->SetBlittingFlags(dfbSurface,
+                                                 DSBLIT_SRC_CONVOLUTION);
+                } else
+                    dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
+            }
         } else
         {
             dfbSurface->SetBlittingFlags(

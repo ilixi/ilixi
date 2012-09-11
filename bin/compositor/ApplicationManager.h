@@ -30,7 +30,7 @@
 
 namespace ilixi
 {
-class Compositor;
+class ILXCompositor;
 
 typedef std::list<AppInfo*> AppInfoList;
 typedef std::list<AppInstance*> AppInstanceList;
@@ -39,7 +39,7 @@ class ApplicationManager
 {
 
 public:
-    ApplicationManager(Compositor* compositor);
+    ApplicationManager(ILXCompositor* compositor);
 
     virtual
     ~ApplicationManager();
@@ -132,7 +132,7 @@ protected:
                   SaWManWindowRelation relation);
 
 private:
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
     AppInfoList _infos;
     AppInstanceList _instances;
 

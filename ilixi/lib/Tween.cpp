@@ -28,8 +28,7 @@
 namespace ilixi
 {
 
-Tween::Tween(Transition transition, Equation equation, float initialValue,
-             float endValue)
+Tween::Tween(Transition transition, Equation equation, float initialValue, float endValue)
         : _enabled(true),
           _transition(transition),
           _equation(equation),
@@ -40,7 +39,8 @@ Tween::Tween(Transition transition, Equation equation, float initialValue,
 }
 
 Tween::Tween(const Tween& t)
-        : _transition(t._transition),
+        : _enabled(true),
+          _transition(t._transition),
           _equation(t._equation),
           _initialValue(t._initialValue),
           _change(t._change),

@@ -39,6 +39,16 @@ SoundDFB::~SoundDFB()
 {
 }
 
+float
+SoundDFB::getMasterVolume()
+{
+    ILOG_TRACE_F(ILX_SOUND);
+    float vol = 0;
+    if (__sound)
+        __sound->GetMasterVolume(__sound, &vol);
+    return vol;
+}
+
 void
 SoundDFB::setMasterVolume(float volume)
 {

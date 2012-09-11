@@ -34,7 +34,7 @@ namespace ilixi
 class Notify
 {
 public:
-    Notify(const std::string& title, const std::string& text,
+    Notify(const std::string& title, const std::string& body,
            const std::string& iconPath = "");
 
     virtual
@@ -46,17 +46,9 @@ public:
     void
     show();
 
-    struct NotifyData
-    {
-        char path[256];
-        char sender[128];
-        char text[128];
-        char title[128];
-    };
-
 private:
     std::string _title;
-    std::string _text;
+    std::string _body;
     std::string _icon;
 
 };

@@ -32,7 +32,7 @@ namespace ilixi
 //! Helper class for animating an AppCompositor.
 class AppView : public AppCompositor
 {
-    friend class Compositor;
+    friend class ILXCompositor;
 public:
     enum AnimatedProperty
     {
@@ -45,7 +45,7 @@ public:
         AnimHiding = 0x020
     };
 
-    AppView(Compositor* compositor, AppInstance* instance, Widget* parent = 0);
+    AppView(ILXCompositor* compositor, AppInstance* instance, Widget* parent = 0);
 
     virtual
     ~AppView();

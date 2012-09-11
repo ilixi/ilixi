@@ -124,7 +124,7 @@ window_restack(void *context, SaWManWindowHandle handle, SaWManWindowHandle rela
 
 //*********************************************************************
 
-ApplicationManager::ApplicationManager(Compositor* compositor)
+ApplicationManager::ApplicationManager(ILXCompositor* compositor)
         : _compositor(compositor)
 {
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Initialising Application Manager.\n");

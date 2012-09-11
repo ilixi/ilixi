@@ -20,7 +20,7 @@ SpinBox::SpinBox(int value, Widget* parent)
           _plus(NULL),
           _minus(NULL),
           _min(0),
-          _max(100),
+          _max(value > 100 ? value : 100),
           _value(value),
           _step(1),
           _wrapping(true)
@@ -35,7 +35,8 @@ SpinBox::SpinBox(int value, Widget* parent)
     _plus->setToolButtonStyle(ToolButton::IconOnly);
     _plus->setIcon(StyleHint::Plus);
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
-    _plus->setDisabled();
+    if (_max == _value)
+        _plus->setDisabled();
     addChild(_plus);
 
     _minus = new ToolButton("-");
@@ -122,19 +123,29 @@ void
 SpinBox::setMax(int max)
 {
     _max = max;
+
+    if (_value == _max)
+        _plus->setDisabled();
+    else
+        _plus->setEnabled();
 }
 
 void
 SpinBox::setMin(int min)
 {
     _min = min;
+
+    if (_value == _min)
+        _minus->setDisabled();
+    else
+        _minus->setEnabled();
 }
 
 void
 SpinBox::setRange(int min, int max)
 {
-    _min = min;
-    _max = max;
+    setMin(min);
+    setMax(max);
 }
 
 void

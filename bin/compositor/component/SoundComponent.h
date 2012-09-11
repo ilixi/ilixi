@@ -32,30 +32,20 @@ namespace ilixi
 class SoundComponent : public ComaComponent
 {
 public:
-    enum SoundCompMethods
-    {
-        SetVolume, Mute, UnMute
-    };
-
-    enum SoundCompNotifications
-    {
-        VolumeChanged, Muted, UnMuted, SoundCompNumNotifications
-    };
-
     SoundComponent();
 
     virtual
     ~SoundComponent();
 
     void
-    setVolume(unsigned int volume);
+    setVolume(float volume);
 
 protected:
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
 
 private:
-    unsigned int _volume;
+    float _volume;
 };
 
 } /* namespace ilixi */

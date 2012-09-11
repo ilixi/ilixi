@@ -58,7 +58,7 @@ NumPages::addItem(const char* name, const char* icon)
 }
 
 void
-NumPages::setAppStatus(VisibilityNotification notification, bool visible)
+NumPages::setAppStatus(Compositor::VisibilityData notification)
 {
     ILOG_TRACE_W(ILX_NUMPAGES);
     ILOG_DEBUG(
@@ -68,7 +68,7 @@ NumPages::setAppStatus(VisibilityNotification notification, bool visible)
     {
         if (_items[i]->text() == notification.name)
         {
-            if (visible)
+            if (notification.visible)
                 _items[i]->setAppVisible(1);
             else
                 _items[i]->setAppVisible(0);
@@ -77,7 +77,7 @@ NumPages::setAppStatus(VisibilityNotification notification, bool visible)
 }
 
 void
-NumPages::setAppStarting(VisibilityNotification notification)
+NumPages::setAppStarting(Compositor::VisibilityData notification)
 {
     ILOG_TRACE_W(ILX_NUMPAGES);
     for (int i = 0; i < _items.size(); ++i)

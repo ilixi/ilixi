@@ -23,16 +23,15 @@
 
 #include <lib/Notify.h>
 #include <core/DaleDFB.h>
+#include <core/ComponentData.h>
 #include <core/AppBase.h>
-#include <ui/Widget.h>
 
 namespace ilixi
 {
 
-Notify::Notify(const std::string& title, const std::string& text,
-               const std::string& iconPath)
+Notify::Notify(const std::string& title, const std::string& body, const std::string& iconPath)
         : _title(title),
-          _text(text),
+          _body(body),
           _icon(iconPath)
 {
 }
@@ -50,18 +49,18 @@ Notify::setIcon(const std::string& iconPath)
 void
 Notify::show()
 {
-    NotifyData msg;
-    snprintf(msg.path, 128, "%s", _icon.c_str());
-    snprintf(msg.sender, 128, "%s", AppBase::title().c_str());
-    snprintf(msg.text, 128, "%s", _text.c_str());
+    Compositor::NotificationData msg;
+    snprintf(msg.body, 128, "%s", _body.c_str());
+    snprintf(msg.icon, 128, "%s", _icon.c_str());
     snprintf(msg.title, 128, "%s", _title.c_str());
+    msg.client = getpid();
 
     IComaComponent* comp;
     DaleDFB::comaGetComponent("CompositorComponent", &comp);
 
     void *ptr;
-    DaleDFB::comaGetLocal(sizeof(NotifyData), &ptr);
-    NotifyData* data = (NotifyData*) ptr;
+    DaleDFB::comaGetLocal(sizeof(Compositor::NotificationData), &ptr);
+    Compositor::NotificationData* data = (Compositor::NotificationData*) ptr;
     *data = msg;
 
     DaleDFB::comaCallComponent(comp, 0, (void*) data);

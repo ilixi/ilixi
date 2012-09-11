@@ -12,6 +12,7 @@
 #include <ui/GridLayout.h>
 #include <types/Font.h>
 #include <lib/TweenAnimation.h>
+#include <core/ComponentData.h>
 #include <vector>
 #include "PageButton.h"
 
@@ -19,12 +20,6 @@ namespace ilixi
 {
 
 class AppButton;
-
-struct VisibilityNotification
-{
-    char name[64];
-    pid_t pid;bool multi;
-};
 
 class NumPages : public Widget
 {
@@ -38,10 +33,10 @@ public:
     addItem(const char* name, const char* icon);
 
     void
-    setAppStatus(VisibilityNotification notification, bool visible);
+    setAppStatus(Compositor::VisibilityData notification);
 
     void
-    setAppStarting(VisibilityNotification notification);
+    setAppStarting(Compositor::VisibilityData notification);
 
     void
     initPages();

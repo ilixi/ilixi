@@ -6,16 +6,17 @@
  */
 
 #include "OSKComponent.h"
-#include <core/Logger.h>
 #include "Compositor.h"
+#include <core/ComponentData.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_OSKCOMP, "ilixi/Coma/OSKComponent", "OSKComponent");
 
-OSKComponent::OSKComponent(Compositor* compositor)
-        : ComaComponent("OSKComponent"),
+OSKComponent::OSKComponent(ILXCompositor* compositor)
+        : ComaComponent("OSK"),
           _compositor(compositor)
 {
     init();
@@ -32,32 +33,32 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
 
     switch (method)
     {
-    case ShowOSK:
+    case OSK::ShowOSK:
         {
-            OSKRequest request;
+            OSK::OSKRequest request;
             if (arg == NULL)
             {
                 request.inputRect =
                 {   0,0,100,100};
             } else
             {
-                request = *((OSKRequest*) arg);
+                request = *((OSK::OSKRequest*) arg);
                 ILOG_DEBUG(ILX_OSKCOMP, "ShowOSK\n");
                 ILOG_DEBUG(ILX_OSKCOMP, " -> Mode (%d)\n", request.mode);
                 ILOG_DEBUG(
                         ILX_OSKCOMP,
                         " -> Rectangle (%d, %d, %d, %d)\n", request.inputRect.x, request.inputRect.y, request.inputRect.w, request.inputRect.h);
-                ILOG_DEBUG(ILX_OSKCOMP, " -> PID (%d) \n", request.process);
+                ILOG_DEBUG(ILX_OSKCOMP, " -> PID (%d) \n", request.client);
             }
-            _compositor->showOSK(request.inputRect, request.process);
+            _compositor->showOSK(request.inputRect, request.client);
         }
         break;
 
-    case HideOSK:
+    case OSK::HideOSK:
         ILOG_DEBUG(ILX_OSKCOMP, "HideOSK\n");
         _compositor->toggleOSK(false);
         break;
-    case ConsumeKey:
+    case OSK::ConsumeKey:
         {
             ILOG_DEBUG(ILX_OSKCOMP, "ConsumeKey\n");
             uint32_t key = *((uint32_t*) arg);

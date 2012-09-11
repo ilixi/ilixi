@@ -33,21 +33,12 @@ Image* Home::_circle = NULL;
 Image* Home::_circle_sm = NULL;
 
 void
-appVisible(void* ctx, void* arg)
+appVisibility(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
-    VisibilityNotification notification = *((VisibilityNotification*) arg);
-    home->_pages->setAppStatus(notification, 1);
-}
-
-void
-appHidden(void* ctx, void* arg)
-{
-    ILOG_TRACE_F(ILX_HOMEAPP);
-    Home* home = (Home*) ctx;
-    VisibilityNotification notification = *((VisibilityNotification*) arg);
-    home->_pages->setAppStatus(notification, 0);
+    Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
+    home->_pages->setAppStatus(notification);
 }
 
 void
@@ -55,7 +46,7 @@ appStarting(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
-    VisibilityNotification notification = *((VisibilityNotification*) arg);
+    Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
     home->_pages->setAppStarting(notification);
 }
 
@@ -67,14 +58,14 @@ receiveAppList(void* ctx, void* arg)
 
     int* size = ((int*) arg);
     ILOG_DEBUG(ILX_HOMEAPP, " -> Size: %d\n", *size);
-    Home::AppData *srcdata = (Home::AppData*) (size + 1);
+    Compositor::AppData *srcdata = (Compositor::AppData*) (size + 1);
     Home::AppDataVector vec;
 
     for (int i = 0; i < *size; ++i)
     {
         ILOG_DEBUG(ILX_HOMEAPP, "%s - %s\n", srcdata[i].name, srcdata[i].icon);
 
-        Home::AppData data;
+        Compositor::AppData data;
         snprintf(data.name, 64, "%s", srcdata[i].name);
         snprintf(data.icon, 128, "%s", srcdata[i].icon);
         vec.push_back(data);
@@ -102,7 +93,7 @@ Home::Home(int argc, char* argv[])
     _pages->sigAppStart.connect(sigc::mem_fun(this, &Home::runApp));
     addWidget(_pages);
 
-    DaleDFB::comaGetComponent("CompositorComponent", &_compositor);
+    DaleDFB::comaGetComponent("Compositor", &_compositor);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Home::requestAppList));
@@ -125,17 +116,19 @@ Home::runApp(const char* name)
         DaleDFB::comaGetLocal(128, &ptr);
         char* n = (char*) ptr;
         snprintf(n, 128, "%s", name);
-        DaleDFB::comaCallComponent(_compositor, 7, (void*) n);
+        DaleDFB::comaCallComponent(_compositor, Compositor::StartApp,
+                                   (void*) n);
     }
 }
 
 void
-Home::initButtons(const AppDataVector& dataVector)
+Home::initButtons(const Home::AppDataVector& dataVector)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    for (AppDataVector::const_iterator it = dataVector.begin();
+    for (Home::AppDataVector::const_iterator it = dataVector.begin();
             it != dataVector.end(); ++it)
-        _pages->addItem(((AppData) *it).name, ((AppData) *it).icon);
+        _pages->addItem(((Compositor::AppData) *it).name,
+                        ((Compositor::AppData) *it).icon);
     _pages->initPages();
 }
 
@@ -144,11 +137,13 @@ Home::requestAppList()
 {
     if (_compositor)
     {
-        _compositor->Listen(_compositor, 0, appVisible, this);
-        _compositor->Listen(_compositor, 1, appHidden, this);
-        _compositor->Listen(_compositor, 2, appStarting, this);
-        _compositor->Listen(_compositor, 7, receiveAppList, this);
-        DaleDFB::comaCallComponent(_compositor, 8, NULL);
+        _compositor->Listen(_compositor, Compositor::AppVisibilty,
+                            appVisibility, this);
+        _compositor->Listen(_compositor, Compositor::AppStarting, appStarting,
+                            this);
+        _compositor->Listen(_compositor, Compositor::SendingAppList,
+                            receiveAppList, this);
+        DaleDFB::comaCallComponent(_compositor, Compositor::GetAppList, NULL);
     }
 }
 

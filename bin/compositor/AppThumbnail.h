@@ -31,12 +31,12 @@
 
 namespace ilixi
 {
-  class Compositor;
+  class ILXCompositor;
 
   class AppThumbnail : public AppCompositor
   {
   public:
-    AppThumbnail(Compositor* compositor, AppInstance* instance, Widget* parent =
+    AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent =
         0);
 
     virtual

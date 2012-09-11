@@ -35,13 +35,13 @@ namespace ilixi
 
 class StatusbarComponent;
 
-class StatusBar : public Application
+class ILXStatusBar : public Application
 {
 public:
-    StatusBar(int argc, char* argv[]);
+    ILXStatusBar(int argc, char* argv[]);
 
     virtual
-    ~StatusBar();
+    ~ILXStatusBar();
 
     virtual void
     onHide();
@@ -87,28 +87,13 @@ private:
     volumeListener(void* ctx, void* arg);
 
     friend void
-    homeShowing(void* ctx, void* arg);
-
-    friend void
-    homeHidden(void* ctx, void* arg);
+    appVisibilty(void* ctx, void* arg);
 
     friend void
     switcherShowing(void* ctx, void* arg);
 
     friend void
     switcherHidden(void* ctx, void* arg);
-
-    friend void
-    soundVisible(void* ctx, void* arg);
-
-    friend void
-    soundHidden(void* ctx, void* arg);
-
-    friend void
-    dashVisible(void* ctx, void* arg);
-
-    friend void
-    dashHidden(void* ctx, void* arg);
 
     friend void
     backVisible(void* ctx, void* arg);

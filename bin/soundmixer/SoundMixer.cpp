@@ -22,6 +22,9 @@
  */
 
 #include "SoundMixer.h"
+#include "VolumeMeter.h"
+#include "BandSlider.h"
+
 #include <ui/GroupBox.h>
 #include <ui/VBoxLayout.h>
 #include <ui/HBoxLayout.h>
@@ -29,19 +32,25 @@
 #include <ui/PushButton.h>
 #include <ui/CheckBox.h>
 #include <ui/Spacer.h>
-#include <core/Logger.h>
-#include <lib/Notify.h>
-#include "VolumeMeter.h"
-#include "BandSlider.h"
 
+#include <core/ComponentData.h>
 #include <types/Music.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_MIXERAPP, "ilixi/Mixer", "SoundMixer");
+D_DEBUG_DOMAIN( ILX_APPMIXER, "ilixi/Mixer", "SoundMixer");
 
-SoundMixer::SoundMixer(int argc, char* argv[])
+void
+volumeListener(void* ctx, void* arg)
+{
+    ILXSoundMixer* bar = (ILXSoundMixer*) ctx;
+    float vol = *((float*) arg);
+    bar->_volSlider->setValue(vol);
+}
+
+ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
         : Application(&argc, &argv, AppOptions(OptDale | OptSound)),
           _soundComponent(NULL),
           _music(NULL)
@@ -63,15 +72,16 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     volBox->addWidget(new Label("Output:"), 0, 0, 0, 3);
 
     _volSlider = new Slider();
-    _volSlider->setValue(100);
+    _volSlider->setRange(0, 1);
+    _volSlider->setValue(1);
     _volSlider->sigValueChanged.connect(
-            sigc::mem_fun(this, &SoundMixer::changeVolume));
+            sigc::mem_fun(this, &ILXSoundMixer::changeVolume));
     volBox->addWidget(_volSlider, 1, 0, 0, 2);
 
     _mute = new PushButton("Mute");
     _mute->setXConstraint(FixedConstraint);
     volBox->addWidget(_mute, 1, 2);
-    _mute->sigClicked.connect(sigc::mem_fun(this, &SoundMixer::mute));
+    _mute->sigClicked.connect(sigc::mem_fun(this, &ILXSoundMixer::mute));
 
     volBox->addWidget(new Label("Balance:"), 2, 0, 0, 3);
     volBox->addWidget(new Label("Front"), 3, 0);
@@ -108,7 +118,7 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     buttons->addWidget(new PushButton("Save Preset"));
     PushButton* testSound = new PushButton("Test");
     testSound->sigClicked.connect(
-            sigc::mem_fun(this, &SoundMixer::playTestSound));
+            sigc::mem_fun(this, &ILXSoundMixer::playTestSound));
     buttons->addWidget(testSound);
     levels->addWidget(buttons);
 
@@ -131,14 +141,16 @@ SoundMixer::SoundMixer(int argc, char* argv[])
     rowLevels->addWidget(new BandSlider("20KHz"));
     levels->addWidget(rowLevels);
 
-    DaleDFB::comaGetComponent("SoundComponent", &_soundComponent);
+    DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
+    _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged,
+                            volumeListener, this);
 
     _music = new Music(ILIXI_DATADIR"soundmixer/test.wav");
     _music->setRepeat(true);
-    SoundDFB::setMasterVolume(1);
+
 }
 
-SoundMixer::~SoundMixer()
+ILXSoundMixer::~ILXSoundMixer()
 {
     delete _music;
     if (_soundComponent)
@@ -146,13 +158,16 @@ SoundMixer::~SoundMixer()
 }
 
 void
-SoundMixer::mute()
+ILXSoundMixer::mute()
 {
     _volSlider->setValue(0);
+    if (_soundComponent)
+        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute,
+                                   NULL);
 }
 
 void
-SoundMixer::playTestSound()
+ILXSoundMixer::playTestSound()
 {
     if (_music->status() == Music::Playing)
         _music->stop();
@@ -161,18 +176,17 @@ SoundMixer::playTestSound()
 }
 
 void
-SoundMixer::changeVolume(int volume)
+ILXSoundMixer::changeVolume(float volume)
 {
-    if (_soundComponent)
+    if (_soundComponent && _volSlider->hasFocus())
     {
         void *ptr;
-        DaleDFB::comaGetLocal(sizeof(int), &ptr);
-        int* vol = (int*) ptr;
+        DaleDFB::comaGetLocal(sizeof(float), &ptr);
+        float* vol = (float*) ptr;
         *vol = volume;
-        DaleDFB::comaCallComponent(_soundComponent, 0, (void*) vol);
+        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume,
+                                   (void*) vol);
     }
-
-    SoundDFB::setMasterVolume(_volSlider->value() / 100);
 }
 
 } /* namespace ilixi */
@@ -180,7 +194,7 @@ SoundMixer::changeVolume(int volume)
 int
 main(int argc, char* argv[])
 {
-    ilixi::SoundMixer app(argc, argv);
+    ilixi::ILXSoundMixer app(argc, argv);
     app.exec();
     return 0;
 }

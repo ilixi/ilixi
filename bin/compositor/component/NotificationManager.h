@@ -29,26 +29,27 @@
 #include <lib/Timer.h>
 #include <lib/TweenAnimation.h>
 #include <lib/Notify.h>
+#include <core/ComponentData.h>
 
 namespace ilixi
 {
-class Compositor;
+class ILXCompositor;
 class Notification;
 
 class NotificationManager
 {
 public:
-    NotificationManager(Compositor* compositor);
+    NotificationManager(ILXCompositor* compositor);
 
     virtual
     ~NotificationManager();
 
     void
-    addNotification(const Notify::NotifyData& data);
+    addNotification(const Compositor::NotificationData& data);
 
 private:
     int _deltaY;
-    Compositor* _compositor;
+    ILXCompositor* _compositor;
     typedef std::vector<Notification*> NotificationVector;
     NotificationVector _notifications;
     pthread_mutex_t _notMutex;
