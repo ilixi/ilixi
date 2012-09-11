@@ -184,6 +184,7 @@ AC_CONFIG_FILES([ \
 		bin/navigation/Makefile \
 		bin/osk/images/Makefile \
 		bin/osk/Makefile \
+		bin/settings/Makefile \
 		bin/soundmixer/images/Makefile \
 		bin/soundmixer/Makefile \
 		bin/stacking/Makefile \

@@ -18,6 +18,7 @@ miscdata_DATA 	=	8tracks.png \
 					navit.png \
 					neo.png \
 					particle.png \
+					settings.png \
 					texture.png \
 					twitter.png \
 					webkitdfb.png \

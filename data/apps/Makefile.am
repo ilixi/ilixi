@@ -17,6 +17,7 @@ miscdata_DATA 	=	\
 					ilixi_home.appdef \
 					ilixi_monitor.appdef \
 					ilixi_widgets.appdef \
+					ilixi_settings.appdef \
 					knuckles.appdef \
 					lite_web.appdef \
 					matrix.appdef \
