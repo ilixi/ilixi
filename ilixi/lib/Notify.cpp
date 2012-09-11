@@ -56,7 +56,7 @@ Notify::show()
     msg.client = getpid();
 
     IComaComponent* comp;
-    DaleDFB::comaGetComponent("CompositorComponent", &comp);
+    DaleDFB::comaGetComponent("Compositor", &comp);
 
     void *ptr;
     DaleDFB::comaGetLocal(sizeof(Compositor::NotificationData), &ptr);
