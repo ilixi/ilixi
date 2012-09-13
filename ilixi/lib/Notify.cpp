@@ -25,15 +25,22 @@
 #include <core/DaleDFB.h>
 #include <core/ComponentData.h>
 #include <core/AppBase.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
+
+D_DEBUG_DOMAIN(ILX_NOTIFY, "ilixi/lib/Notify", "Notify");
 
 Notify::Notify(const std::string& title, const std::string& body, const std::string& iconPath)
         : _title(title),
           _body(body),
           _icon(iconPath)
 {
+    ILOG_TRACE_F(ILX_NOTIFY);
+    ILOG_DEBUG(ILX_NOTIFY, " -> title: %s\n", title.c_str());
+    ILOG_DEBUG(ILX_NOTIFY, " -> body: %s\n", body.c_str());
+    ILOG_DEBUG(ILX_NOTIFY, " -> iconPath: %s\n", iconPath.c_str());
 }
 
 Notify::~Notify()
@@ -49,23 +56,24 @@ Notify::setIcon(const std::string& iconPath)
 void
 Notify::show()
 {
-    Compositor::NotificationData msg;
-    snprintf(msg.body, 128, "%s", _body.c_str());
-    snprintf(msg.icon, 128, "%s", _icon.c_str());
-    snprintf(msg.title, 128, "%s", _title.c_str());
-    msg.client = getpid();
-
-    IComaComponent* comp;
+    ILOG_TRACE_F(ILX_NOTIFY);
+    IComaComponent* comp = NULL;
     DaleDFB::comaGetComponent("Compositor", &comp);
+    if (comp)
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(sizeof(Compositor::NotificationData), &ptr);
+        Compositor::NotificationData* data = (Compositor::NotificationData*) ptr;
 
-    void *ptr;
-    DaleDFB::comaGetLocal(sizeof(Compositor::NotificationData), &ptr);
-    Compositor::NotificationData* data = (Compositor::NotificationData*) ptr;
-    *data = msg;
+        snprintf(data->body, 128, "%s", _body.c_str());
+        snprintf(data->icon, 256, "%s", _icon.c_str());
+        snprintf(data->title, 128, "%s", _title.c_str());
+        data->client = getpid();
 
-    DaleDFB::comaCallComponent(comp, 0, (void*) data);
-
-    comp->Release(comp);
+        DaleDFB::comaCallComponent(comp, Compositor::AddNotification,
+                                   (void*) data);
+        comp->Release(comp);
+    }
 }
 
 } /* namespace ilixi */
