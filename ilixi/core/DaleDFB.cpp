@@ -215,7 +215,7 @@ DaleDFB::getOSKComp()
         if (tryOnce)
         {
             tryOnce = false;
-            DirectResult ret = __coma->GetComponent(__coma, "OSKComponent", 500,
+            DirectResult ret = __coma->GetComponent(__coma, "OSK", 500,
                                                     &__oskComp);
             if (ret)
             {
