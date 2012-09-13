@@ -196,25 +196,17 @@ Image::loadImage()
         return false;
     }
 
-    if (access(_imagePath.c_str(), F_OK) != 0)
-    {
-        ILOG_ERROR( ILX_IMAGE,
-                   "File (%s) is not accessible!\n", _imagePath.c_str());
-        return false;
-    }
-
-    invalidateSurface();
-
     DFBSurfaceDescription desc;
 
     IDirectFBImageProvider* provider;
     if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
                                                _imagePath.c_str(), &provider) != DFB_OK)
     {
-        invalidateSurface();
         ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
         return false;
     }
+
+    invalidateSurface();
 
     if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
         ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
