@@ -181,6 +181,7 @@ AC_CONFIG_FILES([ \
 		bin/gallery/images/Makefile \
 		bin/gallery/Makefile \
 		bin/home/Makefile \
+		bin/monitor/Makefile \
 		bin/navigation/Makefile \
 		bin/osk/images/Makefile \
 		bin/osk/Makefile \

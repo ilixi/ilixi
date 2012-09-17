@@ -1,9 +1,8 @@
 ## Makefile.am for bin/
+SUBDIRS = gallery demo2 demo3 demo4 carousel stacking navigation monitor
 if WITH_FUSIONDALE
-SUBDIRS = compositor home statusbar osk gallery demo2 demo3 demo4 carousel stacking settings navigation
+SUBDIRS += compositor home statusbar osk settings
 if WITH_FUSIONSOUND
 SUBDIRS += soundmixer
 endif
-else
-SUBDIRS = gallery demo2 demo3 demo4 carousel stacking navigation  
 endif
