@@ -74,6 +74,7 @@ Image::Image(Image* source, const Rectangle& sourceRect)
           _subImage(true)
 {
     ILOG_TRACE(ILX_IMAGE);
+    ILOG_DEBUG(ILX_IMAGE, " -> Size: %d, %d\n", _size.width(), _size.height());
     loadSubImage(source, sourceRect);
 }
 
@@ -112,6 +113,7 @@ Image::width() const
 Size
 Image::size()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (_size.isValid())
         return _size;
     else if (loadImage())

@@ -26,6 +26,7 @@
 
 #include <ui/Frame.h>
 #include <ui/Label.h>
+#include <ui/Icon.h>
 
 namespace ilixi
 {
@@ -79,7 +80,15 @@ public:
     void
     setTitle(std::string title);
 
+    /*!
+     * Sets icon shown before title.
+     */
+    void
+    setTitleIcon(StyleHint::PackedIcon icon);
+
 protected:
+    //! This image stores the title icon.
+    Icon* _titleIcon;
     //! This property stores GroupBox's title.
     Label* _title;
     //! This property stores the size of title tab.
@@ -106,6 +115,9 @@ protected:
 private:
     virtual void
     updateLayoutGeometry();
+
+    void
+    updateTitleSize();
 };
 
 }

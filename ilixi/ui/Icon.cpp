@@ -55,7 +55,8 @@ Icon::Icon(const Image& image, Widget* parent)
 }
 
 Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
-        : Widget(parent)
+        : Widget(parent),
+          _image(NULL)
 {
     ILOG_TRACE_W(ILX_ICON);
     _image = stylist()->defaultIcon(packedIcon);
@@ -70,6 +71,7 @@ Icon::~Icon()
 Size
 Icon::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_ICON);
     if (_image)
         return _image->size();
     return Size();

@@ -33,6 +33,7 @@ D_DEBUG_DOMAIN( ILX_GROUPBOX, "ilixi/ui/GroupBox", "GroupBox");
 
 GroupBox::GroupBox(std::string title, Widget* parent)
         : Frame(parent),
+          _titleIcon(NULL),
           _title(new Label(""))
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
@@ -54,10 +55,9 @@ GroupBox::heightForWidth(int width) const
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
     return _layout->heightForWidth(
-            width - _margin.hSum()
-                    - stylist()->defaultParameter(StyleHint::FrameOffsetLR))
-            + stylist()->defaultParameter(StyleHint::FrameOffsetTB)
-            + _titleSize.height();
+            width - _margin.hSum() - stylist()->defaultParameter(
+                    StyleHint::FrameOffsetLR)) + stylist()->defaultParameter(
+            StyleHint::FrameOffsetTB) + _titleSize.height();
 }
 
 Size
@@ -66,11 +66,10 @@ GroupBox::preferredSize() const
     ILOG_TRACE_W(ILX_GROUPBOX);
     Size s = _layout->preferredSize();
     return Size(
-            std::max(s.width(), _titleSize.width()) + _margin.hSum()
-                    + stylist()->defaultParameter(StyleHint::FrameOffsetLR),
-            s.height() + _margin.vSum()
-                    + stylist()->defaultParameter(StyleHint::FrameOffsetTB)
-                    + _titleSize.height());
+            std::max(s.width(), _titleSize.width()) + _margin.hSum() + stylist()->defaultParameter(
+                    StyleHint::FrameOffsetLR),
+            s.height() + _margin.vSum() + stylist()->defaultParameter(
+                    StyleHint::FrameOffsetTB) + _titleSize.height());
 }
 
 std::string
@@ -91,15 +90,18 @@ GroupBox::setTitle(std::string title)
     if (_title->text() != title)
     {
         _title->setText(title);
-        Size s = _title->preferredSize();
-        _titleSize.setWidth(
-                s.width()
-                        + stylist()->defaultParameter(StyleHint::TabOffsetLR));
-        _titleSize.setHeight(
-                s.height()
-                        + stylist()->defaultParameter(StyleHint::TabOffsetTop));
+        updateTitleSize();
         update();
     }
+}
+
+void
+GroupBox::setTitleIcon(StyleHint::PackedIcon icon)
+{
+    removeChild(_titleIcon);
+    _titleIcon = new Icon(icon);
+    updateTitleSize();
+    addChild(_titleIcon);
 }
 
 void
@@ -114,16 +116,15 @@ GroupBox::compose(const PaintEvent& event)
 int
 GroupBox::canvasY() const
 {
-    return _margin.top()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetTop)
-            + _titleSize.height();
+    return _margin.top() + stylist()->defaultParameter(
+            StyleHint::FrameOffsetTop) + _titleSize.height();
 }
 
 int
 GroupBox::canvasHeight() const
 {
-    return height() - _margin.vSum() - _titleSize.height()
-            - stylist()->defaultParameter(StyleHint::FrameOffsetTB);
+    return height() - _margin.vSum() - _titleSize.height() - stylist()->defaultParameter(
+            StyleHint::FrameOffsetTB);
 }
 
 void
@@ -133,12 +134,35 @@ GroupBox::updateLayoutGeometry()
     ILOG_DEBUG(
             ILX_GROUPBOX,
             " -> Canvas(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
-    Size s = _title->preferredSize();
-    _title->setGeometry(
-            2 * stylist()->defaultParameter(StyleHint::TabOffsetLeft),
-            stylist()->defaultParameter(StyleHint::TabOffsetTop), s.width(),
-            s.height());
+
+    Size textSize = _title->preferredSize();
+    int x = 2 * stylist()->defaultParameter(StyleHint::TabOffsetLeft);
+    int y = stylist()->defaultParameter(StyleHint::TabOffsetTop);
+    if (_titleIcon)
+    {
+        _titleIcon->setGeometry(x, y, textSize.height(), textSize.height());
+        x += _titleIcon->width() + 5;
+    }
+
+    _title->setGeometry(x, y, textSize.width(), textSize.height());
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
+}
+
+void
+GroupBox::updateTitleSize()
+{
+    Size textSize = _title->preferredSize();
+    if (_titleIcon)
+        _titleSize.setWidth(
+                textSize.width() + textSize.height() + 5 + stylist()->defaultParameter(
+                        StyleHint::TabOffsetLR));
+    else
+        _titleSize.setWidth(
+                textSize.width() + stylist()->defaultParameter(
+                        StyleHint::TabOffsetLR));
+    _titleSize.setHeight(
+            textSize.height() + stylist()->defaultParameter(
+                    StyleHint::TabOffsetTop));
 }
 
 } /* namespace ilixi */

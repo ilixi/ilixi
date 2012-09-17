@@ -198,18 +198,109 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
     ILOG_TRACE(ILX_STYLISTBASE);
     switch (icon)
     {
-    case StyleHint::Plus:
-        return _style->getIcon("plus");
-    case StyleHint::Minus:
-        return _style->getIcon("minus");
-    case StyleHint::Up:
-        return _style->getIcon("arrow_up");
+    case StyleHint::ArrowNE:
+        return _style->getIcon("arrow_ne");
+    case StyleHint::ArrowSW:
+        return _style->getIcon("arrow_sw");
+    case StyleHint::Calendar:
+        return _style->getIcon("calendar");
+    case StyleHint::Clock:
+        return _style->getIcon("clock");
+    case StyleHint::Comment:
+        return _style->getIcon("comment");
+    case StyleHint::CPU:
+        return _style->getIcon("cpu");
+    case StyleHint::Cross:
+        return _style->getIcon("cross");
+    case StyleHint::CrossCircle:
+        return _style->getIcon("cross_circle");
     case StyleHint::Down:
         return _style->getIcon("arrow_down");
+    case StyleHint::Eject:
+        return _style->getIcon("eject");
+    case StyleHint::File:
+        return _style->getIcon("file");
+    case StyleHint::FileDelete:
+        return _style->getIcon("file_delete");
+    case StyleHint::FileDownload:
+        return _style->getIcon("file_download");
+    case StyleHint::FileNew:
+        return _style->getIcon("file_new");
+    case StyleHint::FileText:
+        return _style->getIcon("file_text");
+    case StyleHint::FileUpload:
+        return _style->getIcon("file_upload");
+    case StyleHint::Flag:
+        return _style->getIcon("flag");
+    case StyleHint::Heart:
+        return _style->getIcon("heart");
+    case StyleHint::Info:
+        return _style->getIcon("info");
     case StyleHint::Left:
         return _style->getIcon("arrow_left");
+    case StyleHint::Minus:
+        return _style->getIcon("minus");
+    case StyleHint::Network:
+        return _style->getIcon("network");
+    case StyleHint::Next:
+        return _style->getIcon("next");
+    case StyleHint::Next2:
+        return _style->getIcon("next2");
+    case StyleHint::Pause:
+        return _style->getIcon("pause");
+    case StyleHint::Phone:
+        return _style->getIcon("phone");
+    case StyleHint::Picture:
+        return _style->getIcon("picture");
+    case StyleHint::Play:
+        return _style->getIcon("play");
+    case StyleHint::Plus:
+        return _style->getIcon("plus");
+    case StyleHint::Power:
+        return _style->getIcon("power");
+    case StyleHint::Prev:
+        return _style->getIcon("prev");
+    case StyleHint::Prev2:
+        return _style->getIcon("prev2");
+    case StyleHint::RAM:
+        return _style->getIcon("ram");
+    case StyleHint::Restart:
+        return _style->getIcon("restart");
+    case StyleHint::Ribbon:
+        return _style->getIcon("ribbon");
     case StyleHint::Right:
         return _style->getIcon("arrow_right");
+    case StyleHint::Search:
+        return _style->getIcon("search");
+    case StyleHint::Settings:
+        return _style->getIcon("settings");
+    case StyleHint::Share:
+        return _style->getIcon("share");
+    case StyleHint::Standby:
+        return _style->getIcon("standby");
+    case StyleHint::Star:
+        return _style->getIcon("star");
+    case StyleHint::Stats:
+        return _style->getIcon("stats");
+    case StyleHint::Stop:
+        return _style->getIcon("stop");
+    case StyleHint::Tag:
+        return _style->getIcon("tag");
+    case StyleHint::ThumbDown:
+        return _style->getIcon("thumb_down");
+    case StyleHint::ThumbUp:
+        return _style->getIcon("thumb_up");
+    case StyleHint::Tick:
+        return _style->getIcon("tick");
+    case StyleHint::TickCircle:
+        return _style->getIcon("tick_circle");
+    case StyleHint::Up:
+        return _style->getIcon("arrow_up");
+    case StyleHint::ZoomIn:
+        return _style->getIcon("zoom_in");
+    case StyleHint::ZoomOut:
+        return _style->getIcon("zoom_out");
+
     default:
         return NULL;
     }
