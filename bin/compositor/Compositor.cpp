@@ -621,7 +621,9 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 ILOG_DEBUG(
                         ILX_COMPOSITOR,
                         "CET_Quit (%s)\n", data->instance->appInfo()->name().c_str());
-                _currentApp = NULL;
+
+                if (data->instance == _currentApp)
+                    _currentApp = NULL;
 
                 if (data->instance->view())
                     removeWidget(data->instance->view());
@@ -629,7 +631,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 if (data->instance->thumb())
                     _switcher->removeThumb(data->instance->thumb());
 
-                toggleLauncher(true);
+                if (_currentApp == NULL)
+                    toggleLauncher(true);
             }
             break;
 
