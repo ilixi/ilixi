@@ -28,6 +28,8 @@
 #include <types/Font.h>
 #include <types/Rectangle.h>
 #include <libxml/tree.h>
+#include <map>
+
 namespace ilixi
 {
 
@@ -45,12 +47,20 @@ public:
     ~Style();
 
     /*!
+     * If name is found returns icon as a sub-image, else returns NOIMAGE image.
+     */
+    Image*
+    getIcon(std::string name);
+
+    /*!
      * Initialise style from an XML file.
      *
      * Returns false on error.
      */
     bool
     parseStyle(const char* filename);
+
+
 
     //--------------------------------------------------------------
     // Fonts
@@ -67,13 +77,19 @@ public:
     //--------------------------------------------------------------
     // Icons
     //--------------------------------------------------------------
-    Image* _icons;
-    Rectangle plus;
-    Rectangle minus;
+    //! This image stores the icon pack.
+    Image* _iconPack;
+    //! Default size for icons in the icon pack, e.g. Size(48, 48).
+    int _defaultIconSize;
+
+    typedef std::map<std::string, Point> IconMap;
+    //! This is for mapping icons to sub_images.
+    IconMap _iconMap;
 
     //--------------------------------------------------------------
     // Pack
     //--------------------------------------------------------------
+    //! This image stores the widget pack.
     Image* _pack;
 
     struct r3
@@ -149,6 +165,15 @@ public:
     Rectangle radioOn;
 
 protected:
+    void
+    parseFonts(xmlNodePtr node);
+
+    void
+    parseIcons(xmlNodePtr node);
+
+    void
+    parseTheme(xmlNodePtr node);
+
     void
     getRectangle(xmlNodePtr node, Rectangle& r);
 

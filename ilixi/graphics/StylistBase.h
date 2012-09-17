@@ -229,8 +229,6 @@ protected:
     Palette* _palette;
     //! This property stores the style items.
     Style* _style;
-    //! This property specifies the width of borders around widgets.
-    int _borderWidth;
 
     struct AnimatedElement
     {

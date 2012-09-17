@@ -25,12 +25,69 @@
 		</titleFont>
 	</fonts>
 
-	<icons resource="/images/ui-icons.png">
-		<plus x="0" y="0" w="12" h="34" />
-		<minus x="0" y="0" w="12" h="34" />
+	<icons resource="images/ui-icons-white.png" defaultSize="48">
+		<icon row="1" col="1" name="arrow_sw" />
+		<icon row="2" col="1" name="arrow_down" />
+		<icon row="3" col="1" name="arrow_left" />
+		<icon row="4" col="1" name="cross" />
+		<icon row="5" col="1" name="tick" />
+		<icon row="6" col="1" name="minus" />
+		<icon row="7" col="1" name="play" />
+		<icon row="8" col="1" name="next" />
+		<icon row="9" col="1" name="movie" />
+		<icon row="10" col="1" name="prev" />
+		<icon row="11" col="1" name="calendar" />
+		<icon row="12" col="1" name="share" />
+		<icon row="1" col="2" name="arrow_ne" />
+		<icon row="2" col="2" name="arrow_up" />
+		<icon row="3" col="2" name="arrow_right" />
+		<icon row="4" col="2" name="cross_circle" />
+		<icon row="5" col="2" name="tick_circle" />
+		<icon row="6" col="2" name="plus" />
+		<icon row="7" col="2" name="pause" />
+		<icon row="8" col="2" name="next2" />
+		<icon row="9" col="2" name="stop" />
+		<icon row="10" col="2" name="prev2" />
+		<icon row="11" col="2" name="clock" />
+		<icon row="12" col="2" name="comment" />
+		<icon row="1" col="3" name="ribbon" />
+		<icon row="2" col="3" name="search" />
+		<icon row="3" col="3" name="star" />
+		<icon row="4" col="3" name="tag" />
+		<icon row="5" col="3" name="thumb_down" />
+		<icon row="6" col="3" name="thumb_up" />
+		<icon row="7" col="3" name="zoom_in" />
+		<icon row="8" col="3" name="zoom_out" />
+		<icon row="9" col="3" name="file_upload" />
+		<icon row="10" col="3" name="file_text" />
+		<icon row="11" col="3" name="file_add" />
+		<icon row="12" col="3" name="file_download" />
+		<icon row="1" col="4" name="file_delete" />
+		<icon row="2" col="4" name="file" />
+		<icon row="3" col="4" name="settings" />
+		<icon row="4" col="4" name="info" />
+		<icon row="5" col="4" name="heart" />
+		<icon row="6" col="4" name="flag" />
+		<icon row="7" col="4" name="stats" />
+		<icon row="8" col="4" name="eject" />
+		<icon row="9" col="4" name="music" />
+		<icon row="10" col="4" name="usb" />
+		<icon row="11" col="4" name="wifi" />
+		<icon row="12" col="4" name="tools" />
+		<icon row="1" col="5" name="headphone" />
+		<icon row="2" col="5" name="network" />
+		<icon row="3" col="5" name="sdcard" />
+		<icon row="4" col="5" name="cpu" />
+		<icon row="5" col="5" name="ram" />
+		<icon row="6" col="5" name="picture" />
+		<icon row="7" col="5" name="phone" />
+		<icon row="8" col="5" name="info" />
+		<icon row="9" col="5" name="power" />
+		<icon row="10" col="5" name="standby" />
+		<icon row="11" col="5" name="restart" />
 	</icons>
 
-	<pack resource="/osk/ui-pack-osk.png">
+	<pack resource="osk/ui-pack-osk.png">
 		<PushButton>
 			<def3>
 				<left x="5" y="7" w="16" h="45" />
@@ -143,7 +200,7 @@
 				<left x="85" y="107" w="18" h="18" />
 			</foc1>
 			<check x="107" y="104" w="18" h="18" />
-			<tri-check x="128" y="107" w="18" h="18" />			
+			<tri-check x="128" y="107" w="18" h="18" />
 		</CheckBox>
 
 		<RadioButton>
@@ -163,7 +220,7 @@
 				<left x="85" y="130" w="18" h="18" />
 			</foc1>
 			<radioOff x="105" y="130" w="16" h="16" />
-			<radioOn x="125" y="130" w="16" h="16" />				
+			<radioOn x="125" y="130" w="16" h="16" />
 		</RadioButton>
 
 		<ProgressBar>
@@ -215,7 +272,7 @@
 				<mid x="385" y="112" w="16" h="150" />
 				<right x="385" y="262" w="16" h="10" />
 			</exp3>
-						
+
 			<sIndicator>
 				<def1>
 					<left x="6" y="232" w="14" h="14" />

@@ -68,7 +68,7 @@ SpinBox::preferredSize() const
     std::stringstream ss;
     ss << _prefix << _value << _postfix;
     Size text = font->extents(ss.str());
-    return Size(text.width() + 80, _plus->preferredSize().height());
+    return Size(text.width() + 90, _plus->preferredSize().height());
 }
 
 int
@@ -250,7 +250,7 @@ SpinBox::updateSpinBoxGeometry()
     Size s = stylist()->defaultFont(StyleHint::InputFont)->extents(
             _layout.text());
     int y = (height() - s.height()) / 2;
-    _layout.setBounds(40, y, width() - 80, s.height());
+    _layout.setBounds(45, y, width() - 90, s.height());
     _layout.doLayout(stylist()->defaultFont(StyleHint::InputFont));
 }
 

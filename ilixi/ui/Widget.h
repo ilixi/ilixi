@@ -24,7 +24,7 @@
 #ifndef ILIXI_WIDGET_H_
 #define ILIXI_WIDGET_H_
 
-#include <graphics/Stylist.h>
+#include <graphics/StylistBase.h>
 #include <graphics/Surface.h>
 #include <ilixiConfig.h>
 #include <list>
@@ -742,7 +742,7 @@ public:
      *
      * @sa Stylist
      */
-    static Stylist* const
+    static StylistBase* const
     stylist();
 
     /*!
@@ -1064,7 +1064,7 @@ private:
      *
      * @sa Application::setStylist()
      */
-    static Stylist* _stylist;
+    static StylistBase* _stylist;
 
     /*!
      * Attaches widget to given root window.

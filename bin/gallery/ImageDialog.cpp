@@ -51,5 +51,5 @@ ImageDialog::~ImageDialog()
 void
 ImageDialog::setImagePath(const std::string& path)
 {
-    _icon->setDefaultImage(path);
+    _icon->setImage(path);
 }

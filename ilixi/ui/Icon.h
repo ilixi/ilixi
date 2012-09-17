@@ -29,58 +29,85 @@
 
 namespace ilixi
 {
-
+/*!
+ * Icon is used for rendering images especially with different states.
+ *
+ * Source for an icon can be a file or a packed icon. Note that original
+ * image will be scaled if icon has a different size.
+ */
 class Icon : public Widget
 {
 public:
+    /*!
+     * Constructor creates a new icon with no image.
+     *
+     * @param parent widget.
+     */
     Icon(Widget* parent = 0);
 
+    /*!
+     * Constructor creates a new icon using given path.
+     *
+     * @param path to an image file.
+     * @param parent widget.
+     */
     Icon(const std::string& path, Widget* parent = 0);
 
+    /*!
+     * Constructor creates a new icon using given image.
+     *
+     * @param image will be copied.
+     * @param parent widget.
+     */
     Icon(const Image& image, Widget* parent = 0);
 
+    /*!
+     * Constructor creates a new icon using given packed icon.
+     *
+     * @param packedIcon an enum specifying a default icon.
+     * @param parent widget.
+     */
     Icon(StyleHint::PackedIcon packedIcon, Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~Icon();
 
+    /*!
+     * Returns image size.
+     */
     virtual Size
     preferredSize() const;
 
-    Image*
+    /*!
+     * Returns image.
+     */
+    Image* const
     image();
 
-    Image*
-    image(WidgetState state);
-
+    /*!
+     * Sets image using given path.
+     *
+     * @param path to an image file.
+     */
     void
-    setDefaultImage(const std::string& path);
+    setImage(const std::string& path);
 
+    /*!
+     * Sets the state of icon.
+     */
     void
-    setDisabledImage(const std::string& path);
-
-    void
-    setExposedImage(const std::string& path);
-
-    void
-    setFocusedImage(const std::string& path);
+    setState(WidgetState state);
 
 private:
     //! Image to show if icon is in default state.
-    Image* _default;
-    //! Image to show if icon is in disabled state.
-    Image* _disabled;
-    //! Image to show if icon is in focused state.
-    Image* _focused;
-    //! Image to show if icon is in exposed state.
-    Image* _exposed;
+    Image* _image;
 
-    void
-    updateImageSize();
-
-    void
+    //! Draws icon using Stylist.
+    virtual void
     compose(const PaintEvent& event);
-
 };
 
 }

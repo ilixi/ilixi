@@ -246,6 +246,9 @@ ToolButton::pointerButtonDownEvent(const PointerEvent& event)
     }
 
     _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
+    if(_icon)
+        _icon->setState(PressedState);
+
     sigPressed();
     update();
 }
@@ -259,9 +262,12 @@ ToolButton::pointerButtonUpEvent(const PointerEvent& event)
         if (_tbOptions & Repeatable)
             __tbThread->cancel();
 
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
+        if(_icon)
+            _icon->setState(DefaultState);
+
         sigClicked();
         toggleChecked();
-        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
     }
 }
 

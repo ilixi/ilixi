@@ -72,7 +72,7 @@ Demo2::~Demo2()
 void
 Demo2::showImage(const std::string& file)
 {
-  _icon->setDefaultImage(file);
+  _icon->setImage(file);
   _icon->update();
 }
 

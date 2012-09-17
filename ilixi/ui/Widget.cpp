@@ -33,7 +33,7 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
 
 unsigned int Widget::_idCounter = 0;
-Stylist* Widget::_stylist = NULL;
+StylistBase* Widget::_stylist = NULL;
 
 bool
 compareZ(Widget* first, Widget* second)
@@ -814,7 +814,7 @@ Widget::consumeKeyEvent(const KeyEvent& keyEvent)
     return false;
 }
 
-Stylist* const
+StylistBase* const
 Widget::stylist()
 {
     return _stylist;

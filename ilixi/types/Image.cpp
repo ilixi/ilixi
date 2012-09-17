@@ -70,9 +70,10 @@ Image::Image(const std::string& path, const Size& size)
 Image::Image(Image* source, const Rectangle& sourceRect)
         : _dfbSurface(NULL),
           _imagePath(""),
-          _size(),
+          _size(sourceRect.size()),
           _subImage(true)
 {
+    ILOG_TRACE(ILX_IMAGE);
     loadSubImage(source, sourceRect);
 }
 
@@ -141,9 +142,6 @@ Image::getImagePath() const
 void
 Image::setImagePath(const std::string& path)
 {
-    if (_subImage)
-        return;
-
     if (path != _imagePath)
     {
         invalidateSurface();
@@ -195,6 +193,7 @@ Image::loadImage()
         ILOG_ERROR(ILX_IMAGE, "Image path is empty");
         return false;
     }
+    ILOG_TRACE(ILX_IMAGE);
 
     DFBSurfaceDescription desc;
 

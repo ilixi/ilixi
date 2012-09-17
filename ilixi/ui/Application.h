@@ -129,7 +129,7 @@ protected:
      * /warning This method is not implemented.
      */
     static void
-    setStylist(Stylist* stylist);
+    setStylist(StylistBase* stylist);
 
     /*!
      * Sets the palette file for stylist.

@@ -162,7 +162,7 @@ Application::hide()
 }
 
 void
-Application::setStylist(Stylist* stylist)
+Application::setStylist(StylistBase* stylist)
 {
     if (!stylist)
         return;

@@ -56,8 +56,7 @@ ColorGroup::ColorGroup(const ColorGroup& c)
 {
 }
 
-ColorGroup::ColorGroup(Color c1, Color c2, Color c3, Color c4, Color c5,
-                       Color c6)
+ColorGroup::ColorGroup(Color c1, Color c2, Color c3, Color c4, Color c5, Color c6)
         : base(c1),
           baseAlt(c2),
           bg(c3),
@@ -68,8 +67,7 @@ ColorGroup::ColorGroup(Color c1, Color c2, Color c3, Color c4, Color c5,
 }
 
 void
-ColorGroup::setColors(Color c1, Color c2, Color c3, Color c4, Color c5,
-                      Color c6)
+ColorGroup::setColors(Color c1, Color c2, Color c3, Color c4, Color c5, Color c6)
 {
     base = c1;
     baseAlt = c2;
@@ -89,6 +87,7 @@ Palette::Palette()
           _pressed(),
           _disabled()
 {
+    parsePalette(ILIXI_DATADIR"def_palette.xml");
 }
 
 ColorGroup&
@@ -121,8 +120,7 @@ Palette::parsePalette(const char* palette)
             ctxt,
             palette,
             NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID
-                    | XML_PARSE_NOBLANKS);
+            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -179,8 +177,7 @@ Palette::parsePalette(const char* palette)
                     focus = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "text") == 0)
                     text = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "textDisabled")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "textDisabled") == 0)
                     textDisabled = c;
             }
 
@@ -192,8 +189,7 @@ Palette::parsePalette(const char* palette)
                     _default.baseText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAlt") == 0)
                     _default.baseAlt = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText") == 0)
                     _default.baseAltText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
                     _default.bg = c;
@@ -213,8 +209,7 @@ Palette::parsePalette(const char* palette)
                     _disabled.baseText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAlt") == 0)
                     _disabled.baseAlt = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText") == 0)
                     _disabled.baseAltText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
                     _disabled.bg = c;
@@ -234,8 +229,7 @@ Palette::parsePalette(const char* palette)
                     _exposed.baseText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAlt") == 0)
                     _exposed.baseAlt = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText") == 0)
                     _exposed.baseAltText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
                     _exposed.bg = c;
@@ -255,8 +249,7 @@ Palette::parsePalette(const char* palette)
                     _pressed.baseText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "baseAlt") == 0)
                     _pressed.baseAlt = c;
-                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText")
-                        == 0)
+                else if (xmlStrcmp(element->name, (xmlChar*) "baseAltText") == 0)
                     _pressed.baseAltText = c;
                 else if (xmlStrcmp(element->name, (xmlChar*) "bg") == 0)
                     _pressed.bg = c;

@@ -9,19 +9,13 @@
 		<!ELEMENT size (#PCDATA)>
 		<!ELEMENT fontStyle (#PCDATA)>
 
-<!ELEMENT icons (plus, minus)>
+<!ELEMENT icons (icon*)>
 <!ATTLIST icons resource CDATA #REQUIRED>
-	<!ELEMENT plus EMPTY>
-	<!ATTLIST plus x CDATA #REQUIRED>
-	<!ATTLIST plus y CDATA #REQUIRED>
-	<!ATTLIST plus w CDATA #REQUIRED>
-	<!ATTLIST plus h CDATA #REQUIRED>
-
-	<!ELEMENT minus EMPTY>
-	<!ATTLIST minus x CDATA #REQUIRED>
-	<!ATTLIST minus y CDATA #REQUIRED>
-	<!ATTLIST minus w CDATA #REQUIRED>
-	<!ATTLIST minus h CDATA #REQUIRED>
+<!ATTLIST icons defaultSize CDATA "48">
+	<!ELEMENT icon EMPTY>
+	<!ATTLIST icon name CDATA #REQUIRED>
+	<!ATTLIST icon row CDATA #REQUIRED>
+	<!ATTLIST icon col CDATA #REQUIRED>
 
 <!ELEMENT pack (PushButton, ToolButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, Tab, LineInput)>
 <!ATTLIST pack resource CDATA #REQUIRED>

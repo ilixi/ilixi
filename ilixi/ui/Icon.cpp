@@ -32,142 +32,73 @@ D_DEBUG_DOMAIN( ILX_ICON, "ilixi/ui/Icon", "Icon");
 
 Icon::Icon(Widget* parent)
         : Widget(parent),
-          _default(new Image()),
-          _disabled(NULL),
-          _exposed(NULL),
-          _focused(NULL)
+          _image(new Image())
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const std::string& path, Widget* parent)
         : Widget(parent),
-          _default(new Image(path)),
-          _disabled(NULL),
-          _exposed(NULL),
-          _focused(NULL)
+          _image(new Image(path))
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(const Image& image, Widget* parent)
         : Widget(parent),
-          _default(new Image(image)),
-          _disabled(NULL),
-          _exposed(NULL),
-          _focused(NULL)
+          _image(new Image(image))
 {
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
-//    sigGeometryUpdated.connect(sigc::mem_fun(this, &Icon::updateImageSize));
 }
 
 Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
-        : Widget(parent),
-          _default(stylist()->defaultIcon(packedIcon)),
-          _disabled(NULL),
-          _exposed(NULL),
-          _focused(NULL)
+        : Widget(parent)
 {
-
+    ILOG_TRACE_W(ILX_ICON);
+    _image = stylist()->defaultIcon(packedIcon);
 }
 
 Icon::~Icon()
 {
-    delete _default;
-    delete _disabled;
-    delete _exposed;
-    delete _focused;
     ILOG_TRACE_W(ILX_ICON);
+    delete _image;
 }
 
 Size
 Icon::preferredSize() const
 {
-    if (size().isValid())
-        return size();
-    return _default->size();
-//    return stylist()->defaultSize(StyleHint::Icon);
+    if (_image)
+        return _image->size();
+    return Size();
 }
 
-Image*
+Image* const
 Icon::image()
 {
-    // XXX use parent state if a certain flag is set?
-    //  if (!enabled())
-    //    return image(DisabledState);
-    //  else if (parent())
-    //    {
-    //      if (parent()->hasFocus())
-    //        return image(FocusedState);
-    //      else if (parent()->exposed())
-    //        return image(ExposedState);
-    //    }
-    return _default;
-}
-
-Image*
-Icon::image(WidgetState state)
-{
-    if (state & DisabledState && _disabled)
-        return _disabled;
-    else if (state & FocusedState && _focused)
-        return _focused;
-    else if (state & ExposedState && _exposed)
-        return _exposed;
-    return _default;
+    return _image;
 }
 
 void
-Icon::setDefaultImage(const std::string& path)
+Icon::setImage(const std::string& path)
 {
-    if (_default)
-        _default->setImagePath(path);
+    if (_image)
+        _image->setImagePath(path);
     else
-        _default = new Image(path);
+        _image = new Image(path);
 }
 
 void
-Icon::setDisabledImage(const std::string& path)
+Icon::setState(WidgetState state)
 {
-    delete _disabled;
-    _disabled = new Image(path);
-}
-
-void
-Icon::setExposedImage(const std::string& path)
-{
-    delete _exposed;
-    _exposed = new Image(path);
-}
-
-void
-Icon::setFocusedImage(const std::string& path)
-{
-    delete _focused;
-    _focused = new Image(path);
-}
-
-void
-Icon::updateImageSize()
-{
-    _default->setSize(size());
-    if (_disabled)
-        _disabled->setSize(size());
-    if (_focused)
-        _focused->setSize(size());
-    if (_exposed)
-        _exposed->setSize(size());
+    _state = state;
 }
 
 void
 Icon::compose(const PaintEvent& event)
 {
-    ILOG_TRACE_W(ILX_ICON);
     Painter painter(this);
     painter.begin(event);
     stylist()->drawIcon(&painter, this);

@@ -25,6 +25,7 @@
 #include <lib/TweenAnimation.h>
 #include <sigc++/bind.h>
 #include <ui/Widget.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
@@ -35,15 +36,17 @@ Image* StylistBase::_noImage = NULL;
 
 StylistBase::StylistBase()
         : _palette(NULL),
-          _style(NULL),
-          _borderWidth(1)
+          _style(NULL)
 {
+    ILOG_TRACE(ILX_STYLISTBASE);
     _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
     initAnimations();
 }
 
 StylistBase::~StylistBase()
 {
+    delete _palette;
+    delete _style;
     delete _noImage;
 }
 
@@ -192,17 +195,21 @@ StylistBase::defaultFont(StyleHint::Font font) const
 Image*
 StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
 {
+    ILOG_TRACE(ILX_STYLISTBASE);
     switch (icon)
     {
     case StyleHint::Plus:
-        return new Image(_style->_icons, _style->plus);
+        return _style->getIcon("plus");
     case StyleHint::Minus:
-        return new Image(_style->_icons, _style->minus);
+        return _style->getIcon("minus");
     case StyleHint::Up:
+        return _style->getIcon("arrow_up");
     case StyleHint::Down:
+        return _style->getIcon("arrow_down");
     case StyleHint::Left:
+        return _style->getIcon("arrow_left");
     case StyleHint::Right:
-        return NULL;
+        return _style->getIcon("arrow_right");
     default:
         return NULL;
     }

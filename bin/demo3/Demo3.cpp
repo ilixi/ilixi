@@ -95,6 +95,9 @@ Demo3::Demo3(int argc, char* argv[])
     PushButton* pb2 = new PushButton("PushButton 1");
     frame->addWidget(pb2);
 
+    SpinBox* spin1 = new SpinBox(5);
+    frame->addWidget(spin1);
+
     Label *lipLabel = new Label("LineInput:");
     frame->addWidget(lipLabel);
 

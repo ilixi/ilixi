@@ -37,17 +37,14 @@ D_DEBUG_DOMAIN( ILX_STYLIST, "ilixi/graphics/Stylist", "Stylist");
 Stylist::Stylist()
         : StylistBase()
 {
-    _borderWidth = 1;
+    ILOG_TRACE(ILX_STYLIST);
     _palette = new Palette();
     _style = new Style();
-    setPaletteFromFile(ILIXI_DATADIR"def_palette.xml");
-    setStyleFromFile(ILIXI_DATADIR"def_style.xml");
 }
 
 Stylist::~Stylist()
 {
-    delete _palette;
-    delete _style;
+    ILOG_TRACE(ILX_STYLIST);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -112,17 +109,14 @@ Stylist::drawLabel(Painter* p, Label* label)
 void
 Stylist::drawIcon(Painter* p, Icon* icon)
 {
-    if (icon->parent() && (icon->parent()->state() & PressedState))
-    {
-        p->setBrush(Color(128, 128, 128));
-        p->drawImage(
-                icon->image(),
-                0,
-                0,
-                (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
-    } else
-        p->stretchImage(icon->image(),
-                        Rectangle(0, 0, icon->width(), icon->height()));
+    if (!icon->enabled())
+        p->setBrush(_palette->_disabled.text);
+    else
+        p->setBrush(_palette->getGroup(icon->state()).text);
+    p->stretchImage(
+            icon->image(),
+            Rectangle(0, 0, icon->width(), icon->height()),
+            (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
 }
 
 void
@@ -521,7 +515,6 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box)
     if (state & FocusedState)
         draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.foc);
 
-
     if (box->layout().text().size())
     {
         p->setFont(*defaultFont(StyleHint::DefaultFont));
@@ -600,9 +593,9 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
         const WidgetState state = button->state();
         int y;
         if (horizontal)
-            y = button->height() - _borderWidth - wIndicator;
+            y = button->height() - defaultParameter(StyleHint::ToolButtonTop) - wIndicator;
         else
-            y = _borderWidth;
+            y = defaultParameter(StyleHint::ToolButtonTop);
 
         if (button->checked())
             p->setBrush(_palette->getGroup(state).fill);
