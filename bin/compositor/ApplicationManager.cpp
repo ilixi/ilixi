@@ -211,7 +211,7 @@ ApplicationManager::infoByInstanceID(unsigned int instanceID)
 }
 
 AppInfo*
-ApplicationManager::infoByPID(pid_t pid)
+ApplicationManager::infoByPID(const pid_t pid)
 {
     AppInstance* instanceRecord = instanceByPID(pid);
     if (instanceRecord)
@@ -244,7 +244,7 @@ ApplicationManager::instanceByInstanceID(unsigned int instanceID)
 }
 
 AppInstance*
-ApplicationManager::instanceByPID(pid_t pid)
+ApplicationManager::instanceByPID(const pid_t pid)
 {
     for (AppInstanceList::iterator it = _instances.begin();
             it != _instances.end(); ++it)

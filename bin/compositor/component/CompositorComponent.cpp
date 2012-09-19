@@ -46,6 +46,8 @@ CompositorComponent::CompositorComponent(ILXCompositor* compositor)
     createNotification(Compositor::BackKeyVisible, NULL, CNF_NONE);
     createNotification(Compositor::BackKeyHidden, NULL, CNF_NONE);
 
+    createNotification(Compositor::NotificationAck, NULL);
+
     createNotification(Compositor::SendingAppList, NULL);
 
     createNotification(Compositor::SwitcherHidden, NULL, CNF_NONE);
@@ -140,7 +142,7 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         {
             Compositor::NotificationData data = *((Compositor::NotificationData*) arg);
             ILOG_DEBUG(ILX_COMPCOMP,
-                       "AddNotification for PID[%d]\n", data.client);
+                       "AddNotification request from PID[%d] for UUID: %s\n", data.client, data.uuid);
             _notificationMan->addNotification(data);
             break;
         }
@@ -239,6 +241,19 @@ CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
     notify(Compositor::AppVisibilty, tPid);
     ILOG_DEBUG(ILX_COMPCOMP,
                "%s is now visible!\n", instance->appInfo()->name().c_str());
+}
+
+void
+CompositorComponent::signalNotificationAck(int method, char* uuid, pid_t client)
+{
+
+    Compositor::NotificationAckData* data;
+    allocate(sizeof(Compositor::NotificationAckData), (void**) &data);
+    data->method = (Compositor::NotificationMethod) method;
+    snprintf(data->uuid, 37, "%s", uuid);
+    data->client = client;
+    notify(Compositor::NotificationAck, data);
+    ILOG_DEBUG(ILX_COMPCOMP, "Sent NotificationAck[%d] to %d for UUID: %s\n", method, client, uuid);
 }
 
 void

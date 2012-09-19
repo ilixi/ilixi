@@ -37,27 +37,31 @@ Image* Notification::_bg = NULL;
 Notification::Notification(const Compositor::NotificationData& data, ILXCompositor* parent)
         : Widget(parent),
           _compositor(parent),
-          _notState(Init)
+          _notState(Init),
+          _clicked(false)
 {
     ILOG_TRACE_W(ILX_NOTIFICATION);
+    setInputMethod(PointerInput);
 
     if (!_bg)
         _bg = new Image(ILIXI_DATADIR"compositor/notify.png");
 
-    _title = data.title;
-    _text = data.body;
     _client = data.client;
-    if (data.icon)
+    _tag = data.tag;
+    _text = data.body;
+    _title = data.title;
+    snprintf(_uuid, 37, "%s", data.uuid);
+    if (strcmp(data.icon, "") != 0)
         _icon = new Image(data.icon, 64, 64);
     else
-        _icon = new Image(_compositor->appMan()->infoByPID(_client)->icon(), 64,
-                          64);
-
+    {
+        AppInfo* info = _compositor->appMan()->infoByPID(_client);
+        if (info)
+            _icon = new Image(info->icon(), 64, 64);
+        else
+            _icon = stylist()->defaultIcon(StyleHint::Cross);
+    }
     _timer.sigExec.connect(sigc::mem_fun(this, &Notification::hide));
-
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Notification::onNotificationGeomUpdate));
-    setVisible(false);
 
     _animZ = new TweenAnimation();
     _tweenZ = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
@@ -74,6 +78,13 @@ Notification::Notification(const Compositor::NotificationData& data, ILXComposit
     _animX->sigFinished.connect(
             sigc::mem_fun(this, &Notification::tweenEndSlot));
     _seq.addAnimation(_animX);
+
+    setVisible(false);
+    ILOG_DEBUG(ILX_NOTIFICATION, " -> body: %s\n", data.body);
+    ILOG_DEBUG(ILX_NOTIFICATION, " -> client: %d\n", _client);
+    ILOG_DEBUG(ILX_NOTIFICATION, " -> iconURL: %s\n", data.icon);
+    ILOG_DEBUG(ILX_NOTIFICATION, " -> title: %s\n", data.title);
+    ILOG_DEBUG(ILX_NOTIFICATION, " -> uuid: %s\n", data.uuid);
 }
 
 Notification::~Notification()
@@ -88,6 +99,24 @@ Notification::preferredSize() const
     return _bg->size();
 }
 
+const std::string&
+Notification::tag() const
+{
+    return _tag;
+}
+
+const std::string&
+Notification::text() const
+{
+    return _text;
+}
+
+const std::string&
+Notification::title() const
+{
+    return _title;
+}
+
 Notification::NotificationState
 Notification::state() const
 {
@@ -95,7 +124,7 @@ Notification::state() const
 }
 
 void
-Notification::show(unsigned int ms)
+Notification::show()
 {
     ILOG_TRACE_W(ILX_NOTIFICATION);
     if (!visible())
@@ -106,7 +135,7 @@ Notification::show(unsigned int ms)
         _tweenZ->setInitialValue(0);
         _tweenZ->setEndValue(1);
         _seq.start();
-        _timer.start(5000, 1);
+        _timer.start(_compositor->settings.notificationTimeout, 1);
         setVisible(true);
     }
 }
@@ -128,6 +157,13 @@ Notification::hide()
 }
 
 void
+Notification::close()
+{
+    _compositor->_compComp->signalNotificationAck(Compositor::Close, _uuid,
+                                                  _client);
+}
+
+void
 Notification::releaseBG()
 {
     delete _bg;
@@ -139,7 +175,7 @@ Notification::compose(const PaintEvent& event)
     ILOG_TRACE_W(ILX_NOTIFICATION);
     Painter p(this);
     p.begin(event);
-    p.drawImage(_bg, width() * _tweenX->value(), 0);
+    p.stretchImage(_bg, width() * _tweenX->value(), 0, width(), height());
 
     if (_tweenZ->enabled())
         p.stretchImage(
@@ -159,14 +195,25 @@ Notification::compose(const PaintEvent& event)
 }
 
 void
-Notification::onNotificationGeomUpdate()
+Notification::pointerButtonDownEvent(const PointerEvent& event)
 {
+    _clicked = true;
+}
+
+void
+Notification::pointerButtonUpEvent(const PointerEvent& event)
+{
+    if (_clicked)
+    {
+        _compositor->_compComp->signalNotificationAck(Compositor::Click, _uuid,
+                                                      _client);
+        _clicked = false;
+    }
 }
 
 void
 Notification::tweenSlot()
 {
-//    setOpacity(1 - _tween->value());
     update();
 }
 
@@ -178,8 +225,13 @@ Notification::tweenEndSlot()
     {
         setVisible(false);
         _notState = Hidden;
+        close();
     } else
+    {
         _notState = Visible;
+        _compositor->_compComp->signalNotificationAck(Compositor::Show, _uuid,
+                                                      _client);
+    }
 }
 
 } /* namespace ilixi */

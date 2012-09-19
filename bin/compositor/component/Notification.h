@@ -34,66 +34,138 @@ namespace ilixi
 {
 class ILXCompositor;
 
+/*!
+ * Provides a simple implementation for desktop notification.
+ */
 class Notification : public Widget
 {
     friend class NotificationManager;
 public:
+    /*!
+     * This enum specifies states for a notification.
+     */
     enum NotificationState
     {
-        Init, Visible, Hidden
+        Init,       //!< Notification is initialized.
+        Visible,    //!< Notification is visible.
+        Hidden      //!< Notification is hidden.
     };
 
+    /*!
+     * Constructor creates a new notification.
+     *
+     * @param data for notification.
+     * @param parent widget.
+     */
     Notification(const Compositor::NotificationData& data, ILXCompositor* parent);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~Notification();
 
+    /*!
+     * Returns fixed notification size.
+     */
     Size
     preferredSize() const;
 
+    /*!
+     * Returns tag of notification.
+     */
+    const std::string&
+    tag() const;
+
+    /*!
+     * Returns body of notification.
+     */
+    const std::string&
+    text() const;
+
+    /*!
+     * Returns title of notification.
+     */
+    const std::string&
+    title() const;
+
+    /*!
+     * Returns notification state.
+     */
     NotificationState
     state() const;
 
+    /*!
+     * Shows notification.
+     */
     void
-    show(unsigned int ms);
+    show();
+
+    /*!
+     * Hides and closes notification.
+     */
+    void
+    hide();
+
+    /*!
+     * Sends a close event via Compositor component.
+     */
+    void
+    close();
 
 protected:
+    /*!
+     * Draws notification.
+     */
     virtual void
     compose(const PaintEvent& event);
+
+    /*!
+     * Implements click.
+     */
+    virtual void
+    pointerButtonDownEvent(const PointerEvent& event);
+
+    /*!
+     * Emits sigClicked if clicked.
+     */
+    virtual void
+    pointerButtonUpEvent(const PointerEvent& event);
 
 private:
     ILXCompositor* _compositor;
     NotificationState _notState;
 
+    bool _clicked;
+
     Image* _icon;
     std::string _title;
     std::string _text;
+    std::string _tag;
+    char _uuid[37];
     pid_t _client;
 
+    //! This timer is used for hiding notification.
     Timer _timer;
 
     AnimationSequence _seq;
-
     TweenAnimation* _animX;
     Tween* _tweenX;
-
     TweenAnimation* _animZ;
     Tween* _tweenZ;
 
+    //! Background image used by all notifications.
     static Image* _bg;
 
-    void
-    hide();
-
-    void
-    onNotificationGeomUpdate();
-
+    //! Just updates widget.
     void
     tweenSlot();
 
+    //! Emits signal when animation is finished.
     void
     tweenEndSlot();
 
+    //! Releases static background image.
     static void
     releaseBG();
 };

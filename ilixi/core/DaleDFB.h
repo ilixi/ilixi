@@ -29,14 +29,16 @@ extern "C"
 {
 #include <fusiondale.h>
 }
+#include <lib/Notify.h>
 #include <types/Rectangle.h>
-
+#include <list>
 namespace ilixi
 {
 
 class DaleDFB
 {
     friend class AppBase;
+    friend class Notify;
 public:
 
     /*!
@@ -65,6 +67,7 @@ private:
     static IFusionDale* __dale;
     static IComa* __coma;
     static IComaComponent* __oskComp;
+    static IComaComponent* __compComp;
 
     struct OSKRequest
     {
@@ -72,6 +75,9 @@ private:
         int mode;
         pid_t process;
     };
+
+    typedef std::list<Notify*> Notifications;
+    static Notifications __nots;
 
     DaleDFB();
 
@@ -86,6 +92,18 @@ private:
 
     static DFBResult
     getOSKComp();
+
+    static DFBResult
+    getCompComp();
+
+    static DFBResult
+    addNotification(Notify*, void* data);
+
+    static DFBResult
+    removeNotification(Notify*);
+
+    static void
+    notificationListener(void* ctx, void* arg);
 
 };
 

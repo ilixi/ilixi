@@ -73,6 +73,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
             AppView::Opacity | AppView::Zoom);
     settings.durationShow = 300;
     settings.durationHide = 500;
+    settings.notificationTimeout = 5000;
 
     setTitle("Compositor");
     setMargin(0);

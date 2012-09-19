@@ -22,12 +22,15 @@
  */
 
 #include <lib/Util.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 namespace ilixi
 {
 
 unsigned int
-Hash(const std::string& str)
+createHash(const std::string& str)
 {
     unsigned int hash = 5381;
 
@@ -35,6 +38,19 @@ Hash(const std::string& str)
         hash = ((hash << 5) + hash) + str[i];
 
     return hash;
+}
+
+std::string
+createUUID()
+{
+    char uuid[37];
+    srand(time(NULL));
+    snprintf(uuid, 37, "%x%x-%x-%x-%x-%x%x%x", (uint16_t) rand(),
+             (uint16_t) rand(), (uint16_t) rand(),
+             (((uint16_t) rand() & 0x0fff) | 0x4000),
+             (uint16_t) rand() % 0x3fff + 0x8000, (uint16_t) rand(),
+             (uint16_t) rand(), (uint16_t) rand());
+    return std::string(uuid);
 }
 
 } /* namespace ilixi */

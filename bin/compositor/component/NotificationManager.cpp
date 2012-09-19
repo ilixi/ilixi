@@ -25,6 +25,7 @@
 #include "Notification.h"
 #include "Compositor.h"
 #include <core/Logger.h>
+#include <algorithm>
 
 namespace ilixi
 {
@@ -34,70 +35,84 @@ D_DEBUG_DOMAIN( ILX_NOTIFICATIONMAN, "ilixi/comp/NotificationMan",
 
 NotificationManager::NotificationManager(ILXCompositor* compositor)
         : _deltaY(0),
-          _compositor(compositor)
+          _compositor(compositor),
+          _maxNotifications(3)
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
+
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&_activeMutex, &attr);
+    pthread_mutex_init(&_pendingMutex, NULL);
+
     _timer.sigExec.connect(
-            sigc::mem_fun(this, &NotificationManager::removeNotifications));
-    _timer.start(300);
+            sigc::mem_fun(this, &NotificationManager::updateNotifications));
+    _timer.start(1500);
 
     _anim.setDuration(500);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_tween);
     _anim.sigExec.connect(sigc::mem_fun(this, &NotificationManager::tweenSlot));
-
-    pthread_mutex_init(&_notMutex, NULL);
 }
 
 NotificationManager::~NotificationManager()
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
+    pthread_mutex_destroy(&_activeMutex);
+    pthread_mutex_destroy(&_pendingMutex);
     Notification::releaseBG();
-    pthread_mutex_destroy(&_notMutex);
 }
 
 void
 NotificationManager::addNotification(const Compositor::NotificationData& data)
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-    Notification* notify = new Notification(data, _compositor);
-    Size s = notify->preferredSize();
-    notify->setGeometry(_compositor->width() - s.width(), 10, s.width(),
-                        s.height());
-    _compositor->addWidget(notify);
-    notify->bringToFront();
-    notify->show(500);
-//    pthread_mutex_lock(&_notMutex);
-    _notifications.push_back(notify);
-//    pthread_mutex_unlock(&_notMutex);
-    arrangeNotifications(s.height());
+
+    // check if origin is allowed to push notifications.
+    if (!checkPermission(data))
+        return;
+
+    // create a new notification.
+    Notification* notification = new Notification(data, _compositor);
+    Size s = notification->preferredSize();
+    notification->setGeometry(_compositor->width() - 400, 10, 400, s.height());
+    _compositor->addWidget(notification);
+    notification->bringToFront();
+
+    if (replacePending(notification) || replaceActive(notification))
+        return;
+
+    pthread_mutex_lock(&_pendingMutex);
+    _pending.push_back(notification);
+    pthread_mutex_unlock(&_pendingMutex);
+//    arrangeNotifications(s.height());
 }
 
 void
-NotificationManager::removeNotifications()
+NotificationManager::tweenSlot()
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-//    pthread_mutex_lock(&_notMutex);
-    NotificationVector::iterator it = _notifications.begin();
-    while (it != _notifications.end())
+
+    int deltaY = _tween->value() * _deltaY;
+    ILOG_DEBUG(ILX_NOTIFICATIONMAN, "DeltaY: %d\n", deltaY);
+    for (NotificationList::iterator it = _active.begin(); it != _active.end();
+            ++it)
     {
-        if (((Notification*) *it)->state() == Notification::Hidden)
-        {
-            ILOG_DEBUG(ILX_NOTIFICATIONMAN,
-                       "Notification %p is removed.\n", ((Notification*) *it));
-            _compositor->removeWidget(*it);
-            it = _notifications.erase(it);
-        } else
-            ++it;
+        if (*it == _active.back())
+            continue;
+        ((Notification*) *it)->translate(0, deltaY);
+        ((Notification*) *it)->update();
     }
-//    pthread_mutex_unlock(&_notMutex);
+
+    _deltaY -= deltaY;
 }
 
 void
 NotificationManager::arrangeNotifications(int deltaY)
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-    if (_notifications.empty())
+    if (_active.empty())
         return;
 
     _anim.stop();
@@ -109,20 +124,142 @@ NotificationManager::arrangeNotifications(int deltaY)
 }
 
 void
-NotificationManager::tweenSlot()
+NotificationManager::updateNotifications()
 {
     ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
-//    pthread_mutex_lock(&_notMutex);
-    int deltaY = _tween->value() * _deltaY;
-    ILOG_DEBUG(ILX_NOTIFICATIONMAN, "DeltaY: %d\n", deltaY);
-    for (unsigned int i = 0; i < _notifications.size() - 1; ++i)
+
+    // remove hidden notifications, make space.
+    pthread_mutex_lock(&_activeMutex);
+    NotificationList::iterator it = _active.begin();
+    while (it != _active.end())
     {
-        _notifications[i]->translate(0, deltaY);
-        _notifications[i]->update();
+        if (((Notification*) *it)->state() == Notification::Hidden)
+        {
+            ILOG_DEBUG(ILX_NOTIFICATIONMAN,
+                       "Notification %p is removed.\n", ((Notification*) *it));
+            _compositor->removeWidget(*it);
+            it = _active.erase(it);
+        } else
+            ++it;
+    }
+    pthread_mutex_unlock(&_activeMutex);
+
+    // if there is space add pending notifications.
+    if (_active.size() < _maxNotifications)
+    {
+        bool arrange = false;
+        pthread_mutex_lock(&_pendingMutex);
+        unsigned int i;
+        for (i = 0; i < _maxNotifications - _active.size(); ++i)
+        {
+            if (_pending.empty())
+                break;
+            _active.push_back(_pending.front());
+            _pending.pop_front();
+            _active.back()->show();
+            arrange = true;
+        }
+        pthread_mutex_unlock(&_pendingMutex);
+
+        if (arrange && _active.size() > 1)
+            arrangeNotifications(i * _active.front()->preferredSize().height());
+    }
+}
+
+bool
+NotificationManager::replacePending(Notification* notification)
+{
+    ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
+    if (notification->tag().empty())
+        return false;
+    pthread_mutex_lock(&_pendingMutex);
+    NotificationList::iterator it = _pending.begin();
+    while (it != _pending.end())
+    {
+        Notification* old = ((Notification*) *it);
+        if (old->tag() == notification->tag())
+        {
+            it = _pending.erase(it);
+            _pending.insert(it, notification);
+            old->close();
+            _compositor->removeWidget(old);
+            pthread_mutex_unlock(&_pendingMutex);
+            return true;
+        }
+        ++it;
+    }
+    pthread_mutex_unlock(&_pendingMutex);
+    return false;
+}
+
+bool
+NotificationManager::replaceActive(Notification* notification)
+{
+    ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
+    if (notification->tag().empty())
+        return false;
+    pthread_mutex_lock(&_activeMutex);
+    NotificationList::iterator it = _active.begin();
+    while (it != _active.end())
+    {
+        Notification* old = ((Notification*) *it);
+        if (old->tag() == notification->tag())
+        {
+            it = _active.erase(it);
+            _active.insert(it, notification);
+            notification->setGeometry(old->surfaceGeometry());
+            old->close();
+            _compositor->removeWidget(old);
+            notification->show();
+            pthread_mutex_unlock(&_activeMutex);
+            return true;
+        }
+        ++it;
+    }
+    pthread_mutex_unlock(&_activeMutex);
+    return false;
+}
+
+void
+NotificationManager::parseURI(const std::string& uri, std::string& query, std::string& path)
+{
+    typedef std::string::const_iterator iterator_t;
+
+    iterator_t queryStart = std::find(uri.begin(), uri.end(), '?');
+    iterator_t pathEnd = queryStart;
+
+    if (queryStart != uri.end())
+        queryStart++;
+
+    query = std::string(queryStart, uri.end());
+
+    iterator_t pathStart = uri.begin();
+
+    for (size_t idx = 0; pathStart != pathEnd && idx < 3; idx++)
+    {
+        pathStart = std::find(pathStart, pathEnd, L'/');
+        if (pathStart != pathEnd)
+            pathStart++;
     }
 
-    _deltaY -= deltaY;
-//    pthread_mutex_unlock(&_notMutex);
+    path = std::string(pathStart, pathEnd);
+}
+
+bool
+NotificationManager::checkPermission(const Compositor::NotificationData& data)
+{
+    ILOG_TRACE_F(ILX_NOTIFICATIONMAN);
+
+    // TODO check permission for notifications.
+    if (data.client)
+        return true;
+
+    std::string query;
+    std::string path;
+    parseURI(data.origin, query, path);
+    ILOG_DEBUG(ILX_NOTIFICATIONMAN, " -> path: %s\n", path.c_str());
+    ILOG_DEBUG(ILX_NOTIFICATIONMAN, " -> query: %s\n", query.c_str());
+    return true;
 }
 
 } /* namespace ilixi */

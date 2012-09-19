@@ -27,30 +27,125 @@
 #include <graphics/Surface.h>
 #include <types/TextLayout.h>
 #include <string>
+#include <sigc++/sigc++.h>
 
 namespace ilixi
 {
-
+/*!
+ * Helps send a notification to compositor.
+ */
 class Notify
 {
 public:
-    Notify(const std::string& title, const std::string& body,
-           const std::string& iconPath = "");
+    /*!
+     * Creates a new notification.
+     *
+     * @param title of notification, max 128 characters.
+     * @param body text for notification, max 256 characters.
+     * @param iconPath for image to use, max 256 characters.
+     * @param tag is used to tag conceptually similar notifications. If two notifications have the same tag then old one will be replaced by new.
+     */
+    Notify(const std::string& title, const std::string& body, const std::string& iconPath = "", const std::string& tag = "");
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~Notify();
 
+    /*!
+     * Returns body string.
+     */
+    const std::string&
+    body() const;
+
+    /*!
+     * Returns icon path string.
+     */
+    const std::string&
+    icon() const;
+
+    /*!
+     * Returns tag string for notification.
+     */
+    const std::string&
+    tag() const;
+
+    /*!
+     * Returns title string for notification.
+     */
+    const std::string&
+    title() const;
+
+    /*!
+     * Returns UUID for notification.
+     */
+    const char*
+    uuid() const;
+
+    /*!
+     * Sets icon path of notification.
+     */
     void
     setIcon(const std::string& iconPath);
 
+    /*!
+     * Sets body string of notification.
+     */
+    void
+    setBody(const std::string& body);
+
+    /*!
+     * Sets tag string of notification.
+     */
+    void
+    setTag(const std::string& tag);
+
+    /*!
+     * Sets title string of notification.
+     */
+    void
+    setTitle(const std::string& title);
+
+    /*!
+     * Show notification.
+     *
+     * \warning notification will actually be visible when display has enough space.
+     */
     void
     show();
 
-private:
-    std::string _title;
-    std::string _body;
-    std::string _icon;
+    /*!
+     * This signal is emitted when user clicks on notification.
+     */
+    sigc::signal<void> sigClick;
 
+    /*!
+     * This signal is emitted when notification becomes visible.
+     */
+    sigc::signal<void> sigShow;
+
+    /*!
+     * This signal is emitted if icon URL is invalid.
+     */
+    sigc::signal<void> sigError;
+
+    /*!
+     * This signal is emitted when notification becomes hidden.
+     */
+    sigc::signal<void> sigClose;
+
+private:
+    //! This property stores the title of notification.
+    std::string _title;
+    //! This property stores the body text of notification.
+    std::string _body;
+    //! This property stores the path to image.
+    std::string _icon;
+    //! This property stores the tag for the notification.
+    std::string _tag;
+    //! This property stores the UUID for the notification.
+    char _uuid[37];
 };
 
 } /* namespace ilixi */

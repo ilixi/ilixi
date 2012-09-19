@@ -47,6 +47,7 @@ class ILXCompositor : public Application
     friend class NotificationManager;
     friend class OSKComponent;
     friend class AppView;
+    friend class Notification;
 
 public:
     /*!
@@ -197,8 +198,9 @@ private:
         AppView::AnimatedProperty hideAnimProps; //!< Animated properties for hiding application.
         AppView::AnimatedProperty showAnimProps; //!< Animated properties for visible application.
         unsigned int durationShow;             //!< Animation duration for show.
-        unsigned int durationHide;              //!< Animation duration for hide.
-        DFBConvolutionFilter filter;                //!< Convolution filter.
+        unsigned int durationHide;             //!< Animation duration for hide.
+        DFBConvolutionFilter filter; //!< Convolution filter.
+        unsigned int notificationTimeout; //!< Notification will hide itself after timeout(ms).
     };
 
     static CompositorSettings settings;

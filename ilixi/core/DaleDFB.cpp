@@ -22,6 +22,7 @@
  */
 
 #include <core/DaleDFB.h>
+#include <core/ComponentData.h>
 #include <core/Logger.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -32,11 +33,14 @@ namespace ilixi
 IFusionDale* DaleDFB::__dale = NULL;
 IComa* DaleDFB::__coma = NULL;
 IComaComponent* DaleDFB::__oskComp = NULL;
+IComaComponent* DaleDFB::__compComp = NULL;
+DaleDFB::Notifications DaleDFB::__nots;
 
 D_DEBUG_DOMAIN( ILX_DALEDFB, "ilixi/core/DaleDFB", "DaleDFB");
 
 DaleDFB::DaleDFB()
 {
+    __nots.clear();
 }
 
 DaleDFB::~DaleDFB()
@@ -190,6 +194,12 @@ DaleDFB::releaseDale()
         __oskComp = NULL;
     }
 
+    if (__compComp)
+    {
+        __compComp->Release(__compComp);
+        __compComp = NULL;
+    }
+
     if (__coma)
     {
         __coma->Release(__coma);
@@ -226,6 +236,91 @@ DaleDFB::getOSKComp()
             return DFB_FAILURE;
     }
     return DFB_OK;
+}
+
+DFBResult
+DaleDFB::getCompComp()
+{
+    if (!__coma)
+        return DFB_FAILURE;
+
+    if (!__compComp)
+    {
+        static bool tryOnce = true;
+        if (tryOnce)
+        {
+            tryOnce = false;
+            DirectResult ret = __coma->GetComponent(__coma, "Compositor", 500,
+                                                    &__compComp);
+            if (ret)
+            {
+                ILOG_ERROR( ILX_DALEDFB, "Cannot get Compositor component!\n");
+                return DFB_FAILURE;
+            }
+
+            __compComp->Listen(__compComp, Compositor::NotificationAck,
+                               notificationListener, NULL);
+
+        } else
+            return DFB_FAILURE;
+    }
+    return DFB_OK;
+}
+
+DFBResult
+DaleDFB::addNotification(Notify* n, void* data)
+{
+    if (getCompComp() == DFB_FAILURE)
+        return DFB_FAILURE;
+
+    if (comaCallComponent(__compComp, Compositor::AddNotification, data) == DFB_OK)
+    {
+        __nots.push_back(n);
+        __nots.sort();
+        __nots.unique();
+        return DFB_OK;
+    }
+
+    return DFB_FAILURE;
+}
+
+DFBResult
+DaleDFB::removeNotification(Notify* n)
+{
+    for (Notifications::iterator it = __nots.begin(); it != __nots.end(); ++it)
+    {
+        if (*it == n)
+        {
+            __nots.erase(it);
+            return DFB_OK;
+        }
+    }
+    return DFB_FAILURE;
+}
+
+void
+DaleDFB::notificationListener(void* ctx, void* arg)
+{
+    Compositor::NotificationAckData data = *((Compositor::NotificationAckData*) arg);
+    if (data.client != getpid())
+        return;
+
+    for (Notifications::iterator it = __nots.begin(); it != __nots.end(); ++it)
+    {
+        Notify* n = ((Notify*) *it);
+        if (strcmp(n->uuid(), data.uuid) == 0)
+        {
+            if (data.method == Compositor::Click)
+                n->sigClick();
+            else if (data.method == Compositor::Close)
+                n->sigClose();
+            else if (data.method == Compositor::Error)
+                n->sigError();
+            else if (data.method == Compositor::Show)
+                n->sigShow();
+            return;
+        }
+    }
 }
 
 } /* namespace ilixi */

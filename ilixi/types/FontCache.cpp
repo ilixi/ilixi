@@ -69,7 +69,7 @@ FontCache::getKey(const char* name, int size, DFBFontAttributes attr)
 {
     std::stringstream ss;
     ss << name << size << attr;
-    return Hash(ss.str());
+    return createHash(ss.str());
 }
 
 IDirectFBFont*

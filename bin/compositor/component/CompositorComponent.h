@@ -61,6 +61,9 @@ public:
     void
     notifyVisibility(AppInstance* instance, bool visible);
 
+    void
+    signalNotificationAck(int method, char* uuid, pid_t client);
+
 protected:
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);

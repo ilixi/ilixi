@@ -24,12 +24,12 @@
 #ifndef NOTIFICATIONMANAGER_H_
 #define NOTIFICATIONMANAGER_H_
 
-#include <vector>
 #include <directfb.h>
 #include <lib/Timer.h>
 #include <lib/TweenAnimation.h>
 #include <lib/Notify.h>
 #include <core/ComponentData.h>
+#include <list>
 
 namespace ilixi
 {
@@ -50,22 +50,52 @@ public:
 private:
     int _deltaY;
     ILXCompositor* _compositor;
-    typedef std::vector<Notification*> NotificationVector;
-    NotificationVector _notifications;
-    pthread_mutex_t _notMutex;
+    unsigned int _maxNotifications;
+    typedef std::list<Notification*> NotificationList;
+
+    NotificationList _active;
+    pthread_mutex_t _activeMutex;
+    NotificationList _pending;
+    pthread_mutex_t _pendingMutex;
 
     Timer _timer;
     TweenAnimation _anim;
     Tween* _tween;
 
     void
-    removeNotifications();
+    tweenSlot();
+
+    void
+    updateNotifications();
 
     void
     arrangeNotifications(int deltaY);
 
+    /*!
+     * Returns true if replaces an old notification in pending queue.
+     *
+     * Replaced notification will fire a CLOSE event.
+     */
+    bool
+    replacePending(Notification* notification);
+
+    /*!
+     * Returns true if replaces an old (visible) notification in active queue.
+     *
+     * Replaced notification will fire a CLOSE event.
+     * New notification will fire a SHOW event.
+     */
+    bool
+    replaceActive(Notification* notification);
+
     void
-    tweenSlot();
+    parseURI(const std::string& uri, std::string& query, std::string& path);
+
+    /*!
+     * Returns true if notification origin is allowed to show notifications.
+     */
+    bool
+    checkPermission(const Compositor::NotificationData& data);
 };
 
 } /* namespace ilixi */

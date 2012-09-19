@@ -54,7 +54,7 @@ public:
     infoByInstanceID(InstanceID instanceID);
 
     AppInfo*
-    infoByPID(pid_t pid);
+    infoByPID(const pid_t pid);
 
     AppInstance*
     instanceByAppID(AppID appID);
@@ -63,7 +63,7 @@ public:
     instanceByInstanceID(InstanceID instanceID);
 
     AppInstance*
-    instanceByPID(pid_t pid);
+    instanceByPID(const pid_t pid);
 
     AppInfoList
     applicationList();

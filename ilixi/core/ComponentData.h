@@ -17,9 +17,9 @@ namespace OSK
  */
 typedef enum
 {
-    Standard,   //!< This layout has letters, numbers and symbols. It is the default one.
+    Standard, //!< This layout has letters, numbers and symbols. It is the default one.
     Numeric,    //!< This layout has numbers only.
-    URL         //!< This layout has letters, numbers and symbols for valid URLs.
+    URL        //!< This layout has letters, numbers and symbols for valid URLs.
 } OSKLayoutMode;
 
 /*!
@@ -102,15 +102,38 @@ typedef struct
 
 /*!
  * This structure contains data for Notification.
- * e.g. Twitter.
  */
 typedef struct
 {
-    char body[128];     //!< Body text.
+    char body[256];     //!< Body text.
     char icon[256];     //!< Path for icon.
+    char origin[256];   //!< URI.
+    char tag[128];      //!< Tag.
     char title[128];    //!< Title.
+    char uuid[37];      //!< UUID Version 4.
     pid_t client;       //!< PID of client application.
 } NotificationData;
+
+/*!
+ * This enum specifies the method for NotificationAck.
+ */
+typedef enum
+{
+    Click,  //!< Click event.
+    Close,  //!< Close event.
+    Error,  //!< Error event.
+    Show    //!< Show event.
+} NotificationMethod;
+
+/*!
+ * This structure contains data for NotificationAck.
+ */
+typedef struct
+{
+    NotificationMethod method;
+    char uuid[37];      //!< UUID Version 4.
+    pid_t client;       //!< PID of client application.
+} NotificationAckData;
 
 /*!
  * This enum specifies the COMA methods for Compositor component.
@@ -141,6 +164,7 @@ typedef enum
     AppVisibilty,       //!< Sent when an application becomes hidden or visible.
     BackKeyHidden,      //!< Sent if BACK key should become hidden.
     BackKeyVisible,     //!< Sent if BACK key should become visible.
+    NotificationAck,    //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
     SendingAppList,     //!< Sent with application list. // TODO remove this!
     SwitcherHidden,     //!< Sent when Switcher is hidden.
     SwitcherVisible,    //!< Sent when Switcher is visible.

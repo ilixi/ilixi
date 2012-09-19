@@ -33,7 +33,15 @@ namespace ilixi
  * An algorithm produced by Professor Daniel J. Bernstein.
  */
 unsigned int
-Hash(const std::string& str);
+createHash(const std::string& str);
+
+/*!
+ * Creates a Version 4 UUID.
+ *
+ * @param uuid 36 characters long.
+ */
+std::string
+createUUID();
 
 } /* namespace ilixi */
 #endif /* ILIXI_UTIL_H_ */
