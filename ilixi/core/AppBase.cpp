@@ -40,7 +40,8 @@ using namespace std;
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
+D_DEBUG_DOMAIN( ILX_APPBASE,         "ilixi/core/AppBase",         "AppBase");
+D_DEBUG_DOMAIN( ILX_APPBASE_UPDATES, "ilixi/core/AppBase/Updates", "AppBase Updates");
 
 IDirectFB* AppBase::__dfb = NULL;
 IDirectFBDisplayLayer* AppBase::__layer = NULL;
@@ -378,20 +379,6 @@ AppBase::runCallbacks()
 {
     int32_t timeout = 1000;
 
-    pthread_mutex_lock(&__cbMutex);
-    CallbackList::iterator it = __callbacks.begin();
-    while (it != __callbacks.end())
-    {
-        if (((Callback*) *it)->_funck->funck() == 0)
-        {
-            ILOG_DEBUG( ILX_APPBASE,
-                       "Callback %p is removed.\n", ((Callback*) *it));
-            it = __callbacks.erase(it);
-        } else
-            ++it;
-    }
-    pthread_mutex_unlock(&__cbMutex);
-
     // timer
     pthread_mutex_lock(&__timerMutex);
     if (_timers.size())
@@ -413,6 +400,21 @@ AppBase::runCallbacks()
             timeout = expiry - now;
     }
     pthread_mutex_unlock(&__timerMutex);
+
+    // callbacks
+    pthread_mutex_lock(&__cbMutex);
+    CallbackList::iterator it = __callbacks.begin();
+    while (it != __callbacks.end())
+    {
+        if (((Callback*) *it)->_funck->funck() == 0)
+        {
+            ILOG_DEBUG( ILX_APPBASE,
+                       "Callback %p is removed.\n", ((Callback*) *it));
+            it = __callbacks.erase(it);
+        } else
+            ++it;
+    }
+    pthread_mutex_unlock(&__cbMutex);
 
     return timeout;
 }
@@ -616,14 +618,14 @@ AppBase::removeWindow(WindowWidget* window)
 void
 AppBase::updateWindows()
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-    pthread_mutex_lock(&__windowMutex);
-
-    for (WindowList::iterator it = __windowList.begin();
-            it != __windowList.end(); ++it)
-        ((WindowWidget*) *it)->updateWindow();
-
-    pthread_mutex_unlock(&__windowMutex);
+//    ILOG_TRACE_F(ILX_APPBASE);
+//    pthread_mutex_lock(&__windowMutex);
+//
+//    for (WindowList::iterator it = __windowList.begin();
+//            it != __windowList.end(); ++it)
+//        ((WindowWidget*) *it)->updateWindow();
+//
+//    pthread_mutex_unlock(&__windowMutex);
 }
 
 void
@@ -639,15 +641,15 @@ AppBase::handleEvents(int32_t timeout)
     if (timeout < 1)
         timeout = 1;
 
-    for (WindowList::iterator it = __windowList.begin();
-            it != __windowList.end(); ++it)
-    {
-        if (((WindowWidget*) *it)->_updates._updateQueue.size())
-        {
-            wait = false;
-            break;
-        }
-    }
+//    for (WindowList::iterator it = __windowList.begin();
+//            it != __windowList.end(); ++it)
+//    {
+//        if (((WindowWidget*) *it)->_updates._updateQueue.size())
+//        {
+//            wait = false;
+//            break;
+//        }
+//    }
 
     if (wait)
     {
@@ -706,7 +708,12 @@ AppBase::handleEvents(int32_t timeout)
 
         case DFEC_SURFACE:
             {
-                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
+                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n" );
+
+                ILOG_DEBUG(ILX_APPBASE_UPDATES, "  -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n",
+                           event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update),
+                           event.surface.flip_count);
+
                 for (SurfaceListenerList::iterator it = __selList.begin();
                         it != __selList.end(); ++it)
                     ((SurfaceEventListener*) *it)->consumeSurfaceEvent(
@@ -856,7 +863,8 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
                        32);
         Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
                        32);
-        activeWindow()->update(PaintEvent(cnew.united(cold), 10));
+        if (!getenv("ILIXI_NO_CURSOR"))
+            activeWindow()->update(PaintEvent(cnew.united(cold), 10));
     }
 
     we.window.x = 0;

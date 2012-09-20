@@ -63,6 +63,9 @@ WindowWidget::WindowWidget(Widget* parent)
 
     _eventManager = new EventManager(this);
     setRootWindow(this);
+
+    _update_timer.sigExec.connect(
+            sigc::mem_fun(this, &WindowWidget::updateWindow));
 }
 
 WindowWidget::~WindowWidget()
@@ -107,6 +110,12 @@ WindowWidget::update()
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(frameGeometry());
 #endif
+
+        if (!_update_timer.running())
+        {
+            _update_timer.start( 10 );
+        }
+
         pthread_mutex_unlock(&_updates._listLock);
     }
 }
@@ -122,6 +131,12 @@ WindowWidget::update(const PaintEvent& event)
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(event.right);
 #endif
+
+        if (!_update_timer.running())
+        {
+            _update_timer.start( 10 );
+        }
+
         pthread_mutex_unlock(&_updates._listLock);
     }
 }
@@ -221,10 +236,10 @@ WindowWidget::paint(const PaintEvent& event)
 
                 paintChildren(evt);
 
-                if ((AppBase::appOptions() & OptExclusive))
+                if ((AppBase::appOptions() & OptExclusive) && !getenv("ILIXI_NO_CURSOR"))
                 {
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface,
-                                                    DSSE_RIGHT);
+                                                    DSSE_LEFT);
                     _exclusiveSurface->SetBlittingFlags(
                             _exclusiveSurface, DSBLIT_BLEND_ALPHACHANNEL);
                     _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage,
@@ -417,6 +432,17 @@ WindowWidget::showWindow()
     update(PaintEvent(Rectangle(0, 0, width(), height()),
                       PaintEvent::BothEyes));
     updateWindow();
+
+#ifdef ILIXI_REDRAW_HACK
+    update(PaintEvent(Rectangle(0, 0, width(), height()),
+                      PaintEvent::BothEyes));
+    updateWindow();
+
+    update(PaintEvent(Rectangle(0, 0, width(), height()),
+                      PaintEvent::BothEyes));
+    updateWindow();
+#endif
+
     if (!(AppBase::appOptions() & OptExclusive))
         _window->showWindow();
 

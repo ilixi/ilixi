@@ -26,6 +26,7 @@
 
 #include <core/Window.h>
 #include <core/EventManager.h>
+#include <lib/Timer.h>
 #include <ui/Frame.h>
 #include <semaphore.h>
 #include <vector>
@@ -176,6 +177,8 @@ private:
 
     IDirectFBSurface*
     windowSurface();
+
+    Timer _update_timer;
 };
 
 }
