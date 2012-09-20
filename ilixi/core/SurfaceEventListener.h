@@ -84,7 +84,7 @@ protected:
      *
      * @param update Region to update in source surface coordinates.
      */
-    virtual void
+    virtual bool
     onSourceUpdate(const DFBSurfaceEvent& event) = 0;
 
     /*!

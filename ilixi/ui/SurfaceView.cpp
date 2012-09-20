@@ -26,6 +26,7 @@
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
 #include <sys/time.h>
+#include <math.h>
 
 namespace ilixi
 {
@@ -49,6 +50,7 @@ SurfaceView::SurfaceView(Widget* parent)
 #ifdef ILIXI_STEREO_OUTPUT
     _sourceStereo = false;
 #endif
+    _renderedSource = true;
 }
 
 SurfaceView::~SurfaceView()
@@ -240,15 +242,11 @@ SurfaceView::compose(const PaintEvent& event)
 void
 SurfaceView::renderSource(const PaintEvent& event)
 {
+    _renderedSource = true;
+
     if (_sourceSurface && (_svState & SV_READY))
     {
         ILOG_TRACE_W(ILX_SURFACEVIEW);
-#ifdef ILIXI_STEREO_OUTPUT
-        if (event.eye == PaintEvent::RightEye)
-#endif
-        {
-            _sourceSurface->FrameAck(_sourceSurface, _flipCount);
-        }
 
 #ifdef ILIXI_STEREO_OUTPUT
         if (_sourceStereo)
@@ -315,10 +313,13 @@ SurfaceView::renderSource(const PaintEvent& event)
     }
 }
 
-void
+bool
 SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
+
+    if (!_renderedSource)
+        return false;
 
     if (!(_svState & SV_READY))
     {
@@ -344,11 +345,15 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
-    } else if (!(_svState & SV_SHOULD_BLOCK))
-        _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
+    } //else if (!(_svState & SV_SHOULD_BLOCK))
 
+    _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
+
+    _renderedSource = false;
     _flipCount = event.flip_count;
     sigSourceUpdated();
+
+    return true;
 }
 
 void

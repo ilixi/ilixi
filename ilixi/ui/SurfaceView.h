@@ -165,8 +165,9 @@ private:
 #ifdef ILIXI_STEREO_OUTPUT
     bool _sourceStereo;
 #endif
+    bool _renderedSource;
 
-    void
+    bool
     onSourceUpdate(const DFBSurfaceEvent& event);
 
     void

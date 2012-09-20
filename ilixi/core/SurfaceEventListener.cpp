@@ -84,8 +84,11 @@ SurfaceEventListener::funck()
 {
     if (!_queue.empty())
     {
-        onSourceUpdate(_queue.front());
-        _queue.pop();
+        while (_queue.size() > 2)
+            _queue.pop();
+
+        if (onSourceUpdate(_queue.front()))
+            _queue.pop();
     }
     return true;
 }
