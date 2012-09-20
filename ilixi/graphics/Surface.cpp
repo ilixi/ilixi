@@ -173,13 +173,57 @@ void
 Surface::flip(const Rectangle& rect, DFBSurfaceFlipFlags flags)
 {
     DFBRegion r = rect.dfbRegion();
-    DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, flags);
-    if (ret)
-        ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
-    else
-        ILOG_DEBUG(
-                ILX_SURFACE,
-                "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
+
+    if (getenv("ILIXI_NEW_FLIP"))
+    {
+        int w, h;
+
+        _dfbSurface->GetSize(_dfbSurface, &w, &h);
+
+        _dfbSurface->SetClip( _dfbSurface, NULL );
+        _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_NOFX);
+
+        if (r.y1) {
+             DFBRectangle rect = { 0, 0, w, r.y1 };
+
+             _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
+        }
+
+        if (r.y2 < h - 1) {
+             DFBRectangle rect = { 0, r.y2 + 1, w, h - r.y2 - 1 };
+
+             _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
+        }
+
+        if (r.x1) {
+             DFBRectangle rect = { 0, r.y1, r.x1, r.y2 - r.y1 + 1 };
+
+             _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
+        }
+
+        if (r.x2 < w - 1) {
+             DFBRectangle rect = { r.x2 + 1, r.y1, w - r.x2 - 1, r.y2 - r.y1 + 1 };
+
+             _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
+        }
+
+        DFBResult ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_ONSYNC);
+        if (ret)
+            ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+        else
+            ILOG_DEBUG(
+                    ILX_SURFACE,
+                    "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
+    }
+    else {
+        DFBResult ret = _dfbSurface->Flip(_dfbSurface, &r, flags);
+        if (ret)
+            ILOG_ERROR(ILX_SURFACE, "Flip error: %s\n", DirectFBErrorString(ret));
+        else
+            ILOG_DEBUG(
+                    ILX_SURFACE,
+                    "[%p] %s Rect(%d, %d, %d, %d)\n", this, __FUNCTION__, rect.x(), rect.y(), rect.width(), rect.height());
+    }
 }
 
 void
