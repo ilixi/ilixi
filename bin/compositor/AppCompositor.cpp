@@ -120,24 +120,27 @@ AppCompositor::updateAppCompositorGeometry()
 //                "INFO: %p - InstanceID: %d\n", info, _instance->instanceID());
 //            ILOG_DEBUG(ILX_APPCOMPOSITOR, "Flags: %x\n", info->appFlags());
 
-            if (info->appFlags() & APP_NO_MAINWINDOW)
+            if (info)
             {
-                int x, y;
-                view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
-                Size s = view->preferredSize();
-                view->setGeometry(x, y, s.width(), s.height());
-            } else
-            {
-                if (i == 0)
-                    view->setGeometry((width() - w) / 2, (height() - h) / 2, w,
-                                      h);
-                else
+                if (info->appFlags() & APP_NO_MAINWINDOW)
                 {
                     int x, y;
                     view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                     Size s = view->preferredSize();
-                    view->setGeometry(x, y, s.width() * _zoomFactor,
-                                      s.height() * _zoomFactor);
+                    view->setGeometry(x, y, s.width(), s.height());
+                } else
+                {
+                    if (i == 0)
+                        view->setGeometry((width() - w) / 2, (height() - h) / 2, w,
+                                          h);
+                    else
+                    {
+                        int x, y;
+                        view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
+                        Size s = view->preferredSize();
+                        view->setGeometry(x, y, s.width() * _zoomFactor,
+                                          s.height() * _zoomFactor);
+                    }
                 }
             }
             i++;

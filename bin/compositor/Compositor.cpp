@@ -135,7 +135,7 @@ ILXCompositor::showInstance(AppInstance* instance)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     toggleSwitcher(false);
-    if (!instance)
+    if (!instance || !instance->view())
     {
         toggleLauncher(true);
         return;
@@ -631,6 +631,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
                 if (data->instance->thumb())
                     _switcher->removeThumb(data->instance->thumb());
+
+                delete data->instance;
 
                 if (_currentApp == NULL)
                     toggleLauncher(true);

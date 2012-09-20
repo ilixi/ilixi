@@ -484,7 +484,6 @@ ApplicationManager::processRemoved(SaWManProcess *process)
     if (found)
     {
         _compositor->processRemoved(instance);
-        delete instance;
         return DR_OK;
     }
     return DR_ITEMNOTFOUND;
