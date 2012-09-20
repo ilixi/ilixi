@@ -25,10 +25,20 @@
 #define ILIXI_SOUND_H_
 
 #include <directfb.h>
+
+#ifdef HAVE_FUSIONSOUND
 extern "C"
 {
 #include <fusionsound.h>
 }
+#else
+typedef void FSBufferDescription;
+typedef void FSStreamDescription;
+typedef void IFusionSound;
+typedef void IFusionSoundBuffer;
+typedef void IFusionSoundStream;
+typedef void IFusionSoundMusicProvider;
+#endif
 
 namespace ilixi
 {

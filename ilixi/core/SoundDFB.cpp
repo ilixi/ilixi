@@ -21,6 +21,8 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <config.h>
+
 #include <core/SoundDFB.h>
 #include <core/Logger.h>
 
@@ -44,8 +46,10 @@ SoundDFB::getMasterVolume()
 {
     ILOG_TRACE_F(ILX_SOUND);
     float vol = 0;
+#ifdef HAVE_FUSIONSOUND
     if (__sound)
         __sound->GetMasterVolume(__sound, &vol);
+#endif
     return vol;
 }
 
@@ -53,16 +57,20 @@ void
 SoundDFB::setMasterVolume(float volume)
 {
     ILOG_TRACE_F(ILX_SOUND);
+#ifdef HAVE_FUSIONSOUND
     if (__sound)
         __sound->SetMasterVolume(__sound, volume);
+#endif
 }
 
 void
 SoundDFB::getMasterAmplitude(float* left, float* right)
 {
     ILOG_TRACE_F(ILX_SOUND);
+#ifdef HAVE_FUSIONSOUND
     if (__sound)
         __sound->GetMasterFeedback(__sound, left, right);
+#endif
 }
 
 DFBResult
@@ -72,12 +80,14 @@ SoundDFB::createBuffer(const FSBufferDescription* desc, IFusionSoundBuffer** buf
     if (!__sound)
         return DFB_FAILURE;
 
+#ifdef HAVE_FUSIONSOUND
     DirectResult ret = __sound->CreateBuffer(__sound, desc, buffer);
     if (ret)
     {
         ILOG_ERROR(ILX_SOUND, "CreateBuffer() failed!");
         return DFB_FAILURE;
     }
+#endif
 
     return DFB_OK;
 }
@@ -89,12 +99,14 @@ SoundDFB::createStream(const FSStreamDescription* desc, IFusionSoundStream** str
     if (!__sound)
         return DFB_FAILURE;
 
+#ifdef HAVE_FUSIONSOUND
     DirectResult ret = __sound->CreateStream(__sound, desc, stream);
     if (ret)
     {
         ILOG_ERROR(ILX_SOUND, "CreateMusicProvider() failed!");
         return DFB_FAILURE;
     }
+#endif
 
     return DFB_OK;
 }
@@ -106,6 +118,7 @@ SoundDFB::createMusicProvider(const char* filename, IFusionSoundMusicProvider** 
     if (!__sound)
         return DFB_FAILURE;
 
+#ifdef HAVE_FUSIONSOUND
     DirectResult ret = __sound->CreateMusicProvider(__sound, filename,
                                                     provider);
     if (ret)
@@ -113,6 +126,7 @@ SoundDFB::createMusicProvider(const char* filename, IFusionSoundMusicProvider** 
         ILOG_ERROR(ILX_SOUND, "CreateMusicProvider() failed!");
         return DFB_FAILURE;
     }
+#endif
 
     return DFB_OK;
 }
@@ -121,11 +135,13 @@ DFBResult
 SoundDFB::initSound(int* argc, char*** argv)
 {
     ILOG_TRACE_F(ILX_SOUND);
+#ifdef HAVE_FUSIONSOUND
     if (FusionSoundInit(argc, argv) != DR_OK)
         ILOG_THROW(ILX_SOUND, "FusionSoundInit() failed!\n");
 
     if (FusionSoundCreate(&__sound) != DR_OK)
         ILOG_THROW(ILX_SOUND, "FusionSoundCreate() failed!\n");
+#endif
     return DFB_OK;
 }
 
@@ -133,11 +149,13 @@ void
 SoundDFB::releaseSound()
 {
     ILOG_TRACE_F(ILX_SOUND);
+#ifdef HAVE_FUSIONSOUND
     if (__sound)
     {
         __sound->Release(__sound);
         __sound = NULL;
     }
+#endif
 }
 
 } /* namespace ilixi */
