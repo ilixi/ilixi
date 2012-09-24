@@ -24,6 +24,7 @@
 #ifndef ILIXI_SOUND_H_
 #define ILIXI_SOUND_H_
 
+#include <config.h>
 #include <directfb.h>
 
 #ifdef HAVE_FUSIONSOUND
