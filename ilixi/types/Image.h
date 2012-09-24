@@ -148,14 +148,23 @@ public:
     setSize(const Size& size);
 
 private:
+    enum ImageFlags
+    {
+        Initialised,
+        Modified,
+        NotAvailable,
+        Ready,
+        SubImage
+    };
+
     //! This property stores the pointer to DirectFB surface.
     IDirectFBSurface* _dfbSurface;
     //! This property stores the image path.
     std::string _imagePath;
     //! This property stores the size of the image.
     Size _size;
-    //! This flag stores whether the image is a sub-image.
-    bool _subImage;
+    //! This property stores the state of image.
+    ImageFlags _state;
 
     /*!
      * Release surface and set it to NULL.
