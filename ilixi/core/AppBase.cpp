@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <limits.h>
+#include <directfb_util.h>
 #if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
 #endif
