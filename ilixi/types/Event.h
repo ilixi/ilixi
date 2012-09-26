@@ -30,11 +30,18 @@
 
 namespace ilixi
 {
+/*!
+ * Maps from DFBWindowEventType.
+ */
 enum KeyEventType
 {
-    KeyDownEvent = 0x00000100, KeyUpEvent = 0x00000200
+    KeyDownEvent = DWET_KEYDOWN,
+    KeyUpEvent = DWET_KEYUP
 };
 
+/*!
+ * Defines key input events.
+ */
 struct KeyEvent
 {
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol)
@@ -46,8 +53,16 @@ struct KeyEvent
     {
     }
 
-    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol, DFBInputDeviceKeyIdentifier id,
-             DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks)
+    KeyEvent(KeyEventType type, DFBWindowEvent event)
+            : eventType(type),
+              keySymbol(event.key_symbol),
+              keyID(event.key_id),
+              modifierMask(event.modifiers),
+              lockState(event.locks)
+    {
+    }
+
+    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol, DFBInputDeviceKeyIdentifier id, DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks)
             : eventType(type),
               keySymbol(symbol),
               keyID(id),
@@ -56,38 +71,55 @@ struct KeyEvent
     {
     }
 
+    //! Type of event.
     KeyEventType eventType;
+    //! Advanced mapping unicode compatible and modifier dependent.
     DFBInputDeviceKeySymbol keySymbol;
+    //! Basic mapping and modifier independent.
     DFBInputDeviceKeyIdentifier keyID;
+    //! Pressed modifiers.
     DFBInputDeviceModifierMask modifierMask;
+    //! Active locks.
     DFBInputDeviceLockState lockState;
 };
 
+/*!
+ * Maps from DFBWindowEventType.
+ */
 enum PointerEventType
 {
-    PointerButtonDown = 0x00010000,
-    PointerButtonUp = 0x00020000,
-    PointerMotion = 0x00040000,
-    PointerWheel = 0x00200000
+    PointerButtonDown = DWET_BUTTONDOWN,
+    PointerButtonUp = DWET_BUTTONUP,
+    PointerMotion = DWET_MOTION,
+    PointerWheel = DWET_WHEEL
 };
 
+/*!
+ * Maps from DFBInputDeviceButtonIdentifier.
+ */
 enum PointerButton
 {
-    ButtonLeft = 0x00000000,
-    ButtonRight = 0x00000001,
-    ButtonMiddle = 0x00000002,
-    ButtonFirst = ButtonLeft,
-    ButtonLast = 0x0000001F
+    ButtonLeft = DIBI_LEFT,
+    ButtonRight = DIBI_RIGHT,
+    ButtonMiddle = DIBI_MIDDLE,
+    ButtonFirst = DIBI_FIRST,
+    ButtonLast = DIBI_LAST
 };
 
+/*!
+ * Maps from DFBInputDeviceButtonMask.
+ */
 enum PointerButtonMask
 {
     ButtonMaskNone = 0,
-    ButtonMaskLeft = 0x00000001,
-    ButtonMaskRight = 0x00000002,
-    ButtonMaskMiddle = 0x00000004
+    ButtonMaskLeft = DIBM_LEFT,
+    ButtonMaskRight = DIBM_RIGHT,
+    ButtonMaskMiddle = DIBM_MIDDLE
 };
 
+/*!
+ * Defines pointer input events.
+ */
 struct PointerEvent
 {
     PointerEvent()
@@ -101,9 +133,18 @@ struct PointerEvent
     {
     }
 
-    PointerEvent(PointerEventType type, int X, int Y, int step = 0,
-                 PointerButton pbutton = ButtonLast, PointerButtonMask mask =
-                         ButtonMaskNone)
+    PointerEvent(PointerEventType type, DFBWindowEvent event)
+            : eventType(type),
+              x(event.x),
+              y(event.y),
+              wheelStep(event.step),
+              button((PointerButton) event.button),
+              buttonMask((PointerButtonMask) event.buttons),
+              timestamp(direct_clock_get_millis())
+    {
+    }
+
+    PointerEvent(PointerEventType type, int X, int Y, int step = 0, PointerButton pbutton = ButtonLast, PointerButtonMask mask = ButtonMaskNone)
             : eventType(type),
               x(X),
               y(Y),
@@ -114,12 +155,19 @@ struct PointerEvent
     {
     }
 
+    //! Type of event.
     PointerEventType eventType;
+    //! Cursor X position.
     int x;
+    //! Cursor Y position.
     int y;
+    //! Wheel step {-1, 1}.
     int wheelStep;
+    //! Button being pressed or released.
     PointerButton button;
+    //! Mask of currently pressed buttons.
     PointerButtonMask buttonMask;
+    //! Set on construction.
     long timestamp;
 };
 
@@ -128,7 +176,9 @@ struct PaintEvent
 {
     enum PaintEventEye
     {
-        LeftEye = 0x01, RightEye = 0x02, BothEyes = 0x03
+        LeftEye = 0x01,
+        RightEye = 0x02,
+        BothEyes = 0x03
     };
 
     PaintEvent()
