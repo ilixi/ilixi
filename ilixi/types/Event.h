@@ -129,6 +129,7 @@ struct PointerEvent
               wheelStep(0),
               button(ButtonLast),
               buttonMask(ButtonMaskNone),
+              modifierMask((DFBInputDeviceModifierMask) 0),
               timestamp(direct_clock_get_millis())
     {
     }
@@ -140,6 +141,7 @@ struct PointerEvent
               wheelStep(event.step),
               button((PointerButton) event.button),
               buttonMask((PointerButtonMask) event.buttons),
+              modifierMask(event.modifiers),
               timestamp(direct_clock_get_millis())
     {
     }
@@ -151,7 +153,20 @@ struct PointerEvent
               wheelStep(step),
               button(pbutton),
               buttonMask(mask),
+              modifierMask((DFBInputDeviceModifierMask) 0),
               timestamp(direct_clock_get_millis())
+    {
+    }
+
+    PointerEvent(const PointerEvent& other)
+            : eventType(other.eventType),
+              x(other.x),
+              y(other.y),
+              wheelStep(other.wheelStep),
+              button(other.button),
+              buttonMask(other.buttonMask),
+              modifierMask(other.modifierMask),
+              timestamp(other.timestamp)
     {
     }
 
@@ -167,6 +182,8 @@ struct PointerEvent
     PointerButton button;
     //! Mask of currently pressed buttons.
     PointerButtonMask buttonMask;
+    //! Pressed modifiers.
+    DFBInputDeviceModifierMask modifierMask;
     //! Set on construction.
     long timestamp;
 };
