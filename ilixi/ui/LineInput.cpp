@@ -344,6 +344,22 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
         }
         break;
 
+    case DIKS_SHIFT:
+    case DIKS_CONTROL:
+    case DIKS_ALT:
+    case DIKS_ALTGR:
+    case DIKS_META:
+    case DIKS_SUPER:
+    case DIKS_HYPER:
+    case DIKS_CAPS_LOCK:
+    case DIKS_NUM_LOCK:
+    case DIKS_SCROLL_LOCK:
+        break;
+
+    case DIKS_ENTER:
+        sigTextEntered(text());
+        break;
+
     default:
         char c;
         if (keyEvent.keySymbol < 0x80)
@@ -451,6 +467,7 @@ LineInput::updateTextBaseGeometry()
     _layout.doLayout(font());
     _cursor.setSize(
             2, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+    updateCursorPosition();
 }
 
 Font*

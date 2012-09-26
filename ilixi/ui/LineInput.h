@@ -126,6 +126,8 @@ public:
      */
     sigc::signal<void> sigTextEdited;
 
+    sigc::signal<void, const std::string&> sigTextEntered;
+
 private:
     enum LineInputFlags
     {
