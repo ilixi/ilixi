@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>Settings</name>
-    <author>Tarik Sekmen</author>
-    <licence>LGPL</licence>    
-    <category>Default</category>
-    <version>1.0</version>
+	<name>Settings</name>
+	<author>Tarik Sekmen</author>
+	<licence>LGPL</licence>
+	<category>Default</category>
+	<version>1.0</version>
 	<icon>@DATADIR:settings.png</icon>
-    <exec>ilixi_settings</exec>
+	<exec>ilixi_settings</exec>
 </app>

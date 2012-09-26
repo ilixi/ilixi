@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>Matrix</name>
-    <author>Denis Oliver Kropp</author>
-    <licence>MIT</licence>    
-    <category>Default</category>
-    <version>1.0</version>
+	<name>Matrix</name>
+	<author>Denis Oliver Kropp</author>
+	<licence>MIT</licence>
+	<category>Default</category>
+	<version>1.0</version>
 	<icon>@DATADIR:matrix.png</icon>
-    <exec>df_matrix</exec>
-    <args>--dfb:force-windowed</args>
-    <flags>APP_NEEDS_CLEAR</flags>
+	<exec>df_matrix</exec>
+	<args>--dfb:force-windowed</args>
+	<flags>APP_NEEDS_CLEAR</flags>
 </app>

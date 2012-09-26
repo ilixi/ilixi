@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>Penguins</name>
-    <author>Andreas Shimokawa</author>
-    <licence>MIT</licence>    
-    <category>Default</category>
-    <version>1.0</version>
+	<name>Penguins</name>
+	<author>Andreas Shimokawa</author>
+	<licence>MIT</licence>
+	<category>Default</category>
+	<version>1.0</version>
 	<icon>@DATADIR:andi.png</icon>
-    <exec>df_andi</exec>
-    <args>--dfb:force-windowed -a</args>
-    <flags>APP_ALLOW_MULTIPLE</flags>
+	<exec>df_andi</exec>
+	<args>--dfb:force-windowed -a</args>
+	<flags>APP_ALLOW_MULTIPLE</flags>
 </app>

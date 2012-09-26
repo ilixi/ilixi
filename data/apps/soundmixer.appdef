@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>SoundMixer</name>
-    <author>Tarik Sekmen</author>
-    <licence>LGPL</licence>    
-    <category>System</category>
-    <version>1.0</version>
+	<name>SoundMixer</name>
+	<author>Tarik Sekmen</author>
+	<licence>LGPL</licence>
+	<category>System</category>
+	<version>1.0</version>
 	<icon>@DATADIR:gallery.png</icon>
-    <exec>ilixi_mixer</exec>
-    <args></args>
-    <flags>APP_SYSTEM, APP_AUTO_START</flags>
-    <deps>DEP_MOUSE</deps>
+	<exec>ilixi_mixer</exec>
+	<args></args>
+	<flags>APP_SYSTEM, APP_AUTO_START</flags>
+	<deps>DEP_MOUSE</deps>
 </app>

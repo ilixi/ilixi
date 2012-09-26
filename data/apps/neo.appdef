@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>Neo</name>
-    <author>Denis Oliver Kropp</author>
-    <licence>MIT</licence>    
-    <category>Default</category>
-    <version>1.0</version>
+	<name>Neo</name>
+	<author>Denis Oliver Kropp</author>
+	<licence>MIT</licence>
+	<category>Default</category>
+	<version>1.0</version>
 	<icon>@DATADIR:neo.png</icon>
-    <exec>df_neo</exec>
-    <args>--dfb:force-windowed</args>
+	<exec>df_neo</exec>
+	<args>--dfb:force-windowed</args>
 </app>

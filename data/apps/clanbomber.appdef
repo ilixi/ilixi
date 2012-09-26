@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-    <name>ClanBomber 2</name>
-    <author>Denis Oliver Kropp, Andreas Shimokawa</author>
-    <licence>MIT</licence>    
-    <category>Default</category>
-    <version>1.0</version>
+	<name>ClanBomber 2</name>
+	<author>Denis Oliver Kropp, Andreas Shimokawa</author>
+	<licence>MIT</licence>
+	<category>Default</category>
+	<version>1.0</version>
 	<icon>@DATADIR:clanbomber2.png</icon>
-    <exec>clanbomber2</exec>
-    <args>--dfb:force-windowed</args>
+	<exec>clanbomber2</exec>
+	<args>--dfb:force-windowed</args>
 </app>
