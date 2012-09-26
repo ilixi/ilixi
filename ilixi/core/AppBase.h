@@ -96,6 +96,12 @@ public:
     void
     setTitle(std::string title);
 
+    /*!
+     * Returns EventBuffer interface.
+     */
+    static IDirectFBEventBuffer*
+    getEventBuffer();
+
 protected:
     /*!
      * User events are handled before other event types.

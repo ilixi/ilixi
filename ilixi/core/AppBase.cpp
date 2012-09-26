@@ -41,7 +41,7 @@ using namespace std;
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPBASE,         "ilixi/core/AppBase",         "AppBase");
+D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
 D_DEBUG_DOMAIN( ILX_APPBASE_UPDATES, "ilixi/core/AppBase/Updates", "AppBase Updates");
 
 IDirectFB* AppBase::__dfb = NULL;
@@ -141,10 +141,8 @@ AppBase::initDFB(int* argc, char*** argv)
 
         if (__options & OptExclusive)
         {
-            if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE,
-                                              &__buffer) != DFB_OK)
-                ILOG_THROW(ILX_APPBASE,
-                           "Error while creating input event buffer!\n");
+            if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE, &__buffer) != DFB_OK)
+                ILOG_THROW(ILX_APPBASE, "Error while creating input event buffer!\n");
         } else if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
             ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
 
@@ -165,8 +163,7 @@ AppBase::initDFB(int* argc, char*** argv)
         }
 #endif
     } else
-        ILOG_WARNING(ILX_APPBASE,
-                     "DirectFB interfaces are already initialised.\n");
+        ILOG_WARNING(ILX_APPBASE, "DirectFB interfaces are already initialised.\n");
 }
 
 void
@@ -225,6 +222,12 @@ AppBase::getLayer()
     return __layer;
 }
 
+IDirectFBEventBuffer*
+AppBase::getEventBuffer()
+{
+    return __buffer;
+}
+
 IDirectFBWindow*
 AppBase::activeDFBWindow() const
 {
@@ -271,9 +274,7 @@ AppBase::addCallback(Callback* cb)
     {
         pthread_mutex_lock(&__instance->__cbMutex);
 
-        CallbackList::iterator it = std::find(__instance->__callbacks.begin(),
-                                              __instance->__callbacks.end(),
-                                              cb);
+        CallbackList::iterator it = std::find(__instance->__callbacks.begin(), __instance->__callbacks.end(), cb);
         if (cb == *it)
         {
             pthread_mutex_unlock(&__instance->__cbMutex);
@@ -338,8 +339,7 @@ AppBase::addTimer(Timer* timer)
         }
         __instance->_timers.push_back(timer);
 
-        std::sort(__instance->_timers.begin(), __instance->_timers.end(),
-                  timerSort);
+        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
 
         pthread_mutex_unlock(&__instance->__timerMutex);
         ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
@@ -367,8 +367,7 @@ AppBase::removeTimer(Timer* timer)
             }
         }
 
-        std::sort(__instance->_timers.begin(), __instance->_timers.end(),
-                  timerSort);
+        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
 
         pthread_mutex_unlock(&__instance->__timerMutex);
     }
@@ -392,8 +391,7 @@ AppBase::runCallbacks()
             if (!_timers[0]->funck())
                 _timers.erase(_timers.begin());
 
-            std::sort(__instance->_timers.begin(), __instance->_timers.end(),
-                      timerSort);
+            std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
 
             if (_timers.size())
                 timeout = _timers[0]->expiry() - now;
@@ -409,8 +407,7 @@ AppBase::runCallbacks()
     {
         if (((Callback*) *it)->_funck->funck() == 0)
         {
-            ILOG_DEBUG( ILX_APPBASE,
-                       "Callback %p is removed.\n", ((Callback*) *it));
+            ILOG_DEBUG( ILX_APPBASE, "Callback %p is removed.\n", ((Callback*) *it));
             it = __callbacks.erase(it);
         } else
             ++it;
@@ -427,14 +424,11 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
     {
         pthread_mutex_lock(&__instance->__selMutex);
 
-        SurfaceListenerList::iterator it = std::find(
-                __instance->__selList.begin(), __instance->__selList.end(),
-                sel);
+        SurfaceListenerList::iterator it = std::find(__instance->__selList.begin(), __instance->__selList.end(), sel);
         if (sel == *it)
         {
             pthread_mutex_unlock(&__instance->__selMutex);
-            ILOG_ERROR( ILX_APPBASE,
-                       "SurfaceEventListener %p already added!\n", sel);
+            ILOG_ERROR( ILX_APPBASE, "SurfaceEventListener %p already added!\n", sel);
             return false;
         }
 
@@ -451,10 +445,8 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         if (attach)
         {
             sel->sourceSurface()->MakeClient(sel->sourceSurface());
-            sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(),
-                                                    __buffer);
-            ILOG_DEBUG(ILX_APPBASE,
-                       " -> Surface[%p] is attached.\n", sel->sourceSurface());
+            sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(), __buffer);
+            ILOG_DEBUG(ILX_APPBASE, " -> Surface[%p] is attached.\n", sel->sourceSurface());
         }
 
         __instance->__selList.push_back(sel);
@@ -480,8 +472,7 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
             if (sel == *it)
             {
                 __instance->__selList.erase(it);
-                ILOG_DEBUG( ILX_APPBASE,
-                           "SurfaceEventListener %p is removed.\n", sel);
+                ILOG_DEBUG( ILX_APPBASE, "SurfaceEventListener %p is removed.\n", sel);
                 ret = true;
                 break;
             }
@@ -500,11 +491,8 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
 
             if (detach)
             {
-                sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(),
-                                                        __buffer);
-                ILOG_DEBUG(
-                        ILX_APPBASE,
-                        " -> Surface[%p] is detached.\n", sel->sourceSurface());
+                sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(), __buffer);
+                ILOG_DEBUG( ILX_APPBASE, " -> Surface[%p] is detached.\n", sel->sourceSurface());
             }
             return true;
         } else
@@ -570,9 +558,7 @@ AppBase::addWindow(WindowWidget* window)
     {
         pthread_mutex_lock(&__instance->__windowMutex);
 
-        WindowList::iterator it = std::find(__instance->__windowList.begin(),
-                                            __instance->__windowList.end(),
-                                            window);
+        WindowList::iterator it = std::find(__instance->__windowList.begin(), __instance->__windowList.end(), window);
         if (window == *it)
         {
             pthread_mutex_unlock(&__instance->__windowMutex);
@@ -603,15 +589,13 @@ AppBase::removeWindow(WindowWidget* window)
                 __instance->__windowList.erase(it);
 
                 pthread_mutex_unlock(&__instance->__windowMutex);
-                ILOG_DEBUG(ILX_APPBASE,
-                           "WindowWidget %p is removed.\n", window);
+                ILOG_DEBUG(ILX_APPBASE, "WindowWidget %p is removed.\n", window);
                 __instance->setActiveWindow(__instance->__windowList.back());
                 return true;
             }
         }
         pthread_mutex_unlock(&__instance->__windowMutex);
-        ILOG_DEBUG( ILX_APPBASE,
-                   "Cannot remove WindowWidget, %p not found!\n", window);
+        ILOG_DEBUG( ILX_APPBASE, "Cannot remove WindowWidget, %p not found!\n", window);
     }
     return false;
 }
@@ -633,6 +617,7 @@ void
 AppBase::handleEvents(int32_t timeout)
 {
     DFBEvent event;
+    DFBWindowEvent lastMotion; // Used for compressing motion events.
 
     bool wait = true;
 
@@ -654,10 +639,8 @@ AppBase::handleEvents(int32_t timeout)
 
     if (wait)
     {
-        ILOG_DEBUG(ILX_APPBASE,
-                   "Timeout %d.%d\n", timeout / 1000, timeout % 1000);
-        __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000,
-                                          timeout % 1000);
+        ILOG_DEBUG(ILX_APPBASE, "Timeout %d.%d\n", timeout / 1000, timeout % 1000);
+        __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
     }
 
     while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
@@ -677,13 +660,11 @@ AppBase::handleEvents(int32_t timeout)
                 break;
 
             case DIET_BUTTONPRESS:
-                handleButtonInputEvent((const DFBInputEvent&) event,
-                                       DWET_BUTTONDOWN);
+                handleButtonInputEvent((const DFBInputEvent&) event, DWET_BUTTONDOWN);
                 break;
 
             case DIET_BUTTONRELEASE:
-                handleButtonInputEvent((const DFBInputEvent&) event,
-                                       DWET_BUTTONUP);
+                handleButtonInputEvent((const DFBInputEvent&) event, DWET_BUTTONUP);
                 break;
 
             case DIET_AXISMOTION:
@@ -698,9 +679,12 @@ AppBase::handleEvents(int32_t timeout)
 
         case DFEC_WINDOW:
             if (event.window.type != DWET_UPDATE)
-                if (!windowPreEventFilter((const DFBWindowEvent&) event))
-                    activeWindow()->handleWindowEvent(
-                            (const DFBWindowEvent&) event);
+            {
+                if (event.window.type == DWET_MOTION)
+                    lastMotion = event.window;
+                else if (!windowPreEventFilter((const DFBWindowEvent&) event))
+                    activeWindow()->handleWindowEvent((const DFBWindowEvent&) event);
+            }
             break;
 
         case DFEC_USER:
@@ -709,16 +693,13 @@ AppBase::handleEvents(int32_t timeout)
 
         case DFEC_SURFACE:
             {
-                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n" );
+                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
 
-                ILOG_DEBUG(ILX_APPBASE_UPDATES, "  -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n",
-                           event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update),
-                           event.surface.flip_count);
+                ILOG_DEBUG( ILX_APPBASE_UPDATES, "  -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n", event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update), event.surface.flip_count);
 
                 for (SurfaceListenerList::iterator it = __selList.begin();
                         it != __selList.end(); ++it)
-                    ((SurfaceEventListener*) *it)->consumeSurfaceEvent(
-                            (const DFBSurfaceEvent&) event);
+                    ((SurfaceEventListener*) *it)->consumeSurfaceEvent((const DFBSurfaceEvent&) event);
             }
             break;
 
@@ -726,6 +707,10 @@ AppBase::handleEvents(int32_t timeout)
             break;
         }
     }
+
+    if (lastMotion.type != 0)
+        if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
+            activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
 }
 
 void
@@ -735,22 +720,17 @@ AppBase::attachDFBWindow(Window* window)
     {
         DFBResult ret;
 
-        ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow,
-                                                    __buffer);
+        ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow, __buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR(
-                    ILX_APPBASE,
-                    "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_APPBASE, "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
         ret = window->_dfbWindow->RequestFocus(window->_dfbWindow);
         if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPBASE,
-                       "RequestFocus error: %s! \n", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_APPBASE, "RequestFocus error: %s! \n", DirectFBErrorString(ret));
 
         ret = __buffer->Reset(__buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPBASE,
-                       "Buffer reset error: %s!\n", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_APPBASE, "Buffer reset error: %s!\n", DirectFBErrorString(ret));
 
         ILOG_DEBUG(ILX_APPBASE, "Window %p is attached.\n", window);
     }
@@ -763,17 +743,13 @@ AppBase::detachDFBWindow(Window* window)
     {
         DFBResult ret;
 
-        ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow,
-                                                    __buffer);
+        ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow, __buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR(
-                    ILX_APPBASE,
-                    "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_APPBASE, "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
 
         ret = __buffer->Reset(__buffer);
         if (ret != DFB_OK)
-            ILOG_ERROR(ILX_APPBASE,
-                       "Buffer reset error: %s", DirectFBErrorString(ret));
+            ILOG_ERROR(ILX_APPBASE, "Buffer reset error: %s", DirectFBErrorString(ret));
 
         ILOG_DEBUG(ILX_APPBASE, "Window %p is detached.\n", window);
     }
@@ -860,10 +836,8 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
 
     if (we.window.type == DWET_MOTION)
     {
-        Rectangle cold(__instance->__cursorOld.x, __instance->__cursorOld.y, 32,
-                       32);
-        Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32,
-                       32);
+        Rectangle cold(__instance->__cursorOld.x, __instance->__cursorOld.y, 32, 32);
+        Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32, 32);
         if (!getenv("ILIXI_NO_CURSOR"))
             activeWindow()->update(PaintEvent(cnew.united(cold), 10));
     }
