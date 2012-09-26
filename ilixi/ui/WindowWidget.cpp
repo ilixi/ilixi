@@ -134,7 +134,7 @@ WindowWidget::update(const PaintEvent& event)
 
         if (!_update_timer.running())
         {
-            _update_timer.start( 10 );
+            _update_timer.start( 10);
         }
 
         pthread_mutex_unlock(&_updates._listLock);
@@ -520,7 +520,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     case DWET_KEYUP:
         if (_eventManager->focusedWidget())
             return _eventManager->focusedWidget()->consumeKeyEvent(
-                    KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers,
+                    KeyEvent(KeyUpEvent, event.key_symbol, event.key_id, event.modifiers,
                              event.locks));
         return false;
 
@@ -601,7 +601,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
         if (_eventManager->focusedWidget())
             return _eventManager->focusedWidget()->consumeKeyEvent(
-                    KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
+                    KeyEvent(KeyDownEvent, event.key_symbol, event.key_id, event.modifiers,
                              event.locks));
         else
             return false;

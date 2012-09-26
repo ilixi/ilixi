@@ -39,14 +39,18 @@ struct KeyEvent
 {
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol)
             : eventType(type),
-              keySymbol(symbol)
+              keySymbol(symbol),
+              keyID(DIKI_UNKNOWN),
+              modifierMask(DFBInputDeviceModifierMask(0)),
+              lockState(DFBInputDeviceLockState(0))
     {
     }
 
-    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol,
+    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol, DFBInputDeviceKeyIdentifier id,
              DFBInputDeviceModifierMask mask, DFBInputDeviceLockState locks)
             : eventType(type),
               keySymbol(symbol),
+              keyID(id),
               modifierMask(mask),
               lockState(locks)
     {
@@ -54,6 +58,7 @@ struct KeyEvent
 
     KeyEventType eventType;
     DFBInputDeviceKeySymbol keySymbol;
+    DFBInputDeviceKeyIdentifier keyID;
     DFBInputDeviceModifierMask modifierMask;
     DFBInputDeviceLockState lockState;
 };
