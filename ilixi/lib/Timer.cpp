@@ -71,6 +71,8 @@ Timer::repeats() const
 void
 Timer::start(unsigned int msec, unsigned int repeats)
 {
+    if(_running)
+        return;
     _running = true;
     _interval = msec;
     _count = 0;

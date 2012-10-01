@@ -278,7 +278,7 @@ AppBase::addCallback(Callback* cb)
         if (cb == *it)
         {
             pthread_mutex_unlock(&__instance->__cbMutex);
-            ILOG_ERROR(ILX_APPBASE, "Callback %p already added!\n", cb);
+            ILOG_DEBUG(ILX_APPBASE, "Callback %p already added!\n", cb);
             return false;
         }
         __instance->__callbacks.push_back(cb);
@@ -333,7 +333,7 @@ AppBase::addTimer(Timer* timer)
             if (timer == *it)
             {
                 pthread_mutex_unlock(&__instance->__timerMutex);
-                ILOG_ERROR(ILX_APPBASE, "Timer %p already added!\n", timer);
+                ILOG_DEBUG(ILX_APPBASE, "Timer %p already added!\n", timer);
                 return false;
             }
         }
@@ -603,14 +603,14 @@ AppBase::removeWindow(WindowWidget* window)
 void
 AppBase::updateWindows()
 {
-//    ILOG_TRACE_F(ILX_APPBASE);
-//    pthread_mutex_lock(&__windowMutex);
-//
-//    for (WindowList::iterator it = __windowList.begin();
-//            it != __windowList.end(); ++it)
-//        ((WindowWidget*) *it)->updateWindow();
-//
-//    pthread_mutex_unlock(&__windowMutex);
+    ILOG_TRACE_F(ILX_APPBASE);
+    pthread_mutex_lock(&__windowMutex);
+
+    for (WindowList::iterator it = __windowList.begin();
+            it != __windowList.end(); ++it)
+        ((WindowWidget*) *it)->updateWindow();
+
+    pthread_mutex_unlock(&__windowMutex);
 }
 
 void
@@ -627,15 +627,15 @@ AppBase::handleEvents(int32_t timeout)
     if (timeout < 1)
         timeout = 1;
 
-//    for (WindowList::iterator it = __windowList.begin();
-//            it != __windowList.end(); ++it)
-//    {
-//        if (((WindowWidget*) *it)->_updates._updateQueue.size())
-//        {
-//            wait = false;
-//            break;
-//        }
-//    }
+    for (WindowList::iterator it = __windowList.begin();
+            it != __windowList.end(); ++it)
+    {
+        if (((WindowWidget*) *it)->_updates._updateQueue.size())
+        {
+            wait = false;
+            break;
+        }
+    }
 
     if (wait)
     {

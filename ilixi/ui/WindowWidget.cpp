@@ -62,11 +62,12 @@ WindowWidget::WindowWidget(Widget* parent)
     _eventManager = new EventManager(this);
     setRootWindow(this);
 
-    _update_timer.sigExec.connect(sigc::mem_fun(this, &WindowWidget::updateWindow));
+//    _update_timer.sigExec.connect(sigc::mem_fun(this, &WindowWidget::updateWindow));
 }
 
 WindowWidget::~WindowWidget()
 {
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     pthread_mutex_destroy(&_updates._listLock);
     sem_destroy(&_updates._updateReady);
     sem_destroy(&_updates._paintReady);
@@ -81,7 +82,6 @@ WindowWidget::~WindowWidget()
         if (_cursorImage)
             _cursorImage->Release(_cursorImage);
     }
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
 }
 
 bool
@@ -108,10 +108,7 @@ WindowWidget::update()
         _updates._updateQueueRight.push_back(frameGeometry());
 #endif
 
-        if (!_update_timer.running())
-        {
-            _update_timer.start(10);
-        }
+//            _update_timer.start(10, 1);
 
         pthread_mutex_unlock(&_updates._listLock);
     }
@@ -129,10 +126,7 @@ WindowWidget::update(const PaintEvent& event)
         _updates._updateQueueRight.push_back(event.right);
 #endif
 
-        if (!_update_timer.running())
-        {
-            _update_timer.start(10);
-        }
+//            _update_timer.start(10, 1);
 
         pthread_mutex_unlock(&_updates._listLock);
     }
