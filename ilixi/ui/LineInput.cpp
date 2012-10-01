@@ -93,6 +93,18 @@ LineInput::margin() const
     return _margin;
 }
 
+const Rectangle&
+LineInput::cursorRect() const
+{
+    return _cursor;
+}
+
+const Rectangle&
+LineInput::selectionRect() const
+{
+    return _selection;
+}
+
 void
 LineInput::setMargin(const Margin& margin)
 {
@@ -452,7 +464,7 @@ LineInput::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    stylist()->drawLineInput(&p, this);
+    stylist()->drawLineInput(&p, this, _cursorOn);
     p.end();
 }
 
@@ -466,7 +478,7 @@ LineInput::updateTextBaseGeometry()
             height() - stylist()->defaultParameter(StyleHint::LineInputTB) - _margin.vSum());
     _layout.doLayout(font());
     _cursor.setSize(
-            2, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+            1, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     updateCursorPosition();
 }
 

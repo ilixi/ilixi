@@ -91,7 +91,7 @@ public:
      * Draws a line input.
      */
     virtual void
-    drawLineInput(Painter* painter, LineInput* input);
+    drawLineInput(Painter* painter, LineInput* input, bool cursor = false);
 
     /*!
      * Draws a groupbox.

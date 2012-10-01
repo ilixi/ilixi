@@ -153,7 +153,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
 }
 
 void
-Stylist::drawLineInput(Painter* p, LineInput* input)
+Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
 {
     const WidgetState state = input->state();
 
@@ -178,6 +178,13 @@ Stylist::drawLineInput(Painter* p, LineInput* input)
                        _style->li.foc);
     }
 
+    // selection
+    if (!input->selectionRect().isNull())
+    {
+        p->setBrush(_palette->focus);
+        p->fillRectangle(input->selectionRect());
+    }
+
     // layout
     if (input->layout().text().size())
     {
@@ -192,10 +199,10 @@ Stylist::drawLineInput(Painter* p, LineInput* input)
         p->resetClip();
     }
 
-    if (input->_cursorOn)
+    if (cursor)
     {
         p->setBrush(Color(0, 0, 255));
-        p->fillRectangle(input->_cursor);
+        p->fillRectangle(input->cursorRect());
     }
 }
 

@@ -34,7 +34,6 @@ namespace ilixi
 //! Single line text input
 class LineInput : public Widget, public TextBase
 {
-    friend class Stylist;
 public:
     /*!
      * Constructor.
@@ -91,6 +90,18 @@ public:
      */
     const std::string&
     prefix() const;
+
+    /*!
+     * Returns a rectangle at caret position.
+     */
+    const Rectangle&
+    cursorRect() const;
+
+    /*!
+     * Returns a rectangle around selected text.
+     */
+    const Rectangle&
+    selectionRect() const;
 
     /*!
      * Sets margin around text.
