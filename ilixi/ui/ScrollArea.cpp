@@ -24,7 +24,7 @@
 #include <ui/ScrollArea.h>
 #include <graphics/Painter.h>
 #include <lib/TweenAnimation.h>
-#include <ui/LayoutBase.h>
+#include <core/Logger.h>
 #include <cmath>
 
 namespace ilixi
@@ -37,17 +37,18 @@ const int queueSize = 41;
 // this variable specifies how fast content bounces back when it is outside edges (greater = faster bounce).
 const int rubber = 35;
 // this variable specifies how much velocity is reduced in each update (greater = faster decrease).
-const float friction = 0.04;
+const float friction = 0.08;
 
 ScrollArea::ScrollArea(Widget* parent)
         : Widget(parent),
-          _options(0x009),
+          _options(HorizontalAuto | VerticalAuto),
           _content(NULL),
           _cx(0),
           _cy(0),
           _vx(0),
           _vy(0)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     setInputMethod(PointerInputTracking);
     setConstraints(NoConstraint, NoConstraint);
     sigGeometryUpdated.connect(
@@ -58,13 +59,11 @@ ScrollArea::ScrollArea(Widget* parent)
     _ani->addTween(_tween);
     _ani->setDuration(1000);
     _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
-
-    _content = new LayoutBase();
-    addChild(_content);
 }
 
 ScrollArea::~ScrollArea()
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     delete _ani;
 }
 
@@ -92,11 +91,10 @@ ScrollArea::setContent(Widget* content)
         removeChild(_content);
         _content = content;
         if (_options & SmoothScrolling)
-            _content->_surfaceDesc = BlitDescription;
+            surface()->setSurfaceFlag(Surface::BlitDescription);
         addChild(_content);
         raiseChildToFront(_content);
-        updateHThumb();
-        updateVThumb();
+        doLayout();
     }
 }
 
@@ -106,12 +104,12 @@ ScrollArea::setScollerAlways(bool horizontal, bool vertical)
     if (horizontal)
         _options |= HorizontalAlways;
     else
-        _options &= ~HorizontalAuto;
+        _options &= ~HorizontalAlways;
 
     if (vertical)
         _options |= VerticalAlways;
     else
-        _options &= ~HorizontalAuto;
+        _options &= ~VerticalAlways;
 }
 
 void
@@ -129,11 +127,12 @@ ScrollArea::setSmoothScrolling(bool smoothScroll)
     if (smoothScroll)
     {
         _options |= SmoothScrolling;
-        _content->_surfaceDesc = BlitDescription;
+        surface()->setSurfaceFlag(Surface::BlitDescription);
     } else
     {
         _options &= ~SmoothScrolling;
-        _content->_surfaceDesc = DefaultDescription;
+        surface()->unsetSurfaceFlag(Surface::HasOwnSurface);
+        surface()->setSurfaceFlag(Surface::DefaultDescription);
     }
 }
 
@@ -284,7 +283,7 @@ ScrollArea::pointerWheelEvent(const PointerEvent& event)
     _ani->stop();
     if (_options & VerticalScroll)
         _cy += height() / 10 * event.wheelStep;
-    else
+    else if (_options & HorizontalScroll)
         _cx += width() / 10 * event.wheelStep;
     _ani->start();
 }
@@ -323,6 +322,7 @@ ScrollArea::compose(const PaintEvent& event)
 void
 ScrollArea::updateHThumb()
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_options & HorizontalAlways)
         _options |= (HorizontalScroll | DrawHorizontalThumb);
     else if ((_options & HorizontalAuto) && _content->width() > width())
@@ -334,6 +334,7 @@ ScrollArea::updateHThumb()
 void
 ScrollArea::updateVThumb()
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_options & VerticalAlways)
         _options |= (VerticalScroll | DrawVerticalThumb);
     else if ((_options & VerticalAuto) && _content->height() > height())
@@ -345,6 +346,7 @@ ScrollArea::updateVThumb()
 void
 ScrollArea::updateScollAreaGeometry()
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     _content->moveTo(0, 0);
     Size contentSize = _content->preferredSize();
     if (contentSize.isValid())

@@ -29,17 +29,33 @@
 
 namespace ilixi
 {
+class Widget;
 //! Stores surface pixel data.
 class Surface
 {
-    friend class Widget; // so it can release if necessary.
-    friend class Painter; // access to dfbSurface
+    friend class Widget;    // so it can release if necessary.
+    friend class Painter;   // access to dfbSurface
 
 public:
     /*!
+     * These flags specify surface geometry and allocation functionality.
+     */
+    enum SurfaceFlags
+    {
+        InitialiseSurface = 0x01,   //!< Set if widget should (re)initialise its surface.
+        SurfaceModified = 0x02,     //!< Set if widget's surface geometry is modified.
+        DoZSort = 0x04,
+        HasOwnSurface = 0x08,       //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+        RootSurface = 0x10,         //!< Widget's surface is directly acquired from root Window (not a sub-surface).
+        DefaultDescription = (InitialiseSurface | SurfaceModified),
+        BlitDescription = (InitialiseSurface | SurfaceModified | HasOwnSurface),    //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea.
+        WindowDescription = (InitialiseSurface | SurfaceModified | RootSurface)  //!< Use if widget is a WindowWidget, e.g. Application or Dialog.
+    };
+
+    /*!
      * Constructor.
      */
-    Surface();
+    Surface(Widget* owner);
 
     /*!
      * Destructor.
@@ -48,24 +64,12 @@ public:
     ~Surface();
 
     /*!
-     * Creates a new DFB surface which has the same pixel format as window.
+     * Returns surface flags.
      *
-     * @param width in pixels.
-     * @param height in pixels.
+     * @sa setSurfaceFlag();
      */
-
-    bool
-    createDFBSurface(int width, int height, DFBSurfaceCapabilities caps =
-                             DSCAPS_VIDEOONLY);
-
-    /*!
-     * Creates a new DFB sub-surface.
-     *
-     * @param geometry relative coordinates.
-     * @param parent DFB surface.
-     */
-    bool
-    createDFBSubSurface(const Rectangle& geometry, IDirectFBSurface* parent);
+    SurfaceFlags
+    flags() const;
 
     /*!
      * Returns the interface to the underlying DirectFB surface.
@@ -80,23 +84,23 @@ public:
     dfbSurfaceId() const;
 
     /*!
-     * This method is used for modifying the current geometry of DirectFB surface.
-     *
-     * @param geometry New surface geometry.
+     * Sets a surface flag.
      */
     void
-    setGeometry(const Rectangle& geometry);
+    setSurfaceFlag(SurfaceFlags flags);
 
     /*!
-     * This method is used for modifying the current geometry of DirectFB surface.
-     *
-     * @param x
-     * @param y
-     * @param width
-     * @param height
+     * Unsets a surface flag.
      */
     void
-    setGeometry(int x, int y, int width, int height);
+    unsetSurfaceFlag(SurfaceFlags flags);
+
+    /*!
+     * This method is called within widget's paint method in order to initialise or
+     * modify widget's surface and update the geometry of widget's frame and children.
+     */
+    void
+    updateSurface(const PaintEvent& event);
 
     /*!
      * Flips DFB surface.
@@ -224,11 +228,56 @@ public:
     flipStereo(const Rectangle& left, const Rectangle& right);
 #endif
 
+protected:
+    /*!
+     * Creates a new DFB surface which has the same pixel format as window.
+     *
+     * @param width in pixels.
+     * @param height in pixels.
+     */
+    bool
+    createDFBSurface(int width, int height, DFBSurfaceCapabilities caps = DSCAPS_VIDEOONLY);
+
+    /*!
+     * Creates a new DFB sub-surface.
+     *
+     * @param geometry relative coordinates.
+     * @param parent DFB surface.
+     */
+    bool
+    createDFBSubSurface(const Rectangle& geometry, IDirectFBSurface* parent);
+
+    /*!
+     * This method is used for modifying the current geometry of DirectFB surface.
+     *
+     * @param geometry New surface geometry.
+     */
+    void
+    setGeometry(const Rectangle& geometry);
+
+    /*!
+     * This method is used for modifying the current geometry of DirectFB surface.
+     *
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    void
+    setGeometry(int x, int y, int width, int height);
+
 private:
+    //! Pointer to owner widget.
+    Widget* _owner;
     //! Interface to DFB surface.
     IDirectFBSurface* _dfbSurface;
     //! Interface to parent DFB surface.
     IDirectFBSurface* _parentSurface;
+    /*!
+     * This property controls the allocation of surface and specifies how a widget
+     * frame and surface geometry should be used. It is set to DefaultDescription by default.
+     */
+    SurfaceFlags _flags;
 
 #ifdef ILIXI_STEREO_OUTPUT
     IDirectFBSurface* _rightSurface;

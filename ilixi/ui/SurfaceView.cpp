@@ -259,7 +259,7 @@ SurfaceView::renderSource(const PaintEvent& event)
 #endif
 
         IDirectFBSurface* dfbSurface = surface()->dfbSurface();
-        DFBRegion rs = mapToSurface(event.rect).dfbRegion();
+        DFBRegion rs = event.rect.dfbRegion();
         dfbSurface->SetClip(dfbSurface, &rs);
 
         if (opacity() == 255)
@@ -304,10 +304,10 @@ SurfaceView::renderSource(const PaintEvent& event)
         }
 
         if (hScale() == 1 && vScale() == 1)
-            dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, 0, 0);
+            dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, absX(), absY());
         else
         {
-            DFBRectangle rect = { 0, 0, width(), height() };
+            DFBRectangle rect = { absX(), absY(), width(), height() };
             dfbSurface->StretchBlit(dfbSurface, _sourceSurface, NULL, &rect);
         }
     }

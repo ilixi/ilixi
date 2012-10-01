@@ -39,7 +39,7 @@ namespace ilixi
         sigc::mem_fun(this, &VKMenu::updateVKMenuGeometry));
 
     _level1 = new ScrollArea();
-    _level1->setSurfaceFlags(BlitDescription);
+    _level1->surface()->setSurfaceFlag(Surface::BlitDescription);
 //    _level1->setAutoScrolling(false);
     addChild(_level1);
 

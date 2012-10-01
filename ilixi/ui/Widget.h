@@ -46,6 +46,7 @@ class Window;
  */
 class Widget : virtual public sigc::trackable
 {
+    friend class Surface;
     friend class Application; // sets _stylist.
     friend class WindowWidget; // sets RootWindow.
     friend class EventManager;
@@ -106,14 +107,14 @@ public:
 
     /*!
      * Returns absolute x coordinate of the widget in window coordinates.
-     * Value depends on widget's geometry flag and whether it has a parent.
+     * Value depends on widget's surface flags and whether it has a parent.
      */
     int
     absX() const;
 
     /*!
      * Returns absolute y coordinate of the widget in window coordinates.
-     * Value depends on widget's geometry flag and whether it has a parent.
+     * Value depends on widget's surface flags and whether it has a parent.
      */
     int
     absY() const;
@@ -137,7 +138,7 @@ public:
     width() const;
 
     /*!
-     *  Returns size (width, height) of widget.
+     * Returns size (width, height) of widget.
      */
     Size
     size() const;
@@ -253,6 +254,8 @@ public:
 
     /*!
      * Returns widget's opacity.
+     *
+     * Setting opacity of a parent affects all children.
      */
     u8
     opacity() const;
@@ -484,8 +487,7 @@ public:
      * @param y Default is NoConstraint.
      */
     void
-    setConstraints(WidgetResizeConstraint x = NoConstraint,
-                   WidgetResizeConstraint y = NoConstraint);
+    setConstraints(WidgetResizeConstraint x = NoConstraint, WidgetResizeConstraint y = NoConstraint);
 
     /*!
      * Sets widget's state to enabled and calls update() if widget is disabled.
@@ -511,6 +513,8 @@ public:
 
     /*!
      * Sets widget's opacity.
+     *
+     * Setting opacity to 0 will make widget invisible.
      */
     void
     setOpacity(u8 opacity);
@@ -579,8 +583,8 @@ public:
     bringToFront();
 
     /*!
-     * Invokes widget's compose method only if widget is visible and target area
-     * intersects with widget's absolute geometry.
+     * Invokes widget's compose method only if widget is visible and PaintEvent target area
+     * intersects widget's absolute geometry.
      *
      * Warning: You should not override this method unless you know what you are doing.
      *
@@ -593,9 +597,6 @@ public:
 
     /*!
      * Repaints widget immediately without any clipping.
-     *
-     * This method is useful if widget need to paint itself repetitively, e.g.
-     * animations.
      *
      * You should use update() method if you need to simply redraw widget and its contents.
      *
@@ -615,8 +616,7 @@ public:
     /*!
      * Repaints widget and updates parent window inside main event loop.
      *
-     * Widgets intersecting this widget's frame geometry
-     * are also painted.
+     * Widgets intersecting this widget's frame geometry are also painted.
      *
      * @sa repaint()
      */
@@ -638,22 +638,22 @@ public:
     doLayout();
 
     /*!
-     * Returns neighbour widget in given direction.
+     * Returns neighbor widget in given direction.
      */
     Widget*
     getNeighbour(Direction direction) const;
 
     /*!
-     * Sets neighbour widget in given direction.
+     * Sets neighbor widget in given direction.
      *
      * @param direction
-     * @param neightbour
+     * @param neighbor
      */
     void
     setNeighbour(Direction direction, Widget* neightbour);
 
     /*!
-     * Sets neighbours of widget.
+     * Sets neighbors of widget.
      *
      * @param top
      * @param bottom
@@ -759,14 +759,6 @@ public:
     surface() const;
 
     /*!
-     * Set the surface description for widget's surface.
-     *
-     * \warning Initialise flag must be set to true.
-     */
-    void
-    setSurfaceFlags(SurfaceDescription desc);
-
-    /*!
      * Returns event manager of widget.
      */
     EventManager*
@@ -785,12 +777,6 @@ protected:
     WidgetState _state;
 
     /*!
-     * This property controls the allocation of widget's surface and specifies how its
-     * frame and surface geometry should be used. It is set to DefaultDescription by default.
-     */
-    SurfaceDescription _surfaceDesc;
-
-    /*!
      * This property stores widget's input capabilities. It is set to NoInput by default.
      */
     WidgetInputMethod _inputMethod;
@@ -804,7 +790,7 @@ protected:
      * This property stores widget's absolute position (x, y) and surface dimension.
      *
      * Primary use of frame geometry is to determine if a pointer event should be consumed by the widget.
-     * If x and y coordinates of an event are inside a widget's frane geometry, event is consumed and the widget's input
+     * If x and y coordinates of an event are inside a widget's frame geometry, event is consumed and the widget's input
      * event handlers are executed accordingly.
      *
      * Note that if the event coordinates are contained by more than one widget, events
@@ -889,13 +875,6 @@ protected:
      */
     virtual void
     paintChildren(const PaintEvent& event);
-
-    /*!
-     * This method is called within widget's paint method in order to initialise or
-     * modify widget's surface and update the geometry of widget's frame and children.
-     */
-    void
-    updateSurface(const PaintEvent& event);
 
     /*!
      * This method updates widget's absolute geometry and it is called when
@@ -1007,13 +986,11 @@ protected:
     virtual void
     leaveEvent(const PointerEvent& pointerEvent);
 
-    /*!
-     * Sets widget's SurfaceModified geometry flag.
-     */
-    void
-    setSurfaceGeometryModified();
-
 private:
+    //! This property stores the widget's unique id.
+    unsigned int _id;
+    //! This property stores the widget's z order.
+    int _z;
     //! This property stores the widget's opacity.
     u8 _opacity;
     //! This property stores the widget's parent.
@@ -1033,8 +1010,9 @@ private:
     //! This property defines widget's behaviour inside a layout. Default is NoConstraint.
     WidgetResizeConstraint _yResizeConstraint;
 
-    //! This property holds the widget's minimum allowed size that is specified by the user.
     /*!
+     * This property holds the widget's minimum allowed size that is specified by the user.
+     *
      * Note that minimum size overrides layout resize constraints.
      *
      * In order to set a minimum size use setMinimumSize() member method. If you wish to
@@ -1042,8 +1020,9 @@ private:
      */
     Size _minSize;
 
-    //! This property holds the widget's maximum allowed size that is specified by the user.
     /*!
+     * This property holds the widget's maximum allowed size that is specified by the user.
+     *
      * Note that maximum size overrides layout resize constraints.
      *
      * In order to set a maximum size use setMaximumSize() member method. If you wish to
@@ -1051,14 +1030,12 @@ private:
      */
     Size _maxSize;
 
-    int _z;
-
-    unsigned int _id;
-
+    //! Value of this variable is incremented whenever a widget is constructed.
     static unsigned int _idCounter;
 
-    //! Pointer to application wide Stylist instance.
     /*!
+     * Pointer to application wide Stylist instance.
+     *
      * The stylist is set and maintained by the main application. It is used for acquiring default
      * size hints and drawing widgets according to a particular style.
      *
@@ -1075,14 +1052,6 @@ private:
      */
     void
     setRootWindow(WindowWidget* rootWindow);
-
-    /*!
-     * Deletes surface and unsets InitialiseSurface flag.
-     *
-     * Must be executed by root window, if window surface is released.
-     */
-    void
-    invalidateSurface();
 };
 }
 

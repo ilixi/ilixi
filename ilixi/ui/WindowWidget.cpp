@@ -45,7 +45,7 @@ WindowWidget::WindowWidget(Widget* parent)
     sem_init(&_updates._updateReady, 0, 0);
     sem_init(&_updates._paintReady, 0, 1);
 
-    _surfaceDesc = WindowDescription;
+    _surface->setSurfaceFlag(Surface::WindowDescription);
     setMargins(5, 5, 5, 5);
     setNeighbours(this, this, this, this);
 
@@ -151,7 +151,7 @@ WindowWidget::paint(const PaintEvent& event)
         {
             sem_wait(&_updates._updateReady);
 
-            updateSurface(event);
+            _surface->updateSurface(event);
 
 #ifdef ILIXI_STEREO_OUTPUT
             PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
@@ -439,8 +439,6 @@ WindowWidget::closeWindow()
     _eventManager->setExposedWidget(NULL);
 
     AppBase::removeWindow(this);
-
-    invalidateSurface();
 
     if (!(AppBase::appOptions() & OptExclusive))
         _window->releaseDFBWindow();

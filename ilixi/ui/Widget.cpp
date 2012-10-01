@@ -35,35 +35,27 @@ D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
 unsigned int Widget::_idCounter = 0;
 StylistBase* Widget::_stylist = NULL;
 
-bool
-compareZ(Widget* first, Widget* second)
-{
-    if (first->_z < second->_z)
-        return true;
-    return false;
-}
+
 
 Widget::Widget(Widget* parent)
         : _state(DefaultState),
-          _surfaceDesc(DefaultDescription),
           _inputMethod(NoInput),
+          _id(_idCounter++),
+          _z(0),
           _opacity(255),
           _parent(parent),
-          _surface(NULL),
+          _surface(new Surface(this)),
           _rootWindow(NULL),
           _preSelectedWidget(NULL),
           _xResizeConstraint(NoConstraint),
           _yResizeConstraint(NoConstraint)
 {
-    _id = _idCounter++;
-    _z = 0;
     _neighbours[0] = NULL;
     _neighbours[1] = NULL;
     _neighbours[2] = NULL;
     _neighbours[3] = NULL;
 
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Widget::updateFrameGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Widget::updateFrameGeometry));
     ILOG_TRACE_W(ILX_WIDGET);
 }
 
@@ -71,7 +63,6 @@ Widget::Widget(Widget* parent)
 // e.g. children and surface are ignored.
 Widget::Widget(const Widget& widget)
         : _state(widget._state),
-          _surfaceDesc(widget._surfaceDesc),
           _inputMethod(widget._inputMethod),
           _opacity(widget._opacity),
           _parent(widget._parent),
@@ -88,8 +79,7 @@ Widget::Widget(const Widget& widget)
     _neighbours[2] = widget._neighbours[2];
     _neighbours[3] = widget._neighbours[3];
 
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Widget::updateFrameGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Widget::updateFrameGeometry));
     ILOG_TRACE_W(ILX_WIDGET);
 }
 
@@ -175,8 +165,7 @@ Widget::frameGeometry() const
 Rectangle
 Widget::surfaceGeometry() const
 {
-    return Rectangle(_surfaceGeometry.x(), _surfaceGeometry.y(),
-                     _frameGeometry.width(), _frameGeometry.height());
+    return Rectangle(_surfaceGeometry.x(), _surfaceGeometry.y(), _frameGeometry.width(), _frameGeometry.height());
 }
 
 int
@@ -313,7 +302,7 @@ Widget::moveTo(int x, int y)
         ILOG_TRACE_W(ILX_WIDGET);
         ILOG_DEBUG(ILX_WIDGET, " -> P(%d, %d)\n", x, y);
         _surfaceGeometry.moveTo(x, y);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -329,7 +318,7 @@ Widget::translate(int deltaX, int deltaY)
     if (deltaX != 0 || deltaY != 0)
     {
         _surfaceGeometry.translate(deltaX, deltaY);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -339,7 +328,7 @@ Widget::setX(int x)
     if (x != _surfaceGeometry.x())
     {
         _surfaceGeometry.setX(x);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -349,7 +338,7 @@ Widget::setY(int y)
     if (y != _surfaceGeometry.y())
     {
         _surfaceGeometry.setY(y);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -359,9 +348,9 @@ Widget::setZ(int z)
     if (z != _z)
     {
         if (_parent)
-            _parent->_surfaceDesc = (SurfaceDescription) (_parent->_surfaceDesc | DoZSort);
+            _parent->_surface->setSurfaceFlag(Surface::DoZSort);
         _z = z;
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -377,7 +366,7 @@ Widget::setHeight(int height)
         else if (_maxSize.height() > 0 && height > _maxSize.height())
             height = _maxSize.height();
         _frameGeometry.setHeight(height);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -393,7 +382,7 @@ Widget::setWidth(int width)
         else if (_maxSize.width() > 0 && width > _maxSize.width())
             width = _maxSize.width();
         _frameGeometry.setWidth(width);
-        setSurfaceGeometryModified();
+        _surface->setSurfaceFlag(Surface::SurfaceModified);
     }
 }
 
@@ -473,7 +462,6 @@ Widget::setConstraints(WidgetResizeConstraint x, WidgetResizeConstraint y)
 void
 Widget::setEnabled()
 {
-    // TODO affects all children
     if ((_state & DisabledState))
     {
         _state = (WidgetState) (_state & ~DisabledState);
@@ -484,7 +472,6 @@ Widget::setEnabled()
 void
 Widget::setDisabled()
 {
-    // TODO affects all children
     if (!(_state & DisabledState))
     {
         _state = (WidgetState) (_state | DisabledState);
@@ -495,7 +482,6 @@ Widget::setDisabled()
 void
 Widget::setVisible(bool visible)
 {
-    // TODO affects all children
     if (visible && (_state & InvisibleState))
     {
         _state = (WidgetState) (_state & ~InvisibleState);
@@ -555,8 +541,7 @@ Widget::setParent(Widget* parent)
         // remove me from old parent's children list...
         if (_parent)
         {
-            WidgetListIterator it = std::find(_parent->_children.begin(),
-                                              _parent->_children.end(), this);
+            WidgetListIterator it = std::find(_parent->_children.begin(), _parent->_children.end(), this);
             if (this == *it)
                 _parent->_children.erase(it);
         }
@@ -629,7 +614,7 @@ Widget::repaint(const PaintEvent& event)
 {
     if (_parent && !(_state & InvisibleState))
     {
-        if (_surfaceDesc & HasOwnSurface)
+        if (_surface->flags() & Surface::HasOwnSurface)
         {
             _surface->clear(mapToSurface(event.rect));
             _parent->repaint(PaintEvent(this, event));
@@ -644,7 +629,7 @@ Widget::update()
 {
     if (_rootWindow && !(_state & InvisibleState)) // FIXME invis check
         _rootWindow->update(PaintEvent(_frameGeometry, z()));
-    else if ((_surfaceDesc & HasOwnSurface) || (_surfaceDesc & RootSurface))
+    else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
         paint(PaintEvent(_frameGeometry, z()));
 }
 
@@ -653,13 +638,13 @@ Widget::update(const PaintEvent& event)
 {
     if (_parent && !(_state & InvisibleState))
     {
-        if (_surfaceDesc & HasOwnSurface)
+        if (_surface->flags() & Surface::HasOwnSurface)
         {
             _surface->clear(mapToSurface(event.rect));
             _parent->update(PaintEvent(this, event));
         } else
             _parent->update(event);
-    } else if ((_surfaceDesc & HasOwnSurface) || (_surfaceDesc & RootSurface))
+    } else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
         paint(event);
 }
 
@@ -700,38 +685,31 @@ Widget::mapToSurface(const Rectangle& rect) const
 Rectangle
 Widget::mapToSurface(int x, int y, int width, int height) const
 {
-    if (_surfaceDesc & HasOwnSurface)
-        return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()),
-                         y - (_surfaceGeometry.y() + _frameGeometry.y()), width,
-                         height);
+    if (_surface->flags() & Surface::HasOwnSurface)
+        return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()), y - (_surfaceGeometry.y() + _frameGeometry.y()), width, height);
     else
-        return Rectangle(x - _frameGeometry.x(), y - _frameGeometry.y(), width,
-                         height);
+        return Rectangle(x - _frameGeometry.x(), y - _frameGeometry.y(), width, height);
 }
 
 Point
 Widget::mapToSurface(const Point& point) const
 {
-    if (_surfaceDesc & HasOwnSurface)
-        return Point(point.x() - (_surfaceGeometry.x() + _frameGeometry.x()),
-                     point.y() - (_surfaceGeometry.y() + _frameGeometry.y()));
+    if (_surface->flags() & Surface::HasOwnSurface)
+        return Point(point.x() - (_surfaceGeometry.x() + _frameGeometry.x()), point.y() - (_surfaceGeometry.y() + _frameGeometry.y()));
     else
-        return Point(point.x() - _frameGeometry.x(),
-                     point.y() - _frameGeometry.y());
+        return Point(point.x() - _frameGeometry.x(), point.y() - _frameGeometry.y());
 }
 
 Rectangle
 Widget::mapFromSurface(const Rectangle& rect) const
 {
-    return Rectangle(_frameGeometry.x() + rect.x(),
-                     _frameGeometry.y() + rect.y(), rect.width(), rect.height());
+    return Rectangle(_frameGeometry.x() + rect.x(), _frameGeometry.y() + rect.y(), rect.width(), rect.height());
 }
 
 Rectangle
 Widget::mapFromSurface(int x, int y, int width, int height) const
 {
-    return Rectangle(_frameGeometry.x() + x, _frameGeometry.y() + y, width,
-                     height);
+    return Rectangle(_frameGeometry.x() + x, _frameGeometry.y() + y, width, height);
 }
 
 Point
@@ -743,16 +721,14 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(
-            pointerEvent.x, pointerEvent.y, true)))
+    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
         if ((_inputMethod & PointerTracking) && (pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion))
         {
             if (!(_state & PressedState))
             {
                 _state = (WidgetState) (_state | PressedState);
-                _rootWindow->_eventManager->setGrabbedWidget(this,
-                                                             pointerEvent);
+                _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             }
         } else if ((_inputMethod & PointerTracking) && (pointerEvent.eventType == PointerWheel))
         {
@@ -760,10 +736,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             return true;
         } else if (_children.size())
         {
-            for (WidgetListReverseIterator it = _children.rbegin();
-                    it != _children.rend(); ++it)
-                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(
-                        pointerEvent))
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(pointerEvent))
                     return true;
         }
 
@@ -784,8 +758,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         } else if (pointerEvent.eventType == PointerMotion)
         {
             if (_state & PressedState)
-                _rootWindow->_eventManager->setGrabbedWidget(this,
-                                                             pointerEvent);
+                _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             pointerMotionEvent(pointerEvent);
             _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
         }
@@ -806,8 +779,7 @@ Widget::consumeKeyEvent(const KeyEvent& keyEvent)
         return true;
     } else
     {
-        for (WidgetListReverseIterator it = _children.rbegin();
-                it != _children.rend(); ++it)
+        for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
             if (((Widget*) *it)->consumeKeyEvent(keyEvent))
                 return true;
     }
@@ -832,12 +804,6 @@ Widget::surface() const
     return _surface;
 }
 
-void
-Widget::setSurfaceFlags(SurfaceDescription desc)
-{
-    _surfaceDesc = desc;
-}
-
 EventManager*
 Widget::eventManager() const
 {
@@ -855,8 +821,7 @@ Widget::isChild(Widget* child)
     if (!child)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it)
         return true;
     return false;
@@ -868,8 +833,7 @@ Widget::addChild(Widget* child)
     if (!child)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it)
     {
         ILOG_WARNING(ILX_WIDGET, "Widget %p is already a child.", child);
@@ -880,8 +844,7 @@ Widget::addChild(Widget* child)
     _children.push_back(child);
 
     // Fixme this might be unnecessary since layout should do it.
-    child->setNeighbours(getNeighbour(Up), getNeighbour(Down),
-                         getNeighbour(Left), getNeighbour(Right));
+    child->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
 
     ILOG_DEBUG(ILX_WIDGET, "Added child %p\n", child);
     return true;
@@ -893,8 +856,7 @@ Widget::removeChild(Widget* child)
     if (!child)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it)
     {
         delete *it;
@@ -914,8 +876,7 @@ Widget::raiseChildToFront(Widget* child)
     if (_children.size() == 1)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it && it != _children.end())
     {
         _children.erase(it);
@@ -934,8 +895,7 @@ Widget::lowerChildToBottom(Widget* child)
     if (_children.size() == 1)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it && it != _children.begin())
     {
         _children.erase(it);
@@ -954,8 +914,7 @@ Widget::raiseChild(Widget* child)
     if (_children.size() == 1)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it && it != _children.end())
     {
         WidgetListIterator temp = it;
@@ -979,8 +938,7 @@ Widget::lowerChild(Widget* child)
     if (_children.size() == 1)
         return false;
 
-    WidgetListIterator it = std::find(_children.begin(), _children.end(),
-                                      child);
+    WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it && it != _children.begin())
     {
         WidgetListIterator temp = it;
@@ -1004,74 +962,6 @@ Widget::paintChildren(const PaintEvent& event)
 }
 
 void
-Widget::updateSurface(const PaintEvent& event)
-{
-    ILOG_TRACE_W(ILX_WIDGET);
-    if (_surfaceDesc & SurfaceModified)
-        sigGeometryUpdated();
-
-#ifdef ILIXI_STEREO_OUTPUT
-    if (_surface)
-    _surface->setStereoEye(event.eye);
-
-    if (_surfaceDesc & InitialiseSurface)
-    {
-        delete _surface;
-        _surface = new Surface();
-        _surface->setStereoEye(event.eye);
-        bool ret = false;
-        if (_surfaceDesc & HasOwnSurface)
-        ret = _surface->createDFBSurface(width(), height());
-        else if (_surfaceDesc & RootSurface)
-        ret = _surface->createDFBSubSurfaceStereo(surfaceGeometry(),
-                _rootWindow->windowSurface(), z());
-        else if (_parent)
-        ret = _surface->createDFBSubSurfaceStereo(_frameGeometry,
-                _rootWindow->windowSurface(), z());
-        if (ret)
-        _surfaceDesc =
-        (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
-    }
-#else
-    if (_surfaceDesc & InitialiseSurface)
-    {
-        delete _surface;
-        _surface = new Surface();
-        bool ret = false;
-
-        if (_surfaceDesc & HasOwnSurface)
-        {
-            ILOG_DEBUG(
-                    ILX_WIDGET,
-                    "  -> SurfaceDesc: 0x%03x HasOwnSurface\n", _surfaceDesc);
-            ret = _surface->createDFBSurface(width(), height());
-        } else if (_surfaceDesc & RootSurface)
-        {
-            ILOG_DEBUG( ILX_WIDGET,
-                       "  -> SurfaceDesc: 0x%03x RootSurface\n", _surfaceDesc);
-            ret = _surface->createDFBSubSurface(surfaceGeometry(),
-                                                _rootWindow->windowSurface());
-        } else if (_parent)
-        {
-            ILOG_DEBUG( ILX_WIDGET,
-                       "  -> SurfaceDesc: 0x%03x Default\n", _surfaceDesc);
-            ret = _surface->createDFBSubSurface(
-                    surfaceGeometry(), _parent->surface()->dfbSurface());
-        }
-
-        if (ret)
-            _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
-    }
-#endif
-
-    if (_surfaceDesc & DoZSort)
-    {
-        _children.sort(compareZ);
-        _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~DoZSort);
-    }
-}
-
-void
 Widget::updateFrameGeometry()
 {
     int x = _surfaceGeometry.x();
@@ -1084,21 +974,18 @@ Widget::updateFrameGeometry()
 
     _frameGeometry.moveTo(x, y);
 
-    ILOG_DEBUG( ILX_WIDGET,
-               "Widget %d updateFrameGeometry( %d, %d)\n", _id, x, y);
+    ILOG_DEBUG( ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, x, y);
 
-    if (_surface && !(_surfaceDesc & HasOwnSurface))
-#ifdef ILIXI_STEREO_OUTPUT
-        _surface->setStereoGeometry(_frameGeometry, z());
-#else
-        _surface->setGeometry(surfaceGeometry());
-#endif
+//    if (!(_surface->flags() & Surface::HasOwnSurface))
+//#ifdef ILIXI_STEREO_OUTPUT
+//        _surface->setStereoGeometry(_frameGeometry, z());
+//#else
+//        _surface->setGeometry(surfaceGeometry());
+//#endif
+        _surface->unsetSurfaceFlag(Surface::SurfaceModified);
 
-    _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~SurfaceModified);
-
-    for (WidgetList::const_iterator it = _children.begin();
-            it != _children.end(); ++it)
-        ((Widget*) *it)->setSurfaceGeometryModified();
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+        ((Widget*) *it)->_surface->setSurfaceFlag(Surface::SurfaceModified);
 }
 
 void
@@ -1161,13 +1048,6 @@ Widget::leaveEvent(const PointerEvent& mouseEvent)
 {
 }
 
-// TODO remove this method...
-void
-Widget::setSurfaceGeometryModified()
-{
-    _surfaceDesc = (SurfaceDescription) (_surfaceDesc | SurfaceModified);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Private methods...
 ////////////////////////////////////////////////////////////////////////////////////
@@ -1176,25 +1056,14 @@ Widget::setRootWindow(WindowWidget* root)
 {
     if (_rootWindow != root)
     {
-        _surfaceDesc = (SurfaceDescription) (_surfaceDesc | InitialiseSurface);
+        _surface->setSurfaceFlag(Surface::InitialiseSurface);
         _rootWindow = root;
     }
 
-    setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left],
-                  _neighbours[Right]);
+    setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
 
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
         (*it)->setRootWindow(root);
-}
-
-void
-Widget::invalidateSurface()
-{
-    _surfaceDesc = (SurfaceDescription) (_surfaceDesc | InitialiseSurface);
-    delete _surface;
-    _surface = NULL;
-    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
-        (*it)->invalidateSurface();
 }
 
 }

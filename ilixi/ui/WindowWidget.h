@@ -38,6 +38,7 @@ class WindowWidget : public Frame
 {
     friend class Widget;
     friend class AppBase;
+    friend class Surface;
 public:
     /*!
      * Constructor.

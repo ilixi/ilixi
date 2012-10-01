@@ -226,7 +226,7 @@ TabPanel::addPage(Widget* widget, std::string label)
     addChild(page.button);
     addChild(widget);
 
-    setSurfaceGeometryModified();
+    doLayout();
 }
 
 void
@@ -269,7 +269,7 @@ TabPanel::removePage(int index)
         PageList::iterator it = _pages.begin() + index;
         removeChild(it->button);
         _pages.erase(it);
-        setSurfaceGeometryModified();
+        doLayout();
         update();
     }
 }

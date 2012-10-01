@@ -32,7 +32,7 @@ namespace ilixi
 enum WidgetState
 {
     DefaultState = 0x00,    //!< Widget is visible and at its default state.
-    ExposedState = 0x01, //! Pointer is over widget. \sa Widget::enterEvent(), Widget::leaveEvent()
+    ExposedState = 0x01,    //! Pointer is over widget. \sa Widget::enterEvent(), Widget::leaveEvent()
     FocusedState = 0x02,    //!< Widget has key input focus.
     PressedState = 0x04,    //!< Pointer is pressed over widget.
     DisabledState = 0x08,   //!< Widget is disabled.
@@ -40,42 +40,20 @@ enum WidgetState
 };
 
 /*!
- * These flags specify a surface.
- */
-enum SurfaceFlags
-{
-    InitialiseSurface = 0x01, //!< Set if widget should (re)initialise its surface.
-    SurfaceModified = 0x02, //!< Set if widget's surface geometry is modified.
-    DoZSort = 0x04,
-    HasOwnSurface = 0x08, //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
-    RootSurface = 0x10 //!< Widget's surface is directly acquired from root Window (not a sub-surface).
-};
-
-/*!
- * These ORed values are used to describe the functionality of a widget's surface and geometry.
- */
-enum SurfaceDescription
-{
-    DefaultDescription = 0x03, //!< (InitialiseSurface | SurfaceModified)
-    BlitDescription = 0x0B, //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea. (InitialiseSurface | SurfaceModified | HasOwnSurface)
-    WindowDescription = 0x13 //!< Use if widget is a WindowWidget, e.g. Application or Dialog. (InitialiseSurface | SurfaceModified | RootWindow)
-};
-
-/*!
  * These values are used to define which input events can be consumed by a widget.
  */
 enum WidgetInputMethod
 {
-    NoInput = 0x00, //!< Widget does not consume pointer or key events.
-    KeyInput = 0x01, //!< Widget is only capable of consuming key events.
-    PointerInput = 0x02, //!< Widget is only capable of consuming pointer events excluding motion.
-    KeyAndPointerInput = KeyInput | PointerInput, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput = 0x03)
-    PointerTracking = 0x04, //!< Widget is only capable of consuming pointer motion events.
-    PointerInputTracking = PointerInput | PointerTracking, //!< Widget is only capable of consuming pointer events including motion. (PointerInput | PointerTracking = 0x06)
-    KeyAndPointerInputTracking = 0x07, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput | PointerTracking)
-    OSKInput = 0x08, //!< Widget can use OSK inputs.
-    OSKInputEnabled = 0x0B, //!< (KeyInput | PointerInput | OSKInput)
-    OSKInputTracking = 0x0F //!< (KeyInput | PointerInput | PointerTracking | OSKInput)
+    NoInput = 0x00,                                         //!< Widget does not consume pointer or key events.
+    KeyInput = 0x01,                                        //!< Widget is only capable of consuming key events.
+    PointerInput = 0x02,                                    //!< Widget is only capable of consuming pointer events excluding motion.
+    KeyAndPointerInput = KeyInput | PointerInput,           //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput = 0x03)
+    PointerTracking = 0x04,                                 //!< Widget is only capable of consuming pointer motion events.
+    PointerInputTracking = PointerInput | PointerTracking,  //!< Widget is only capable of consuming pointer events including motion. (PointerInput | PointerTracking = 0x06)
+    KeyAndPointerInputTracking = 0x07,                      //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput | PointerTracking)
+    OSKInput = 0x08,                                        //!< Widget can use OSK inputs.
+    OSKInputEnabled = 0x0B,                                 //!< (KeyInput | PointerInput | OSKInput)
+    OSKInputTracking = 0x0F                                 //!< (KeyInput | PointerInput | PointerTracking | OSKInput)
 };
 
 /*!
@@ -97,13 +75,13 @@ enum WidgetResizePolicy
  */
 enum WidgetResizeConstraint
 {
-    FixedConstraint = 0x00, //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
-    MinimumConstraint = GrowPolicy, //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
-    MaximumConstraint = ShrinkPolicy, //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
-    NoConstraint = (GrowPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
-    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy), //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
-    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
-    IgnoredConstraint = 0xFF //!< Widget is ignored by layout. Its position or size is not modified.
+    FixedConstraint = 0x00,                                             //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
+    MinimumConstraint = GrowPolicy,                                     //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
+    MaximumConstraint = ShrinkPolicy,                                   //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
+    NoConstraint = (GrowPolicy | ShrinkPolicy),                         //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
+    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy),           //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
+    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy),   //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
+    IgnoredConstraint = 0xFF                                            //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
 namespace StyleHint
@@ -293,8 +271,8 @@ enum Corners
     LeftCorners = 0x05,             //!< Left corners (TopLeft | BottomLeft).
     RightCorners = 0x0A,            //!< Right corners (TopRight | BottomRight).
     TopCorners = 0x03,              //!< Top corners (TopLeft | TopRight).
-    BottomCorners = 0x0C,        //!< Bottom corners (BottomLeft | BottomRight).
-    AllCorners = 0x0F, //!< All corners (TopLeft | TopRight | BottomLeft | BottomRight).
+    BottomCorners = 0x0C,           //!< Bottom corners (BottomLeft | BottomRight).
+    AllCorners = 0x0F,              //!< All corners (TopLeft | TopRight | BottomLeft | BottomRight).
     AllExceptTopLeft = 0x0E,        //!< (TopRight | BottomLeft | BottomRight).
     AllExceptTopRight = 0x0D,       //!< (TopLeft | BottomLeft | BottomRight).
     AllExceptBottomLeft = 0x0B,     //!< (TopLeft | TopRight | BottomRight).
@@ -305,10 +283,10 @@ enum AppOptions
 {
     OptNone = 0x000,                //!< Default application option.
     OptExclusive = 0x001,           //!< Application will use layer exclusively.
-    OptFullScreenUpdate = 0x002, //!< Windows will update whole surface each time.
+    OptFullScreenUpdate = 0x002,    //!< Windows will update whole surface each time.
     OptTripleAccelerated = 0x004,
-    OptDale = 0x200,    //! Enable FusionDale interfaces for Application.
-    OptSound = 0x400    //! Enable FusionSound interfaces for Application.
+    OptDale = 0x200,                //! Enable FusionDale interfaces for Application.
+    OptSound = 0x400                //! Enable FusionSound interfaces for Application.
 };
 }
 

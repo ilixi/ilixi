@@ -39,22 +39,6 @@ class Tween;
 class ScrollArea : public Widget
 {
 public:
-    //! These options control the functionality of ScrollArea.
-    enum ScrollAreaOptions
-    {
-        HorizontalAuto = 0x001, //!< Makes horizontal thumb visible automatically.
-        HorizontalAlways = 0x002, //!< Makes horizontal thumb always visible.
-        HorizontalScroll = 0x004, //!< Whether horizontal scrolling is enabled.
-        VerticalAuto = 0x008, //!< Makes vertical thumb visible automatically.
-        VerticalAlways = 0x010, //!< Makes vertical thumb always visible automatically.
-        VerticalScroll = 0x020, //!< Whether vertical scrolling is enabled .
-        SmoothScrolling = 0x040, //!< Content has its own surface.
-        TargetedScroll = 0x080, //!< Alters scrolling mode, used for scrolling to desired coordinates.
-        DrawFrame = 0x100, //!< Draws frame around scroll area
-        DrawHorizontalThumb = 0x200, //!< Flag controlling drawing of horizontal thumb
-        DrawVerticalThumb = 0x400 //!< Flag controlling drawing of vertical thumb
-    };
-
     /*!
      * Constructor.
      */
@@ -156,8 +140,24 @@ protected:
     virtual void
     compose(const PaintEvent& event);
 private:
+    //! These options control the functionality of ScrollArea.
+    enum ScrollAreaOptions
+    {
+        DrawFrame           = 0x00001,  //!< Draws frame around scroll area
+        DrawHorizontalThumb = 0x00002,  //!< Flag controlling drawing of horizontal thumb
+        DrawVerticalThumb   = 0x00004,  //!< Flag controlling drawing of vertical thumb
+        HorizontalAlways    = 0x00010,  //!< Makes horizontal thumb always visible.
+        HorizontalAuto      = 0x00020,  //!< Makes horizontal thumb visible automatically.
+        HorizontalScroll    = 0x00040,  //!< Whether horizontal scrolling is enabled.
+        SmoothScrolling     = 0x00100,  //!< Content has its own surface.
+        TargetedScroll      = 0x00200,  //!< Alters scrolling mode, used for scrolling to desired coordinates.
+        VerticalAlways      = 0x01000,  //!< Makes vertical thumb always visible automatically.
+        VerticalAuto        = 0x02000,  //!< Makes vertical thumb visible automatically.
+        VerticalScroll      = 0x04000,  //!< Whether vertical scrolling is enabled .
+    };
+
     //! This property stores the options for ScrollArea.
-    u8 _options;
+    int _options;
     //! This is the content of scroll area.
     Widget* _content;
 

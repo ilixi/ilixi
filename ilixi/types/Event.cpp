@@ -44,7 +44,7 @@ PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt)
         : rect(),
           eye(evt.eye)
 {
-    widget->updateSurface(evt);
+    widget->surface()->updateSurface(evt);
     rect = widget->frameGeometry().intersected(evt.rect);
 }
 #endif
