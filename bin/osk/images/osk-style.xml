@@ -25,7 +25,7 @@
 		</titleFont>
 	</fonts>
 
-	<icons resource="images/ui-icons-white.png" defaultSize="48">
+	<icons resource="images/ui-icons.png" defaultSize="48">
 		<icon row="1" col="1" name="arrow_sw" />
 		<icon row="2" col="1" name="arrow_down" />
 		<icon row="3" col="1" name="arrow_left" />
