@@ -273,8 +273,7 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
     {
         if (_children.size())
         {
-            for (WidgetListReverseIterator it = _children.rbegin();
-                    it != _children.rend(); ++it)
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
                 if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(pointerEvent))
                     return true;
         }
@@ -459,7 +458,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         sigAbort();
         return true;
 
-    case DWET_LEAVE:// handle Leave, can be signalled if pointer moves outside window.
+    case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
         _eventManager->setExposedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
         _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
         return true;
@@ -477,15 +476,42 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return target->consumePointerEvent(PointerEvent(PointerWheel, event));
 
     case DWET_KEYUP:
-        if (_eventManager->focusedWidget())
-            return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyUpEvent, event));
-        return false;
+        switch (event.key_symbol)
+        {
+        case DIKS_SHIFT:
+        case DIKS_CONTROL:
+        case DIKS_ALT:
+        case DIKS_ALTGR:
+        case DIKS_META:
+        case DIKS_SUPER:
+        case DIKS_HYPER:
+        case DIKS_CAPS_LOCK:
+        case DIKS_NUM_LOCK:
+        case DIKS_SCROLL_LOCK:
+            break;
+
+        default:
+            if (_eventManager->focusedWidget())
+                return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyUpEvent, event));
+            return false;
+        }
 
     case DWET_KEYDOWN:
         switch (event.key_symbol)
         {
+        case DIKS_SHIFT:
+        case DIKS_CONTROL:
+        case DIKS_ALT:
+        case DIKS_ALTGR:
+        case DIKS_META:
+        case DIKS_SUPER:
+        case DIKS_HYPER:
+        case DIKS_CAPS_LOCK:
+        case DIKS_NUM_LOCK:
+        case DIKS_SCROLL_LOCK:
+            break;
 
-        // TODO Remove ESCAPE and sigAbort() ?
+            // TODO Remove ESCAPE and sigAbort() ?
         case DIKS_ESCAPE:
             sigAbort();
             return true;
@@ -547,17 +573,17 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
                 ILOG_DEBUG(ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectNext());
             return true;
 
+        default:
+            if (_eventManager->focusedWidget())
+                return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else
+                return false;
         } // end switch
 
 //    else if (_eventManager->grabbedWidget())
 //      return _eventManager->grabbedWidget()->consumeKeyEvent(
 //          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers,
 //              event.locks));
-
-        if (_eventManager->focusedWidget())
-            return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
-        else
-            return false;
 
     default:
         return false;
