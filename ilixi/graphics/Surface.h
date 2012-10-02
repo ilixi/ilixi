@@ -42,14 +42,18 @@ public:
      */
     enum SurfaceFlags
     {
-        InitialiseSurface = 0x01,   //!< Set if widget should (re)initialise its surface.
-        SurfaceModified = 0x02,     //!< Set if widget's surface geometry is modified.
-        DoZSort = 0x04,
-        HasOwnSurface = 0x08,       //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
-        RootSurface = 0x10,         //!< Widget's surface is directly acquired from root Window (not a sub-surface).
-        DefaultDescription = (InitialiseSurface | SurfaceModified),
-        BlitDescription = (InitialiseSurface | SurfaceModified | HasOwnSurface),    //!< Use if widget surface should be blitted onto another widget/surface, e.g. main widget inside a ScrollArea.
-        WindowDescription = (InitialiseSurface | SurfaceModified | RootSurface)  //!< Use if widget is a WindowWidget, e.g. Application or Dialog.
+        InitialiseSurface = 0x0001,                             //!< Set if widget should (re)initialise its surface.
+        ModifiedPosition = 0x0002,                              //!< Widget position is modified.
+        ModifiedSize = 0x0004,                                  //!< Widget size is modified.
+        ModifiedGeometry = (ModifiedPosition | ModifiedSize),   //!< Widget's geometry is modified.
+        DoZSort = 0x0008,                                       //!< Perform z-index sorting of children.
+        HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+        RootSurface = 0x0020,                                   //!< Widget is a WindowWidget.
+        SubSurface = 0x0040,                                    //!< Widget uses a subsurface.
+        SharedSurface = 0x0080,                                 //!< Widget uses window surface directly.
+        DefaultDescription = (InitialiseSurface | ModifiedGeometry | SharedSurface),    //!< Default flags for widgets.
+        BlitDescription = (InitialiseSurface | ModifiedGeometry | HasOwnSurface),       //!< Use if widget surface should be blitted onto another widget/surface, e.g. a widget inside a ScrollArea.
+        WindowDescription = (InitialiseSurface | ModifiedGeometry | RootSurface)        //!< Use if widget is a WindowWidget, e.g. Application or Dialog.
     };
 
     /*!

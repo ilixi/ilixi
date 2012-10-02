@@ -106,7 +106,7 @@ ProgressBar::setOrientation(Orientation orientation)
             setConstraints(ExpandingConstraint, FixedConstraint);
         else
             setConstraints(FixedConstraint, ExpandingConstraint);
-        surface()->setSurfaceFlag(Surface::SurfaceModified);
+        surface()->setSurfaceFlag(Surface::ModifiedSize);
     }
 }
 

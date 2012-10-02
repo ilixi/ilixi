@@ -45,8 +45,7 @@ SurfaceView::SurfaceView(Widget* parent)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
     setInputMethod(KeyAndPointerInputTracking);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
 #ifdef ILIXI_STEREO_OUTPUT
     _sourceStereo = false;
 #endif
@@ -108,12 +107,10 @@ SurfaceView::setSourceFromSurfaceID(DFBSurfaceID sid)
         ILOG_TRACE_W(ILX_SURFACEVIEW);
         detachSourceSurface();
 
-        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), sid,
-                                                      &_sourceSurface);
+        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), sid, &_sourceSurface);
         if (ret)
         {
-            ILOG_ERROR( ILX_SURFACEVIEW,
-                       "Error! GetSurface: %s\n", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW, "Error! GetSurface: %s\n", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _surfaceID = 0;
         } else
@@ -166,8 +163,7 @@ SurfaceView::setSourceFromWindow(IDirectFBWindow* window)
 
         if (ret)
         {
-            ILOG_ERROR( ILX_SURFACEVIEW,
-                       "Error! GetSurface: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_SURFACEVIEW, "Error! GetSurface: %s", DirectFBErrorString(ret));
             _sourceSurface = NULL;
             _sourceWindow = NULL;
         } else
@@ -267,47 +263,45 @@ SurfaceView::renderSource(const PaintEvent& event)
             DFBSurfacePixelFormat fmt;
             _sourceSurface->GetPixelFormat(_sourceSurface, &fmt);
             if (DFB_PIXELFORMAT_HAS_ALPHA(fmt) && (_svState & SV_CAN_BLEND))
-                dfbSurface->SetBlittingFlags(dfbSurface,
-                                             DSBLIT_BLEND_ALPHACHANNEL);
+                dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
             else
             {
                 char *conv = getenv("ILIXI_COMP_CONVOLUTION");
 
                 if (conv)
                 {
-                    DFBConvolutionFilter filter = { { -65536, -65536 * 2,
-                                                      -65536, 0, 65536, 0,
-                                                      65536, 65536 * 2, 65536 },
-                                                    65536, 0 };
+                    DFBConvolutionFilter filter = { { -65536, -65536 * 2, -65536, 0, 65536, 0, 65536, 65536 * 2, 65536 }, 65536, 0 };
 
-                    sscanf(conv, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-                           &filter.kernel[0], &filter.kernel[1],
-                           &filter.kernel[2], &filter.kernel[3],
-                           &filter.kernel[4], &filter.kernel[5],
-                           &filter.kernel[6], &filter.kernel[7],
-                           &filter.kernel[8], &filter.scale, &filter.bias);
+                    sscanf(conv, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", &filter.kernel[0], &filter.kernel[1], &filter.kernel[2], &filter.kernel[3], &filter.kernel[4], &filter.kernel[5], &filter.kernel[6], &filter.kernel[7], &filter.kernel[8],
+                           &filter.scale, &filter.bias);
 
                     //filter.scale += sin(direct_clock_get_millis()/1000.0) * 20000;
 
                     dfbSurface->SetSrcConvolution(dfbSurface, &filter);
-                    dfbSurface->SetBlittingFlags(dfbSurface,
-                                                 DSBLIT_SRC_CONVOLUTION);
+                    dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_SRC_CONVOLUTION);
                 } else
                     dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_NOFX);
             }
         } else
         {
-            dfbSurface->SetBlittingFlags(
-                    dfbSurface,
-                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, opacity());
         }
 
         if (hScale() == 1 && vScale() == 1)
-            dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, absX(), absY());
-        else
         {
-            DFBRectangle rect = { absX(), absY(), width(), height() };
+            if (surface()->flags() & Surface::SharedSurface)
+                dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, absX(), absY());
+            else
+                dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, 0, 0);
+        } else
+        {
+            DFBRectangle rect = { 0, 0, width(), height() };
+            if (surface()->flags() & Surface::SharedSurface)
+            {
+                rect.x += absX();
+                rect.y += absY();
+            }
             dfbSurface->StretchBlit(dfbSurface, _sourceSurface, NULL, &rect);
         }
     }
@@ -329,11 +323,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     if (visible())
     {
-        Rectangle lRect = mapFromSurface(
-                Rectangle(event.update.x1 / hScale(),
-                          event.update.y1 / vScale(),
-                          (event.update.x2 - event.update.x1) / hScale() + 1,
-                          (event.update.y2 - event.update.y1) / vScale() + 1));
+        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
 
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(

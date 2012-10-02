@@ -476,7 +476,8 @@ void
 Surface::updateSurface(const PaintEvent& event)
 {
     ILOG_TRACE_F(ILX_SURFACE);
-    if (_flags & Surface::SurfaceModified)
+    ILOG_DEBUG(ILX_SURFACE, " -> owner: %p\n", _owner);
+    if (_flags & Surface::ModifiedGeometry)
         _owner->sigGeometryUpdated();
 
 #ifdef ILIXI_STEREO_OUTPUT
@@ -500,26 +501,32 @@ Surface::updateSurface(const PaintEvent& event)
     if (_flags & InitialiseSurface)
     {
         bool ret = false;
+        release();
 
         if (_flags & HasOwnSurface)
         {
-            ILOG_DEBUG(ILX_SURFACE, " -> SurfaceDesc: 0x%03x HasOwnSurface\n", _flags);
+            ILOG_DEBUG(ILX_SURFACE, " -> HasOwnSurface: 0x%03x\n", _flags);
             ret = createDFBSurface(_owner->width(), _owner->height());
         } else if (_flags & RootSurface)
         {
-            ILOG_DEBUG(ILX_SURFACE, " -> SurfaceDesc: 0x%03x RootSurface\n", _flags);
-//            ret = createDFBSubSurface(_owner->surfaceGeometry(),_owner->_rootWindow->windowSurface() );
+            ILOG_DEBUG(ILX_SURFACE, " -> RootSurface: 0x%03x\n", _flags);
             _dfbSurface = _owner->_rootWindow->windowSurface();
+            _dfbSurface->AddRef(_dfbSurface);
+            ret = true;
+        } else if (_flags & SubSurface)
+        {
+            ILOG_DEBUG(ILX_SURFACE, " -> SubSurface: 0x%03x\n", _flags);
+            ret = createDFBSubSurface(_owner->surfaceGeometry(), _owner->_parent->surface()->dfbSurface());
         } else if (_owner->_parent)
         {
+            ILOG_DEBUG(ILX_SURFACE, " -> SharedSurface: 0x%03x\n", _flags);
             _dfbSurface = _owner->parent()->surface()->dfbSurface();
             _dfbSurface->AddRef(_dfbSurface);
-//            ILOG_DEBUG(ILX_SURFACE, " -> SurfaceDesc: 0x%03x Default\n", _flags);
-//            ret = createDFBSubSurface(_owner->surfaceGeometry(), _owner->_parent->surface()->dfbSurface());
+            ret = true;
         }
 
         if (ret)
-            _flags = (SurfaceFlags) (_flags & ~InitialiseSurface);
+            unsetSurfaceFlag(Surface::InitialiseSurface);
     }
 #endif
 

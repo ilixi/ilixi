@@ -69,7 +69,10 @@ Painter::begin(const PaintEvent& event)
                         event.right.height()));
     }
 #else
-    _myWidget->surface()->clip(event.rect);
+    if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        _myWidget->surface()->clip(event.rect);
+    else
+        _myWidget->surface()->clip(Rectangle(event.rect.x() - _myWidget->absX(), event.rect.y() - _myWidget->absY(), event.rect.width(), event.rect.height()));
 #endif
     _state = Active;
     applyBrush();
@@ -124,7 +127,10 @@ Painter::drawLine(double x1, double y1, double x2, double y2)
     if (_state & Active)
     {
         applyPen();
-        dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2);
+        else
+            dfbSurface->DrawLine(dfbSurface, x1, y1, x2, y2);
     }
 }
 
@@ -146,7 +152,10 @@ Painter::drawRectangle(double x, double y, double width, double height)
     if (_state & Active)
     {
         applyPen();
-        dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+        else
+            dfbSurface->DrawRectangle(dfbSurface, x, y, width, height);
     }
 }
 
@@ -162,7 +171,10 @@ Painter::fillRectangle(double x, double y, double width, double height)
     if (_state & Active)
     {
         applyBrush();
-        dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+        else
+            dfbSurface->FillRectangle(dfbSurface, x, y, width, height);
     }
 }
 
@@ -182,7 +194,10 @@ Painter::drawText(const std::string& text, int x, int y)
     {
         applyBrush();
         applyFont();
-        dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x, _myWidget->absY() + y, DSTF_TOPLEFT);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x, _myWidget->absY() + y, DSTF_TOPLEFT);
+        else
+            dfbSurface->DrawString(dfbSurface, text.c_str(), -1, x, y, DSTF_TOPLEFT);
     }
 }
 
@@ -197,7 +212,10 @@ Painter::drawLayout(const TextLayout& layout)
     {
         applyBrush();
         applyFont();
-        layout.drawTextLayout(dfbSurface, _myWidget->absX(), _myWidget->absY());
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            layout.drawTextLayout(dfbSurface, _myWidget->absX(), _myWidget->absY());
+        else
+            layout.drawTextLayout(dfbSurface);
     }
 }
 
@@ -211,7 +229,10 @@ Painter::drawLayout(const TextLayout& layout, int x, int y)
     {
         applyBrush();
         applyFont();
-        layout.drawTextLayout(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            layout.drawTextLayout(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y);
+        else
+            layout.drawTextLayout(dfbSurface, x, y);
     }
 }
 
@@ -228,8 +249,11 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const DFBSurfaceB
     {
         applyBrush();
         DFBRectangle dest = destRect.dfbRect();
-        dest.x += _myWidget->absX();
-        dest.y += _myWidget->absY();
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            dest.x += _myWidget->absX();
+            dest.y += _myWidget->absY();
+        }
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
         dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), NULL, &dest);
     }
@@ -243,8 +267,11 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const Rectangle& 
         applyBrush();
         DFBRectangle source = sourceRect.dfbRect();
         DFBRectangle dest = destRect.dfbRect();
-        dest.x += _myWidget->absX();
-        dest.y += _myWidget->absY();
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            dest.x += _myWidget->absX();
+            dest.y += _myWidget->absY();
+        }
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
         dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), &source, &dest);
     }
@@ -257,7 +284,10 @@ Painter::drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
     {
         applyBrush();
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
-        dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+        else
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, x, y);
     }
 }
 
@@ -274,7 +304,10 @@ Painter::tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
     {
         applyBrush();
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
-        dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+        else
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, x, y);
     }
 }
 
@@ -286,7 +319,10 @@ Painter::tileImage(Image* image, int x, int y, const Rectangle& source, const DF
         applyBrush();
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
         DFBRectangle r = source.dfbRect();
-        dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+        else
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, x, y);
     }
 }
 
@@ -298,7 +334,10 @@ Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DF
         applyBrush();
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
         DFBRectangle r = source.dfbRect();
-        dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+        else
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, x, y);
     }
 }
 
