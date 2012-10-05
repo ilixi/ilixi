@@ -1,0 +1,9 @@
+/**
+\mainpage Welcome to the ilixi API reference!
+
+Newcomers should start by reading the <a href="http://ilixi.org/index.php?id=documentation">documentation</a> and then examine example applications first.
+
+The ilixi API Reference includes a description of the various interfaces, members, and methods. Class inheritance diagrams are also included to depict relationships. You can refer to these pages while writing code which uses ilixi. You can either use the doxygen search at top-left or click on "Classes" to find classes or methods you're interested in. Note that all classes and types listed on these pages are contained within the ilixi namespace. 
+
+We like to keep documention up-to-date for developers. However, if you can't find what you are looking for or not sure where to start you can always <a href="mailto:dev@directfb.org" style="font-weight:bold">contact us</a> or subscribe to <a href="http://mail.directfb.org/cgi-bin/mailman/listinfo/ilixi" style="font-weight:bold">ilixi mailing list</a> to get assistance.
+*/

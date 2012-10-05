@@ -154,7 +154,7 @@ DX_CHI_FEATURE(OFF)
 DX_MAN_FEATURE(OFF)
 DX_RTF_FEATURE(OFF)
 DX_XML_FEATURE(OFF)
-DX_PDF_FEATURE(ON)
+DX_PDF_FEATURE(OFF)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 
@@ -198,6 +198,7 @@ AC_CONFIG_FILES([ \
 		data/images/Makefile \
 		doc/Makefile \
 		doc/resources/Makefile \
+		doc/uml/Makefile \
 		ilixi/Makefile \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \

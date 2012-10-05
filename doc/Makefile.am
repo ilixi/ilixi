@@ -1,2 +1,2 @@
 ## Makefile.am for doc
-SUBDIRS= resources
+SUBDIRS= resources uml

@@ -1,0 +1,47 @@
+@startuml img/Update_Sequence.png
+
+participant "Application" as App
+participant "WindowWidget" as W
+participant "MyWidget:Widget" as A
+participant "Surface" as S
+
+A -> W : update()
+note over W: Queues an update event \nusing bounding rectangle.
+...
+App-> W: paint(PaintEvent)
+activate W
+	W -> S: clear(Rectangle)
+	W -> W: compose(PaintEvent)
+	W -> W: paintChildren(PaintEvent)
+	note over W: All child widgets that touch\nupdate region are painted.
+	activate W
+	W -> A: paint(PaintEvent)
+		activate A
+		
+		group MyWidget::compose
+			create Painter
+			A -> Painter: Painter(Widget)
+			A -> Painter: begin(Rectangle)
+			activate Painter
+			Painter -> S: clip(Rectangle)
+			
+			A -> Painter: setColor(Color)
+			A -> Painter: fillRectangle(x, y, w, h)
+			
+			A -> Painter: end()
+			Painter -> S: resetClip()
+			deactivate Painter
+			destroy Painter
+		end
+		
+		A -> A: paintChildren(PaintEvent)
+		activate A
+		deactivate A
+		
+		deactivate A
+		deactivate W
+		W -> S: flip(Rectangle)
+
+deactivate W
+
+@enduml
