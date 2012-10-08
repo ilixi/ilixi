@@ -81,10 +81,7 @@ if test "$enable_stereo" = "yes"; then
 fi
 
 AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
-AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
-
 AC_ARG_ENABLE([sound], AS_HELP_STRING([--enable-sound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_sound=no])
-AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
 
 ######################################################################
 # Dependencies
@@ -100,7 +97,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AC_CHECK_HEADERS([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
+AC_CHECK_HEADERS_ONCE([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
 AC_HEADER_STDBOOL
 AC_TYPE_PID_T
 AC_FUNC_ERROR_AT_LINE
@@ -117,21 +114,34 @@ FONTCONFIG_REQ_VERSION=2.6.0
 PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
-AS_IF([test "x$enable_dale" = "xyes"], [
-	FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
-	PACKAGES="$PACKAGES $FUSION_DALE_DEP"
-	AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
-], [
 
-])
+AS_IF([test "x$enable_dale" = "xyes"], [
+	PKG_CHECK_MODULES([FusionDale], [fusiondale >= FUSIONDALE_REQ_VERSION], 
+		[	
+			FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
+			PACKAGES="$PACKAGES $FUSION_DALE_DEP"
+			AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
+		], 
+		[
+			enable_dale=no 
+			AC_MSG_WARN([*** FusionDale packages not found -- Building without FusionDale support.])
+		]
+	)], []
+)
 
 AS_IF([test "x$enable_sound" = "xyes"], [
-	FUSION_SOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
-	PACKAGES="$PACKAGES $FUSION_SOUND_DEP"
-	AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
-], [
-
-])
+	PKG_CHECK_MODULES([FusionSound], [fusionsound >= FUSIONSOUND_REQ_VERSION], 
+		[	
+			FUSION_SOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
+			PACKAGES="$PACKAGES $FUSION_SOUND_DEP"
+			AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
+		], 
+		[
+			enable_sound=no 
+			AC_MSG_WARN([*** FusionSound packages not found -- Building without FusionSound support.])
+		]
+	)], []
+)
 
 PKG_CHECK_MODULES(DEPS, $PACKAGES)
 
@@ -165,6 +175,9 @@ CXXFLAGS="$CFLAGS"
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
+
+AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
+AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
