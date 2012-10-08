@@ -17,8 +17,9 @@ miscdata_DATA 	=	\
 					googleplus.appdef \
 					ilixi_home.appdef \
 					ilixi_monitor.appdef \
-					ilixi_widgets.appdef \
 					ilixi_settings.appdef \
+					ilixi_WebKit.appdef \
+					ilixi_widgets.appdef \
 					knuckles.appdef \
 					lite_web.appdef \
 					matrix.appdef \
