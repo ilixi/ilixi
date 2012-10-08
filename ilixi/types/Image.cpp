@@ -205,10 +205,10 @@ Image::loadImage()
     DFBSurfaceDescription desc;
 
     IDirectFBImageProvider* provider;
-    if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(),
-                                               _imagePath.c_str(), &provider) != DFB_OK)
+    DFBResult ret = AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(), _imagePath.c_str(), &provider);
+    if (ret)
     {
-        ILOG_ERROR(ILX_IMAGE, "Cannot create image provider!\n");
+        ILOG_ERROR(ILX_IMAGE, "Cannot create image provider! %s\n", DirectFBErrorString(ret));
         _state = (ImageFlags) (_state | NotAvailable);
         return false;
     }
@@ -228,23 +228,21 @@ Image::loadImage()
     if (height() > 0)
         desc.height = height();
 
-    DFBResult ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc,
-                                                     &_dfbSurface);
+    ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc, &_dfbSurface);
 
     if (ret)
     {
         invalidateSurface();
-        ILOG_ERROR(
-                ILX_IMAGE,
-                "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_IMAGE, "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
         _state = (ImageFlags) (_state | NotAvailable);
         return false;
     } else
     {
-        if (provider->RenderTo(provider, _dfbSurface, NULL) != DFB_OK)
+        ret = provider->RenderTo(provider, _dfbSurface, NULL);
+        if (ret)
         {
             invalidateSurface();
-            ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface!\n");
+            ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface! %s\n", DirectFBErrorString(ret));
             _state = (ImageFlags) (_state | NotAvailable);
             return false;
         }
