@@ -24,7 +24,7 @@
 #ifndef ILIXI_APPINSTANCE_H_
 #define ILIXI_APPINSTANCE_H_
 
-#include <sawman.h>
+#include <sawman/sawman.h>
 #include <list>
 #include <pthread.h>
 #include "types/AppInfo.h"
