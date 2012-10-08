@@ -228,6 +228,13 @@ AppBase::getEventBuffer()
     return __buffer;
 }
 
+void
+AppBase::postUniversalEvent(Widget* target, unsigned int type, void* data)
+{
+    UniversalEvent event(target, type, data);
+    __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+}
+
 IDirectFBWindow*
 AppBase::activeDFBWindow() const
 {
@@ -297,8 +304,7 @@ AppBase::removeCallback(Callback* cb)
     {
         pthread_mutex_lock(&__instance->__cbMutex);
 
-        for (CallbackList::iterator it = __instance->__callbacks.begin();
-                it != __instance->__callbacks.end(); ++it)
+        for (CallbackList::iterator it = __instance->__callbacks.begin(); it != __instance->__callbacks.end(); ++it)
         {
             if (cb == *it)
             {
@@ -327,8 +333,7 @@ AppBase::addTimer(Timer* timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
 
-        for (TimerList::iterator it = __instance->_timers.begin();
-                it != __instance->_timers.end(); ++it)
+        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
         {
             if (timer == *it)
             {
@@ -355,8 +360,7 @@ AppBase::removeTimer(Timer* timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
 
-        for (TimerList::iterator it = __instance->_timers.begin();
-                it != __instance->_timers.end(); ++it)
+        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
         {
             if (timer == *it)
             {
@@ -435,8 +439,7 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         ILOG_DEBUG(ILX_APPBASE, "SurfaceEventListener %p is added.\n", sel);
         // check whether to attach source surface
         bool attach = true;
-        for (SurfaceListenerList::iterator it = __instance->__selList.begin();
-                it != __instance->__selList.end(); ++it)
+        for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
         {
             if (sel->sourceSurface() == ((SurfaceEventListener*) *it)->sourceSurface())
                 attach = false;
@@ -466,8 +469,7 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
         bool ret = false;
         IDirectFBSurface* source = sel->sourceSurface();
 
-        for (SurfaceListenerList::iterator it = __instance->__selList.begin();
-                it != __instance->__selList.end(); ++it)
+        for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
         {
             if (sel == *it)
             {
@@ -481,8 +483,7 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
         if (ret)
         {
             bool detach = true;
-            for (SurfaceListenerList::iterator it = __instance->__selList.begin();
-                    it != __instance->__selList.end(); ++it)
+            for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
             {
                 if (source == ((SurfaceEventListener*) *it)->sourceSurface())
                     detach = false;
@@ -509,8 +510,7 @@ AppBase::consumeSurfaceEvent(const DFBSurfaceEvent& event)
 {
     pthread_mutex_lock(&__selMutex);
 
-    for (SurfaceListenerList::iterator it = __selList.begin();
-            it != __selList.end(); ++it)
+    for (SurfaceListenerList::iterator it = __selList.begin(); it != __selList.end(); ++it)
         ((SurfaceEventListener*) *it)->consumeSurfaceEvent(event);
 
     pthread_mutex_unlock(&__selMutex);
@@ -581,8 +581,7 @@ AppBase::removeWindow(WindowWidget* window)
     {
         pthread_mutex_lock(&__instance->__windowMutex);
 
-        for (WindowList::iterator it = __instance->__windowList.begin();
-                it != __instance->__windowList.end(); ++it)
+        for (WindowList::iterator it = __instance->__windowList.begin(); it != __instance->__windowList.end(); ++it)
         {
             if (window == *it)
             {
@@ -606,8 +605,7 @@ AppBase::updateWindows()
     ILOG_TRACE_F(ILX_APPBASE);
     pthread_mutex_lock(&__windowMutex);
 
-    for (WindowList::iterator it = __windowList.begin();
-            it != __windowList.end(); ++it)
+    for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         ((WindowWidget*) *it)->updateWindow();
 
     pthread_mutex_unlock(&__windowMutex);
@@ -627,8 +625,7 @@ AppBase::handleEvents(int32_t timeout)
     if (timeout < 1)
         timeout = 1;
 
-    for (WindowList::iterator it = __windowList.begin();
-            it != __windowList.end(); ++it)
+    for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
     {
         if (((WindowWidget*) *it)->_updates._updateQueue.size())
         {
@@ -691,14 +688,22 @@ AppBase::handleEvents(int32_t timeout)
             handleUserEvent((const DFBUserEvent&) event);
             break;
 
+        case DFEC_UNIVERSAL:
+            {
+                ILOG_DEBUG(ILX_APPBASE, "UniversalEvent\n");
+                UniversalEvent* uEvent = (UniversalEvent*) &event;
+                ILOG_DEBUG(ILX_APPBASE, " -> target: %p\n", uEvent->target);
+                uEvent->target->universalEvent(uEvent);
+                break;
+            }
+
         case DFEC_SURFACE:
             {
                 ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
 
                 ILOG_DEBUG( ILX_APPBASE_UPDATES, "  -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n", event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update), event.surface.flip_count);
 
-                for (SurfaceListenerList::iterator it = __selList.begin();
-                        it != __selList.end(); ++it)
+                for (SurfaceListenerList::iterator it = __selList.begin(); it != __selList.end(); ++it)
                     ((SurfaceEventListener*) *it)->consumeSurfaceEvent((const DFBSurfaceEvent&) event);
             }
             break;

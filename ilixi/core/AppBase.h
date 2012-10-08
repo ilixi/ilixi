@@ -102,6 +102,16 @@ public:
     static IDirectFBEventBuffer*
     getEventBuffer();
 
+    /*!
+     * Post a universal event to main event buffer.
+     *
+     * @param target Widget.
+     * @param type of event
+     * @param data if not NULL.
+     */
+    static void
+    postUniversalEvent(Widget* target, unsigned int type, void* data = NULL);
+
 protected:
     /*!
      * User events are handled before other event types.

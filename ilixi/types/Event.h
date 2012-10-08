@@ -262,6 +262,32 @@ struct PaintEvent
 #endif
     PaintEventEye eye;
 };
-}
+
+struct UniversalEvent
+{
+    UniversalEvent(Widget* Target, unsigned int Type, void* Data)
+    {
+        universal.clazz = DFEC_UNIVERSAL;
+        universal.size = sizeof(UniversalEvent);
+        target = Target;
+        type = Type;
+        data = Data;
+    }
+
+    UniversalEvent(const UniversalEvent& other) :
+        universal(other.universal),
+        target(other.target),
+        type(other.type),
+        data(other.data)
+    {
+    }
+
+    DFBUniversalEvent universal;
+    Widget* target;
+    unsigned int type;
+    void* data;
+};
+
+} // namespace ilixi
 
 #endif /* ILIXI_EVENTS_H_ */

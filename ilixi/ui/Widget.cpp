@@ -1048,6 +1048,14 @@ Widget::leaveEvent(const PointerEvent& mouseEvent)
 {
 }
 
+void
+Widget::universalEvent(const UniversalEvent* event)
+{
+    ILOG_TRACE_W(ILX_WIDGET);
+    ILOG_DEBUG(ILX_WIDGET, " -> Type = %u\n", event->type);
+    ILOG_DEBUG(ILX_WIDGET, " -> Data = %p\n", event->data);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Private methods...
 ////////////////////////////////////////////////////////////////////////////////////

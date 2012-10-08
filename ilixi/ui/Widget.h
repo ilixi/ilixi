@@ -53,6 +53,7 @@ class Widget : virtual public sigc::trackable
     friend class WidgetLayout;
     friend class ScrollArea; // Blit
     friend class PaintEvent;
+    friend class AppBase; // UniversalEvents
 
     friend bool
     compareZ(Widget* first, Widget* second);
@@ -985,6 +986,15 @@ protected:
      */
     virtual void
     leaveEvent(const PointerEvent& pointerEvent);
+
+    /*!
+     * This method is used for handling incoming universal events.
+     * \sa AppBase::postUniversalEvent()
+     *
+     * @param event
+     */
+    virtual void
+    universalEvent(const UniversalEvent* event);
 
 private:
     //! This property stores the widget's unique id.
