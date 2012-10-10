@@ -180,6 +180,7 @@ WindowWidget::paint(const PaintEvent& event)
 
                 if (AppBase::appOptions() & OptExclusive)
                 {
+                    surface()->clip(evt.rect);
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
                     _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
                             DSBLIT_BLEND_ALPHACHANNEL);
@@ -205,6 +206,7 @@ WindowWidget::paint(const PaintEvent& event)
 
                 if (AppBase::appOptions() & OptExclusive)
                 {
+                    surface()->clip(evt.rect);
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface,
                             DSSE_RIGHT);
                     _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
@@ -229,6 +231,7 @@ WindowWidget::paint(const PaintEvent& event)
 
                 if ((AppBase::appOptions() & OptExclusive) && !getenv("ILIXI_NO_CURSOR"))
                 {
+                    surface()->clip(evt.rect);
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
                     _exclusiveSurface->SetBlittingFlags(_exclusiveSurface, DSBLIT_BLEND_ALPHACHANNEL);
                     _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL, AppBase::cursorPosition().x, AppBase::cursorPosition().y);
