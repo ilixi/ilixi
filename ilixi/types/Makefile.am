@@ -1,5 +1,5 @@
 ## Makefile.am for /ilixi/types
-INCLUDES 					= 	-I$(top_srcdir)/ilixi
+INCLUDES 					= 	-I$(top_srcdir)/ilixi -I$(top_builddir)/ilixi
 noinst_LTLIBRARIES 			= 	libilixi_types.la
 libilixi_types_la_CPPFLAGS 	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@
 libilixi_types_la_CFLAGS 	= 	$(AM_CFLAGS)

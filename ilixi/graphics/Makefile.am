@@ -1,5 +1,5 @@
 ## Makefile.am for /ilixi/graphics
-INCLUDES					= 	-I$(top_srcdir)/ilixi
+INCLUDES					= 	-I$(top_srcdir)/ilixi -I$(top_builddir)/ilixi
 noinst_LTLIBRARIES 			= 	libilixi_graphics.la
 libilixi_graphics_la_CPPFLAGS = 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ 
 libilixi_graphics_la_CFLAGS	= 	$(AM_CFLAGS)
