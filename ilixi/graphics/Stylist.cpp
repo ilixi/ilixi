@@ -186,15 +186,10 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
     }
 
     // layout
-    if (input->layout().text().size())
+    if (!input->layout().isEmpty())
     {
         p->setFont(*input->font());
         p->setBrush(_palette->getGroup(state).baseText);
-        p->setClip(
-                _style->li.def.l.width(),
-                3,
-                input->width() - _style->li.def.l.width() - _style->li.def.r.width(),
-                input->height() - 6);
         p->drawLayout(input->layout());
         p->resetClip();
     }
@@ -526,11 +521,6 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box)
     {
         p->setFont(*defaultFont(StyleHint::DefaultFont));
         p->setBrush(_palette->getGroup(state).baseText);
-        p->setClip(
-                _style->li.def.l.width(),
-                3,
-                box->width() - _style->li.def.l.width() - _style->li.def.r.width(),
-                box->height() - 6);
         p->drawLayout(box->layout());
         p->resetClip();
     }
