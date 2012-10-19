@@ -285,6 +285,7 @@ SurfaceView::renderSource(const PaintEvent& event)
         } else
         {
             dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
+            dfbSurface->SetPorterDuff(dfbSurface, DSPD_NONE);
             dfbSurface->SetColor(dfbSurface, 0, 0, 0, opacity());
         }
 
