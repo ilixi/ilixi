@@ -123,7 +123,13 @@ Image::size()
         return Size(w, h);
     } else
         return _size;
+}
 
+Size
+Image::preferredSize() const
+{
+    // TODO Add preferredSize to Image.
+    return Size();
 }
 
 IDirectFBSurface*
