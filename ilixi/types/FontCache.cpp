@@ -65,7 +65,7 @@ FontCache::~FontCache()
 }
 
 unsigned int
-FontCache::getKey(const char* name, int size, DFBFontAttributes attr)
+FontCache::getKey(const std::string& name, int size, DFBFontAttributes attr)
 {
     std::stringstream ss;
     ss << name << size << attr;
@@ -75,7 +75,7 @@ FontCache::getKey(const char* name, int size, DFBFontAttributes attr)
 IDirectFBFont*
 FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr)
 {
-    char* fileName;
+    ILOG_TRACE(ILX_FONTCACHE);
     std::string style = "regular";
     int slant = 0;
 
@@ -85,9 +85,7 @@ FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr)
     if (attr & DFFA_STYLE_ITALIC)
         slant = FC_SLANT_ITALIC;
 
-    getFCFileName(name.c_str(), style.c_str(), size, slant, &fileName);
-
-    return getEntryFromFile(fileName, size, attr);
+    return getEntryFromFile(getFCFileName(name.c_str(), style.c_str(), size, slant), size, attr);
 }
 
 void
@@ -120,7 +118,7 @@ FontCache::releaseEntry(const char* name, int size, DFBFontAttributes attr)
 }
 
 IDirectFBFont*
-FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
+FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes attr)
 {
     unsigned int key = getKey(name, size, attr);
 
@@ -136,13 +134,13 @@ FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
         desc.height = size;
         desc.attributes = attr;
 
-        DFBResult ret = AppBase::getDFB()->CreateFont(AppBase::getDFB(), name,
+        DFBResult ret = AppBase::getDFB()->CreateFont(AppBase::getDFB(), name.c_str(),
                                                       &desc, &font);
         if (ret)
         {
             ILOG_TRACE(ILX_FONTCACHE);
             ILOG_DEBUG(ILX_FONTCACHE,
-                       " -> Loading failed for (%s, %d)!\n", name, size);
+                       " -> Loading failed for (%s, %d)!\n", name.c_str(), size);
             pthread_mutex_unlock(&_lock);
             return NULL;
         }
@@ -151,7 +149,7 @@ FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
         _cache.insert(it2, std::pair<unsigned int, IDirectFBFont*>(key, font));
         ILOG_TRACE(ILX_FONTCACHE);
         ILOG_DEBUG(ILX_FONTCACHE,
-                   " -> Cached key (%u) for (%s, %d)\n", key, name, size);
+                   " -> Cached key (%u) for (%s, %d)\n", key, name.c_str(), size);
         pthread_mutex_unlock(&_lock);
 
         return font;
@@ -159,15 +157,15 @@ FontCache::getEntryFromFile(const char* name, int size, DFBFontAttributes attr)
     } else
     {
         ILOG_DEBUG(ILX_FONTCACHE,
-                   "Got from cache using key (%u) (%s,%d)\n", key, name, size);
+                   "Got from cache using key (%u) (%s,%d)\n", key, name.c_str(), size);
         pthread_mutex_unlock(&_lock);
         it->second->AddRef(it->second);
         return it->second;
     }
 }
 
-void
-FontCache::getFCFileName(const char* name, const char* style, double size, int slant, char** fileName)
+std::string
+FontCache::getFCFileName(const char* name, const char* style, double size, int slant)
 {
     ILOG_TRACE(ILX_FONTCACHE);
     FcPattern *pat, *match;
@@ -186,11 +184,14 @@ FontCache::getFCFileName(const char* name, const char* style, double size, int s
     FcDefaultSubstitute(pat);
     match = FcFontMatch(NULL, pat, &result);
 
-    FcPatternGetString(match, FC_FILE, 0, (FcChar8 **) fileName);
-    ILOG_DEBUG(ILX_FONTCACHE, " -> Matched: %s\n", *fileName);
-
+    FcChar8* fileName;
+    FcPatternGetString(match, FC_FILE, 0, &fileName);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> Matched: %s\n", (char*) fileName);
+    std::string font_match = (char*) fileName;
     FcPatternDestroy(match);
     FcPatternDestroy(pat);
+
+    return font_match;
 }
 
 } /* namespace ilixi */

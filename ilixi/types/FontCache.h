@@ -40,7 +40,7 @@ public:
     Instance();
 
     unsigned int
-    getKey(const char* name, int size, DFBFontAttributes attr);
+    getKey(const std::string& name, int size, DFBFontAttributes attr);
 
     IDirectFBFont*
     getEntry(const std::string& name, int size, DFBFontAttributes attr);
@@ -67,10 +67,10 @@ private:
     ~FontCache();
 
     IDirectFBFont*
-    getEntryFromFile(const char* name, int size, DFBFontAttributes attr);
+    getEntryFromFile(const std::string& name, int size, DFBFontAttributes attr);
 
-    void
-    getFCFileName(const char* name, const char* style, double size, int slant, char** fileName);
+    std::string
+    getFCFileName(const char* name, const char* style, double size, int slant);
 
     static FontCache* __instance;
 
