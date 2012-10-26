@@ -84,6 +84,7 @@ AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support
 AC_ARG_ENABLE([sound], AS_HELP_STRING([--enable-sound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_sound=no])
 
 AC_ARG_WITH([reflex], [AS_HELP_STRING([--with-reflex], [enable experimental support for reflex])], [], [with_reflex=no])
+AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples])], [], [with_examples=no])
 
 ######################################################################
 # Dependencies
@@ -199,6 +200,7 @@ AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ili
 AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
 AM_CONDITIONAL([WITH_REFLEX], [test x$with_reflex = xyes])
+AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -233,6 +235,7 @@ AC_CONFIG_FILES([ \
 		doc/Makefile \
 		doc/resources/Makefile \
 		doc/uml/Makefile \
+		examples/Makefile \
 		ilixi/Makefile \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \
@@ -260,6 +263,7 @@ AC_MSG_RESULT([
    FusionDale support       : $enable_dale
    FusionSound support      : $enable_sound
    Reflex support           : $with_reflex
+   Examples                 : $with_examples
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
