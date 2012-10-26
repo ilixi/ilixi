@@ -83,6 +83,8 @@ fi
 AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
 AC_ARG_ENABLE([sound], AS_HELP_STRING([--enable-sound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_sound=no])
 
+AC_ARG_WITH([reflex], [AS_HELP_STRING([--with-reflex], [enable experimental support for reflex])], [], [with_reflex=no])
+
 ######################################################################
 # Dependencies
 ######################################################################
@@ -143,6 +145,21 @@ AS_IF([test "x$enable_sound" = "xyes"], [
 	)], []
 )
 
+LIBREFLEX=""
+AS_IF([test "x$with_reflex" = "xyes"], 
+    [
+        AC_CHECK_FILE([/opt/dfb/include/Reflex/Reflex.h], 
+        [
+            LIBREFLEX="-lReflex"
+            AC_DEFINE([HAVE_LIBREFLEX], [1], [Enable Reflex support])
+        ],
+        [
+            with_reflex=no
+            AC_MSG_WARN([*** Reflex not found -- Building without Reflex support.])
+        ])
+    ]
+)
+
 PKG_CHECK_MODULES(DEPS, $PACKAGES)
 
 AC_SUBST(DIRECTFB_REQ_VERSION)
@@ -171,13 +188,17 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 ######################################################################
 # Output
 ######################################################################
+DEPS_CFLAGS="$DEPS_CFLAGS -I/opt/dfb/include/"
+DEPS_LIBS="$DEPS_LIBS $LIBREFLEX"
 CXXFLAGS="$CFLAGS"
+
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
 AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
+AM_CONDITIONAL([WITH_REFLEX], [test x$with_reflex = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -238,6 +259,7 @@ AC_MSG_RESULT([
    Stereoscopy support      : $enable_stereo   
    FusionDale support       : $enable_dale
    FusionSound support      : $enable_sound
+   Reflex support           : $with_reflex
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.

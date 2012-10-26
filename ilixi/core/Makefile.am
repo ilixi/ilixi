@@ -29,3 +29,14 @@ endif
 
 libilixi_core_la_SOURCES 	+= 	SoundDFB.cpp
 ilixi_include_HEADERS		+=	SoundDFB.h
+
+if WITH_REFLEX
+libilixi_core_la_SOURCES 	+= 	AppBase_rflx.cpp \
+     							Callback_rflx.cpp \
+	     						EventManager_rflx.cpp \
+	     						Logger_rflx.cpp \
+	     						SurfaceEventListener_rflx.cpp \
+	     						Window_rflx.cpp
+
+include $(top_srcdir)/ilixi/gccxml.make
+endif

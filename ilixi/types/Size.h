@@ -116,12 +116,6 @@ public:
     bool
     operator!=(const Size &s) const;
 
-    /*!
-     * Returns the DFBDimension.
-     */
-    DFBDimension
-    dfbDimension() const;
-
 private:
     //! This property stores the width in pixels.
     int _width;

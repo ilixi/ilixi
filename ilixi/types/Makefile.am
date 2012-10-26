@@ -44,4 +44,23 @@ if WITH_FUSIONSOUND
 libilixi_types_la_SOURCES 		+= 	Music.cpp
 nobase_ilixi_include_HEADERS	+=	Music.h
 endif
-		          					
+
+if WITH_REFLEX
+libilixi_types_la_SOURCES 	+=	Affine2D_rflx.cpp \
+								BoxLayout_rflx.cpp \
+	          					Brush_rflx.cpp \
+	          					Color_rflx.cpp \
+	          					Event_rflx.cpp \
+	          					Font_rflx.cpp \
+	          					FontCache_rflx.cpp \
+	          					Image_rflx.cpp \
+	          					Margin_rflx.cpp \
+	          					Pen_rflx.cpp \
+	          					Point_rflx.cpp \
+	          					RadioGroup_rflx.cpp \
+	          					Rectangle_rflx.cpp \
+	          					Size_rflx.cpp \
+	          					WidgetLayout_rflx.cpp
+
+include $(top_srcdir)/ilixi/gccxml.make
+endif

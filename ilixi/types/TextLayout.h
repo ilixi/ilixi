@@ -49,6 +49,24 @@ public:
     //!< right aligned
     };
 
+    typedef struct LayoutLine
+    {
+        LayoutLine()
+                : offset(0),
+                  bytes(0),
+                  y(0),
+                  length(0),
+                  lineWidth(0)
+        {
+        }
+
+        int offset; // offset from first character of line
+        int bytes; // number of bytes to render on line
+        int y; // top-left coordinate of line
+        int length; // number of characters on line
+        int lineWidth; // logical width of text on line
+    };
+
     /*!
      * Constructor.
      */
@@ -270,24 +288,6 @@ private:
     Alignment _alignment;
     //! Bounding rectangle of layout.
     Rectangle _bounds;
-
-    struct LayoutLine
-    {
-        LayoutLine()
-                : offset(0),
-                  bytes(0),
-                  y(0),
-                  length(0),
-                  lineWidth(0)
-        {
-        }
-
-        int offset; // offset from first character of line
-        int bytes; // number of bytes to render on line
-        int y; // top-left coordinate of line
-        int length; // number of characters on line
-        int lineWidth; // logical width of text on line
-    };
 
     typedef std::list<LayoutLine> LineList;
     //! List of lines inside layout.

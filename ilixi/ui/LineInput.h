@@ -79,17 +79,18 @@ public:
     const Margin&
     margin() const;
 
-    /*!
-     * Returns text appended to the start of text.
-     */
-    const std::string&
-    postfix() const;
-
-    /*!
-     * Returns text prepended to the start of text.
-     */
-    const std::string&
-    prefix() const;
+    // TODO Add postfix and prefix to LineInput?
+//    /*!
+//     * Returns text appended to the start of text.
+//     */
+//    const std::string&
+//    postfix() const;
+//
+//    /*!
+//     * Returns text prepended to the start of text.
+//     */
+//    const std::string&
+//    prefix() const;
 
     /*!
      * Returns a rectangle at caret position.

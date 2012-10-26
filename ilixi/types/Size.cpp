@@ -99,11 +99,4 @@ Size::operator!=(const Size &size) const
     return !(*this == size);
 }
 
-DFBDimension
-Size::dfbDimension() const
-{
-    DFBDimension s = { width(), height() };
-    return s;
-}
-
 } /* namespace ilixi */

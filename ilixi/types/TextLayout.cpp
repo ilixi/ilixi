@@ -362,6 +362,7 @@ TextLayout::heightForWidth(int width, Font* font) const
 void
 TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     const char* text = _text.c_str();
 
     x += _bounds.x();

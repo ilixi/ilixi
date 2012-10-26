@@ -64,4 +64,36 @@ ilixi_include_HEADERS 	= 	Application.h \
 							VBoxLayout.h \
 							Widget.h  \
 							WindowWidget.h
+if WITH_REFLEX
+libilixi_ui_la_SOURCES 	+= 	Application_rflx.cpp \
+							Button_rflx.cpp \
+							Carousel_rflx.cpp \
+							CheckBox_rflx.cpp \
+							ComboBox_rflx.cpp \
+							ContainerBase_rflx.cpp \
+							Dialog_rflx.cpp \
+							Frame_rflx.cpp \
+							GridLayout_rflx.cpp \
+							GroupBox_rflx.cpp \
+							HBoxLayout_rflx.cpp \
+							Icon_rflx.cpp \
+							Label_rflx.cpp \
+							LayoutBase_rflx.cpp \
+							LineInput_rflx.cpp \
+							ProgressBar_rflx.cpp \
+							PushButton_rflx.cpp \
+							RadioButton_rflx.cpp \
+							ScrollArea_rflx.cpp \
+							Slider_rflx.cpp \
+							Spacer_rflx.cpp \
+							SpinBox_rflx.cpp \
+							SurfaceView_rflx.cpp \
+							TabPanel_rflx.cpp \
+							TextBase_rflx.cpp \
+							ToolButton_rflx.cpp \
+							VBoxLayout_rflx.cpp \
+							Widget_rflx.cpp \
+							WindowWidget_rflx.cpp
 
+include $(top_srcdir)/ilixi/gccxml.make
+endif							

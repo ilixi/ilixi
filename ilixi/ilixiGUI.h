@@ -28,7 +28,9 @@
 #include <ui/CheckBox.h>
 #include <ui/ComboBox.h>
 #include <ui/Dialog.h>
+#include <ui/GridLayout.h>
 #include <ui/GroupBox.h>
+#include <ui/HBoxLayout.h>
 #include <ui/Icon.h>
 #include <ui/Label.h>
 #include <ui/LineInput.h>
@@ -36,8 +38,10 @@
 #include <ui/PushButton.h>
 #include <ui/RadioButton.h>
 #include <ui/Slider.h>
+#include <ui/Spacer.h>
 #include <ui/SpinBox.h>
 #include <ui/TabPanel.h>
 #include <ui/ToolButton.h>
+#include <ui/VBoxLayout.h>
 
 #endif /* ILIXI_GUI_H_ */

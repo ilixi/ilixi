@@ -60,6 +60,13 @@ private:
 class TabPanel : public Frame
 {
 public:
+    struct TabPage
+    {
+        Widget* widget;
+        TabPanelButton* button;
+        Size widgetSize;
+    };
+
     TabPanel(Widget* parent = 0);
 
     virtual
@@ -144,12 +151,7 @@ private:
 
     int _canvasOffsetY;
 
-    struct TabPage
-    {
-        Widget* widget;
-        TabPanelButton* button;
-        Size widgetSize;
-    };
+
 
     typedef std::vector<TabPage> PageList;
     PageList _pages;

@@ -33,6 +33,50 @@ namespace ilixi
 class GridLayout : public LayoutBase
 {
 public:
+    struct CellData
+    {
+        CellData(Widget* w, int r, int c, int re, int ce)
+                : widget(w),
+                  row(r),
+                  col(c),
+                  lastRow(re),
+                  lastCol(ce),
+                  width(-2),
+                  height(-2),
+                  h4w(-2),
+                  ignored(false)
+        {
+        }
+
+        Widget* widget;
+        int row;
+        int col;
+        int lastRow;
+        int lastCol;
+        int width;
+        int height;
+        int h4w;bool ignored;
+    };
+
+    struct LineData
+    {
+        LineData()
+                : constraint(FixedConstraint),
+                  value(0),
+                  min(0),
+                  max(INT_MAX),
+                  pos(0),
+                  active(false)
+        {
+        }
+
+        char constraint;
+        int value;
+        int min;
+        int max;
+        int pos;bool active;
+    };
+
     GridLayout(unsigned int rows, unsigned int columns, Widget* parent = 0);
 
     virtual
@@ -77,49 +121,7 @@ private:
     int _rows;
     int _cols;
 
-    struct CellData
-    {
-        CellData(Widget* w, int r, int c, int re, int ce)
-                : widget(w),
-                  row(r),
-                  col(c),
-                  lastRow(re),
-                  lastCol(ce),
-                  width(-2),
-                  height(-2),
-                  h4w(-2),
-                  ignored(false)
-        {
-        }
 
-        Widget* widget;
-        int row;
-        int col;
-        int lastRow;
-        int lastCol;
-        int width;
-        int height;
-        int h4w;bool ignored;
-    };
-
-    struct LineData
-    {
-        LineData()
-                : constraint(FixedConstraint),
-                  value(0),
-                  min(0),
-                  max(INT_MAX),
-                  pos(0),
-                  active(false)
-        {
-        }
-
-        char constraint;
-        int value;
-        int min;
-        int max;
-        int pos;bool active;
-    };
 
     typedef std::vector<CellData*> CellDataVector;
     CellDataVector _cells;

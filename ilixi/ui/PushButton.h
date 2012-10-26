@@ -32,7 +32,7 @@ namespace ilixi
 class PushButton : public Button
 {
 public:
-    PushButton(const std::string& text, Widget* parent = 0);
+    PushButton(const std::string& text = "Untitled", Widget* parent = 0);
 
     virtual
     ~PushButton();
