@@ -37,4 +37,4 @@ ilixi-0.1.0.pc
 ilixi/ilixiConfig.h
 libtool
 stamp-h1
-
+*_rflx.cpp
