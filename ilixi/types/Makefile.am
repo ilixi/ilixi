@@ -46,7 +46,7 @@ nobase_ilixi_include_HEADERS	+=	Music.h
 endif
 
 if WITH_REFLEX
-libilixi_types_la_SOURCES 	+=	Affine2D_rflx.cpp \
+TYPES_REFLEX				=	Affine2D_rflx.cpp \
 								BoxLayout_rflx.cpp \
 	          					Brush_rflx.cpp \
 	          					Color_rflx.cpp \
@@ -62,5 +62,10 @@ libilixi_types_la_SOURCES 	+=	Affine2D_rflx.cpp \
 	          					Size_rflx.cpp \
 	          					WidgetLayout_rflx.cpp
 
+libilixi_types_la_SOURCES 	+= $(TYPES_REFLEX)
+
 include $(top_srcdir)/ilixi/gccxml.make
+
+clean-local:
+	-rm $(TYPES_REFLEX)
 endif

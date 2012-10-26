@@ -65,7 +65,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Widget.h  \
 							WindowWidget.h
 if WITH_REFLEX
-libilixi_ui_la_SOURCES 	+= 	Application_rflx.cpp \
+UI_REFLEX				= 	Application_rflx.cpp \
 							Button_rflx.cpp \
 							Carousel_rflx.cpp \
 							CheckBox_rflx.cpp \
@@ -94,6 +94,11 @@ libilixi_ui_la_SOURCES 	+= 	Application_rflx.cpp \
 							VBoxLayout_rflx.cpp \
 							Widget_rflx.cpp \
 							WindowWidget_rflx.cpp
+							
+libilixi_ui_la_SOURCES 	+= $(UI_REFLEX)
 
 include $(top_srcdir)/ilixi/gccxml.make
+
+clean-local:
+	-rm $(UI_REFLEX)
 endif							

@@ -20,12 +20,17 @@ nobase_ilixi_include_HEADERS 	= 	Painter.h \
                   					Surface.h
 
 if WITH_REFLEX
-libilixi_graphics_la_SOURCES 	+= 	Painter_rflx.cpp \
+GRAPHICS_REFLEX					= 	Painter_rflx.cpp \
                   					Palette_rflx.cpp \
                   					Style_rflx.cpp \
                   					Stylist_rflx.cpp \
                   					StylistBase_rflx.cpp \
                   					Surface_rflx.cpp
+                  					
+libilixi_graphics_la_SOURCES 	+= $(GRAPHICS_REFLEX)
 
 include $(top_srcdir)/ilixi/gccxml.make
+
+clean-local:
+	-rm $(GRAPHICS_REFLEX)
 endif
