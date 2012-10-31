@@ -100,6 +100,9 @@ protected:
     virtual DirectResult
     processRemoved(SaWManProcess *process);
 
+    virtual DirectResult
+    processTerminated(pid_t pid);
+
     /*!
      * Called right before a window is created.
      */
@@ -141,6 +144,7 @@ private:
     SaWManCallbacks _callbacks;
 
     pthread_mutex_t _mutex;
+    struct sigaction _act;
 
     void
     initApps();
@@ -153,6 +157,10 @@ private:
                    const char* category, const char* version, const char* icon,
                    const char* exec, const char* args, const char* appFlags,
                    const char* depFlags);
+
+
+    friend void
+    sigchild_handler(int sig, siginfo_t *siginfo, void *context);
 
     // SaWMan callbacks...
     friend DirectResult

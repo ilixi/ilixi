@@ -30,8 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_COMPCOMP, "ilixi/Coma/CompositorComponent",
-               "CompositorComponent");
+D_DEBUG_DOMAIN( ILX_COMPCOMP, "ilixi/Coma/CompositorComponent", "CompositorComponent");
 
 CompositorComponent::CompositorComponent(ILXCompositor* compositor)
         : ComaComponent("Compositor", Compositor::CNumNotifications),
@@ -99,11 +98,9 @@ CompositorComponent::sendAppList()
     }
 
     int* vec;
-    allocate(sizeof(int) + dataVector.size() * sizeof(Compositor::AppData),
-             (void**) &vec);
+    allocate(sizeof(int) + dataVector.size() * sizeof(Compositor::AppData), (void**) &vec);
     *vec = dataVector.size();
-    memcpy(vec + 1, &dataVector[0],
-           dataVector.size() * sizeof(Compositor::AppData));
+    memcpy(vec + 1, &dataVector[0], dataVector.size() * sizeof(Compositor::AppData));
     notify(Compositor::SendingAppList, vec);
     ILOG_DEBUG(ILX_COMPCOMP, "Sent application vector.\n");
 }
@@ -141,8 +138,7 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     case Compositor::AddNotification:
         {
             Compositor::NotificationData data = *((Compositor::NotificationData*) arg);
-            ILOG_DEBUG(ILX_COMPCOMP,
-                       "AddNotification request from PID[%d] for UUID: %s\n", data.client, data.uuid);
+            ILOG_DEBUG(ILX_COMPCOMP, "AddNotification request from PID[%d] for UUID: %s\n", data.client, data.uuid);
             _notificationMan->addNotification(data);
             break;
         }
@@ -225,7 +221,7 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
 void
 CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
 {
-    if (!instance->view()->visible())
+    if (instance->view() && !instance->view()->visible())
         return;
 
     Compositor::VisibilityData vNo;
@@ -239,8 +235,7 @@ CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
     *tPid = vNo;
 
     notify(Compositor::AppVisibilty, tPid);
-    ILOG_DEBUG(ILX_COMPCOMP,
-               "%s is now visible!\n", instance->appInfo()->name().c_str());
+    ILOG_DEBUG(ILX_COMPCOMP, "%s is now %s!\n", instance->appInfo()->name().c_str(), visible ? "visible": "hidden");
 }
 
 void
@@ -281,61 +276,47 @@ CompositorComponent::parseOptions(xmlDocPtr doc)
             {
                 if (xmlStrcmp(element->name, (xmlChar*) "Showing") == 0)
                 {
-                    xmlChar* duration = xmlGetProp(element,
-                                                   (xmlChar*) "duration");
-                    _compositor->settings.durationShow = atoi(
-                            (const char*) duration);
+                    xmlChar* duration = xmlGetProp(element, (xmlChar*) "duration");
+                    _compositor->settings.durationShow = atoi((const char*) duration);
                     xmlFree(duration);
 
                     xmlChar* zoom = xmlGetProp(element, (xmlChar*) "zoom");
                     bool zoomF = atoi((const char*) zoom);
                     if (zoomF)
-                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.showAnimProps | AppView::Zoom);
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(_compositor->settings.showAnimProps | AppView::Zoom);
                     else
-                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.showAnimProps & ~AppView::Zoom);
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(_compositor->settings.showAnimProps & ~AppView::Zoom);
                     xmlFree(zoom);
 
-                    xmlChar* opacity = xmlGetProp(element,
-                                                  (xmlChar*) "opacity");
+                    xmlChar* opacity = xmlGetProp(element, (xmlChar*) "opacity");
                     bool opacityF = atoi((const char*) opacity);
                     if (opacityF)
-                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.showAnimProps | AppView::Opacity);
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(_compositor->settings.showAnimProps | AppView::Opacity);
                     else
-                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.showAnimProps & ~AppView::Opacity);
+                        _compositor->settings.showAnimProps = AppView::AnimatedProperty(_compositor->settings.showAnimProps & ~AppView::Opacity);
                     xmlFree(opacity);
                 } else if (xmlStrcmp(element->name, (xmlChar*) "Hiding") == 0)
                 {
-                    xmlChar* duration = xmlGetProp(element,
-                                                   (xmlChar*) "duration");
-                    _compositor->settings.durationHide = atoi(
-                            (const char*) duration);
+                    xmlChar* duration = xmlGetProp(element, (xmlChar*) "duration");
+                    _compositor->settings.durationHide = atoi((const char*) duration);
                     xmlFree(duration);
 
                     // Zoom flag
                     xmlChar* zoom = xmlGetProp(element, (xmlChar*) "zoom");
                     bool zoomF = atoi((const char*) zoom);
                     if (zoomF)
-                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.hideAnimProps | AppView::Zoom);
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(_compositor->settings.hideAnimProps | AppView::Zoom);
                     else
-                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.hideAnimProps & ~AppView::Zoom);
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(_compositor->settings.hideAnimProps & ~AppView::Zoom);
                     xmlFree(zoom);
 
                     // Opacity flag
-                    xmlChar* opacity = xmlGetProp(element,
-                                                  (xmlChar*) "opacity");
+                    xmlChar* opacity = xmlGetProp(element, (xmlChar*) "opacity");
                     bool opacityF = atoi((const char*) opacity);
                     if (opacityF)
-                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.hideAnimProps | AppView::Opacity);
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(_compositor->settings.hideAnimProps | AppView::Opacity);
                     else
-                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(
-                                _compositor->settings.hideAnimProps & ~AppView::Opacity);
+                        _compositor->settings.hideAnimProps = AppView::AnimatedProperty(_compositor->settings.hideAnimProps & ~AppView::Opacity);
                     xmlFree(opacity);
                 }
 

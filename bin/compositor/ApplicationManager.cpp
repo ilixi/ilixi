@@ -24,22 +24,24 @@
 #include "ApplicationManager.h"
 #include <core/Logger.h>
 #include <lib/FileSystem.h>
+#include <lib/Notify.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <signal.h>
 #include <stdexcept>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "Compositor.h"
+#include <sstream>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/comp/AppMan",
-               "ApplicationManager");
+D_DEBUG_DOMAIN( ILX_APPLICATIONMANAGER, "ilixi/comp/AppMan", "ApplicationManager");
 
 bool
 app_sort(AppInfo* app1, AppInfo* app2)
 {
-
     unsigned int i = 0;
     while ((i < app1->name().length()) && (i < app2->name().length()))
     {
@@ -56,6 +58,29 @@ app_sort(AppInfo* app1, AppInfo* app2)
 }
 
 //*********************************************************************
+static ApplicationManager* __appMan = NULL;
+
+void
+sigchild_handler(int sig, siginfo_t *siginfo, void *context)
+{
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
+    if (siginfo->si_code == CLD_DUMPED && __appMan)
+    {
+        AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
+
+        std::stringstream ss;
+        ss << instance->appInfo()->name() << " terminated abnormally.";
+        Notify notify("Application crashed!", ss.str());
+        notify.setIcon(ILIXI_DATADIR"images/default.png");
+        notify.show();
+
+        if (instance->view())
+            return;
+        AppInfo* info = __appMan->infoByPID(siginfo->si_pid);
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> PID: %ld (%s) terminated abnormally!\n", (long) siginfo->si_pid, info->name().c_str());
+        __appMan->processTerminated((long) siginfo->si_pid);
+    }
+}
 
 DirectResult
 start_request(void *context, const char *name, pid_t *ret_pid)
@@ -67,8 +92,7 @@ start_request(void *context, const char *name, pid_t *ret_pid)
 DirectResult
 stop_request(void *context, pid_t pid, FusionID caller)
 {
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-               "Stop request from Fusion ID 0x%lx for pid %d!\n", caller, pid);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Stop request from Fusion ID 0x%lx for pid %d!\n", caller, pid);
     ApplicationManager* appMan = (ApplicationManager*) context;
     return appMan->stopApplication(pid);
 }
@@ -153,14 +177,22 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Creating SaWManager.\n");
     if (_saw->CreateManager(_saw, &_callbacks, this, &_manager) != DR_OK)
-        ILOG_THROW(ILX_APPLICATIONMANAGER,
-                   "Unable to create SaWMan manager!\n");
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan manager!\n");
 
     initApps();
+    __appMan = this;
+
+    memset(&_act, 0, sizeof(_act));
+    _act.sa_sigaction = &sigchild_handler;
+    _act.sa_flags = SA_SIGINFO | SA_NOCLDWAIT;
+
+    if (sigaction(SIGCHLD, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
 }
 
 ApplicationManager::~ApplicationManager()
 {
+    __appMan = NULL;
     stopAll();
 
     if (_manager)
@@ -172,8 +204,7 @@ ApplicationManager::~ApplicationManager()
     for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
         delete *it;
 
-    for (AppInstanceList::iterator it = _instances.begin();
-            it != _instances.end(); ++it)
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
         delete *it;
 
     pthread_mutex_destroy(&_mutex);
@@ -222,8 +253,7 @@ ApplicationManager::infoByPID(const pid_t pid)
 AppInstance*
 ApplicationManager::instanceByAppID(unsigned long appID)
 {
-    for (AppInstanceList::iterator it = _instances.begin();
-            it != _instances.end(); ++it)
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
         if (((AppInstance*) (*it))->appID() == appID)
             return ((AppInstance*) (*it));
@@ -234,8 +264,7 @@ ApplicationManager::instanceByAppID(unsigned long appID)
 AppInstance*
 ApplicationManager::instanceByInstanceID(unsigned int instanceID)
 {
-    for (AppInstanceList::iterator it = _instances.begin();
-            it != _instances.end(); ++it)
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
         if (((AppInstance*) (*it))->instanceID() == instanceID)
             return ((AppInstance*) (*it));
@@ -246,8 +275,7 @@ ApplicationManager::instanceByInstanceID(unsigned int instanceID)
 AppInstance*
 ApplicationManager::instanceByPID(const pid_t pid)
 {
-    for (AppInstanceList::iterator it = _instances.begin();
-            it != _instances.end(); ++it)
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
         if (((AppInstance*) (*it))->pid() == pid)
             return ((AppInstance*) (*it));
@@ -276,8 +304,7 @@ ApplicationManager::startApp(const std::string& name)
 DirectResult
 ApplicationManager::startApplication(const std::string& name, bool autoStart)
 {
-    ILOG_INFO( ILX_APPLICATIONMANAGER,
-              "%s( name %s )\n", __FUNCTION__, name.c_str());
+    ILOG_INFO( ILX_APPLICATIONMANAGER, "%s( name %s )\n", __FUNCTION__, name.c_str());
 
     AppInfo* appInfo = infoByName(name);
     if (!appInfo)
@@ -287,12 +314,9 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
 
     AppInstance* instance = instanceByAppID(appInfo->appID());
 
-    if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE) && !waitpid(
-            instance->pid(), NULL, WNOHANG))
+    if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE) && !waitpid(instance->pid(), NULL, WNOHANG))
     {
-        ILOG_DEBUG(
-                ILX_APPLICATIONMANAGER,
-                "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
+        ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
         if (!autoStart)
             _compositor->showInstance(instance);
         return DR_BUSY;
@@ -337,8 +361,7 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
             args[arC++] = NULL;
 
             while (i++ < arC)
-                ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-                           "  -> ARG: %d - %s\n", i - 1, args[i - 1]);
+                ILOG_DEBUG(ILX_APPLICATIONMANAGER, "  -> ARG: %d - %s\n", i - 1, args[i - 1]);
 
             execvp(args[0], (char**) args);
         } else
@@ -376,8 +399,7 @@ ApplicationManager::stopApplication(pid_t pid)
     if (instance)
     {
         pthread_mutex_lock(&_mutex);
-        for (AppInstanceList::iterator it = _instances.begin();
-                it != _instances.end(); ++it)
+        for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
         {
             if (((AppInstance*) *it)->pid() == pid)
             {
@@ -392,8 +414,7 @@ ApplicationManager::stopApplication(pid_t pid)
         return DR_OK;
     } else
     {
-        ILOG_ERROR(ILX_APPLICATIONMANAGER,
-                   "Could not find an application with pid[%d]!", pid);
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Could not find an application with pid[%d]!", pid);
         return DR_ITEMNOTFOUND;
     }
 }
@@ -407,9 +428,7 @@ ApplicationManager::stopAll()
     {
         AppInstance* instance = _instances.front();
         AppInfo* info = instance->appInfo();
-        ILOG_DEBUG(
-                ILX_APPLICATIONMANAGER,
-                "  -> Killing %s[%d]...\n", info->name().c_str(), instance->pid());
+        ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Killing %s[%d]...\n", info->name().c_str(), instance->pid());
 
         kill(instance->pid(), SIGKILL);
         delete instance;
@@ -438,11 +457,8 @@ ApplicationManager::initStartup()
 DirectResult
 ApplicationManager::processAdded(SaWManProcess *process)
 {
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-               "%s( process %p )\n", __FUNCTION__, process);
-    ILOG_DEBUG(
-            ILX_APPLICATIONMANAGER,
-            "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "%s( process %p )\n", __FUNCTION__, process);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
 
     if (process->fusion_id == 1)
         return DR_OK;
@@ -451,8 +467,7 @@ ApplicationManager::processAdded(SaWManProcess *process)
     if (instance)
         return DR_OK;
 
-    ILOG_WARNING(ILX_APPLICATIONMANAGER,
-                 "Process[%d] is not recognized!\n", process->pid);
+    ILOG_WARNING(ILX_APPLICATIONMANAGER, "Process[%d] is not recognized!\n", process->pid);
 //    kill(process->pid, SIGKILL);
     return DR_ITEMNOTFOUND;
 }
@@ -460,17 +475,13 @@ ApplicationManager::processAdded(SaWManProcess *process)
 DirectResult
 ApplicationManager::processRemoved(SaWManProcess *process)
 {
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-               "%s( process %p )\n", __FUNCTION__, process);
-    ILOG_DEBUG(
-            ILX_APPLICATIONMANAGER,
-            "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "%s( process %p )\n", __FUNCTION__, process);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
 
     pthread_mutex_lock(&_mutex);
     bool found = false;
     AppInstance* instance;
-    for (AppInstanceList::iterator it = _instances.begin();
-            it != _instances.end(); ++it)
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
         instance = ((AppInstance*) *it);
         if (instance->pid() == process->pid)
@@ -490,6 +501,31 @@ ApplicationManager::processRemoved(SaWManProcess *process)
 }
 
 DirectResult
+ApplicationManager::processTerminated(pid_t pid)
+{
+    pthread_mutex_lock(&_mutex);
+    bool found = false;
+    AppInstance* instance;
+    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
+    {
+        instance = ((AppInstance*) *it);
+        if (instance->pid() == pid)
+        {
+            found = true;
+            it = _instances.erase(it);
+            break;
+        }
+    }
+    pthread_mutex_unlock(&_mutex);
+    if (found)
+    {
+        _compositor->processTerminated(instance);
+        return DR_OK;
+    }
+    return DR_ITEMNOTFOUND;
+}
+
+DirectResult
 ApplicationManager::windowPreconfig(SaWManWindowConfig *config)
 {
     return DR_OK;
@@ -503,8 +539,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-               " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (!instance)
@@ -514,33 +549,22 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
 
     if (appInfo->appFlags() & APP_OSK)
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-                   " -> setting window config for APP_OSK.\n");
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK.\n");
         DFBRectangle r = { 0, 0, _compositor->width(), 400 };
         info->config.bounds = r;
-        _manager->SetWindowConfig(_manager, info->handle,
-                                  (SaWManWindowConfigFlags) (SWMCF_SIZE),
-                                  &info->config);
+        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_SIZE), &info->config);
     } else if (appInfo->appFlags() & APP_STATUSBAR)
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-                   " -> setting window config for APP_STATUSBAR.\n");
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_STATUSBAR.\n");
         DFBRectangle r = { 0, 0, _compositor->width(), 55 };
         info->config.bounds = r;
-        _manager->SetWindowConfig(
-                _manager, info->handle,
-                (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE),
-                &info->config);
+        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE), &info->config);
     } else if (!(appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG))
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-                   " -> setting window config for Default.\n");
-        DFBRectangle r = { 0, 0, _compositor->width(),
-                           _compositor->height() - 50 };
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for Default.\n");
+        DFBRectangle r = { 0, 0, _compositor->width(), _compositor->height() - 50 };
         info->config.bounds = r;
-        _manager->SetWindowConfig(_manager, info->handle,
-                                  (SaWManWindowConfigFlags) (SWMCF_SIZE),
-                                  &info->config);
+        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_SIZE), &info->config);
     }
 
     _manager->Lock(_manager);
@@ -558,8 +582,7 @@ ApplicationManager::windowRemoved(SaWManWindowInfo *info)
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, info->handle, &process);
 
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER,
-               " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
@@ -575,11 +598,8 @@ ApplicationManager::windowRemoved(SaWManWindowInfo *info)
 DirectResult
 ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 {
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER,
-               "%s( reconfig %p )\n", __FUNCTION__, reconfig);
-    ILOG_DEBUG(
-            ILX_APPLICATIONMANAGER,
-            "  -> Window [%lu] Flags [0x%04x]\n", reconfig->handle, reconfig->flags);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "%s( reconfig %p )\n", __FUNCTION__, reconfig);
+    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Window [%lu] Flags [0x%04x]\n", reconfig->handle, reconfig->flags);
 
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, reconfig->handle, &process);
@@ -594,8 +614,7 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 
         if (!(info->appFlags() & APP_ALLOW_WINDOW_CONFIG) && (reconfig->flags & SWMCF_POSITION))
         {
-            ILOG_WARNING(ILX_APPLICATIONMANAGER,
-                         "SWMCF_POSITION not allowed!\n");
+            ILOG_WARNING(ILX_APPLICATIONMANAGER, "SWMCF_POSITION not allowed!\n");
             reconfig->flags = (SaWManWindowConfigFlags) (reconfig->flags & ~SWMCF_POSITION);
         }
 
@@ -661,22 +680,16 @@ ApplicationManager::parseAppDef(const char* file)
     ctxt = xmlNewParserCtxt();
     if (ctxt == NULL)
     {
-        ILOG_ERROR(ILX_APPLICATIONMANAGER,
-                   "Failed to allocate parser context\n");
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to allocate parser context\n");
         return false;
     }
 
-    doc = xmlCtxtReadFile(
-            ctxt,
-            filePath.c_str(),
-            NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+    doc = xmlCtxtReadFile(ctxt, filePath.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
         xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_APPLICATIONMANAGER,
-                   "Failed to parse appdef: %s\n", file);
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to parse appdef: %s\n", file);
         return false;
     }
 
@@ -684,8 +697,7 @@ ApplicationManager::parseAppDef(const char* file)
     {
         xmlFreeDoc(doc);
         xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_APPLICATIONMANAGER,
-                   "Failed to validate appdef: %s\n", file);
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to validate appdef: %s\n", file);
         return false;
     }
 
@@ -743,11 +755,7 @@ ApplicationManager::parseAppDef(const char* file)
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Parsed appdef file: %s\n", file);
 
-    addApplication((const char*) name, (const char*) author,
-                   (const char*) licence, (const char*) category,
-                   (const char*) version, (const char*) icon,
-                   (const char*) exec, (const char*) args,
-                   (const char*) appFlags, (const char*) depFlags);
+    addApplication((const char*) name, (const char*) author, (const char*) licence, (const char*) category, (const char*) version, (const char*) icon, (const char*) exec, (const char*) args, (const char*) appFlags, (const char*) depFlags);
 
     xmlFree(name);
     xmlFree(author);
@@ -778,6 +786,7 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
     std::string str("which ");
     str.append(exec);
     int ret = system(str.c_str());
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "%s return %d\n", str.c_str(), ret);
     if (ret == 256)
         return;
 

@@ -168,7 +168,8 @@ private:
         CET_Restack,    //!< Window restack
         CET_State,      //!< Window state
         CET_Quit,       //!< Application terminated
-        CET_Term        //!< Terminate application.
+        CET_Term,       //!< Terminate application.
+        CET_Crash       //!< Application crashed.
     };
 
     struct CompositorEvent
@@ -234,6 +235,9 @@ private:
 
     void
     processRemoved(AppInstance* instance);
+
+    void
+    processTerminated(AppInstance* instance);
 
     void
     updateCompositorGeometry();

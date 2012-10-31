@@ -29,6 +29,7 @@
 #include <core/Logger.h>
 #include <lib/Notify.h>
 #include <sigc++/bind.h>
+#include <sstream>
 
 using namespace std;
 
@@ -39,8 +40,7 @@ D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/comp/Compositor", "Compositor");
 ILXCompositor::CompositorSettings ILXCompositor::settings;
 
 ILXCompositor::ILXCompositor(int argc, char* argv[])
-        : Application(&argc, &argv,
-                      (AppOptions) (OptExclusive | OptDale | OptSound)),
+        : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale | OptSound)),
           _appMan(NULL),
           _currentApp(NULL),
           _previousApp(NULL),
@@ -69,8 +69,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
     settings.clickFocus = true;
     settings.animations = true;
     settings.showAnimProps = AppView::Opacity;
-    settings.hideAnimProps = AppView::AnimatedProperty(
-            AppView::Opacity | AppView::Zoom);
+    settings.hideAnimProps = AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom);
     settings.durationShow = 300;
     settings.durationHide = 500;
     settings.notificationTimeout = 5000;
@@ -92,8 +91,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
             addWidget(_fpsLabel);
 
             _fps = new FPSCalculator();
-            _fps->sigUpdated.connect(
-                    sigc::mem_fun(this, &ILXCompositor::onFPSUpdate));
+            _fps->sigUpdated.connect(sigc::mem_fun(this, &ILXCompositor::onFPSUpdate));
         }
 
         else if (strcmp(argv[i], "fsu") == 0)
@@ -103,14 +101,11 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
     if (_switcher == NULL)
         _switcher = new HorizontalSwitcher();
 
-    _switcher->sigSwitchRequest.connect(
-            sigc::mem_fun1(this, &ILXCompositor::showInstance));
-    _switcher->sigFeedbackRequest.connect(
-            sigc::mem_fun(_compComp, &CompositorComponent::notifyVisibility));
+    _switcher->sigSwitchRequest.connect(sigc::mem_fun1(this, &ILXCompositor::showInstance));
+    _switcher->sigFeedbackRequest.connect(sigc::mem_fun(_compComp, &CompositorComponent::notifyVisibility));
     addWidget(_switcher);
 
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &ILXCompositor::updateCompositorGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &ILXCompositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &ILXCompositor::onVisible));
 }
 
@@ -145,18 +140,14 @@ ILXCompositor::showInstance(AppInstance* instance)
     _previousApp = _currentApp;
     _currentApp = instance;
 
-    ILOG_DEBUG(ILX_COMPOSITOR,
-               " -> instance: %s\n", instance->appInfo()->name().c_str());
+    ILOG_DEBUG(ILX_COMPOSITOR, " -> instance: %s\n", instance->appInfo()->name().c_str());
 
     // osk & _previousApp
     if (_osk && _osk->view()->visible())
     {
         _osk->view()->hide(AppView::Position, 0, height());
         if (_previousApp)
-            _previousApp->view()->hide(
-                    AppView::AnimatedProperty(
-                            settings.hideAnimProps | AppView::Position),
-                    0, 0);
+            _previousApp->view()->hide(AppView::AnimatedProperty(settings.hideAnimProps | AppView::Position), 0, 0);
     } else if (_previousApp)
         _previousApp->view()->hide(settings.hideAnimProps);
 
@@ -228,8 +219,7 @@ ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
     ILOG_TRACE_W(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
     if (rect.y > height() - 450)
-        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - 450),
-                                    rect.w, rect.h);
+        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - 450), rect.w, rect.h);
     else
         _oskTargetRect.setRectangle(rect.x, 0, rect.w, rect.h);
 
@@ -263,8 +253,7 @@ ILXCompositor::toggleOSK(bool show)
 void
 ILXCompositor::sendOSKInput(uint32_t key)
 {
-    _currentApp->view()->consumeKeyEvent(
-            KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
+    _currentApp->view()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
     if (key == DIKS_ENTER)
         toggleOSK(false);
 }
@@ -334,12 +323,10 @@ ILXCompositor::getWindow(DFBWindowID id)
     if (id)
     {
         IDirectFBDisplayLayer* layer;
-        DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY,
-                                                  &layer);
+        DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY, &layer);
         if (ret)
         {
-            ILOG_ERROR( ILX_COMPOSITOR,
-                       "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
             return NULL;
         }
 
@@ -348,8 +335,7 @@ ILXCompositor::getWindow(DFBWindowID id)
         if (ret)
         {
             layer->Release(layer);
-            ILOG_ERROR( ILX_COMPOSITOR,
-                       "Error! GetWindow: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetWindow: %s", DirectFBErrorString(ret));
             return NULL;
         }
         layer->Release(layer);
@@ -396,7 +382,7 @@ ILXCompositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfi
     data->reconfig->handle = reconfig->handle;
     data->reconfig->request = reconfig->request;
     data->windowID = info->win_id;
-
+    usleep(10000);
     postUserEvent(CET_Config, data);
 }
 
@@ -461,6 +447,17 @@ ILXCompositor::processRemoved(AppInstance* instance)
 }
 
 void
+ILXCompositor::processTerminated(AppInstance* instance)
+{
+    ILOG_DEBUG(ILX_COMPOSITOR, "%s( PID %u )\n", __FUNCTION__, instance->pid());
+
+    CompositorEventData* data = new CompositorEventData;
+    data->instance = instance;
+
+    postUserEvent(CET_Crash, data);
+}
+
+void
 ILXCompositor::updateCompositorGeometry()
 {
     _switcher->setOptimalGeometry(width(), height() - 50);
@@ -489,10 +486,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_STATUSBAR\n");
                     _statusBar = data->instance;
-                    _statusBar->setView(
-                            new AppView(this, data->instance, this));
-                    _statusBar->view()->setGeometry(0, height() - 55, width(),
-                                                    55);
+                    _statusBar->setView(new AppView(this, data->instance, this));
+                    _statusBar->view()->setGeometry(0, height() - 55, width(), 55);
                     addWidget(_statusBar->view());
                     _statusBar->view()->setZ(0);
                     _statusBar->view()->bringToFront();
@@ -526,10 +521,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                     else if (appInfo->name() == "SoundMixer")
                         _mixer = data->instance;
 
-                    data->instance->setView(
-                            new AppView(this, data->instance, this));
-                    data->instance->view()->setGeometry(0, 0, width(),
-                                                        height() - 50);
+                    data->instance->setView(new AppView(this, data->instance, this));
+                    data->instance->view()->setGeometry(0, 0, width(), height() - 50);
                     addWidget(data->instance->view());
                     data->instance->view()->setZ(0);
                     data->instance->view()->sendToBack();
@@ -537,31 +530,24 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 } else
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_DEFAULT\n");
-                    if (data->instance->view() == NULL)
-                    {
-                        data->instance->setView(
-                                new AppView(this, data->instance, this));
-                        data->instance->view()->setGeometry(0, 0, width(),
-                                                            height() - 50);
-                        addWidget(data->instance->view());
-                        data->instance->view()->setNeighbour(Down, _switcher);
-                        data->instance->view()->setZ(-5);
-                        data->instance->view()->sendToBack();
-                    }
 
                     if (data->instance->thumb() == NULL)
                     {
-                        data->instance->setThumb(
-                                new AppThumbnail(this, data->instance));
+                        data->instance->setThumb(new AppThumbnail(this, data->instance));
+                        data->instance->setView(new AppView(this, data->instance, this));
+
+                        data->instance->view()->setGeometry(0, 0, width(), height() - 50);
+                        data->instance->view()->setNeighbour(Down, _switcher);
+                        data->instance->view()->setZ(-5);
+                        addWidget(data->instance->view());
+                        data->instance->view()->sendToBack();
                         _switcher->addThumb(data->instance->thumb());
                     }
-
+                    data->instance->view()->addWindow(dfbWindow, true, !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
                     data->instance->thumb()->addWindow(dfbWindow, false);
+
                     if (data->instance->thumb()->_close)
                         data->instance->thumb()->_close->bringToFront();
-                    data->instance->view()->addWindow(
-                            dfbWindow, true,
-                            !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);
@@ -585,11 +571,9 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 ILOG_DEBUG(ILX_COMPOSITOR, "CET_CONFIG (%d)\n", data->windowID);
 
                 if (data->instance->view())
-                    data->instance->view()->onWindowConfig(data->windowID,
-                                                           data->reconfig);
+                    data->instance->view()->onWindowConfig(data->windowID, data->reconfig);
                 if (data->instance->thumb())
-                    data->instance->thumb()->onWindowConfig(data->windowID,
-                                                            data->reconfig);
+                    data->instance->thumb()->onWindowConfig(data->windowID, data->reconfig);
 
                 delete data->reconfig;
             }
@@ -600,15 +584,12 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
         case CET_Restack:
             {
-                ILOG_DEBUG(ILX_COMPOSITOR,
-                           "CET_Restack (%d)\n", data->windowID);
+                ILOG_DEBUG(ILX_COMPOSITOR, "CET_Restack (%d)\n", data->windowID);
 
                 if (data->instance->view())
-                    data->instance->view()->onWindowConfig(data->windowID,
-                                                           data->reconfig);
+                    data->instance->view()->onWindowConfig(data->windowID, data->reconfig);
                 if (data->instance->thumb())
-                    data->instance->thumb()->onWindowConfig(data->windowID,
-                                                            data->reconfig);
+                    data->instance->thumb()->onWindowConfig(data->windowID, data->reconfig);
 
                 delete data->reconfig;
             }
@@ -619,9 +600,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
         case CET_Quit:
             {
-                ILOG_DEBUG(
-                        ILX_COMPOSITOR,
-                        "CET_Quit (%s)\n", data->instance->appInfo()->name().c_str());
+                ILOG_DEBUG( ILX_COMPOSITOR, "CET_Quit (%s)\n", data->instance->appInfo()->name().c_str());
 
                 if (data->instance == _currentApp)
                     _currentApp = NULL;
@@ -641,9 +620,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
         case CET_Term:
             {
-                ILOG_DEBUG(
-                        ILX_COMPOSITOR,
-                        "CET_Term (%s)\n", data->instance->appInfo()->name().c_str());
+                ILOG_DEBUG( ILX_COMPOSITOR, "CET_Term (%s)\n", data->instance->appInfo()->name().c_str());
 
                 if (data->instance->view())
                     removeWidget(data->instance->view());
@@ -652,6 +629,31 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                     _switcher->removeThumb(data->instance->thumb());
 
                 _appMan->stopApplication(data->instance->pid());
+            }
+            break;
+
+        case CET_Crash:
+            {
+                ILOG_DEBUG( ILX_COMPOSITOR, "CET_Crash (%s)\n", data->instance->appInfo()->name().c_str());
+
+                _compComp->signalInstanceChanged(data->instance, NULL);
+
+                std::stringstream ss;
+                ss << data->instance->appInfo()->name() << " terminated abnormally.";
+                Notify notify("Application crashed!", ss.str());
+                notify.setIcon(ILIXI_DATADIR"images/default.png");
+                notify.show();
+
+                if (data->instance == _currentApp)
+                    _currentApp = NULL;
+
+                if (data->instance->view())
+                    removeWidget(data->instance->view());
+
+                if (data->instance->thumb())
+                    _switcher->removeThumb(data->instance->thumb());
+
+                delete data->instance;
             }
             break;
 
@@ -685,7 +687,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             return true;
         } else if (event.key_symbol == DIKS_F11)
         {
-            Notify notify("Hey!", "Want parmak?");
+            Notify notify("Hi there!", "This is a notification...");
             notify.setIcon(ILIXI_DATADIR"images/default.png");
             notify.show();
             return true;
@@ -724,7 +726,8 @@ main(int argc, char* argv[])
     {
         ilixi::ILXCompositor app(argc, argv);
         app.exec();
-    } catch (const std::exception& e)
+    }
+    catch (const std::exception& e)
     {
         ILOG_FATAL(ilixi::ILX_COMPOSITOR, "Exception: %s\n", e.what());
     }
