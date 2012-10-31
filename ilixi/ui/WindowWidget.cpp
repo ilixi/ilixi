@@ -294,7 +294,7 @@ void
 WindowWidget::showWindow()
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
-    if (AppBase::appOptions() & OptExclusive)
+    if (!AppBase::activeWindow() && (AppBase::appOptions() & OptExclusive))
     {
         // setup cursor
         IDirectFBImageProvider* provider;
@@ -425,7 +425,6 @@ WindowWidget::showWindow()
         _window->showWindow();
 
     AppBase::setActiveWindow(this);
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
 }
 
 void

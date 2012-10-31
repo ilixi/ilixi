@@ -74,7 +74,7 @@ LayoutBase::preferredSize() const
 
         return r.size();
     }
-    return Size(50, 50); // FIXME default size for layout.
+    return Size(0, 0); // FIXME default size for layout.
 }
 
 unsigned int
