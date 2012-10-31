@@ -39,7 +39,7 @@ public:
      * @param text Label's text.
      * @param parent Label's parent.
      */
-    Label(std::string text, Widget* parent = 0);
+    Label(std::string text = "", Widget* parent = 0);
 
     /*!
      * Copy constructor.

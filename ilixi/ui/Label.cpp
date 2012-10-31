@@ -93,8 +93,7 @@ void
 Label::updateTextBaseGeometry()
 {
     ILOG_TRACE_W(ILX_LABEL);
-    _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(),
-                      height() - _margin.vSum());
+    _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(), height() - _margin.vSum());
     _layout.doLayout(font());
 }
 
