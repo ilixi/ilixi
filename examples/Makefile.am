@@ -1,5 +1,6 @@
 ## Makefile.am for examples
-bin_PROGRAMS 			= 	ilixi_hello ilixi_buttons ilixi_containers ilixi_signals
+SUBDIRS					=
+bin_PROGRAMS 			= ilixi_hello ilixi_buttons ilixi_containers ilixi_signals ilixi_dialogs
 
 ILIXI_EX_LDLIBS			= @DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
 ILIXI_EX_CPPFLAGS		= -I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
@@ -24,3 +25,9 @@ ilixi_signals_LDADD		= $(ILIXI_EX_LDLIBS)
 ilixi_signals_CPPFLAGS	= $(ILIXI_EX_CPPFLAGS)
 ilixi_signals_CFLAGS	= $(ILIXI_EX_CFLAGS)
 ilixi_signals_SOURCES	= signals.cpp
+
+ilixi_dialogs_LDADD		= $(ILIXI_EX_LDLIBS)
+ilixi_dialogs_CPPFLAGS	= $(ILIXI_EX_CPPFLAGS)
+ilixi_dialogs_CFLAGS	= $(ILIXI_EX_CFLAGS)
+ilixi_dialogs_SOURCES	= dialogs.cpp
+
