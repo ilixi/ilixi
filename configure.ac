@@ -262,7 +262,6 @@ AC_CONFIG_FILES([ \
 		doc/resources/Makefile \
 		doc/uml/Makefile \
 		examples/Makefile \
-		examples/meta-ui/Makefile \
 		ilixi/Makefile \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \
