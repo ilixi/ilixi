@@ -39,7 +39,7 @@ namespace ilixi
         sigc::mem_fun(this, &VKMenu::updateVKMenuGeometry));
 
     _level1 = new ScrollArea();
-    _level1->surface()->setSurfaceFlag(Surface::BlitDescription);
+//    _level1->surface()->setSurfaceFlag(Surface::BlitDescription);
 //    _level1->setAutoScrolling(false);
     addChild(_level1);
 
@@ -122,47 +122,47 @@ namespace ilixi
     repaint();
   }
 
-  void
-  VKMenu::paint(const PaintEvent& event)
-  {
-    if (visible())
-      {
-        PaintEvent evt(this, event);
-        if (evt.isValid())
-          {
-            IDirectFBSurface* dfbSurface = surface()->dfbSurface();
-
-            if (_level1->visible())
-              {
-                if (_level1->surface())
-                  _level1->surface()->clear();
-
-                _level1->paint(evt);
-                _level1->surface()->flip();
-
-                dfbSurface->SetBlittingFlags(dfbSurface,
-                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
-                        | DSBLIT_BLEND_COLORALPHA));
-                dfbSurface->SetColor(dfbSurface, 0, 0, 0,
-                    _circle->value() * 255);
-                surface()->blit(_level1->surface(),
-                    Rectangle(0, 0, width(), height()), _level1->x(),
-                    _level1->y());
-
-                /*
-                 DFBRectangle sRect =
-                 Rectangle(0, 0, width(), height()).dfbRect();
-                 DFBRectangle dRect = Rectangle(_level1->x() + _val1 * _level1->width() / 2, _level1->y(),
-                 width() * _val2, height() * _val2).dfbRect();
-
-                 dfbSurface->StretchBlit(dfbSurface,
-                 _level1->surface()->DFBSurface(), &sRect, &dRect);
-                 */
-              }
-
-          }
-      }
-  }
+//  void
+//  VKMenu::paint(const PaintEvent& event)
+//  {
+//    if (visible())
+//      {
+//        PaintEvent evt(this, event);
+//        if (evt.isValid())
+//          {
+//            IDirectFBSurface* dfbSurface = surface()->dfbSurface();
+//
+//            if (_level1->visible())
+//              {
+//                if (_level1->surface())
+//                  _level1->surface()->clear();
+//
+//                _level1->paint(evt);
+//                _level1->surface()->flip();
+//
+//                dfbSurface->SetBlittingFlags(dfbSurface,
+//                    (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
+//                        | DSBLIT_BLEND_COLORALPHA));
+//                dfbSurface->SetColor(dfbSurface, 0, 0, 0,
+//                    _circle->value() * 255);
+//                surface()->blit(_level1->surface(),
+//                    Rectangle(0, 0, width(), height()), _level1->x(),
+//                    _level1->y());
+//
+//                /*
+//                 DFBRectangle sRect =
+//                 Rectangle(0, 0, width(), height()).dfbRect();
+//                 DFBRectangle dRect = Rectangle(_level1->x() + _val1 * _level1->width() / 2, _level1->y(),
+//                 width() * _val2, height() * _val2).dfbRect();
+//
+//                 dfbSurface->StretchBlit(dfbSurface,
+//                 _level1->surface()->DFBSurface(), &sRect, &dRect);
+//                 */
+//              }
+//
+//          }
+//      }
+//  }
 
   void
   VKMenu::compose(const PaintEvent& event)

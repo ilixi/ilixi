@@ -55,8 +55,8 @@ namespace ilixi
     void
     tweenSlot();
 
-    virtual void
-    paint(const PaintEvent& event);
+//    virtual void
+//    paint(const PaintEvent& event);
 
   protected:
     ScrollArea* _level1;
