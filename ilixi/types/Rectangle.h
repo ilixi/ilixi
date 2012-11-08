@@ -24,6 +24,7 @@
 #ifndef ILIXI_RECTANGLE_H_
 #define ILIXI_RECTANGLE_H_
 
+#include <lib/Util.h>
 #include <types/Point.h>
 #include <types/Size.h>
 
@@ -330,12 +331,13 @@ public:
     bool
     operator!=(const Rectangle &r) const;
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     /*!
      * Returns the DFBBox.
      */
     DFBBox
     dfbBox() const;
-
+#endif
     /*!
      * Returns the DFBRectangle.
      */

@@ -26,6 +26,7 @@
 
 #include <ui/LayoutBase.h>
 #include <vector>
+#include <climits>
 
 namespace ilixi
 {

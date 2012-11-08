@@ -25,7 +25,9 @@
 #include <ui/Widget.h>
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
+#if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
+#endif
 
 namespace ilixi
 {

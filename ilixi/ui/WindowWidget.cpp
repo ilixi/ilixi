@@ -232,7 +232,9 @@ WindowWidget::paint(const PaintEvent& event)
                 if ((AppBase::appOptions() & OptExclusive) && !getenv("ILIXI_NO_CURSOR"))
                 {
                     surface()->clip(evt.rect);
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
                     _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
+#endif
                     _exclusiveSurface->SetBlittingFlags(_exclusiveSurface, DSBLIT_BLEND_ALPHACHANNEL);
                     _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL, AppBase::cursorPosition().x, AppBase::cursorPosition().y);
 
@@ -313,6 +315,7 @@ WindowWidget::showWindow()
         provider->RenderTo(provider, _cursorImage, NULL);
         provider->Release(provider);
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
         // setup screen
         IDirectFBScreen* pScreen;
         DFBScreenEncoderConfig sEncoderCfg;
@@ -348,7 +351,7 @@ WindowWidget::showWindow()
             pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
         }
         pScreen->Release(pScreen);
-
+#endif
         // setup layer
         DFBGraphicsDeviceDescription deviceDesc;
         AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);

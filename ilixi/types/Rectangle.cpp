@@ -337,14 +337,14 @@ Rectangle::operator!=(const Rectangle &rectangle) const
 {
     return !(*this == rectangle);
 }
-
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 DFBBox
 Rectangle::dfbBox() const
 {
     DFBBox b = { x(), y(), right() - 1, bottom() - 1 };
     return b;
 }
-
+#endif
 DFBRectangle
 Rectangle::dfbRect() const
 {

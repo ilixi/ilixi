@@ -8,7 +8,6 @@ libilixi_core_la_SOURCES 	= 	AppBase.cpp \
      							Callback.cpp \
 	     						EventManager.cpp \
 	     						Logger.cpp \
-	     						SurfaceEventListener.cpp \
 	     						Window.cpp
 						
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
@@ -16,7 +15,6 @@ ilixi_include_HEADERS		=	AppBase.h \
 	     						Callback.h \
 	     						EventManager.h \
 	     						Logger.h \
-	     						SurfaceEventListener.h \
 	     						Window.h
 
 if WITH_FUSIONDALE
@@ -25,6 +23,11 @@ libilixi_core_la_SOURCES 	+= 	ComaComponent.cpp \
 ilixi_include_HEADERS		+=	ComaComponent.h \
 								ComponentData.h \
 								DaleDFB.h
+endif
+
+if WITH_SURFACE_EVENTS
+libilixi_core_la_SOURCES 	+= 	SurfaceEventListener.cpp
+ilixi_include_HEADERS		+=	SurfaceEventListener.h
 endif
 
 libilixi_core_la_SOURCES 	+= 	SoundDFB.cpp

@@ -25,9 +25,20 @@
 #define ILIXI_UTIL_H_
 
 #include <string>
+#include <directfb_version.h>
 
 namespace ilixi
 {
+
+#if __GNUC__ > 3
+#define DO_PRAGMA(x)    _Pragma (#x)
+#define TODO(x)         DO_PRAGMA(message ("TODO - " #x))
+#else
+#define TODO(x)         do {} while(0)
+#endif
+
+#define VERSION_CODE(a,b,c)      (((a) << 16) + ((b) << 8) + (c))
+#define ILIXI_DFB_VERSION       VERSION_CODE(DIRECTFB_MAJOR_VERSION, DIRECTFB_MINOR_VERSION, DIRECTFB_MICRO_VERSION)
 
 /*!
  * An algorithm produced by Professor Daniel J. Bernstein.

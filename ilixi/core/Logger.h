@@ -27,15 +27,16 @@
 #include <ilixiConfig.h>
 #include <directfb.h>
 #include <stdexcept>
+#include <lib/Util.h>
 
 namespace ilixi
 {
 #ifdef ILIXI_LOGGER_ENABLED
 D_DEBUG_DOMAIN( ILX, "ilixi", "ilixi");
 D_DEBUG_DOMAIN( ILX_CORE, "ilixi/core", "Important stuff");
-D_DEBUG_DOMAIN( ILX_GRAPHICS, "ilixi/graphics", "Graphics related");
-D_DEBUG_DOMAIN( ILX_LIB, "ilixi/lib", "For fun");
-D_DEBUG_DOMAIN( ILX_TYPES, "ilixi/types", "Types we like to use");
+D_DEBUG_DOMAIN( ILX_GRAPHICS, "ilixi/graphics", "Primarily graphics related");
+D_DEBUG_DOMAIN( ILX_LIB, "ilixi/lib", "Non-essential helpers");
+D_DEBUG_DOMAIN( ILX_TYPES, "ilixi/types", "Types");
 D_DEBUG_DOMAIN( ILX_UI, "ilixi/ui", "Widgets");
 
 /*!
@@ -73,8 +74,13 @@ ilixi_log(int level, const char* message, ...);
 #define ILOG_NOTICE(_fmt...)            do {} while(0)
 #define ILOG_WARNING(_fmt...)           do {} while(0)
 #endif // end ILIXI_LOG_DEBUG_ENABLED
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 #define ILOG_ERROR(Domain, _fmt...)     D_LOG(Domain, ERROR, _fmt)
 #define ILOG_FATAL(Domain, _fmt...)     D_LOG(Domain, FATAL, _fmt)
+#else
+#define ILOG_ERROR(Domain, _fmt...)     D_ERROR(_fmt)
+#define ILOG_FATAL(Domain, _fmt...)     D_ERROR(_fmt)
+#endif
 #else // ILIXI_LOGGER_ENABLED = 0
 #define ILOG_TRACE(Domain)              do {} while(0)
 #define ILOG_TRACE_F(Domain)            do {} while(0)

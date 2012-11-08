@@ -53,7 +53,19 @@ public:
 
 private:
     pthread_mutex_t _lock;
-    typedef std::map<unsigned int, IDirectFBFont*> CacheMap;
+
+    struct FontData
+    {
+        FontData(IDirectFBFont* f)
+                : font(f),
+                  ref(1)
+        {
+        }
+        IDirectFBFont* font;
+        unsigned int ref;
+    };
+
+    typedef std::map<unsigned int, FontData> CacheMap;
     CacheMap _cache;
 
     FontCache();

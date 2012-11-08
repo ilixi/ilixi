@@ -46,7 +46,9 @@ AC_SUBST(LT_AGE)
 PACKAGE=ilixi
 VERSION=$ILIXI_VERSION
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+PKG_PROG_PKG_CONFIG
 
 ######################################################################
 # Options
@@ -80,9 +82,9 @@ if test "$enable_stereo" = "yes"; then
 	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereo output])
 fi
 
-AC_ARG_ENABLE([dale], AS_HELP_STRING([--enable-dale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_dale=no])
-AC_ARG_ENABLE([sound], AS_HELP_STRING([--enable-sound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_sound=no])
-
+AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
+AC_ARG_ENABLE([fusionsound], AS_HELP_STRING([--enable-fusionsound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_fusionsound=no])
+AC_ARG_WITH([sawman], [AS_HELP_STRING([--with-sawman], [enables compositor and application manager])], [], [with_sawman=no])
 AC_ARG_WITH([reflex], [AS_HELP_STRING([--with-reflex], [enable experimental support for reflex])], [], [with_reflex=no])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples])], [], [with_examples=no])
 
@@ -106,7 +108,7 @@ AC_TYPE_PID_T
 AC_FUNC_ERROR_AT_LINE
 
 # Checks for libraries.
-DIRECTFB_REQ_VERSION=1.6.0
+DIRECTFB_REQ_VERSION=1.4.15
 SAWMAN_REQ_VERSION=1.6.0
 FUSIONDALE_REQ_VERSION=1.6.0
 FUSIONSOUND_REQ_VERSION=1.6.0
@@ -114,36 +116,51 @@ SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 FONTCONFIG_REQ_VERSION=2.6.0
 
-PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sawman >= $SAWMAN_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
+PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
-
-AS_IF([test "x$enable_dale" = "xyes"], [
-	PKG_CHECK_MODULES([FusionDale], [fusiondale >= FUSIONDALE_REQ_VERSION], 
-		[	
-			FUSION_DALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
-			PACKAGES="$PACKAGES $FUSION_DALE_DEP"
+FUSIONDALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
+FUSIONSOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
+SAWMAN_DEP="sawman >= $SAWMAN_REQ_VERSION"
+            
+AS_IF([test "x$enable_fusiondale" = "xyes"], [
+	PKG_CHECK_MODULES([FusionDale], [$FUSIONDALE_DEP], 
+		[				
+			PACKAGES="$PACKAGES $FUSIONDALE_DEP"
 			AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 		], 
 		[
-			enable_dale=no 
+			enable_fusiondale=no 
 			AC_MSG_WARN([*** FusionDale packages not found -- Building without FusionDale support.])
 		]
 	)], []
 )
 
-AS_IF([test "x$enable_sound" = "xyes"], [
-	PKG_CHECK_MODULES([FusionSound], [fusionsound >= FUSIONSOUND_REQ_VERSION], 
+AS_IF([test "x$enable_fusionsound" = "xyes"], [
+	PKG_CHECK_MODULES([FusionSound], [$FUSIONSOUND_DEP], 
 		[	
-			FUSION_SOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
-			PACKAGES="$PACKAGES $FUSION_SOUND_DEP"
+			PACKAGES="$PACKAGES $FUSIONSOUND_DEP"
 			AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
 		], 
 		[
-			enable_sound=no 
+			enable_fusionsound=no 
 			AC_MSG_WARN([*** FusionSound packages not found -- Building without FusionSound support.])
 		]
 	)], []
+)
+
+AS_IF([test "x$with_sawman" = "xyes"], 
+    [
+        PKG_CHECK_MODULES([SaWMan], [$SAWMAN_DEP], 
+        [
+            PACKAGES="$PACKAGES $SAWMAN_DEP"
+            AC_DEFINE([HAVE_SAWMAN], [1], [Enable SaWMan support])
+        ],
+        [
+            with_sawman=no
+            AC_MSG_WARN([*** SaWMan not found -- Building without SaWMan support.])
+        ])
+    ]
 )
 
 LIBREFLEX=""
@@ -168,8 +185,9 @@ AC_SUBST(SAWMAN_REQ_VERSION)
 AC_SUBST(SIGC_REQ_VERSION)
 AC_SUBST(LIBXML_REQ_VERSION)
 AC_SUBST(FONTCONFIG_REQ_VERSION)
-AC_SUBST(FUSION_DALE_DEP)
-AC_SUBST(FUSION_SOUND_DEP)
+AC_SUBST(FUSIONDALE_DEP)
+AC_SUBST(FUSIONSOUND_DEP)
+AC_SUBST(SAWMAN_DEP)
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -193,14 +211,21 @@ DEPS_CFLAGS="$DEPS_CFLAGS -I/opt/dfb/include/"
 DEPS_LIBS="$DEPS_LIBS $LIBREFLEX"
 CXXFLAGS="$CFLAGS"
 
+DFB_SURFACE_EVENTS=no
+if $PKG_CONFIG --atleast-version=1.6.0 directfb; then
+    DFB_SURFACE_EVENTS=yes
+fi
+
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
-AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_dale = xyes])
-AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_sound = xyes])
+AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_fusiondale = xyes])
+AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
+AM_CONDITIONAL([WITH_SAWMAN], [test x$with_sawman = xyes])
 AM_CONDITIONAL([WITH_REFLEX], [test x$with_reflex = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
+AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$DFB_SURFACE_EVENTS = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -217,6 +242,7 @@ AC_CONFIG_FILES([ \
 		bin/gallery/images/Makefile \
 		bin/gallery/Makefile \
 		bin/home/Makefile \
+		bin/meta-demo/Makefile \
 		bin/monitor/Makefile \
 		bin/navigation/Makefile \
 		bin/osk/images/Makefile \
@@ -236,6 +262,7 @@ AC_CONFIG_FILES([ \
 		doc/resources/Makefile \
 		doc/uml/Makefile \
 		examples/Makefile \
+		examples/meta-ui/Makefile \
 		ilixi/Makefile \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \
@@ -260,8 +287,9 @@ AC_MSG_RESULT([
    DEPS_LIBS                : $DEPS_LIBS
    Log level                : $LOGGER_LEVEL
    Stereoscopy support      : $enable_stereo   
-   FusionDale support       : $enable_dale
-   FusionSound support      : $enable_sound
+   FusionDale support       : $enable_fusiondale
+   FusionSound support      : $enable_fusionsound
+   Sawman support           : $with_sawman
    Reflex support           : $with_reflex
    Examples                 : $with_examples
 
@@ -269,6 +297,4 @@ Type \`make' to build ilixi.
 Type \`make install' to install ilixi.
 ]);
 
-AS_IF([test "x$enable_dale" = "xno"], [
-	AC_MSG_WARN([ilixi compositor requires FusionDale support; so it won't build.])
-])
+echo $WITH_SURFACE_EVENTS

@@ -63,7 +63,9 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&__cbMutex, &attr);
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     pthread_mutex_init(&__selMutex, NULL);
+#endif
     pthread_mutex_init(&__windowMutex, &attr);
     pthread_mutex_init(&__timerMutex, &attr);
 
@@ -210,7 +212,9 @@ AppBase::releaseDFB()
         ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are released.\n");
 
         pthread_mutex_destroy(&__cbMutex);
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
         pthread_mutex_destroy(&__selMutex);
+#endif
         pthread_mutex_destroy(&__windowMutex);
         pthread_mutex_destroy(&__timerMutex);
     }
@@ -420,7 +424,7 @@ AppBase::runCallbacks()
 
     return timeout;
 }
-
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 bool
 AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
 {
@@ -515,7 +519,7 @@ AppBase::consumeSurfaceEvent(const DFBSurfaceEvent& event)
 
     pthread_mutex_unlock(&__selMutex);
 }
-
+#endif
 WindowWidget*
 AppBase::activeWindow()
 {
@@ -696,7 +700,7 @@ AppBase::handleEvents(int32_t timeout)
                 uEvent->target->universalEvent(uEvent);
                 break;
             }
-
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
         case DFEC_SURFACE:
             {
                 ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
@@ -707,7 +711,7 @@ AppBase::handleEvents(int32_t timeout)
                     ((SurfaceEventListener*) *it)->consumeSurfaceEvent((const DFBSurfaceEvent&) event);
             }
             break;
-
+#endif
         default:
             break;
         }

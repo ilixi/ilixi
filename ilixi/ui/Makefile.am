@@ -26,7 +26,6 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							Slider.cpp \
 							Spacer.cpp \
 							SpinBox.cpp \
-							SurfaceView.cpp \
 							TabPanel.cpp \
 							TextBase.cpp \
 							ToolButton.cpp \
@@ -57,13 +56,18 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Slider.h \
 							Spacer.h \
 							SpinBox.h \
-							SurfaceView.h \
 							TabPanel.h \
 							TextBase.h \
 							ToolButton.h \
 							VBoxLayout.h \
 							Widget.h  \
 							WindowWidget.h
+
+if WITH_SURFACE_EVENTS
+libilixi_ui_la_SOURCES 	+= 	SurfaceView.cpp
+ilixi_include_HEADERS 	+= 	SurfaceView.h
+endif
+							
 if WITH_REFLEX
 UI_REFLEX				= 	Application_rflx.cpp \
 							Button_rflx.cpp \

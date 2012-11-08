@@ -24,15 +24,18 @@
 #ifndef ILIXI_APPBASE_H_
 #define ILIXI_APPBASE_H_
 
-#include <string>
+#include <lib/Util.h>
 #include <types/Enums.h>
 #include <core/EventManager.h>
-#include <core/SurfaceEventListener.h>
 #include <core/Callback.h>
 #include <core/Window.h>
 #include <list>
 #include <map>
+#include <vector>
 #include <stdint.h>
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+#include <core/SurfaceEventListener.h>
+#endif
 
 namespace ilixi
 {
@@ -184,11 +187,13 @@ private:
     //! Serialises access to __callbacks.
     pthread_mutex_t __cbMutex;
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     typedef std::list<SurfaceEventListener*> SurfaceListenerList;
     //! List of surface event listeners.
     SurfaceListenerList __selList;
     //! Serialises access to _selList.
     pthread_mutex_t __selMutex;
+#endif
 
     typedef std::list<WindowWidget*> WindowList;
     //! Application wide list of windows.
@@ -248,6 +253,7 @@ private:
     int32_t
     runCallbacks();
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     /*!
      * Adds surface event listener.
      */
@@ -265,6 +271,7 @@ private:
      */
     void
     consumeSurfaceEvent(const DFBSurfaceEvent& event);
+#endif
 
     /*!
      * Returns active window.

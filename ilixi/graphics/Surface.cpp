@@ -129,9 +129,11 @@ DFBSurfaceID
 Surface::dfbSurfaceId() const
 {
     unsigned int id = 0;
+#if ILIXI_DFB_SURFACE_EVENTS
     if (_dfbSurface)
         _dfbSurface->GetID(_dfbSurface, &id);
     else
+#endif
         ILOG_ERROR(ILX_SURFACE, "Cannot get surface id!\n");
     return id;
 }

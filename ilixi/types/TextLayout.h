@@ -49,7 +49,7 @@ public:
     //!< right aligned
     };
 
-    typedef struct LayoutLine
+    struct LayoutLine
     {
         LayoutLine()
                 : offset(0),
