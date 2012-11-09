@@ -322,7 +322,7 @@ public:
      * @param affine2D
      */
     void
-    setAffine2D(const Affine2D& affine2D);
+    setAffine2D(const Affine2D& affine2D = Affine2D());
 
 private:
     enum PainterFlags

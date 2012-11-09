@@ -29,11 +29,11 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_ANIMATIONSEQ, "ilixi/lib/AnimationSequence",
-               "AnimationSequence");
+D_DEBUG_DOMAIN( ILX_ANIMATIONSEQ, "ilixi/lib/AnimationSequence", "AnimationSequence");
 
 AnimationSequence::AnimationSequence()
-        : _current(NULL)
+        : _current(NULL),
+          _looping(false)
 {
 }
 
@@ -52,8 +52,7 @@ int
 AnimationSequence::duration() const
 {
     int d = 0;
-    for (AnimationVector::const_iterator it = _animations.begin();
-            it != _animations.end(); ++it)
+    for (AnimationVector::const_iterator it = _animations.begin(); it != _animations.end(); ++it)
         d += ((Animation*) *it)->duration();
     return d;
 }
@@ -64,27 +63,20 @@ AnimationSequence::addAnimation(Animation* animation)
     if (!animation)
         return false;
 
-    AnimationVector::iterator it = std::find(_animations.begin(),
-                                             _animations.end(), animation);
+    AnimationVector::iterator it = std::find(_animations.begin(), _animations.end(), animation);
 
     if (it != _animations.end())
     {
-        ILOG_WARNING(ILX_ANIMATIONSEQ,
-                     "Animation %p is already in sequence.", animation);
+        ILOG_WARNING(ILX_ANIMATIONSEQ, "Animation %p is already in sequence.", animation);
         return false;
     }
 
-    animation->sigStarted.connect(
-            sigc::bind<Animation*>(
-                    sigc::mem_fun(this,
-                                  &AnimationSequence::setCurrentAnimation),
-                    animation));
+    animation->sigStarted.connect(sigc::bind<Animation*>(sigc::mem_fun(this, &AnimationSequence::setCurrentAnimation), animation));
 
     _animations.push_back(animation);
 
     if (_animations.size() > 1)
-        _animations[_animations.size() - 2]->sigFinished.connect(
-                sigc::mem_fun(_animations.back(), &Animation::start));
+        _animations[_animations.size() - 2]->sigFinished.connect(sigc::mem_fun(_animations.back(), &Animation::start));
     return true;
 }
 
@@ -95,8 +87,7 @@ AnimationSequence::removeAnimation(Animation* animation)
     if (!animation)
         return false;
 
-    AnimationVector::iterator it = std::find(_animations.begin(),
-                                             _animations.end(), animation);
+    AnimationVector::iterator it = std::find(_animations.begin(), _animations.end(), animation);
     if (it != _animations.end())
     {
         delete *it;
@@ -110,8 +101,7 @@ AnimationSequence::removeAnimation(Animation* animation)
 void
 AnimationSequence::clear()
 {
-    for (AnimationVector::iterator it = _animations.begin();
-            it != _animations.end(); ++it)
+    for (AnimationVector::iterator it = _animations.begin(); it != _animations.end(); ++it)
         delete *it;
 }
 
@@ -121,6 +111,8 @@ AnimationSequence::start()
     if (_animations.size() && !_current)
     {
         _current = _animations[0];
+        if (_looping)
+            _animations.back()->sigFinished.connect(sigc::mem_fun(_animations.front(), &Animation::start));
         _current->start();
     }
 }
@@ -133,6 +125,12 @@ AnimationSequence::stop()
         _current->stop();
         _current = NULL;
     }
+}
+
+void
+AnimationSequence::setLooping(bool looping)
+{
+    _looping = looping;
 }
 
 void

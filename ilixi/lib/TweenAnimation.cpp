@@ -42,8 +42,7 @@ TweenAnimation::~TweenAnimation()
 }
 
 void
-TweenAnimation::addTween(Tween::Transition transition, Tween::Equation equation,
-                         float initialValue, float endValue)
+TweenAnimation::addTween(Tween::Transition transition, Tween::Equation equation, float initialValue, float endValue)
 {
     Tween* t = new Tween(transition, equation, initialValue, endValue);
     _tweens.push_back(t);
@@ -53,6 +52,16 @@ void
 TweenAnimation::addTween(Tween* tween)
 {
     _tweens.push_back(tween);
+}
+
+float
+TweenAnimation::tweenValue(int index)
+{
+    int i = 0;
+    for (TweenList::iterator it = _tweens.begin(); it != _tweens.end(); ++it, ++i)
+        if (i == index)
+            return ((Tween*) *it)->value();
+    return 0;
 }
 
 void

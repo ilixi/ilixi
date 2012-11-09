@@ -59,6 +59,9 @@ public:
     void
     addTween(Tween* tween);
 
+    float
+    tweenValue(int index);
+
 protected:
     virtual void
     step(long ms);

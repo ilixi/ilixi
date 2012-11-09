@@ -1,5 +1,5 @@
 ## Makefile.am for examples
-SUBDIRS					=
+SUBDIRS					= animations
 bin_PROGRAMS 			= ilixi_hello ilixi_buttons ilixi_containers ilixi_signals ilixi_dialogs
 
 ILIXI_EX_LDLIBS			= @DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
@@ -31,3 +31,7 @@ ilixi_dialogs_CPPFLAGS	= $(ILIXI_EX_CPPFLAGS)
 ilixi_dialogs_CFLAGS	= $(ILIXI_EX_CFLAGS)
 ilixi_dialogs_SOURCES	= dialogs.cpp
 
+# .. in progress ..
+#if WITH_REFLEX
+#SUBDIRS += meta-ui
+#endif

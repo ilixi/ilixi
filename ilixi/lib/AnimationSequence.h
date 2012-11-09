@@ -88,9 +88,16 @@ public:
     void
     stop();
 
+    /*!
+     * Sets whether sequence loops.
+     */
+    void
+    setLooping(bool looping);
+
 private:
     //! This property stores the currently running animation.
     Animation* _current;
+    bool _looping;
     typedef std::vector<Animation*> AnimationVector;
     AnimationVector _animations;
 
