@@ -12,6 +12,6 @@ endif
 
 endif # end WITH_FUSIONDALE
 
-if WITH_REFLEX
-SUBDIRS += meta-demo
-endif
+#if WITH_REFLEX
+#SUBDIRS += meta-demo
+#endif
