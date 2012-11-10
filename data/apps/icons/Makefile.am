@@ -2,6 +2,7 @@
 miscdatadir 	=	$(ILIXI_DATADIR)/apps/icons
 miscdata_DATA 	=	8tracks.png \
 					andi.png \
+					animations.png \
 					bbc.png \
 					clanbomber2.png \
 					dfbterm.png \

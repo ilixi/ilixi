@@ -15,6 +15,7 @@ miscdata_DATA 	=	\
 					google.appdef \
 					googlemaps.appdef \
 					googleplus.appdef \
+					ilixi_animations.appdef \
 					ilixi_home.appdef \
 					ilixi_monitor.appdef \
 					ilixi_settings.appdef \
