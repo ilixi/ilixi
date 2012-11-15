@@ -116,7 +116,7 @@ SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 FONTCONFIG_REQ_VERSION=2.6.0
 
-PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
+REQ_PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
 FUSIONDALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
@@ -126,7 +126,7 @@ SAWMAN_DEP="sawman >= $SAWMAN_REQ_VERSION"
 AS_IF([test "x$enable_fusiondale" = "xyes"], [
 	PKG_CHECK_MODULES([FusionDale], [$FUSIONDALE_DEP], 
 		[				
-			PACKAGES="$PACKAGES $FUSIONDALE_DEP"
+			REQ_PACKAGES="$REQ_PACKAGES $FUSIONDALE_DEP"
 			AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 		], 
 		[
@@ -139,7 +139,7 @@ AS_IF([test "x$enable_fusiondale" = "xyes"], [
 AS_IF([test "x$enable_fusionsound" = "xyes"], [
 	PKG_CHECK_MODULES([FusionSound], [$FUSIONSOUND_DEP], 
 		[	
-			PACKAGES="$PACKAGES $FUSIONSOUND_DEP"
+			REQ_PACKAGES="$REQ_PACKAGES $FUSIONSOUND_DEP"
 			AC_DEFINE([HAVE_FUSIONSOUND], [1], [Enable FusionSound support])
 		], 
 		[
@@ -153,7 +153,7 @@ AS_IF([test "x$with_sawman" = "xyes"],
     [
         PKG_CHECK_MODULES([SaWMan], [$SAWMAN_DEP], 
         [
-            PACKAGES="$PACKAGES $SAWMAN_DEP"
+            REQ_PACKAGES="$REQ_PACKAGES $SAWMAN_DEP"
             AC_DEFINE([HAVE_SAWMAN], [1], [Enable SaWMan support])
         ],
         [
@@ -178,16 +178,8 @@ AS_IF([test "x$with_reflex" = "xyes"],
     ]
 )
 
-PKG_CHECK_MODULES(DEPS, $PACKAGES)
-
-AC_SUBST(DIRECTFB_REQ_VERSION)
-AC_SUBST(SAWMAN_REQ_VERSION)
-AC_SUBST(SIGC_REQ_VERSION)
-AC_SUBST(LIBXML_REQ_VERSION)
-AC_SUBST(FONTCONFIG_REQ_VERSION)
-AC_SUBST(FUSIONDALE_DEP)
-AC_SUBST(FUSIONSOUND_DEP)
-AC_SUBST(SAWMAN_DEP)
+PKG_CHECK_MODULES(DEPS, $REQ_PACKAGES)
+AC_SUBST(REQ_PACKAGES)
 
 ######################################################################
 # DOXYGEN SUPPORT
