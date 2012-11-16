@@ -23,11 +23,14 @@
 
 #include "AppThumbnail.h"
 #include "Compositor.h"
+#include <core/Logger.h>
 #include <graphics/Painter.h>
 #include <sigc++/bind.h>
 
 namespace ilixi
 {
+
+D_DEBUG_DOMAIN( ILX_APPTHUMB, "ilixi/comp/AppThumbnail", "AppThumbnail");
 
 AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent)
         : AppCompositor(compositor, instance, parent),
@@ -46,18 +49,17 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         _close->setIcon(ILIXI_DATADIR"compositor/close.png", Size(32, 32));
         _close->setDrawFrame(false);
         _close->setGeometry(164, 0, 32, 32);
-        _close->sigPressed.connect(
-                sigc::bind<AppInstance*>(
-                        sigc::mem_fun(_compositor, &ILXCompositor::killApp),
-                        _instance));
+        _close->sigPressed.connect(sigc::bind<AppInstance*>(sigc::mem_fun(_compositor, &ILXCompositor::killApp), _instance));
         addChild(_close);
     }
 
     setVisible(false);
+    ILOG_TRACE_W(ILX_APPTHUMB);
 }
 
 AppThumbnail::~AppThumbnail()
 {
+    ILOG_TRACE_W(ILX_APPTHUMB);
 }
 
 Size
@@ -89,25 +91,16 @@ void
 AppThumbnail::focusInEvent()
 {
     sigFocused(this);
-//    _ani.stop();
-//    _opacityTween->setInitialValue(128);
-//    _opacityTween->setEndValue(255);
-//    _ani.start();
 }
 
 void
 AppThumbnail::focusOutEvent()
 {
-//    _ani.stop();
-//    _opacityTween->setInitialValue(255);
-//    _opacityTween->setEndValue(128);
-//    _ani.start();
 }
 
 void
 AppThumbnail::tweenSlot()
 {
-//    setOpacity(_opacityTween->value());
     update();
 }
 

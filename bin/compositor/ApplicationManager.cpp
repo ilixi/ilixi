@@ -547,6 +547,8 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
 
     AppInfo* appInfo = instance->appInfo();
 
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> App: %s Window: %u\n", appInfo->name().c_str(), instance->windowCount());
+
     if (appInfo->appFlags() & APP_OSK)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK.\n");
@@ -559,7 +561,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
         DFBRectangle r = { 0, 0, _compositor->width(), 55 };
         info->config.bounds = r;
         _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE), &info->config);
-    } else if (!(appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG))
+    } else if (!(appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG) && instance->windowCount() == 0)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for Default.\n");
         DFBRectangle r = { 0, 0, _compositor->width(), _compositor->height() - 50 };

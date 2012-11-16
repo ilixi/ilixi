@@ -28,10 +28,9 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPCOMPOSITOR, "ilixi/comp/appcomp", "AppCompositor");
+D_DEBUG_DOMAIN( ILX_APPCOMPOSITOR, "ilixi/comp/AppComp", "AppCompositor");
 
-AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance,
-                             Widget* parent)
+AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance, Widget* parent)
         : Widget(parent),
           _compositor(compositor),
           _instance(instance),
@@ -39,8 +38,7 @@ AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance,
           _zoomFactor(1)
 {
     setInputMethod(NoInput);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &AppCompositor::updateAppCompositorGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &AppCompositor::updateAppCompositorGeometry));
 }
 
 AppCompositor::~AppCompositor()
@@ -54,33 +52,47 @@ AppCompositor::instance() const
 }
 
 void
-AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling,
-                         bool blocking)
+AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling, bool blocking)
 {
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> window: %p\n", window);
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> eventHandling: %d\n", eventHandling);
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> blocking: %d\n", blocking);
+
     SurfaceView* view = new SurfaceView();
     if (!eventHandling)
         view->setInputMethod(NoInput);
     view->setBlocking(blocking);
     if (_instance->appInfo()->appFlags() & APP_NEEDS_BLENDING)
         view->setBlendingEnabled(true);
+
+    if (_instance->windowCount() > 1)
+        view->setBlendingEnabled(true);
     view->setSourceFromWindow(window);
-    view->sigSourceReady.connect(
-            sigc::mem_fun(this, &AppCompositor::madeAvailable));
+    view->sigSourceReady.connect(sigc::mem_fun(this, &AppCompositor::madeAvailable));
     addChild(view);
-    updateAppCompositorGeometry();
+    sigGeometryUpdated();
 }
 
 void
 AppCompositor::removeWindow(DFBWindowID windowID)
 {
-    for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it)
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> windowID: %u\n", windowID);
+    for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
     {
-        SurfaceView* view = reinterpret_cast<SurfaceView*>(*it);
+        SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view && view->dfbWindowID() == windowID)
-            removeChild(*it);
+        {
+            if (removeChild(*it))
+            {
+                ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> removeChild( %p )\n", (*it));
+                sigGeometryUpdated();
+                break;
+            } else
+                ILOG_ERROR(ILX_APPCOMPOSITOR, " -> Cannot remove child window!\n");
+        }
     }
-    updateAppCompositorGeometry();
 }
 
 float
@@ -104,62 +116,80 @@ AppCompositor::compose(const PaintEvent& event)
 void
 AppCompositor::updateAppCompositorGeometry()
 {
-    int w = _zoomFactor * width();
-    int h = _zoomFactor * height();
-    int i = 0;
-    for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it)
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
+    float w = _zoomFactor * width();
+    float h = _zoomFactor * height();
+
+    if (w == 0 || h == 0)
+        return;
+
+    AppInfo* info = _instance->appInfo();
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> name: %s\n", info->name().c_str());
+    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> w: %f h: %f\n", w, h);
+    if (info)
     {
-        SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
-        if (view)
+        if (info->appFlags() & APP_NO_MAINWINDOW)
         {
-            AppInfo* info = _compositor->appMan()->infoByInstanceID(
-                    _instance->instanceID());
-
-//            ILOG_DEBUG(ILX_APPCOMPOSITOR,
-//                "INFO: %p - InstanceID: %d\n", info, _instance->instanceID());
-//            ILOG_DEBUG(ILX_APPCOMPOSITOR, "Flags: %x\n", info->appFlags());
-
-            if (info)
+            int i = 0;
+            ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> APP_NO_MAINWINDOW - ZoomFactor: %f\n", _zoomFactor);
+            for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
             {
-                if (info->appFlags() & APP_NO_MAINWINDOW)
+                SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
+                if (view)
                 {
                     int x, y;
                     view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                     Size s = view->preferredSize();
-                    view->setGeometry(x, y, s.width(), s.height());
-                } else
+                    view->setGeometry(_zoomFactor * x, _zoomFactor * y, _zoomFactor * s.width(), _zoomFactor * s.height());
+                    ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
+                    ++i;
+                }
+            }
+        } else
+        {
+            int i = 0;
+            float hScale = 1;
+            float vScale = 1;
+            ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> APP_WITH_MAINWINDOW - ZoomFactor: %f\n", _zoomFactor);
+            for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
+            {
+                SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
+                if (view)
                 {
                     if (i == 0)
-                        view->setGeometry((width() - w) / 2, (height() - h) / 2, w,
-                                          h);
-                    else
+                    {
+                        view->setGeometry((width() - w) / 2, (height() - h) / 2, w, h);
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
+                        // Calculate scaling factors using mainwindow as base
+                        Size s = view->preferredSize();
+                        hScale = w / s.width();
+                        vScale = h / s.height();
+                        view->sigGeometryUpdated();
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> hScale: %f vScale: %f\n", hScale, vScale);
+                    } else
                     {
                         int x, y;
                         view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                         Size s = view->preferredSize();
-                        view->setGeometry(x, y, s.width() * _zoomFactor,
-                                          s.height() * _zoomFactor);
+                        view->setGeometry(x * hScale, y * vScale, s.width() * hScale, s.height() * vScale);
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
                     }
+                    ++i;
                 }
             }
-            i++;
         }
     }
 }
 
 void
-AppCompositor::onWindowConfig(DFBWindowID windowID,
-                              const SaWManWindowReconfig *reconfig)
+AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *reconfig)
 {
-    for (WidgetList::iterator it = _children.begin(); it != _children.end();
-            ++it)
+    for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
     {
         SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view && view->dfbWindowID() == windowID)
         {
-            ILOG_DEBUG(ILX_APPCOMPOSITOR,
-                       "Config 0x%02x\n", view->dfbWindowID(), reconfig->flags);
+            ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config 0x%02x\n", view->dfbWindowID(), reconfig->flags);
             if (reconfig->flags & SWMCF_STACKING)
             {
                 if (reconfig->request.association)
@@ -181,27 +211,21 @@ AppCompositor::onWindowConfig(DFBWindowID windowID,
             {
                 if (reconfig->flags & SWMCF_OPACITY)
                 {
-                    ILOG_DEBUG(ILX_APPCOMPOSITOR,
-                               " -> opacity(%d)\n", reconfig->request.opacity);
+                    ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> opacity(%d)\n", reconfig->request.opacity);
                     view->setOpacity(reconfig->request.opacity);
                 }
 
                 if (reconfig->flags & SWMCF_POSITION)
                 {
-                    ILOG_DEBUG(
-                            ILX_APPCOMPOSITOR,
-                            " -> moveTo(%d, %d)\n", reconfig->request.bounds.x, reconfig->request.bounds.y);
-                    view->moveTo(reconfig->request.bounds.x,
-                                 reconfig->request.bounds.y);
+                    ILOG_DEBUG( ILX_APPCOMPOSITOR, " -> moveTo(%d, %d)\n", reconfig->request.bounds.x, reconfig->request.bounds.y);
+                    view->moveTo(reconfig->request.bounds.x, reconfig->request.bounds.y);
+                    view->update();
                 }
 
                 if (reconfig->flags & SWMCF_SIZE)
                 {
-                    ILOG_DEBUG(
-                            ILX_APPCOMPOSITOR,
-                            " -> setSize(%d, %d)\n", reconfig->request.bounds.w, reconfig->request.bounds.h);
-                    view->setSize(reconfig->request.bounds.w,
-                                  reconfig->request.bounds.h);
+                    ILOG_DEBUG( ILX_APPCOMPOSITOR, " -> setSize(%d, %d)\n", reconfig->request.bounds.w, reconfig->request.bounds.h);
+                    view->setSize(reconfig->request.bounds.w, reconfig->request.bounds.h);
                 }
             }
 
