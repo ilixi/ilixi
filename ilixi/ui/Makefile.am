@@ -30,6 +30,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							TextBase.cpp \
 							ToolButton.cpp \
 							VBoxLayout.cpp \
+							VideoPlayer.cpp \
 							Widget.cpp \
 							WindowWidget.cpp
           				
@@ -60,6 +61,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							TextBase.h \
 							ToolButton.h \
 							VBoxLayout.h \
+							VideoPlayer.h \
 							Widget.h  \
 							WindowWidget.h
 
