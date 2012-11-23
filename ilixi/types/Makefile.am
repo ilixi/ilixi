@@ -19,6 +19,7 @@ libilixi_types_la_SOURCES 	=	Affine2D.cpp \
 	          					Rectangle.cpp \
 	          					Size.cpp \
 	          					TextLayout.cpp \
+	          					Video.cpp \
 	          					WidgetLayout.cpp
 
 ilixi_includedir 				= 	$(includedir)/$(PACKAGE)-$(VERSION)/types
@@ -38,6 +39,7 @@ nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
 		          					Rectangle.h \
 		          					Size.h \
 		          					TextLayout.h \
+		          					Video.h \
 		          					WidgetLayout.h
 
 if WITH_FUSIONSOUND
