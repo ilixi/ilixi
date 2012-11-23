@@ -36,6 +36,8 @@
 #include <core/SoundDFB.h>
 #endif
 
+#include <core/PlatformManager.h>
+
 using namespace std;
 
 namespace ilixi
@@ -44,8 +46,6 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_APPBASE, "ilixi/core/AppBase", "AppBase");
 D_DEBUG_DOMAIN( ILX_APPBASE_UPDATES, "ilixi/core/AppBase/Updates", "AppBase Updates");
 
-IDirectFB* AppBase::__dfb = NULL;
-IDirectFBDisplayLayer* AppBase::__layer = NULL;
 IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
@@ -76,11 +76,24 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
 
     __cursorOld.x = 0;
     __cursorOld.y = 0;
+
+    PlatformManager::instance().initialize(argc, argv, options);
+    initEventBuffer();
 }
 
 AppBase::~AppBase()
 {
-    releaseDFB();
+    releaseEventBuffer();
+    PlatformManager::instance().release();
+
+    pthread_mutex_destroy(&__cbMutex);
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+    pthread_mutex_destroy(&__selMutex);
+#endif
+    pthread_mutex_destroy(&__windowMutex);
+    pthread_mutex_destroy(&__timerMutex);
+    __activeWindow = NULL;
+
     ILOG_TRACE_F(ILX_APPBASE);
 }
 
@@ -119,111 +132,27 @@ AppBase::clearAppState(AppState state)
     __state = (AppState) (__state & ~state);
 }
 
-IDirectFB*
-AppBase::getDFB()
+void
+AppBase::initEventBuffer()
 {
-    return __dfb;
+    ILOG_DEBUG(ILX_APPBASE, "Initialising event buffer...\n");
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        if (PlatformManager::instance().getDFB()->CreateInputEventBuffer(PlatformManager::instance().getDFB(), DICAPS_ALL, DFB_TRUE, &__buffer) != DFB_OK)
+            ILOG_THROW(ILX_APPBASE, "Error while creating input event buffer!\n");
+    } else if (PlatformManager::instance().getDFB()->CreateEventBuffer(PlatformManager::instance().getDFB(), &__buffer) != DFB_OK)
+        ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
 }
 
 void
-AppBase::initDFB(int* argc, char*** argv)
+AppBase::releaseEventBuffer()
 {
-    if (!__dfb)
+    if (__buffer)
     {
-        ILOG_DEBUG(ILX_APPBASE, "Initialising DirectFB interfaces...\n");
-
-        if (DirectFBInit(argc, argv) != DFB_OK)
-            ILOG_THROW(ILX_APPBASE, "DirectFBInit() failed!\n");
-
-        if (DirectFBCreate(&__dfb) != DFB_OK)
-            ILOG_THROW(ILX_APPBASE, "DirectFBCreate() failed!\n");
-
-        if (__dfb->GetDisplayLayer(__dfb, DLID_PRIMARY, &__layer) != DFB_OK)
-            ILOG_THROW(ILX_APPBASE, "Error while getting primary layer!\n");
-
-        if (__options & OptExclusive)
-        {
-            if (__dfb->CreateInputEventBuffer(__dfb, DICAPS_ALL, DFB_TRUE, &__buffer) != DFB_OK)
-                ILOG_THROW(ILX_APPBASE, "Error while creating input event buffer!\n");
-        } else if (__dfb->CreateEventBuffer(__dfb, &__buffer) != DFB_OK)
-            ILOG_THROW(ILX_APPBASE, "Error while creating event buffer!\n");
-
-        ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are ready.\n");
-#if ILIXI_HAVE_FUSIONDALE
-        if (__options & OptDale)
-        {
-            if (DaleDFB::initDale(argc, argv) == DFB_OK)
-                ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are ready.\n");
-        }
-#endif
-
-#if ILIXI_HAVE_FUSIONSOUND
-        if (__options & OptSound)
-        {
-            if (SoundDFB::initSound(argc, argv) == DFB_OK)
-                ILOG_INFO(ILX_APPBASE, "FusionSound interfaces are ready.\n");
-        }
-#endif
-    } else
-        ILOG_WARNING(ILX_APPBASE, "DirectFB interfaces are already initialised.\n");
-}
-
-void
-AppBase::releaseDFB()
-{
-    if (__dfb)
-    {
-        ILOG_TRACE_F(ILX_APPBASE);
-#if ILIXI_HAVE_FUSIONDALE
-        if (__options & OptDale)
-        {
-            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionDale...");
-            DaleDFB::releaseDale();
-            ILOG_INFO(ILX_APPBASE, "FusionDale interfaces are released.\n");
-        }
-#endif
-
-#if ILIXI_HAVE_FUSIONSOUND
-        if (__options & OptSound)
-        {
-            ILOG_DEBUG(ILX_APPBASE, "Releasing FusionSound...");
-            SoundDFB::releaseSound();
-            ILOG_INFO(ILX_APPBASE, "FusionSound interfaces are released.\n");
-        }
-#endif
-
-        ILOG_DEBUG(ILX_APPBASE, "Releasing DirectFB interfaces...\n");
-
-        if (__buffer)
-        {
-            __buffer->Release(__buffer);
-            __buffer = NULL;
-        }
-
-        if (__layer)
-        {
-            __layer->Release(__layer);
-            __layer = NULL;
-        }
-
-        __dfb->Release(__dfb);
-        __dfb = NULL;
-        __activeWindow = NULL;
-        ILOG_INFO(ILX_APPBASE, "DirectFB interfaces are released.\n");
-
-        pthread_mutex_destroy(&__cbMutex);
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-        pthread_mutex_destroy(&__selMutex);
-#endif
-        pthread_mutex_destroy(&__windowMutex);
-        pthread_mutex_destroy(&__timerMutex);
+        ILOG_DEBUG(ILX_APPBASE, "Releasing event buffer.\n");
+        __buffer->Release(__buffer);
+        __buffer = NULL;
     }
-}
-
-IDirectFBDisplayLayer*
-AppBase::getLayer()
-{
-    return __layer;
 }
 
 IDirectFBEventBuffer*
@@ -425,8 +354,8 @@ AppBase::runCallbacks()
     return timeout;
 }
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-bool
-AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
+
+bool AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
 {
     if (__instance && sel)
     {
@@ -446,7 +375,7 @@ AppBase::addSurfaceEventListener(SurfaceEventListener* sel)
         for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
         {
             if (sel->sourceSurface() == ((SurfaceEventListener*) *it)->sourceSurface())
-                attach = false;
+            attach = false;
         }
 
         if (attach)
@@ -487,7 +416,8 @@ AppBase::removeSurfaceEventListener(SurfaceEventListener* sel)
         if (ret)
         {
             bool detach = true;
-            for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
+            for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end();
+                    ++it)
             {
                 if (source == ((SurfaceEventListener*) *it)->sourceSurface())
                     detach = false;

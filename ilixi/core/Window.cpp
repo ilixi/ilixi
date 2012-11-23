@@ -21,9 +21,10 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <core/Window.h>
 #include <core/AppBase.h>
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
+#include <core/Window.h>
 #include <algorithm>
 
 namespace ilixi
@@ -93,7 +94,7 @@ Window::hideWindow()
 bool
 Window::initDFBWindow(const Size& size)
 {
-    if (!AppBase::getDFB())
+    if (!PlatformManager::instance().getDFB())
     {
         ILOG_FATAL(ILX_WINDOW, "DirectFB interface is not initialised!\n");
         exit(EXIT_FAILURE);
@@ -101,9 +102,7 @@ Window::initDFBWindow(const Size& size)
 
     DFBResult ret;
     DFBWindowDescription desc;
-    desc.flags = (DFBWindowDescriptionFlags) (DWDESC_POSX | DWDESC_POSY
-            | DWDESC_WIDTH | DWDESC_HEIGHT | DWDESC_CAPS | DWDESC_SURFACE_CAPS
-            | DWDESC_PIXELFORMAT | DWDESC_OPTIONS | DWDESC_STACKING);
+    desc.flags = (DFBWindowDescriptionFlags) (DWDESC_POSX | DWDESC_POSY | DWDESC_WIDTH | DWDESC_HEIGHT | DWDESC_CAPS | DWDESC_SURFACE_CAPS | DWDESC_PIXELFORMAT | DWDESC_OPTIONS | DWDESC_STACKING);
 
     desc.pixelformat = DSPF_ARGB;
     desc.surface_caps = DSCAPS_DOUBLE;
@@ -112,17 +111,14 @@ Window::initDFBWindow(const Size& size)
     desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL
             | DWCAPS_STEREO);
 #else
-    desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER
-            | DWCAPS_ALPHACHANNEL);
+    desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
 #endif
 
     DFBDisplayLayerConfig conf;
-    ret = AppBase::getLayer()->GetConfiguration(AppBase::getLayer(), &conf);
+    ret = PlatformManager::instance().getLayer()->GetConfiguration(PlatformManager::instance().getLayer(), &conf);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR(
-                ILX_WINDOW,
-                "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_WINDOW, "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
 
@@ -157,22 +153,17 @@ Window::initDFBWindow(const Size& size)
         ILOG_DEBUG(ILX_WINDOW, " -> (%d, %d, %d, %d)\n", x, y, w, h);
     }
 
-    ret = AppBase::getLayer()->CreateWindow(AppBase::getLayer(), &desc,
-                                            &_dfbWindow);
+    ret = PlatformManager::instance().getLayer("ui")->CreateWindow(PlatformManager::instance().getLayer("ui"), &desc, &_dfbWindow);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR(
-                ILX_WINDOW,
-                "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
 
     ret = _dfbWindow->GetSurface(_dfbWindow, &_windowSurface);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR(
-                ILX_WINDOW,
-                "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
+        ILOG_ERROR( ILX_WINDOW, "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
 

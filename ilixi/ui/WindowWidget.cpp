@@ -24,6 +24,7 @@
 #include <ui/WindowWidget.h>
 #include <core/AppBase.h>
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
 
 namespace ilixi
 {
@@ -31,13 +32,13 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
 
 IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
-IDirectFBSurface* WindowWidget::_cursorImage = NULL;
 
 WindowWidget::WindowWidget(Widget* parent)
         : Frame(parent),
           _backgroundFlags(BGFAll),
           _window(NULL),
-          _eventManager(NULL)
+          _eventManager(NULL),
+          _layerName("ui")
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
@@ -75,13 +76,6 @@ WindowWidget::~WindowWidget()
     AppBase::removeWindow(this);
     delete _eventManager;
     delete _window;
-    if (AppBase::appOptions() & OptExclusive)
-    {
-        if (_exclusiveSurface)
-            _exclusiveSurface->Release(_exclusiveSurface);
-        if (_cursorImage)
-            _cursorImage->Release(_cursorImage);
-    }
 }
 
 bool
@@ -229,20 +223,9 @@ WindowWidget::paint(const PaintEvent& event)
 
                 paintChildren(evt);
 
-                if ((AppBase::appOptions() & OptExclusive) && !getenv("ILIXI_NO_CURSOR"))
-                {
-                    surface()->clip(evt.rect);
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-                    _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
-#endif
-                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface, DSBLIT_BLEND_ALPHACHANNEL);
-                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL, AppBase::cursorPosition().x, AppBase::cursorPosition().y);
+                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
-                }
-                if ((AppBase::appOptions() & OptExclusive) && (AppBase::appOptions() & OptTripleAccelerated))
-                    surface()->flip(evt.rect, DSFLIP_ONSYNC);
-                else
-                    surface()->flip(evt.rect, DSFLIP_WAITFORSYNC);
+                surface()->flip(evt.rect);
 #endif
             }
             sem_post(&_updates._paintReady);
@@ -296,104 +279,18 @@ void
 WindowWidget::showWindow()
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
-    if (!AppBase::activeWindow() && (AppBase::appOptions() & OptExclusive))
+    if (!AppBase::activeWindow() && (PlatformManager::instance().appOptions() & OptExclusive))
     {
-        // setup cursor
-        IDirectFBImageProvider* provider;
-        DFBSurfaceDescription desc;
-        if (AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(), ILIXI_DATADIR"images/pointer.png", &provider) != DFB_OK)
-            ILOG_THROW(ILX_WINDOWWIDGET, "Error while creating cursor image provider!\n");
-
-        provider->GetSurfaceDescription(provider, &desc);
-        desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
-        desc.caps = DSCAPS_PREMULTIPLIED;
-        desc.pixelformat = DSPF_ARGB;
-
-        if (AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc, &_cursorImage) != DFB_OK)
-            ILOG_THROW(ILX_WINDOWWIDGET, "Error while creating cursor surface!\n");
-
-        provider->RenderTo(provider, _cursorImage, NULL);
-        provider->Release(provider);
-
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-        // setup screen
-        IDirectFBScreen* pScreen;
-        DFBScreenEncoderConfig sEncoderCfg;
-        DFBScreenEncoderDescription sEncoderDesc;
-
-        AppBase::__layer->GetScreen(AppBase::__layer, &pScreen);
-        sEncoderCfg.flags = (DFBScreenEncoderConfigFlags) (DSECONF_TV_STANDARD | DSECONF_SCANMODE | DSECONF_FREQUENCY | DSECONF_CONNECTORS | DSECONF_RESOLUTION | DSECONF_FRAMING);
-
-        sEncoderCfg.tv_standard = DSETV_DIGITAL;
-        sEncoderCfg.out_connectors = (DFBScreenOutputConnectors) (DSOC_COMPONENT | DSOC_HDMI);
-        sEncoderCfg.scanmode = DSESM_PROGRESSIVE;
-        sEncoderCfg.resolution = DSOR_1280_720;
-        sEncoderCfg.frequency = DSEF_60HZ;
-
-        /* Find the most appropriate framing encoder configuration */
-        pScreen->GetEncoderDescriptions(pScreen, &sEncoderDesc);
-
-        if (sEncoderDesc.all_framing & DSEPF_STEREO_FRAME_PACKING)
-            sEncoderCfg.framing = DSEPF_STEREO_FRAME_PACKING;
-        else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_FULL)
-            sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_FULL;
-        else if (sEncoderDesc.all_framing & DSEPF_STEREO_SIDE_BY_SIDE_HALF)
-            sEncoderCfg.framing = DSEPF_STEREO_SIDE_BY_SIDE_HALF;
-        else if (sEncoderDesc.all_framing & DSEPF_STEREO_TOP_AND_BOTTOM)
-            sEncoderCfg.framing = DSEPF_STEREO_TOP_AND_BOTTOM;
-        else
-            sEncoderCfg.framing = DSEPF_MONO;
-
-        DFBResult err = pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
-        if (err == DFB_UNSUPPORTED)
-        {
-            sEncoderCfg.framing = DSEPF_MONO;
-            pScreen->SetEncoderConfiguration(pScreen, 0, &sEncoderCfg);
-        }
-        pScreen->Release(pScreen);
-#endif
-        // setup layer
-        DFBGraphicsDeviceDescription deviceDesc;
-        AppBase::getDFB()->GetDeviceDescription(AppBase::getDFB(), &deviceDesc);
-
-        DFBDisplayLayerConfig config;
-        config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE | DLCONF_OPTIONS);
-        if (deviceDesc.acceleration_mask == DFXL_NONE)
-        {
-            config.buffermode = DLBM_BACKSYSTEM;
-            AppBase::unSetAppOption(OptFullScreenUpdate);
-            ILOG_DEBUG(ILX_WINDOWWIDGET, "Not using fullscreen updates\n");
-        } else
-        {
-            config.buffermode = DLBM_BACKVIDEO;
-            //AppBase::setAppOption(OptTripleAccelerated);
-        }
-
-#ifdef ILIXI_STEREO_OUTPUT
-        config.options = DLOP_STEREO;
-#else
-        config.options = DLOP_NONE;
-#endif
-
-        if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config) != DFB_OK)
-        {
-            ILOG_WARNING(ILX_WINDOWWIDGET, "Cannot set layer buffer mode to TRIPLE!\n");
-            AppBase::unSetAppOption(OptTripleAccelerated);
-            config.buffermode = DLBM_BACKVIDEO;
-            if (AppBase::__layer->SetConfiguration(AppBase::__layer, &config) != DFB_OK)
-                ILOG_THROW(ILX_WINDOWWIDGET, "Error while setting layer configuration!\n");
-        }
-
-        if (AppBase::__layer->GetSurface(AppBase::__layer, &_exclusiveSurface) != DFB_OK)
-            ILOG_THROW(ILX_WINDOWWIDGET, "Error while getting layer surface!\n");
-
+        _exclusiveSurface = PlatformManager::instance().getLayerSurface(_layerName);
+        if (_exclusiveSurface == NULL)
+            ILOG_THROW(ILX_WINDOWWIDGET, "Couldn't get layer surface!\n");
         int w, h;
         _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
 
         AppBase::addWindow(this);
         setSize(Size(w, h));
         setRootWindow(this);
-    } else
+    } else // DIALOGS
     {
         if (_window->_dfbWindow)
             return;
@@ -639,7 +536,7 @@ WindowWidget::updateWindow()
             _updates._updateRegionRight = updateTempRight;
         }
 #else
-        if (AppBase::appOptions() & OptFullScreenUpdate)
+        if (PlatformManager::instance().useFSU(_layerName))
             _updates._updateRegion = frameGeometry();
         else
             _updates._updateRegion = updateTemp;
@@ -663,6 +560,12 @@ WindowWidget::windowSurface()
     else if (_window)
         return _window->dfbSurface();
     return NULL;
+}
+
+std::string
+WindowWidget::layerName() const
+{
+    return _layerName;
 }
 
 } /* namespace ilixi */

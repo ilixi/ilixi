@@ -22,7 +22,6 @@
  */
 
 #include <types/Font.h>
-#include <core/AppBase.h>
 #include <core/Logger.h>
 #include <types/FontCache.h>
 #include <sstream>

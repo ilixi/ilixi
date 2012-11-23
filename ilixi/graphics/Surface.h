@@ -110,7 +110,7 @@ public:
      * Flips DFB surface.
      */
     void
-    flip(DFBSurfaceFlipFlags flags = DSFLIP_WAITFORSYNC);
+    flip();
 
     /*!
      * Flips DFB surface.
@@ -118,7 +118,7 @@ public:
      * @param rect area to flip in surface coordinates.
      */
     void
-    flip(const Rectangle& rect, DFBSurfaceFlipFlags flags = DSFLIP_BLIT);
+    flip(const Rectangle& rect);
 
     /*!
      * Lock surface mutex. This is mainly used by Painter to serialise updates.

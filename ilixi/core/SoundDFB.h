@@ -46,7 +46,7 @@ namespace ilixi
 
 class SoundDFB
 {
-    friend class AppBase;
+    friend class PlatformManager;
 public:
     static float
     getMasterVolume();

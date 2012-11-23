@@ -22,9 +22,9 @@
  */
 
 #include <ui/SurfaceView.h>
-#include <core/AppBase.h>
-#include <ui/WindowWidget.h>
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
+#include <ui/WindowWidget.h>
 #include <sys/time.h>
 #include <math.h>
 
@@ -107,7 +107,7 @@ SurfaceView::setSourceFromSurfaceID(DFBSurfaceID sid)
         ILOG_TRACE_W(ILX_SURFACEVIEW);
         detachSourceSurface();
 
-        DFBResult ret = AppBase::getDFB()->GetSurface(AppBase::getDFB(), sid, &_sourceSurface);
+        DFBResult ret = PlatformManager::instance().getDFB()->GetSurface(PlatformManager::instance().getDFB(), sid, &_sourceSurface);
         if (ret)
         {
             ILOG_ERROR( ILX_SURFACEVIEW, "Error! GetSurface: %s\n", DirectFBErrorString(ret));

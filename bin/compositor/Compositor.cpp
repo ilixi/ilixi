@@ -27,6 +27,7 @@
 #include "component/Notification.h"
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
 #include <lib/Notify.h>
 #include <sigc++/bind.h>
 #include <sstream>
@@ -93,9 +94,6 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
             _fps = new FPSCalculator();
             _fps->sigUpdated.connect(sigc::mem_fun(this, &ILXCompositor::onFPSUpdate));
         }
-
-        else if (strcmp(argv[i], "fsu") == 0)
-            setAppOption(OptFullScreenUpdate);
     }
 
     if (_switcher == NULL)
@@ -290,7 +288,7 @@ ILXCompositor::setLayerOpacity(u8 opacity)
     ILOG_TRACE_W(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> %d\n", opacity);
     IDirectFBDisplayLayer* layer;
-    DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY, &layer);
+    DFBResult ret = PlatformManager::instance().getDFB()->GetDisplayLayer(PlatformManager::instance().getDFB(), DLID_PRIMARY, &layer);
     layer->SetOpacity(layer, opacity);
     layer->Release(layer);
 }
@@ -323,7 +321,7 @@ ILXCompositor::getWindow(DFBWindowID id)
     if (id)
     {
         IDirectFBDisplayLayer* layer;
-        DFBResult ret = getDFB()->GetDisplayLayer(getDFB(), DLID_PRIMARY, &layer);
+        DFBResult ret = PlatformManager::instance().getDFB()->GetDisplayLayer(PlatformManager::instance().getDFB(), DLID_PRIMARY, &layer);
         if (ret)
         {
             ILOG_ERROR( ILX_COMPOSITOR, "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));

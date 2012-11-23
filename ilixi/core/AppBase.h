@@ -47,32 +47,22 @@ class Timer;
  */
 class AppBase
 {
-    friend class WindowWidget;
-    friend class Window;
-
-    friend class Timer;
-
-    friend class EventManager;
-    friend class Image;
-    friend class Video;
-    friend class Surface;
-    friend class Font;
-    friend class FontCache;
-    friend class Callback;
-    friend class Widget;
-    friend class SurfaceEventListener;
-    friend class SurfaceView;
     friend class Application;
+    friend class Callback;              // add/remove callback
+    friend class SurfaceEventListener;  // add/remove SurfaceEventListener
+    friend class Timer;                 // add/remove timer
     friend class WebView;
+    friend class Window;                // activeWindow
+    friend class WindowWidget;
 
     /*!
      * This enum is used to specify the state of an application.
      */
     enum AppState
     {
-        APS_TERM = 0x0000001, //!< Application is about to terminate shortly.
-        APS_VISIBLE = 0x0000002, //!< Application has a visible window and has access to events.
-        APS_HIDDEN = 0x0000004, //!< Application has no window and has no access to events.
+        APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
+        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
     };
 
 public:
@@ -140,18 +130,6 @@ protected:
     void
     clearAppState(AppState state);
 
-    /*!
-     * Returns DirectFB interface.
-     */
-    static IDirectFB*
-    getDFB();
-
-    /*!
-     * Returns DisplayLayer interface.
-     */
-    static IDirectFBDisplayLayer*
-    getLayer();
-
     IDirectFBWindow*
     activeDFBWindow() const;
 
@@ -207,27 +185,16 @@ private:
     TimerList _timers;
     pthread_mutex_t __timerMutex;
 
-    //! DirectFB interface.
-    static IDirectFB* __dfb;
-    //! DFBLayer interface.
-    static IDirectFBDisplayLayer* __layer;
     //! Event buffer for application.
     static IDirectFBEventBuffer* __buffer;
     //! AppBase instance.
     static AppBase* __instance;
 
-    /*!
-     * Initialise DirectFB. This method is executed
-     * only once by main Application during its construction.
-     */
     void
-    initDFB(int* argc, char*** argv);
+    initEventBuffer();
 
-    /*!
-     * Releases DirectFB resources.
-     */
     void
-    releaseDFB();
+    releaseEventBuffer();
 
     /*!
      * Adds callback.

@@ -87,7 +87,6 @@ Palette::Palette()
           _pressed(),
           _disabled()
 {
-    parsePalette(ILIXI_DATADIR"def_palette.xml");
 }
 
 ColorGroup&

@@ -152,6 +152,8 @@ private:
      */
     EventManager* _eventManager;
 
+    std::string _layerName;
+
     //! Stores window's dirty regions and a region for update.
     struct
     {
@@ -167,7 +169,6 @@ private:
     } _updates;
 
     static IDirectFBSurface* _exclusiveSurface;
-    static IDirectFBSurface* _cursorImage;
 
     /*!
      * Creates a united rectangle from a list of dirty regions and
@@ -178,6 +179,9 @@ private:
 
     IDirectFBSurface*
     windowSurface();
+
+    std::string
+    layerName() const;
 
     Timer _update_timer;
 };

@@ -24,7 +24,7 @@
 
 #include <types/FontCache.h>
 #include <lib/Util.h>
-#include <core/AppBase.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 #include <ilixiConfig.h>
 #include <sstream>
@@ -135,7 +135,7 @@ FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes
         desc.height = size;
         desc.attributes = attr;
 
-        DFBResult ret = AppBase::getDFB()->CreateFont(AppBase::getDFB(), name.c_str(), &desc, &font);
+        DFBResult ret = PlatformManager::instance().getDFB()->CreateFont(PlatformManager::instance().getDFB(), name.c_str(), &desc, &font);
         if (ret)
         {
             ILOG_TRACE(ILX_FONTCACHE);

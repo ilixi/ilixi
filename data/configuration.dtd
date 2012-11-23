@@ -1,0 +1,28 @@
+<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Stylist, Cursor) >
+   
+<!ELEMENT HardwareLayers (DFBLayer+) >
+    <!ELEMENT DFBLayer EMPTY >
+    <!ATTLIST DFBLayer  id CDATA #REQUIRED
+                        fsu (on|off) #REQUIRED 
+                        flipMode (none|onSync|waitForSync|new) #REQUIRED 
+                        bufferMode (unknown|frontOnly|backVideo|backSystem|triple|windows) #REQUIRED >    
+   
+<!ELEMENT LogicLayers (Layer+) >
+    <!ELEMENT Layer EMPTY >
+    <!ATTLIST Layer name ID #REQUIRED 
+                    hwID CDATA #REQUIRED >
+
+<!ELEMENT Screen (TvStandard, OutConnectors, ScanMode, Resolution?, Frequency?) >
+    <!ELEMENT TvStandard    (#PCDATA) >
+    <!ELEMENT OutConnectors (#PCDATA) >
+    <!ELEMENT ScanMode      (#PCDATA) >
+    <!ELEMENT Resolution    (#PCDATA) >
+    <!ELEMENT Frequency     (#PCDATA) >
+        
+<!ELEMENT Stylist (Style, Palette) >
+    <!ELEMENT Style     (#PCDATA) >
+    <!ELEMENT Palette   (#PCDATA) >
+
+<!ELEMENT Cursor (#PCDATA) >
+    <!ATTLIST Cursor    visible (yes|no) "yes" 
+                        useLayer (yes|no) "yes" >

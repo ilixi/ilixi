@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration PUBLIC "-//ilixi//DTD Configuration v1//EN" "http://www.ilixi.org/dtd/configuration.dtd">
+
+<Configuration>
+	<HardwareLayers>
+		<DFBLayer id="0" fsu="on" flipMode="onSync" bufferMode="backSystem" />
+		<DFBLayer id="1" fsu="off" flipMode="onSync" bufferMode="frontOnly" />
+	</HardwareLayers>
+
+	<LogicLayers>
+		<Layer name="ui" hwID="0" />
+		<Layer name="cursor" hwID="1" />
+		<Layer name="video" hwID="0" />
+	</LogicLayers>
+
+	<Screen>
+		<TvStandard>DIGITAL</TvStandard>
+		<OutConnectors>COMPONENT, HDMI</OutConnectors>
+		<ScanMode>PROGRESSIVE</ScanMode>
+		<Resolution>1280_720</Resolution>
+		<Frequency>60HZ</Frequency>
+	</Screen>
+
+	<Stylist>
+		<Style>@DATADIR:def_style.xml</Style>
+		<Palette>@DATADIR:def_palette.xml</Palette>
+	</Stylist>
+
+	<Cursor visible="yes" useLayer="yes">@DATADIR:pointer.png</Cursor>
+</Configuration>

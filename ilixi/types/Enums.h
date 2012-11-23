@@ -46,11 +46,11 @@ enum WidgetInputMethod
 {
     NoInput = 0x00,                                         //!< Widget does not consume pointer or key events.
     KeyInput = 0x01,                                        //!< Widget is only capable of consuming key events.
-    PointerInput = 0x02,                                    //!< Widget is only capable of consuming pointer events excluding motion.
-    KeyAndPointerInput = KeyInput | PointerInput,           //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput = 0x03)
-    PointerTracking = 0x04,                                 //!< Widget is only capable of consuming pointer motion events.
-    PointerInputTracking = PointerInput | PointerTracking,  //!< Widget is only capable of consuming pointer events including motion. (PointerInput | PointerTracking = 0x06)
-    KeyAndPointerInputTracking = 0x07,                      //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput | PointerTracking)
+    PointerInput = 0x02,                       //!< Widget is only capable of consuming pointer events excluding motion.
+    KeyAndPointerInput = KeyInput | PointerInput, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput = 0x03)
+    PointerTracking = 0x04,                              //!< Widget is only capable of consuming pointer motion events.
+    PointerInputTracking = PointerInput | PointerTracking, //!< Widget is only capable of consuming pointer events including motion. (PointerInput | PointerTracking = 0x06)
+    KeyAndPointerInputTracking = 0x07, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput | PointerTracking)
     OSKInput = 0x08,                                        //!< Widget can use OSK inputs.
     OSKInputEnabled = 0x0B,                                 //!< (KeyInput | PointerInput | OSKInput)
     OSKInputTracking = 0x0F                                 //!< (KeyInput | PointerInput | PointerTracking | OSKInput)
@@ -75,13 +75,13 @@ enum WidgetResizePolicy
  */
 enum WidgetResizeConstraint
 {
-    FixedConstraint = 0x00,                                             //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
-    MinimumConstraint = GrowPolicy,                                     //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
-    MaximumConstraint = ShrinkPolicy,                                   //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
-    NoConstraint = (GrowPolicy | ShrinkPolicy),                         //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
-    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy),           //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
-    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy),   //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
-    IgnoredConstraint = 0xFF                                            //!< Widget is ignored by layout. Its position or size is not modified.
+    FixedConstraint = 0x00,              //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
+    MinimumConstraint = GrowPolicy, //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
+    MaximumConstraint = ShrinkPolicy, //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
+    NoConstraint = (GrowPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
+    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy), //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
+    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
+    IgnoredConstraint = 0xFF                     //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
 namespace StyleHint
@@ -281,13 +281,21 @@ enum Corners
 
 enum AppOptions
 {
-    OptNone = 0x000,                //!< Default application option.
-    OptExclusive = 0x001,           //!< Application will use layer exclusively.
-    OptFullScreenUpdate = 0x002,    //!< Windows will update whole surface each time.
-    OptTripleAccelerated = 0x004,
-    OptDale = 0x200,                //! Enable FusionDale interfaces for Application.
-    OptSound = 0x400                //! Enable FusionSound interfaces for Application.
+    OptNone = 0x00000000,               //!< Default application option.
+    OptExclusive = 0x00000001,          //!< Application will use layer exclusively.
+    OptDale = 0x00000010,               //!< Enable FusionDale interfaces for Application.
+    OptSound = 0x00000020,              //!< Enable FusionSound interfaces for Application.
+    OptTripleAccelerated = 0x00000200
 };
+
+enum LayerFlipMode
+{
+    FlipNone,
+    FlipOnSync,
+    FlipWaitForSync,
+    FlipNew
+};
+
 }
 
 #endif /* ILIXI_ENUMS_H_ */

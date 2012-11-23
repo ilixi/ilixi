@@ -26,6 +26,7 @@
 #include <graphics/Stylist.h>
 #include <core/Logger.h>
 #include <string.h>
+#include <core/PlatformManager.h>
 
 namespace ilixi
 {
@@ -39,7 +40,8 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
 {
     // parse app-meta file...
     ILOG_TRACE_W(ILX_APPLICATION);
-    initDFB(argc, argv);
+//    initDFB(argc, argv);
+
     setStylist(new Stylist());
     setBackgroundFilled(false);
     setMargins(0, 0, 0, 0);
@@ -96,14 +98,6 @@ void
 Application::exec()
 {
     ILOG_INFO(ILX_APPLICATION, "Starting...\n");
-
-    if (__options & OptExclusive)
-    {
-        if (__layer->SetCooperativeLevel(__layer, DLSCL_EXCLUSIVE))
-            ILOG_ERROR(ILX_APPLICATION, "Error while setting EXLUSIVE mode!\n");
-        else
-            ILOG_INFO(ILX_APPLICATION, "Now running in exclusive mode.\n");
-    }
 
     show();
 
@@ -164,12 +158,22 @@ Application::hide()
 void
 Application::setStylist(StylistBase* stylist)
 {
-    if (!stylist)
-        return;
     // TODO we will allow setting custom stylist in the future.
     if (_stylist)
+    {
+        ILOG_WARNING(ILX_APPLICATION, "setStylist()  -  Not implemented!");
         return;
+    }
+
+    if (!stylist)
+        return;
+
     _stylist = stylist;
+    if (!_stylist->setPaletteFromFile(PlatformManager::instance().getPalette().c_str()))
+        ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
+
+    if (!_stylist->setStyleFromFile(PlatformManager::instance().getStyle().c_str()))
+        ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 }
 
 void
@@ -194,7 +198,7 @@ Application::postUserEvent(unsigned int type, void* data)
     event.type = type;
     event.data = data;
 
-    __buffer->PostEvent(__buffer, DFB_EVENT(&event));
+    __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
 }
 
 void

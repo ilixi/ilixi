@@ -39,7 +39,6 @@ Style::Style()
           _defaultIconSize(48),
           _pack(NULL)
 {
-    parseStyle(ILIXI_DATADIR"def_style.xml");
 }
 
 Style::~Style()

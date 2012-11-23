@@ -37,7 +37,7 @@ namespace ilixi
 
 class DaleDFB
 {
-    friend class AppBase;
+    friend class PlatformManager;
     friend class Notify;
 public:
 

@@ -22,7 +22,7 @@
  */
 
 #include <types/Image.h>
-#include <core/AppBase.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 #include <graphics/Stylist.h>
 
@@ -211,7 +211,7 @@ Image::loadImage()
     DFBSurfaceDescription desc;
 
     IDirectFBImageProvider* provider;
-    DFBResult ret = AppBase::getDFB()->CreateImageProvider(AppBase::getDFB(), _imagePath.c_str(), &provider);
+    DFBResult ret = PlatformManager::instance().getDFB()->CreateImageProvider(PlatformManager::instance().getDFB(), _imagePath.c_str(), &provider);
     if (ret)
     {
         ILOG_ERROR(ILX_IMAGE, "Cannot create image provider! %s\n", DirectFBErrorString(ret));
@@ -234,7 +234,7 @@ Image::loadImage()
     if (height() > 0)
         desc.height = height();
 
-    ret = AppBase::getDFB()->CreateSurface(AppBase::getDFB(), &desc, &_dfbSurface);
+    ret = PlatformManager::instance().getDFB()->CreateSurface(PlatformManager::instance().getDFB(), &desc, &_dfbSurface);
 
     if (ret)
     {
