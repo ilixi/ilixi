@@ -82,7 +82,7 @@ public:
      * Sets slider's value.
      */
     void
-    setValue(float value);
+    setValue(float value, bool signal = true);
 
     /*!
      * Sets slider's minimum and maximum limits.

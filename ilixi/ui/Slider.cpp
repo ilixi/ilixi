@@ -110,7 +110,7 @@ Slider::value() const
 }
 
 void
-Slider::setValue(float value)
+Slider::setValue(float value, bool signal)
 {
     if (value != _value)
     {
@@ -122,7 +122,8 @@ Slider::setValue(float value)
             _value = value;
 
         updateIndicatorPosition();
-        sigValueChanged(_value);
+        if(signal)
+            sigValueChanged(_value);
         update();
         ILOG_DEBUG(ILX_SLIDER, "Value: %f\n", _value);
     }
