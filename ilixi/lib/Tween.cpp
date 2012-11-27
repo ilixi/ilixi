@@ -103,6 +103,14 @@ Tween::setEndValue(float endValue)
     _change = endValue - _initialValue;
 }
 
+void
+Tween::setRange(float initial, float end)
+{
+    _initialValue = initial;
+    _change = end - _initialValue;
+    _value = _initialValue;
+}
+
 bool
 Tween::enabled() const
 {

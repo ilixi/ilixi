@@ -142,6 +142,12 @@ public:
     void
     setEndValue(float endValue);
 
+    /*!
+     * Sets the initial and end values respectively.
+     */
+    void
+    setRange(float initial, float end);
+
 private:
     bool _enabled;
     //! This property stores transition.
