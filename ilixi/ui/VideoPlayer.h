@@ -46,8 +46,11 @@ protected:
 private:
     //! Video object.
     Video* _video;
-    //! Subsurface for blitting video.
+    //! Layer sub-surface used for blitting video frames, only available in exclusive mode.
+    IDirectFBSurface* _videoLSurface;
+    //! Direct sub-surface used for blitting video frames.
     IDirectFBSurface* _videoSurface;
+    IDirectFBSurface* _videoFrame;
 
     //! Playback time.
     Label* _time;

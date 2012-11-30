@@ -15,6 +15,7 @@ D_DEBUG_DOMAIN( ILX_VIDEOPLAYER, "ilixi/ui/VideoPlayer", "VideoPlayer");
 VideoPlayer::VideoPlayer(Widget* parent)
         : Widget(parent),
           _video(NULL),
+          _videoLSurface(NULL),
           _videoSurface(NULL)
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
@@ -59,7 +60,7 @@ VideoPlayer::VideoPlayer(Widget* parent)
     _line1->addWidget(_volume);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &VideoPlayer::updateVPGeometry));
-    setInputMethod(KeyAndPointerInputTracking);
+    setInputMethod(KeyPointerTracking);
 }
 
 VideoPlayer::~VideoPlayer()
@@ -68,6 +69,8 @@ VideoPlayer::~VideoPlayer()
     delete _video;
     if (_videoSurface)
         _videoSurface->Release(_videoSurface);
+    if (_videoLSurface)
+        _videoLSurface->Release(_videoLSurface);
 }
 
 int
@@ -95,10 +98,16 @@ VideoPlayer::load(const std::string& path)
 void
 VideoPlayer::compose(const PaintEvent& rect)
 {
-    Painter painter(this);
-    painter.begin(rect);
-    painter.drawRectangle(0, 0, width(), height());
-    painter.end();
+    if (_videoLSurface)
+        surface()->clear();
+    else
+    {
+        DFBRectangle r = surfaceGeometry().dfbRect();
+        surface()->dfbSurface()->GetSubSurface(surface()->dfbSurface(), &r, &_videoSurface);
+    }
+
+    if (_videoSurface)
+        _videoSurface->StretchBlit(_videoSurface, _videoFrame, NULL, NULL);
 }
 
 void
@@ -110,7 +119,7 @@ VideoPlayer::playVideo()
     case DVSTATE_STOP:
         _video->play();
         _play->setIcon(StyleHint::Pause);
-        //    _play->update();
+        _play->update();
         _rewind->setEnabled();
         _fullscreen->setEnabled();
         _position->setEnabled();
@@ -120,7 +129,7 @@ VideoPlayer::playVideo()
         _video->seek(0);
         _video->play();
         _play->setIcon(StyleHint::Pause);
-        //    _play->update();
+        _play->update();
         _rewind->setEnabled();
         _fullscreen->setEnabled();
         _position->setEnabled();
@@ -131,7 +140,7 @@ VideoPlayer::playVideo()
     case DVSTATE_PLAY:
         _video->stop();
         _play->setIcon(StyleHint::Play);
-        //    _play->update();
+        _play->update();
         break;
 
     default:
@@ -182,8 +191,13 @@ void
 VideoPlayer::updateVideo(IDirectFBSurface* frame)
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
-    _videoSurface->StretchBlit(_videoSurface, frame, NULL, NULL);
-    _videoSurface->Flip(_videoSurface, NULL, DSFLIP_ONSYNC);
+    _videoFrame = frame;
+    if (_videoLSurface)
+    {
+        _videoLSurface->StretchBlit(_videoLSurface, _videoFrame, NULL, NULL);
+        _videoLSurface->Flip(_videoLSurface, NULL, DSFLIP_ONSYNC);
+    } else
+        update();
 
     if (!_position->pressed())
     {
@@ -207,23 +221,33 @@ VideoPlayer::updateVPGeometry()
     Size s1 = _line1->preferredSize();
     _line1->setGeometry(5, height() - s1.height() - 5, width() - 10, s1.height());
 
-    if (_videoSurface)
+    if (PlatformManager::instance().appOptions() & OptExclusive)
     {
-        DFBRectangle r = surfaceGeometry().dfbRect();
-        _videoSurface->MakeSubSurface(_videoSurface, PlatformManager::instance().getLayerSurface("video"), &r);
-    }
-
-    if (surface() && !_videoSurface)
-    {
-        IDirectFBSurface* video = PlatformManager::instance().getLayerSurface("video");
-        if (video)
+        if (_videoLSurface)
         {
             DFBRectangle r = surfaceGeometry().dfbRect();
-            video->GetSubSurface(video, &r, &_videoSurface);
-        } else
-        {
-            ILOG_ERROR(ILX_VIDEOPLAYER, "Cannot get video layer surface!\n");
+            _videoLSurface->MakeSubSurface(_videoLSurface, PlatformManager::instance().getLayerSurface("video"), &r);
         }
+
+        if (surface() && !_videoLSurface)
+        {
+            IDirectFBSurface* video = PlatformManager::instance().getLayerSurface("video");
+            if (video)
+            {
+                DFBRectangle r = surfaceGeometry().dfbRect();
+                video->GetSubSurface(video, &r, &_videoLSurface);
+            } else
+            {
+                ILOG_ERROR(ILX_VIDEOPLAYER, "Cannot get video layer surface!\n");
+            }
+        }
+    } else if (PlatformManager::instance().appOptions() & OptDale)
+    {
+        // TODO video component
+    } else
+    {
+        // if possible use video layer.
+        // else use ui sub-surface
     }
 }
 
