@@ -83,6 +83,7 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~ExposedState);
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
         _exposedWidget->leaveEvent(pointerEvent);
+        _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
     }
 
     _exposedWidget = widget;
@@ -90,6 +91,7 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
     {
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state | ExposedState);
         _exposedWidget->enterEvent(pointerEvent);
+        _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
     }
 
     return true;
@@ -108,6 +110,7 @@ EventManager::setFocusedWidget(Widget* widget)
     {
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state & ~FocusedState);
         _focusedWidget->focusOutEvent();
+        _focusedWidget->sigStateChanged(_focusedWidget, _focusedWidget->_state);
     }
 
     _focusedWidget = widget;
@@ -119,6 +122,7 @@ EventManager::setFocusedWidget(Widget* widget)
 
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state | FocusedState);
         _focusedWidget->focusInEvent();
+        _focusedWidget->sigStateChanged(_focusedWidget, _focusedWidget->_state);
     }
 
     setOSKWidget(widget);
