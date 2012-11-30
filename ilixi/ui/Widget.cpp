@@ -463,6 +463,7 @@ Widget::setEnabled()
     if ((_state & DisabledState))
     {
         _state = (WidgetState) (_state & ~DisabledState);
+        sigStateChanged(this, _state);
         update();
     }
 }
@@ -473,6 +474,7 @@ Widget::setDisabled()
     if (!(_state & DisabledState))
     {
         _state = (WidgetState) (_state | DisabledState);
+        sigStateChanged(this, _state);
         update();
     }
 }
@@ -483,10 +485,12 @@ Widget::setVisible(bool visible)
     if (visible && (_state & InvisibleState))
     {
         _state = (WidgetState) (_state & ~InvisibleState);
+        sigStateChanged(this, _state);
         doLayout();
     } else if (!visible && !(_state & InvisibleState))
     {
         _state = (WidgetState) (_state | InvisibleState);
+        sigStateChanged(this, _state);
         doLayout();
     }
 }
@@ -727,6 +731,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             {
                 _state = (WidgetState) (_state | PressedState);
                 _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
+                sigStateChanged(this, _state);
             }
         } else if ((_inputMethod & PointerTracking) && (pointerEvent.eventType == PointerWheel))
         {
@@ -744,21 +749,25 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             _state = (WidgetState) (_state | PressedState);
             _rootWindow->_eventManager->setFocusedWidget(this);
             pointerButtonDownEvent(pointerEvent);
+            sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerButtonUp)
         {
             _state = (WidgetState) (_state & ~PressedState);
             pointerButtonUpEvent(pointerEvent);
             _rootWindow->_eventManager->setGrabbedWidget(NULL, pointerEvent);
+            sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerWheel)
         {
             _rootWindow->_eventManager->setFocusedWidget(this);
             pointerWheelEvent(pointerEvent);
+            sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerMotion)
         {
             if (_state & PressedState)
                 _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             pointerMotionEvent(pointerEvent);
             _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
+            sigStateChanged(this, _state);
         }
         return true;
     }
@@ -849,7 +858,7 @@ Widget::addChild(Widget* child)
 }
 
 bool
-Widget::removeChild(Widget* child)
+Widget::removeChild(Widget* child, bool destroy)
 {
     if (!child)
         return false;
@@ -857,11 +866,27 @@ Widget::removeChild(Widget* child)
     WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it)
     {
-        delete *it;
+        if (destroy)
+            delete *it;
         _children.erase(it);
         ILOG_DEBUG(ILX_WIDGET, "Removed child %p\n", child);
         return true;
     }
+    return false;
+}
+
+bool
+Widget::insertChild(Widget* child, unsigned int index)
+{
+    if (index > _children.size())
+        return false;
+
+    removeChild(child, false);
+    WidgetListIterator it = _children.begin();
+    for (unsigned node = 0; node < index; ++node)
+        ++it;
+
+    _children.insert(it, child);
     return false;
 }
 

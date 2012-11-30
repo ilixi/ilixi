@@ -766,10 +766,24 @@ public:
     eventManager() const;
 
     /*!
+     * Returns true if widget is a child.
+     */
+    bool
+    isChild(Widget* child);
+
+    /*!
      * This signal is emitted before widget is painted only if its geometry is modified.
      * By default widget's updateFrameGeometry() method is connected to this signal.
      */
     sigc::signal<void> sigGeometryUpdated;
+
+    /*!
+     * This signal is emitted whenever widget state changes.
+     *
+     * In case widget has event handling methods (e.g. focusInEvent) triggered by
+     * a state change, they are executed first.
+     */
+    sigc::signal<void, Widget*, WidgetState> sigStateChanged;
 
 protected:
     /*!
@@ -810,12 +824,6 @@ protected:
     WidgetList _children;
 
     /*!
-     * Returns true if widget is a child.
-     */
-    bool
-    isChild(Widget* child);
-
-    /*!
      * Adds a child to this widget. The child is owned by widget.
      *
      * Returns true if successful.
@@ -831,9 +839,21 @@ protected:
      * Returns true if successful.
      *
      * @param child widget.
+     * @param destroy if true, delete child widget.
      */
     bool
-    removeChild(Widget* child);
+    removeChild(Widget* child, bool destroy = true);
+
+    /*!
+     * Inserts child widget at given index.
+     *
+     * Returns true if successful
+     *
+     * @param child widget
+     * @param index
+     */
+    bool
+    insertChild(Widget* child, unsigned int index);
 
     /*!
      * Puts the child on the front of the children list.
