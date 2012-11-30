@@ -60,6 +60,12 @@ public:
     setVerticalAlignment(Alignment::Vertical alignment);
 
     /*!
+     * Inserts widget to layout at given column.
+     */
+    bool
+    insertWidget(unsigned int column, Widget* widget);
+
+    /*!
      * Calculates total height for given width.
      */
     virtual int

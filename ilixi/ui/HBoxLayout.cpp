@@ -54,6 +54,17 @@ HBoxLayout::setVerticalAlignment(Alignment::Vertical alignment)
     _alignment = alignment;
 }
 
+bool
+HBoxLayout::insertWidget(unsigned int column, Widget* widget)
+{
+    if (insertChild(widget, column))
+    {
+        doLayout();
+        return true;
+    }
+    return false;
+}
+
 int
 HBoxLayout::heightForWidth(int width) const
 {
@@ -65,8 +76,7 @@ HBoxLayout::heightForWidth(int width) const
     int hTemp = 0; // height for current widget
     int h4w = 0;
     Widget* widget;
-    for (WidgetList::const_iterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
     {
         widget = ((Widget*) *it);
         if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
@@ -112,8 +122,7 @@ HBoxLayout::preferredSize() const
     int ch = 0; // current widget's height.
     Size s;
 
-    for (WidgetList::const_iterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
     {
         widget = ((Widget*) *it);
         if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
@@ -150,8 +159,7 @@ HBoxLayout::tile()
     ILOG_TRACE_W(ILX_HBOX);
     ElementList list;
     LayoutElement e;
-    for (Widget::WidgetListConstIterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (Widget::WidgetListConstIterator it = _children.begin(); it != _children.end(); ++it)
     {
         e.widget = ((Widget*) *it);
         if (e.widget->visible() && e.widget->xConstraint() != IgnoredConstraint)
@@ -297,8 +305,7 @@ HBoxLayout::tile()
             if (((LayoutElement) *it).widget->minWidth() > 0 && average > ((LayoutElement) *it).widget->minWidth())
             {
                 expandSpace += average - ((LayoutElement) *it).widget->minWidth();
-                ((LayoutElement) *it).size.setWidth(
-                        ((LayoutElement) *it).widget->minWidth());
+                ((LayoutElement) *it).size.setWidth(((LayoutElement) *it).widget->minWidth());
             } else if (average > ((LayoutElement) *it).size.width())
                 expandSpace += average - ((LayoutElement) *it).size.width();
         }
@@ -319,8 +326,7 @@ HBoxLayout::tile()
     Widget* up = getNeighbour(Up);
     Widget* down = getNeighbour(Down);
     ElementList::iterator itNext, itLast;
-    for (ElementList::iterator it = list.begin(), end = list.end(),
-            itLast = (++list.rbegin()).base(); it != end; ++it)
+    for (ElementList::iterator it = list.begin(), end = list.end(), itLast = (++list.rbegin()).base(); it != end; ++it)
     {
         widget = ((LayoutElement) *it).widget;
 
