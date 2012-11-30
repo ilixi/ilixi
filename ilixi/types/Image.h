@@ -150,11 +150,11 @@ public:
 private:
     enum ImageFlags
     {
-        Initialised,
-        Modified,
-        NotAvailable,
-        Ready,
-        SubImage
+        Initialised = 0x0001,
+        Modified = 0x0002,
+        NotAvailable = 0x0004,
+        Ready = 0x0008,
+        SubImage = 0x0010
     };
 
     //! This property stores the pointer to DirectFB surface.

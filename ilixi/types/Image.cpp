@@ -150,10 +150,13 @@ Image::getImagePath() const
 void
 Image::setImagePath(const std::string& path)
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (path != _imagePath)
     {
-        invalidateSurface();
+        ILOG_DEBUG(ILX_IMAGE, " -> Path: %s\n", path.c_str());
         _imagePath = path;
+        _state = Initialised;
+        invalidateSurface();
     }
 }
 
@@ -179,6 +182,7 @@ Image::setSize(const Size& s)
 void
 Image::invalidateSurface()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (_dfbSurface)
     {
         _dfbSurface->Release(_dfbSurface);
@@ -187,18 +191,22 @@ Image::invalidateSurface()
             _state = (ImageFlags) (Initialised | SubImage);
         else
             _state = Initialised;
-        ILOG_TRACE(ILX_IMAGE);
+        ILOG_DEBUG(ILX_IMAGE, " -> State: %x\n", _state);
     }
 }
 
 bool
 Image::loadImage()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (_dfbSurface)
         return true;
 
     if ((_state & NotAvailable) || (_state & SubImage))
+    {
+        ILOG_DEBUG(ILX_IMAGE, " -> NotAvailable or SubImage.\n");
         return false;
+    }
 
     if (_imagePath == "")
     {
@@ -206,8 +214,8 @@ Image::loadImage()
         _state = (ImageFlags) (_state | NotAvailable);
         return false;
     }
-    ILOG_TRACE(ILX_IMAGE);
 
+    ILOG_DEBUG(ILX_IMAGE, " -> Loading image: %s\n", _imagePath.c_str());
     DFBSurfaceDescription desc;
 
     IDirectFBImageProvider* provider;
@@ -253,7 +261,7 @@ Image::loadImage()
             return false;
         }
         provider->Release(provider);
-        ILOG_DEBUG(ILX_IMAGE, "Image [%s] is loaded.\n", _imagePath.c_str());
+        ILOG_DEBUG(ILX_IMAGE, " -> Image is loaded.\n");
         _state = (ImageFlags) (_state | Ready);
         return true;
     }
