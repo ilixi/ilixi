@@ -109,14 +109,17 @@ Stylist::drawLabel(Painter* p, Label* label)
 void
 Stylist::drawIcon(Painter* p, Icon* icon)
 {
-    if (!icon->enabled())
+    if (!icon->enabled()) {
         p->setBrush(_palette->_disabled.text);
+        p->stretchImage(
+                icon->image(),
+                Rectangle(0, 0, icon->width(), icon->height()),
+                (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
+    }
     else
-        p->setBrush(_palette->getGroup(icon->state()).text);
-    p->stretchImage(
-            icon->image(),
-            Rectangle(0, 0, icon->width(), icon->height()),
-            (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
+        p->stretchImage(
+                icon->image(),
+                Rectangle(0, 0, icon->width(), icon->height()));
 }
 
 void
