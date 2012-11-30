@@ -90,6 +90,7 @@ Icon::setImage(const std::string& path)
         _image->setImagePath(path);
     else
         _image = new Image(path);
+    doLayout();
 }
 
 void
