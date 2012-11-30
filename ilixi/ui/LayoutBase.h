@@ -89,12 +89,12 @@ public:
     addWidget(Widget* widget);
 
     /*!
-     * Removes and deletes a child widget.
+     * Removes and deletes a child widget if destroy is true.
      *
      * Returns true if successful.
      */
     virtual bool
-    removeWidget(Widget* widget);
+    removeWidget(Widget* widget, bool destroy = true);
 
     /*!
      * Aligns widgets inside layout.
