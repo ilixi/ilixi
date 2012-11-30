@@ -202,7 +202,7 @@ Image::loadImage()
 
     if (_imagePath == "")
     {
-        ILOG_ERROR(ILX_IMAGE, "Image path is empty");
+        ILOG_ERROR(ILX_IMAGE, "Image path is empty!\n");
         _state = (ImageFlags) (_state | NotAvailable);
         return false;
     }
