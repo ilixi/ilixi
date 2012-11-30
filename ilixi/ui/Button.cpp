@@ -61,9 +61,11 @@ Button::click(unsigned int ms)
     if (ms)
     {
         _state = (WidgetState) (_state | PressedState);
+        sigStateChanged(this, _state);
         update();
         usleep(ms * 1000);
         _state = (WidgetState) (_state & ~PressedState);
+        sigStateChanged(this, _state);
     }
     sigClicked();
     toggleChecked();

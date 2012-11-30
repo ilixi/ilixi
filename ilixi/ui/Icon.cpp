@@ -96,6 +96,7 @@ void
 Icon::setState(WidgetState state)
 {
     _state = state;
+    sigStateChanged(this, _state);
 }
 
 void
