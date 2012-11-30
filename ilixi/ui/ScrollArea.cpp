@@ -350,6 +350,9 @@ void
 ScrollArea::updateScollAreaGeometry()
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
+    if (!_content)
+        return;
+
     _content->moveTo(0, 0);
     Size contentSize = _content->preferredSize();
     if (contentSize.isValid())
