@@ -34,7 +34,7 @@ Button::Button(const std::string& text, Widget* parent)
           TextBase(text, this),
           _buttonFlag(None)
 {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     ILOG_TRACE_W(ILX_BUTTON);
 }
 

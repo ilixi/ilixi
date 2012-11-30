@@ -36,7 +36,7 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         : AppCompositor(compositor, instance, parent),
           _close(NULL)
 {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     setConstraints(FixedConstraint, FixedConstraint);
     _ani.setDuration(300);
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);

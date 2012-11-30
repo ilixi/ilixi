@@ -33,7 +33,7 @@ ScrollItem::ScrollItem(const std::string& text, Widget* parent) :
     Widget(parent), TextBase(text, this), _val1(0)
 {
   setConstraints(MinimumConstraint, FixedConstraint);
-  setInputMethod(KeyAndPointerInput);
+  setInputMethod(KeyPointer);
   ILOG_TRACE_W(ILX_SCROLLITEM);
 }
 

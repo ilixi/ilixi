@@ -38,7 +38,7 @@ ImageWidget::ImageWidget(const std::string& text, Widget* parent)
     _boxSlide = new Tween(Tween::BOUNCE, Tween::EASE_OUT, 0, 1);
     _anim.addTween(_boxSlide);
 
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     std::stringstream ss;
     ss << "ID: " << id();
     PushButton* button = new PushButton(ss.str());

@@ -31,7 +31,7 @@ namespace ilixi
       Button(text, parent), _image(NULL), _doOut(false)
   {
     setConstraints(FixedConstraint, FixedConstraint);
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
 
 //    _image = new Image(ILIXI_DATADIR"images/default.png", 196, 196);
 

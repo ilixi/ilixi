@@ -40,7 +40,7 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
         : Widget(parent),
           TextBase(title, this)
 {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 
     _vlayout = new VBoxLayout();
@@ -59,7 +59,7 @@ ComboBox::ComboBox(const std::string& title, const StringList& items,
                    Widget* parent)
         : TextBase(title, parent)
 {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 
     _dialog = new Dialog(title, Dialog::CancelButtonOption);

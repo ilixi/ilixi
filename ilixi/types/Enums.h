@@ -44,16 +44,17 @@ enum WidgetState
  */
 enum WidgetInputMethod
 {
-    NoInput = 0x00,                                         //!< Widget does not consume pointer or key events.
-    KeyInput = 0x01,                                        //!< Widget is only capable of consuming key events.
-    PointerInput = 0x02,                       //!< Widget is only capable of consuming pointer events excluding motion.
-    KeyAndPointerInput = KeyInput | PointerInput, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput = 0x03)
-    PointerTracking = 0x04,                              //!< Widget is only capable of consuming pointer motion events.
-    PointerInputTracking = PointerInput | PointerTracking, //!< Widget is only capable of consuming pointer events including motion. (PointerInput | PointerTracking = 0x06)
-    KeyAndPointerInputTracking = 0x07, //!< Widget is capable of consuming both key and pointer events. (KeyInput | PointerInput | PointerTracking)
-    OSKInput = 0x08,                                        //!< Widget can use OSK inputs.
-    OSKInputEnabled = 0x0B,                                 //!< (KeyInput | PointerInput | OSKInput)
-    OSKInputTracking = 0x0F                                 //!< (KeyInput | PointerInput | PointerTracking | OSKInput)
+    NoInput = 0x0000,                 //!< Widget does not consume pointer or key events.
+    KeyInput = 0x0001,                //!< Widget is capable of consuming key events only.
+    PointerInput = 0x0002,            //!< Widget is capable of consuming pointer events excluding motion.
+    PointerInputTracking = 0x0004,    //!< Widget is capable of consuming pointer motion events only.
+    PointerPassthrough = 0x0008,      //!< Widget passes all pointer events to children.
+    OSKInput = 0x0010,                //!< Widget is capable of consuming input from OSK component only.
+    KeyPointer = KeyInput | PointerInput,
+    PointerTracking = PointerInput | PointerInputTracking,
+    KeyPointerTracking = KeyInput | PointerInput | PointerInputTracking,
+    KeyPointerOSK = KeyInput | PointerInput | OSKInput,
+    KeyPointerTrackingOSK = KeyInput | PointerInput | PointerInputTracking | OSKInput
 };
 
 /*!

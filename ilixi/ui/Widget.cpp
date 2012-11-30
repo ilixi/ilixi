@@ -265,7 +265,7 @@ Widget::state() const
 bool
 Widget::acceptsPointerInput() const
 {
-    return (_inputMethod & PointerInput) && visible() && enabled();
+    return ((_inputMethod & PointerInput) || (_inputMethod & PointerTracking) || (_inputMethod & PointerPassthrough)) && visible() && enabled();
 }
 
 bool
@@ -530,9 +530,9 @@ void
 Widget::setPointerTracking(bool pointerTracking)
 {
     if (pointerTracking)
-        _inputMethod = (WidgetInputMethod) (_inputMethod | PointerTracking);
+        _inputMethod = (WidgetInputMethod) (_inputMethod | PointerInputTracking);
     else
-        _inputMethod = (WidgetInputMethod) (_inputMethod & ~PointerTracking);
+        _inputMethod = (WidgetInputMethod) (_inputMethod & ~PointerInputTracking);
 }
 
 void
@@ -725,7 +725,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
     if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
-        if ((_inputMethod & PointerTracking) && (pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion))
+        if ((_inputMethod & PointerInputTracking) && (pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion))
         {
             if (!(_state & PressedState))
             {
@@ -733,8 +733,9 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
                 _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
                 sigStateChanged(this, _state);
             }
-        } else if ((_inputMethod & PointerTracking) && (pointerEvent.eventType == PointerWheel))
+        } else if ((_inputMethod & PointerInputTracking) && (pointerEvent.eventType == PointerWheel))
         {
+            ILOG_DEBUG(ILX_WIDGET, "WheelEvent 1\n");
             pointerWheelEvent(pointerEvent);
             return true;
         } else if (_children.size())
@@ -758,6 +759,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerWheel)
         {
+            ILOG_DEBUG(ILX_WIDGET, "WheelEvent 2\n");
             _rootWindow->_eventManager->setFocusedWidget(this);
             pointerWheelEvent(pointerEvent);
             sigStateChanged(this, _state);

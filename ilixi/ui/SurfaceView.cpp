@@ -44,7 +44,7 @@ SurfaceView::SurfaceView(Widget* parent)
           _svState(SV_NONE)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
-    setInputMethod(KeyAndPointerInputTracking);
+    setInputMethod(KeyPointerTracking);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &SurfaceView::onSVGeomUpdate));
 #ifdef ILIXI_STEREO_OUTPUT
     _sourceStereo = false;

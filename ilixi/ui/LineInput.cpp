@@ -44,7 +44,7 @@ LineInput::LineInput(const std::string& text, Widget* parent)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
     setConstraints(ExpandingConstraint, FixedConstraint);
-    setInputMethod(OSKInputTracking);
+    setInputMethod(KeyPointerTrackingOSK);
     _layout.setSingleLine(true);
     _cursorTimer.sigExec.connect(sigc::mem_fun(this, &LineInput::drawCursor));
 }

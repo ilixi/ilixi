@@ -43,7 +43,7 @@ CarouselItem::CarouselItem(Carousel* parent)
           _angle(0),
           _scale(0)
 {
-    setInputMethod(KeyAndPointerInput);
+    setInputMethod(KeyPointer);
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &CarouselItem::updateCarouselItemGeometry));
 }

@@ -41,7 +41,7 @@ Slider::Slider(Widget* parent)
           _inverted(false)
 {
     _range = _maximum - _minimum;
-    setInputMethod(KeyAndPointerInputTracking);
+    setInputMethod(KeyPointerTracking);
     setConstraints(ExpandingConstraint, FixedConstraint);
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Slider::updateIndicatorPosition));
