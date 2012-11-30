@@ -96,7 +96,7 @@ SurfaceView::isBlocking() const
 bool
 SurfaceView::isBlendingEnabled() const
 {
-    return _state & SV_CAN_BLEND;
+    return _svState & SV_CAN_BLEND;
 }
 
 void
