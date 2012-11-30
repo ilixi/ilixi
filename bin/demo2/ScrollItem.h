@@ -40,7 +40,7 @@ public:
   void
   setImage(ilixi::Image* image);
 
-  sigc::signal<void, std::string> sigPressed;
+  sigc::signal<void, std::string> sigFocused;
 
 protected:
   void
@@ -57,9 +57,6 @@ protected:
 
   virtual void
   leaveEvent(const ilixi::PointerEvent& event);
-
-  virtual void
-  pointerButtonDownEvent(const ilixi::PointerEvent& event);
 
   virtual void
   compose(const ilixi::PaintEvent& event);
