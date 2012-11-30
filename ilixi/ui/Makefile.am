@@ -19,6 +19,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							Label.cpp \
 							LayoutBase.cpp \
 							LineInput.cpp \
+							ListBox.cpp \
 							ProgressBar.cpp \
 							PushButton.cpp \
 							RadioButton.cpp \
@@ -50,6 +51,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Label.h \
 							LayoutBase.h \
 							LineInput.h \
+							ListBox.h \
 							ProgressBar.h \
 							PushButton.h \
 							RadioButton.h \
