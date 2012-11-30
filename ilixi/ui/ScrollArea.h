@@ -98,7 +98,7 @@ public:
      * Scrolls to widget, and centers the view.
      */
     void
-    scrollTo(Widget* widget);
+    scrollTo(Widget* widget, bool center = true);
 
     /*!
      * Paints scroll area.

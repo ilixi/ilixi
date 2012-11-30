@@ -49,15 +49,14 @@ ScrollArea::ScrollArea(Widget* parent)
           _vy(0)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    setInputMethod(PointerInputTracking);
+    setInputMethod(PointerTracking);
     setConstraints(NoConstraint, NoConstraint);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
 
     _ani = new TweenAnimation();
-    _tween = new Tween(Tween::CUBIC, Tween::EASE_OUT, 1, 0);
+    _tween = new Tween(Tween::BACK, Tween::EASE_OUT, 1, 0);
     _ani->addTween(_tween);
-    _ani->setDuration(1000);
+    _ani->setDuration(300);
     _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
 }
 
@@ -86,6 +85,7 @@ ScrollArea::preferredSize() const
 void
 ScrollArea::setContent(Widget* content)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (content)
     {
         removeChild(_content);
@@ -152,36 +152,40 @@ ScrollArea::scrollTo(int x, int y)
 }
 
 void
-ScrollArea::scrollTo(Widget* widget)
+ScrollArea::scrollTo(Widget* widget, bool center)
 {
     if (widget == NULL)
         return;
 
-    // TODO widget must be a child check.
+    if (!_content->isChild(widget))
+        return;
 
-    // center widget inside.
-    if (widget->x() != _cx)
-        _vx = widget->x() - (width() - widget->width()) / 2.0 + _cx;
-    else
-        _vx = 0;
-
-    if (widget->y() != _cy)
-        _vy = widget->y() - (height() - widget->height()) / 2.0 + _cy;
-    else
-        _vy = 0;
-
-    if (_vx || _vy)
+    if (center)
     {
-        _ani->stop();
-        _sCur = Point(_cx, _cy);
-        _options |= TargetedScroll;
-        _ani->start();
+        if (widget->x() != _cx)
+            _vx = widget->x() - (width() - widget->width()) / 2.0 + _cx;
+        else
+            _vx = 0;
+
+        if (widget->y() != _cy)
+            _vy = widget->y() - (height() - widget->height()) / 2.0 + _cy;
+        else
+            _vy = 0;
+
+        if (_vx || _vy)
+        {
+            _ani->stop();
+            _sCur = Point(_cx, _cy);
+            _options |= TargetedScroll;
+            _ani->start();
+        }
     }
 }
 
 void
 ScrollArea::paint(const PaintEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (visible())
     {
         PaintEvent evt(this, event);
@@ -193,14 +197,9 @@ ScrollArea::paint(const PaintEvent& event)
                 if (_content->surface())
                     _content->surface()->clear();
 
-                _content->paint(
-                        PaintEvent(
-                                Rectangle(0, 0, _content->width(),
-                                          _content->height()),
-                                evt.eye));
+                _content->paint(PaintEvent(Rectangle(0, 0, _content->width(), _content->height()), evt.eye));
                 _content->surface()->flip();
-                surface()->blit(_content->surface(),
-                                Rectangle(-_cx, -_cy, width(), height()), 0, 0);
+                surface()->blit(_content->surface(), Rectangle(-_cx, -_cy, width(), height()), 0, 0);
             } else
             {
                 _content->moveTo(_cx, _cy);
@@ -220,6 +219,7 @@ ScrollArea::doLayout()
 void
 ScrollArea::pointerGrabEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     _sCur = Point(event.x, event.y);
     _sPre = _sCur;
     _ani->stop();
@@ -230,6 +230,7 @@ ScrollArea::pointerGrabEvent(const PointerEvent& event)
 void
 ScrollArea::pointerReleaseEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     _vx = 0;
     _vy = 0;
     if (_events.size() > 1)
@@ -267,6 +268,7 @@ ScrollArea::pointerReleaseEvent(const PointerEvent& event)
 void
 ScrollArea::pointerMotionEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (pressed())
     {
         _sCur = Point(event.x, event.y);
@@ -280,6 +282,7 @@ ScrollArea::pointerMotionEvent(const PointerEvent& event)
 void
 ScrollArea::pointerWheelEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     _ani->stop();
     if (_options & VerticalScroll)
         _cy += height() / 10 * event.wheelStep;
@@ -353,13 +356,9 @@ ScrollArea::updateScollAreaGeometry()
     {
         _content->setSize(contentSize);
 
-        _sMax = Rectangle(width() - _content->width(),
-                          height() - _content->height(), width() / 3,
-                          height() / 3);
+        _sMax = Rectangle(width() - _content->width(), height() - _content->height(), width() / 3, height() / 3);
 
-        _thumbs = Rectangle(width() - 11, height() - 11,
-                            width() * width() / _content->width() - 4,
-                            height() * height() / _content->height() - 4);
+        _thumbs = Rectangle(width() - 11, height() - 11, width() * width() / _content->width() - 4, height() * height() / _content->height() - 4);
     }
 
     updateHThumb();
