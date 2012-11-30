@@ -61,6 +61,12 @@ public:
     setHorizontalAlignment(Alignment::Horizontal alignment);
 
     /*!
+     * Inserts widget to layout at given row.
+     */
+    bool
+    insertWidget(unsigned int row, Widget* widget);
+
+    /*!
      * Calculates total height for given width.
      */
     virtual int

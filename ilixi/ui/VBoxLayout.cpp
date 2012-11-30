@@ -54,6 +54,17 @@ VBoxLayout::setHorizontalAlignment(Alignment::Horizontal alignment)
     _alignment = alignment;
 }
 
+bool
+VBoxLayout::insertWidget(unsigned int row, Widget* widget)
+{
+    if (insertChild(widget, row))
+    {
+        doLayout();
+        return true;
+    }
+    return false;
+}
+
 int
 VBoxLayout::heightForWidth(int width) const
 {
