@@ -20,10 +20,10 @@
 		<Frequency>60HZ</Frequency>
 	</Screen>
 
-	<Stylist>
-		<Style>@DATADIR:def_style.xml</Style>
-		<Palette>@DATADIR:def_palette.xml</Palette>
-	</Stylist>
+	<Theme>
+		<Style>@THEMEDIR:default/style.xml</Style>
+		<Palette>@THEMEDIR:default/palette.xml</Palette>
+	</Theme>
 
 	<Cursor visible="yes" useLayer="yes">@DATADIR:pointer.png</Cursor>
 </Configuration>
