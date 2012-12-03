@@ -43,12 +43,12 @@ class TextLayout;
  * For example, following code will draw a rectangle on widget's surface using default pen:
  * \code
  * void
- * MyWidget::compose(const Rectangle& rect)
+ * MyWidget::compose(const PaintEvent& event)
  * {
- *    Painter painter(this);        // Painter should use this widget's surface.
- *    painter.begin(rect);
+ *    Painter painter(this);                // Painter should use this widget's surface.
+ *    painter.begin(event);                 // Painter clips event rectangle and lock surface.
  *    painter.drawRectangle(0, 0, 10, 10);
- *    painter.end();
+ *    painter.end();                        // Painter resets clip and unlocks surface.
  * }
  * \endcode
  */
@@ -210,52 +210,53 @@ public:
      * Brush color is used for colorizing.
      */
     void
-    stretchImage(Image* image, int x, int y, int w, int h,
-                 const DFBSurfaceBlittingFlags& flags =
-                         DSBLIT_BLEND_ALPHACHANNEL);
+    stretchImage(Image* image, int x, int y, int w, int h, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Streches image inside given rectangle.
      * Brush color is used for colorizing.
      */
     void
-    stretchImage(Image* image, const Rectangle& destRect,
-                 const DFBSurfaceBlittingFlags& flags =
-                         DSBLIT_BLEND_ALPHACHANNEL);
+    stretchImage(Image* image, const Rectangle& destRect, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    stretchImage(Image* image, const Rectangle& destRect,
-                 const Rectangle& sourceRect,
-                 const DFBSurfaceBlittingFlags& flags =
-                         DSBLIT_BLEND_ALPHACHANNEL);
+    stretchImage(Image* image, const Rectangle& destRect, const Rectangle& sourceRect, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
      * Brush color is used for colorizing.
      */
     void
-    drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
-                      DSBLIT_BLEND_ALPHACHANNEL);
+    drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     /*!
      * Draws image with top-left corner at given x and y.
      * Brush color is used for colorizing.
      */
     void
-    drawImage(Image* image, const Point& point,
-              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    drawImage(Image* image, const Point& point, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
-                      DSBLIT_BLEND_ALPHACHANNEL);
+    tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    tileImage(Image* image, int x, int y, const Rectangle& source,
-              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    tileImage(Image* image, int x, int y, const Rectangle& source, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    blitImage(Image* image, const Rectangle& source, int x, int y,
-              const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    blitImage(Image* image, const Rectangle& source, int x, int y, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+
+    void
+    batchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBPoint* points, int num, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+
+    void
+    batchBlitImage(Image* image, const Rectangle* sourceRects, const Point* points, int num, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+
+    void
+    batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+
+    void
+    batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const Rectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+
 
     /*!
      * Sets the clip rectangle using given values.

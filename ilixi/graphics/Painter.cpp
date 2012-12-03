@@ -342,6 +342,123 @@ Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DF
 }
 
 void
+Painter::batchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBPoint* points, int num, const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            DFBPoint dfbP[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbP[i].x = points[i].x + _myWidget->absX();
+                dfbP[i].y = points[i].y + _myWidget->absY();
+            }
+
+            dfbSurface->BatchBlit(dfbSurface, image->getDFBSurface(), sourceRects, dfbP, num);
+        } else
+            dfbSurface->BatchBlit(dfbSurface, image->getDFBSurface(), sourceRects, points, num);
+    }
+}
+
+void
+Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point* points, int num, const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            DFBRectangle dfbR[num];
+            DFBPoint dfbP[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbR[i] = sourceRects[i].dfbRect();
+                dfbP[i].x = points[i].x() + _myWidget->absX();
+                dfbP[i].y = points[i].y() + _myWidget->absY();
+            }
+
+            dfbSurface->BatchBlit(dfbSurface, image->getDFBSurface(), dfbR, dfbP, num);
+        } else
+        {
+            DFBRectangle dfbR[num];
+            DFBPoint dfbP[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbR[i] = sourceRects[i].dfbRect();
+                dfbP[i].x = points[i].x();
+                dfbP[i].y = points[i].y();
+            }
+
+            dfbSurface->BatchBlit(dfbSurface, image->getDFBSurface(), dfbR, dfbP, num);
+        }
+    }
+}
+
+void
+Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            DFBRectangle dfbR[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbR[i].x = destRects[i].x + _myWidget->absX();
+                dfbR[i].y = destRects[i].y + _myWidget->absY();
+                dfbR[i].w = destRects[i].w;
+                dfbR[i].h = destRects[i].h;
+            }
+
+            dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), sourceRects, dfbR, num);
+        } else
+            dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), sourceRects, destRects, num);
+    }
+}
+
+void
+Painter::batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const Rectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
+{
+    if ((_state & Active) && image)
+    {
+        applyBrush();
+        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        {
+            DFBRectangle dfbS[num];
+            DFBRectangle dfbD[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbS[i] = sourceRects[i].dfbRect();
+                dfbD[i].x = destRects[i].x() + _myWidget->absX();
+                dfbD[i].y = destRects[i].y() + _myWidget->absY();
+                dfbD[i].w = destRects[i].width();
+                dfbD[i].h = destRects[i].height();
+            }
+
+            dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), dfbS, dfbD, num);
+        } else
+        {
+            DFBRectangle dfbS[num];
+            DFBRectangle dfbD[num];
+            for (int i = 0; i < num; ++i)
+            {
+                dfbS[i] = sourceRects[i].dfbRect();
+                dfbD[i] = destRects[i].dfbRect();
+            }
+
+            dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), dfbS, dfbD, num);
+        }
+    }
+}
+
+void
 Painter::setClip(int x, int y, int w, int h)
 {
     setClip(Rectangle(x, y, w, h));

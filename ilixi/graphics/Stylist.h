@@ -154,13 +154,14 @@ public:
     drawComboBox(Painter* painter, ComboBox* combo);
 
     virtual void
-    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners =
-                      AllCorners);
+    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners = AllCorners);
 
 protected:
     virtual void
-    draw9Frame(Painter* painter, int x, int y, int w, int h,
-               const Style::r9& rect, Corners corners = AllCorners);
+    draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false);
+
+    virtual void
+    draw9Frame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect, Corners corners = AllCorners);
 
     void
     drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect);
