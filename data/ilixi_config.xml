@@ -3,13 +3,12 @@
 
 <Configuration>
 	<HardwareLayers>
-		<DFBLayer id="0" fsu="on" flipMode="onSync" bufferMode="backSystem" />
-		<DFBLayer id="1" fsu="off" flipMode="onSync" bufferMode="frontOnly" />
+		<DFBLayer id="0" fsu="on" flipMode="none" bufferMode="backVideo" />
 	</HardwareLayers>
 
 	<LogicLayers>
 		<Layer name="ui" hwID="0" />
-		<Layer name="cursor" hwID="1" />
+		<Layer name="cursor" hwID="0" />
 		<Layer name="video" hwID="0" />
 	</LogicLayers>
 
