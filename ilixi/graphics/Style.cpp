@@ -24,6 +24,7 @@
 #include <graphics/Style.h>
 #include <core/Logger.h>
 #include <libxml/parser.h>
+#include <libgen.h>
 
 namespace ilixi
 {
@@ -53,12 +54,8 @@ Style::getIcon(std::string name)
     IconMap::iterator it = _iconMap.find(name);
     if (it != _iconMap.end())
     {
-        ILOG_DEBUG(
-                ILX_STYLE,
-                " -> %s @ (%d, %d, %d, %d)\n", name.c_str(), it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize);
-        return new Image(
-                _iconPack,
-                Rectangle(it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize));
+        ILOG_DEBUG( ILX_STYLE, " -> %s @ (%d, %d, %d, %d)\n", name.c_str(), it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize);
+        return new Image(_iconPack, Rectangle(it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize));
     }
     ILOG_WARNING(ILX_STYLE, " -> Cannot find icon: %s\n", name.c_str());
     return NULL;
@@ -93,11 +90,7 @@ Style::parseStyle(const char* style)
         return false;
     }
 
-    doc = xmlCtxtReadFile(
-            ctxt,
-            style,
-            NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+    doc = xmlCtxtReadFile(ctxt, style, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -130,9 +123,7 @@ Style::parseStyle(const char* style)
             ILOG_DEBUG(ILX_STYLE, " -> parsing icons...\n");
             xmlChar* imgFile = xmlGetProp(group, (xmlChar*) "resource");
             xmlChar* imgDefSize = xmlGetProp(group, (xmlChar*) "defaultSize");
-            _iconPack = new Image(
-                    std::string(
-                            ILIXI_DATADIR"" + std::string((char*) imgFile)));
+            _iconPack = new Image(std::string(ILIXI_DATADIR"" + std::string((char*) imgFile)));
             _defaultIconSize = atoi((char*) imgDefSize);
             parseIcons(group->children);
             xmlFree(imgDefSize);
@@ -140,11 +131,12 @@ Style::parseStyle(const char* style)
         } else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
         {
             ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
-            xmlChar* imgFile = xmlGetProp(group, (xmlChar*) "resource");
-            _pack = new Image(
-                    std::string(ILIXI_DATADIR + std::string((char*) imgFile)));
+            char* path = dirname(const_cast<char*>(style));
+            std::string imgPack = std::string(std::string(path).append("/ui-pack.png"));
+            ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
+            _pack = new Image(imgPack);
             parseTheme(group->children);
-            xmlFree(imgFile);
+//            free(path);
         }
 
         group = group->next;
@@ -215,8 +207,7 @@ Style::parseIcons(xmlNodePtr node)
         xmlChar* iconCol = xmlGetProp(node, (xmlChar*) "col");
         int x = (atoi((char*) iconCol) - 1) * _defaultIconSize;
         int y = (atoi((char*) iconRow) - 1) * _defaultIconSize;
-        std::pair<IconMap::iterator, bool> res = _iconMap.insert(
-                std::make_pair((char*) iconName, Point(x, y)));
+        std::pair<IconMap::iterator, bool> res = _iconMap.insert(std::make_pair((char*) iconName, Point(x, y)));
         if (!res.second)
             ILOG_WARNING(ILX_STYLE, "Icon %s already exists!\n", iconName);
         else
@@ -487,11 +478,8 @@ Style::getRectangle(xmlNodePtr node, Rectangle& r)
     xmlChar* w = xmlGetProp(node, (xmlChar*) "w");
     xmlChar* h = xmlGetProp(node, (xmlChar*) "h");
 
-    r.setRectangle(atoi((char*) x), atoi((char*) y), atoi((char*) w),
-                   atoi((char*) h));
-    ILOG_DEBUG(
-            ILX_STYLE,
-            "   Rectangle(%d, %d, %d, %d)\n", r.x(), r.y(), r.width(), r.height());
+    r.setRectangle(atoi((char*) x), atoi((char*) y), atoi((char*) w), atoi((char*) h));
+    ILOG_DEBUG( ILX_STYLE, "   Rectangle(%d, %d, %d, %d)\n", r.x(), r.y(), r.width(), r.height());
     xmlFree(x);
     xmlFree(y);
     xmlFree(w);

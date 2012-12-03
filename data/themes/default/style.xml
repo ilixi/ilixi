@@ -87,7 +87,7 @@
 		<icon row="11" col="5" name="restart" />
 	</icons>
 
-	<pack resource="images/ui-pack.png">
+	<pack>
 		<PushButton>
 			<def3>
 				<left x="5" y="7" w="16" h="45" />

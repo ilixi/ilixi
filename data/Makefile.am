@@ -1,10 +1,8 @@
 ## Makefile.am for data
-SUBDIRS			= 	apps images
+SUBDIRS			= 	apps images themes
 miscdatadir 	=	$(ILIXI_DATADIR)
 miscdata_DATA 	=	application.dtd \
 					configuration.dtd \
-					def_palette.xml \
-					def_style.xml \
 					palette.dtd \
 					style.dtd \
 					ilixi_catalog.xml \

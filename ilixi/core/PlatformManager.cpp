@@ -300,8 +300,8 @@ PlatformManager::parseConfig()
         else if (xmlStrcmp(group->name, (xmlChar*) "Screen") == 0)
             setScreen(group->children);
 #endif
-        else if (xmlStrcmp(group->name, (xmlChar*) "Stylist") == 0)
-            setStylist(group->children);
+        else if (xmlStrcmp(group->name, (xmlChar*) "Theme") == 0)
+            setTheme(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Cursor") == 0)
             setCursor(group);
 
@@ -684,7 +684,7 @@ PlatformManager::setScreenFrequency(DFBScreenEncoderFrequency* cfg, xmlChar* fre
 
 #endif // version > 1.6
 void
-PlatformManager::setStylist(xmlNodePtr node)
+PlatformManager::setTheme(xmlNodePtr node)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
     while (node != NULL)
@@ -694,22 +694,24 @@ PlatformManager::setStylist(xmlNodePtr node)
 
         if (xmlStrcmp(node->name, (xmlChar*) "Style") == 0)
         {
-            size_t found = file.find("@DATADIR:");
+            size_t found = file.find("@THEMEDIR:");
             if (found != std::string::npos)
             {
-                _style = ILIXI_DATADIR;
-                _style.append(file.substr(found + 9, std::string::npos));
+                _style = ILIXI_DATADIR"themes/";
+                _style.append(file.substr(found + 10, std::string::npos));
             } else
                 _style = file;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Style: %s\n", _style.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "Palette") == 0)
         {
-            size_t found = file.find("@DATADIR:");
+            size_t found = file.find("@THEMEDIR:");
             if (found != std::string::npos)
             {
-                _palette = ILIXI_DATADIR;
-                _palette.append(file.substr(found + 9, std::string::npos));
+                _palette = ILIXI_DATADIR"themes/";
+                _palette.append(file.substr(found + 10, std::string::npos));
             } else
                 _palette = file;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Palette: %s\n", _palette.c_str());
         }
 
         xmlFree(pcDATA);

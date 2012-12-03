@@ -191,7 +191,7 @@ private:
 #endif
 
     void
-    setStylist(xmlNodePtr node);
+    setTheme(xmlNodePtr node);
 
     void
     setCursor(xmlNodePtr node);

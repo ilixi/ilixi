@@ -110,7 +110,7 @@ AC_FUNC_ERROR_AT_LINE
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.4.15
 SAWMAN_REQ_VERSION=1.6.0
-FUSIONDALE_REQ_VERSION=1.6.0
+FUSIONDALE_REQ_VERSION=0.8.2
 FUSIONSOUND_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
@@ -249,6 +249,8 @@ AC_CONFIG_FILES([ \
 		data/apps/Makefile \
 		data/ilixi_catalog.xml \
 		data/images/Makefile \
+		data/themes/Makefile \
+		data/themes/default/Makefile \
 		doc/Makefile \
 		doc/resources/Makefile \
 		doc/uml/Makefile \

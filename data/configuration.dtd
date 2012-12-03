@@ -1,4 +1,4 @@
-<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Stylist, Cursor) >
+<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Theme, Cursor) >
    
 <!ELEMENT HardwareLayers (DFBLayer+) >
     <!ELEMENT DFBLayer EMPTY >
@@ -19,7 +19,7 @@
     <!ELEMENT Resolution    (#PCDATA) >
     <!ELEMENT Frequency     (#PCDATA) >
         
-<!ELEMENT Stylist (Style, Palette) >
+<!ELEMENT Theme (Style, Palette) >
     <!ELEMENT Style     (#PCDATA) >
     <!ELEMENT Palette   (#PCDATA) >
 

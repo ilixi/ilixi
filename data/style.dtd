@@ -16,7 +16,6 @@
 	<!ATTLIST icon name CDATA #REQUIRED row CDATA #REQUIRED col CDATA #REQUIRED>
 
 <!ELEMENT pack (PushButton, ToolButton, CheckBox, RadioButton, ProgressBar, Slider, Frame, Tab, LineInput)>
-<!ATTLIST pack resource CDATA #REQUIRED>
 
 	<!ELEMENT PushButton (def3, pre3, exp3, dis3, foc3)>
 	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1, check, tri-check)>
