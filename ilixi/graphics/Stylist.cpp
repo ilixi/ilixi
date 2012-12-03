@@ -541,6 +541,7 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rec
 
     p->batchBlitImage(_style->_pack, blitRects, blitPoints, 4);
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     DFBRectangle stretchDestRects[5];
     stretchDestRects[0] =
     {   x + rect.tl.width(), y, midWidth, rect.tm.height()};
@@ -561,6 +562,13 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rec
     stretchSourceRects[4] = rect.bm.dfbRect();
 
     p->batchStretchBlitImage(_style->_pack, stretchSourceRects, stretchDestRects, 5);
+#else
+    p->stretchImage(_style->_pack, Rectangle(x + rect.tl.width(), y, midWidth, rect.tm.height()), rect.tm);
+    p->stretchImage(_style->_pack, Rectangle(x, y + rect.tl.height(), rect.tm.height(), midHeight), rect.l);
+    p->stretchImage(_style->_pack, Rectangle(x + w - rect.r.width(), y + rect.tl.height(), rect.r.width(), midHeight), rect.r);
+    p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight), rect.m);
+    p->stretchImage(_style->_pack, Rectangle(x + rect.bl.width(), by, midWidth, rect.bm.height()), rect.bm);
+#endif
 }
 
 void
@@ -582,6 +590,7 @@ Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& r
 
     p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     DFBRectangle stretchDestRects[4];
     stretchDestRects[0] =
     {   x + rect.tl.width(), y, midWidth, rect.tm.height()};
@@ -599,6 +608,12 @@ Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& r
     stretchSourceRects[3] = rect.m.dfbRect();
 
     p->batchStretchBlitImage(_style->_pack, stretchSourceRects, stretchDestRects, 4);
+#else
+    p->stretchImage(_style->_pack, Rectangle(x + rect.tl.width(), y, midWidth, rect.tm.height()), rect.tm);
+    p->stretchImage(_style->_pack, Rectangle(x, y + rect.tl.height(), rect.tm.height(), midHeight), rect.l);
+    p->stretchImage(_style->_pack, Rectangle(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(), midHeight), rect.r);
+    p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight), rect.m);
+#endif
 }
 
 } /* namespace ilixi */

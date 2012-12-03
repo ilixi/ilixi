@@ -398,6 +398,7 @@ Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point*
     }
 }
 
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 void
 Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
 {
@@ -457,6 +458,7 @@ Painter::batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const
         }
     }
 }
+#endif
 
 void
 Painter::setClip(int x, int y, int w, int h)
