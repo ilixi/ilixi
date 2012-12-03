@@ -34,6 +34,7 @@
 #include <ui/Icon.h>
 #include <ui/Label.h>
 #include <ui/LineInput.h>
+#include <ui/ListBox.h>
 #include <ui/ProgressBar.h>
 #include <ui/PushButton.h>
 #include <ui/RadioButton.h>
