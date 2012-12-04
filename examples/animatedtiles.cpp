@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include <ui/Application.h>
+#include <lib/FPSCalculator.h>
 #include <lib/TweenAnimation.h>
 #include <graphics/Painter.h>
 
@@ -29,6 +30,8 @@ public:
           }
 
           sigVisible.connect(sigc::mem_fun(this, &AnimatedTiles::setStartPosition));
+
+          _fps = new FPSCalculator();
      }
 
      void
@@ -48,7 +51,6 @@ public:
      setStartPosition()
      {
           Size size = _image->size();     // FIXME: make width/height() validate the size as well
-          printf("%dx%d\n\n",size.width(),size.height());
 
           for (int i = 0; i < 64; i++) {
                _pos[i].moveTo( (width()  - size.width())  / 2,
@@ -80,6 +82,14 @@ public:
          for (int i = 0; i < 64; i++) {
              p.drawImage( _image, _pos[i] );
          }
+
+
+         _fps->funck();
+
+         p.setBrush(Color(255, 255, 255));
+         std::string text = _fps->fpsText();
+         Size s = stylist()->defaultFont()->extents(text);
+         p.drawText(text, (width() - s.width()) / 2, 0);
 
          p.end();
      }
@@ -143,6 +153,7 @@ private:
     Point           _pos[64];
     Point           _dest[64];
     TweenAnimation *_anim;
+    ilixi::FPSCalculator* _fps;
 };
 
 
