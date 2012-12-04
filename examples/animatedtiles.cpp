@@ -74,15 +74,27 @@ public:
      void
      compose(const ilixi::PaintEvent& event)
      {
+         Size size = _image->size();     // FIXME: make width/height() validate the size as well
+
          Painter p(this);
          p.begin(event);
 
          p.stretchImage( background(), 0, 0, width(), height() );
 
+         DFBRectangle rects[64];
+         DFBPoint     points[64];
+
          for (int i = 0; i < 64; i++) {
-             p.drawImage( _image, _pos[i] );
+             rects[i].x = 0;
+             rects[i].y = 0;
+             rects[i].w = size.width();
+             rects[i].h = size.height();
+
+             points[i].x = _pos[i].x();
+             points[i].y = _pos[i].y();
          }
 
+         p.batchBlitImage( _image, rects, points, 64 );
 
          _fps->funck();
 
