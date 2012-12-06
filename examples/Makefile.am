@@ -1,6 +1,6 @@
 ## Makefile.am for examples
 SUBDIRS					= animations
-bin_PROGRAMS 			= ilixi_hello ilixi_buttons ilixi_containers ilixi_signals ilixi_dialogs
+bin_PROGRAMS 			= ilixi_hello ilixi_buttons ilixi_containers ilixi_signals ilixi_dialogs ilixi_animatedtiles
 
 ILIXI_EX_LDLIBS			= @DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
 ILIXI_EX_CPPFLAGS		= -I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
@@ -30,6 +30,11 @@ ilixi_dialogs_LDADD		= $(ILIXI_EX_LDLIBS)
 ilixi_dialogs_CPPFLAGS	= $(ILIXI_EX_CPPFLAGS)
 ilixi_dialogs_CFLAGS	= $(ILIXI_EX_CFLAGS)
 ilixi_dialogs_SOURCES	= dialogs.cpp
+
+ilixi_animatedtiles_LDADD	= $(ILIXI_EX_LDLIBS)
+ilixi_animatedtiles_CPPFLAGS	= $(ILIXI_EX_CPPFLAGS)
+ilixi_animatedtiles_CFLAGS	= $(ILIXI_EX_CFLAGS)
+ilixi_animatedtiles_SOURCES	= animatedtiles.cpp
 
 # .. in progress ..
 #if WITH_REFLEX
