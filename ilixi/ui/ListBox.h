@@ -84,6 +84,12 @@ public:
     void
     setOrientation(Orientation orientation);
 
+    bool
+    drawFrame() const;
+
+    void
+    setDrawFrame(bool drawFrame);
+
     sigc::signal<void, unsigned int, unsigned int> sigItemChanged;
     sigc::signal<void, unsigned int> sigIndexChanged;
     sigc::signal<void, Widget*> sigItemClicked;
@@ -97,6 +103,8 @@ private:
     Orientation _orientation;
     ScrollArea* _scrollArea;
     LayoutBase* _layout;
+
+    bool _drawFrame;
 
     unsigned int _currentIndex;
     Widget* _currentItem;

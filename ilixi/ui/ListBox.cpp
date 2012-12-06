@@ -38,6 +38,7 @@ ListBox::ListBox(Widget* parent)
           _orientation(Vertical),
           _scrollArea(NULL),
           _layout(NULL),
+          _drawFrame(false),
           _currentIndex(0),
           _currentItem(NULL)
 {
@@ -209,13 +210,27 @@ ListBox::setOrientation(Orientation orientation)
     }
 }
 
+bool
+ListBox::drawFrame() const
+{
+    return _drawFrame;
+}
+
+void
+ListBox::setDrawFrame(bool drawFrame)
+{
+    _drawFrame = drawFrame;
+}
+
 void
 ListBox::compose(const PaintEvent& event)
 {
-    Painter p(this);
-    p.begin(event);
-    p.drawRectangle(0, 0, width(), height());
-    p.end();
+    if (_drawFrame)
+    {
+        Painter p(this);
+        p.begin(event);
+        stylist()->drawListBox(&p, this);
+    }
 }
 
 void
