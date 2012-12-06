@@ -21,6 +21,7 @@
 	</Screen>
 
 	<Theme>
+		<Background>@THEMEDIR:default/bg.png</Background>
 		<Style>@THEMEDIR:default/style.xml</Style>
 		<Palette>@THEMEDIR:default/palette.xml</Palette>
 	</Theme>

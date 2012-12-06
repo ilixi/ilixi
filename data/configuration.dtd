@@ -19,7 +19,8 @@
     <!ELEMENT Resolution    (#PCDATA) >
     <!ELEMENT Frequency     (#PCDATA) >
         
-<!ELEMENT Theme (Style, Palette) >
+<!ELEMENT Theme (Background?, Style, Palette) >
+    <!ELEMENT Background (#PCDATA) >
     <!ELEMENT Style     (#PCDATA) >
     <!ELEMENT Palette   (#PCDATA) >
 
