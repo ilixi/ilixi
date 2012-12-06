@@ -7,6 +7,6 @@
 	<category>Default</category>
 	<version>1.0</version>
 	<icon>@DATADIR:gallery.png</icon>
-	<exec>ilixi_demo1</exec>
+	<exec>ilixi_gallery</exec>
 	<deps>DEP_MOUSE</deps>
 </app>

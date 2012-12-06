@@ -7,5 +7,5 @@
 	<category>Default</category>
 	<version>1.0</version>
 	<icon>@DATADIR:widgets.png</icon>
-	<exec>ilixi_demo3</exec>
+	<exec>ilixi_widgets</exec>
 </app>
