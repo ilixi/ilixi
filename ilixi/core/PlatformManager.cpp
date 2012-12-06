@@ -67,9 +67,22 @@ PlatformManager::getLayer(const std::string& name) const
             ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p\n", itHW->second.layer);
             return itHW->second.layer;
         }
+        ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find hw layer for logic layer %s!\n", name.c_str());
         return NULL;
     }
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
     return NULL;
+}
+
+DFBDisplayLayerID
+PlatformManager::getLayerID(const std::string& name) const
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    LogicLayerMap::const_iterator it = _layerMap.find(name);
+    if (it != _layerMap.end())
+        return it->second.id;
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
+    return DLID_PRIMARY;
 }
 
 IDirectFBSurface*
@@ -137,6 +150,12 @@ const std::string&
 PlatformManager::getStyle() const
 {
     return _style;
+}
+
+const std::string&
+PlatformManager::getBackground() const
+{
+    return _background;
 }
 
 void
@@ -443,7 +462,7 @@ PlatformManager::setLogicLayers(xmlNodePtr node)
             std::pair<LogicLayerMap::iterator, bool> ret = _layerMap.insert(std::pair<std::string, LogicLayer>((char*) nameC, info));
             if (ret.second == false)
                 ILOG_ERROR(ILX_PLATFORMMANAGER, "A logic layer with name [%s] already exists, cannot add duplicate record!\n", (char*) nameC);
-            else
+            else if (_options & OptExclusive)
             {
                 if (it->second.layer->GetSurface(it->second.layer, &ret.first->second.surface) != DFB_OK)
                     ILOG_THROW(ILX_PLATFORMMANAGER, "Error while getting layer surface!\n");
@@ -692,7 +711,17 @@ PlatformManager::setTheme(xmlNodePtr node)
         xmlChar* pcDATA = xmlNodeGetContent(node);
         std::string file = (char*) pcDATA;
 
-        if (xmlStrcmp(node->name, (xmlChar*) "Style") == 0)
+        if (xmlStrcmp(node->name, (xmlChar*) "Background") == 0)
+        {
+            size_t found = file.find("@THEMEDIR:");
+            if (found != std::string::npos)
+            {
+                _background = ILIXI_DATADIR"themes/";
+                _background.append(file.substr(found + 10, std::string::npos));
+            } else
+                _background = file;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Background: %s\n", _background.c_str());
+        } else if (xmlStrcmp(node->name, (xmlChar*) "Style") == 0)
         {
             size_t found = file.find("@THEMEDIR:");
             if (found != std::string::npos)

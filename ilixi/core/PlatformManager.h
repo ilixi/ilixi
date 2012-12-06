@@ -64,6 +64,12 @@ public:
     getLayer(const std::string& name = "ui") const;
 
     /*!
+     * Returns a DFBLayerID logic layer name is matched, otherwise returns DLID_PRIMARY.
+     */
+    DFBDisplayLayerID
+    getLayerID(const std::string& name = "ui") const;
+
+    /*!
      * Returns the layer surface only in exclusive mode, otherwise returns NULL.
      */
     IDirectFBSurface*
@@ -100,6 +106,12 @@ public:
     getStyle() const;
 
     /*!
+     * Returns path to default backgroung image.
+     */
+    const std::string&
+    getBackground() const;
+
+    /*!
      * Render cursor using given position.
      */
     void
@@ -118,8 +130,8 @@ private:
 
     struct HardwareLayer
     {
-        bool fsu;                       // FullScreenUpdates
-        LayerFlipMode flipMode;              // Controls surface flip behaviour
+        bool fsu;                           // FullScreenUpdates
+        LayerFlipMode flipMode;             // Controls surface flip behaviour
         IDirectFBDisplayLayer* layer;
     };
 
@@ -135,6 +147,7 @@ private:
     typedef std::map<std::string, LogicLayer> LogicLayerMap;
     LogicLayerMap _layerMap;
 
+    std::string _background;
     std::string _style;
     std::string _palette;
 
