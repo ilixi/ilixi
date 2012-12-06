@@ -1,0 +1,14 @@
+## Makefile.am for phone/statusbar
+SUBDIRS					= 	images
+bin_PROGRAMS 			= 	ilixi_pstatus
+ilixi_pstatus_LDADD		=	@DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
+ilixi_pstatus_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
+ilixi_pstatus_CFLAGS	=	$(AM_CFLAGS)
+ilixi_pstatus_SOURCES	= 	Clock.h \
+							Clock.cpp \
+							StatusBar.cpp \
+							StatusBar.h \
+							NotificationIcon.h \
+							NotificationIcon.cpp \
+							ListItem.h \
+							ListItem.cpp
