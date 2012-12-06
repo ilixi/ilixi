@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>Animated Tiles</name>
+	<author>Denis Oliver Kropp</author>
+	<licence>LGPL</licence>
+	<category>System</category>
+	<version>1.0</version>
+	<icon>@DATADIR:animations.png</icon>
+	<exec>ilixi_animatedtiles</exec>
+	<args></args>
+	<flags></flags>
+	<deps></deps>
+</app>

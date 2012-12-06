@@ -9,12 +9,13 @@ miscdata_DATA 	=	\
 					dfbterm.appdef \
 					facebook.appdef \
 					fire.appdef \
-					gallery.appdef \
 					gears.appdef \
 					google.appdef \
 					googlemaps.appdef \
 					googleplus.appdef \
 					ilixi_animations.appdef \
+					ilixi_animatedtiles.appdef \
+					ilixi_gallery.appdef \
 					ilixi_monitor.appdef \
 					ilixi_settings.appdef \
 					ilixi_WebKit.appdef \
