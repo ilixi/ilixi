@@ -677,7 +677,10 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
     case DWET_KEYDOWN:
         if (event.key_symbol == DIKS_HOME)
         {
-            toggleLauncher(true); // show launcher
+            if (_home->view()->visible())
+                toggleLauncher(false); // show launcher
+            else
+                toggleLauncher(true); // show launcher
             return true;
         } else if (event.key_symbol == DIKS_TAB && event.modifiers == DIMM_ALT)
         {
