@@ -549,7 +549,7 @@
 		<VScrollBar>
 			<def3>
 				<left x="380" y="120" w="4" h="4" />
-				<mid x="380" y="124" w="92" h="4" />
+				<mid x="380" y="124" w="4" h="92" />
 				<right x="380" y="216" w="4" h="4" />
 			</def3>
 		</VScrollBar>

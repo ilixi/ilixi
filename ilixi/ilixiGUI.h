@@ -38,6 +38,7 @@
 #include <ui/ProgressBar.h>
 #include <ui/PushButton.h>
 #include <ui/RadioButton.h>
+#include <ui/ScrollArea.h>
 #include <ui/Slider.h>
 #include <ui/Spacer.h>
 #include <ui/SpinBox.h>

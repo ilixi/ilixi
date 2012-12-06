@@ -76,6 +76,12 @@ public:
     drawLabel(Painter* painter, Label* label);
 
     /*!
+     * Draws a ListBox frame.
+     */
+    virtual void
+    drawListBox(Painter* painter, ListBox* box);
+
+    /*!
      * Draws an icon.
      */
     virtual void
@@ -116,6 +122,18 @@ public:
      */
     virtual void
     drawProgressBar(Painter* painter, ProgressBar* bar);
+
+    /*!
+     * Draws a scrollarea frame.
+     */
+    virtual void
+    drawScrollArea(Painter* painter, ScrollArea* area);
+
+    /*!
+     * Draws a scrollbar inside given rectangle and orientation.
+     */
+    virtual void
+    drawScrollBar(Painter* painter, int x, int y, int w, int h, Orientation orientation);
 
     /*!
      * Draws a slider.

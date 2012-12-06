@@ -47,9 +47,11 @@ class GroupBox;
 class Icon;
 class Label;
 class LineInput;
+class ListBox;
 class ProgressBar;
 class PushButton;
 class RadioButton;
+class ScrollArea;
 class Slider;
 class SpinBox;
 class TabPanel;
@@ -141,6 +143,12 @@ public:
     drawLabel(Painter* painter, Label* label)=0;
 
     /*!
+     * Draws a ListBox frame.
+     */
+    virtual void
+    drawListBox(Painter* painter, ListBox* box)=0;
+
+    /*!
      * Draws an icon.
      */
     virtual void
@@ -180,7 +188,19 @@ public:
      * Draws a progressbar.
      */
     virtual void
-    drawProgressBar(Painter* painter, ProgressBar* bar) =0;
+    drawProgressBar(Painter* painter, ProgressBar* bar)=0;
+
+    /*!
+     * Draws a scrollarea frame.
+     */
+    virtual void
+    drawScrollArea(Painter* painter, ScrollArea* area)=0;
+
+    /*!
+     * Draws a scrollbar inside given rectangle and orientation.
+     */
+    virtual void
+    drawScrollBar(Painter* painter, int x, int y, int w, int h, Orientation orientation)=0;
 
     /*!
      * Draws a slider.

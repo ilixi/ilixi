@@ -105,6 +105,13 @@ Stylist::drawLabel(Painter* p, Label* label)
 }
 
 void
+Stylist::drawListBox(Painter* p, ListBox* box)
+{
+    // TODO: draw ListBox frame
+    p->drawRectangle(0, 0, box->width(), box->height());
+}
+
+void
 Stylist::drawIcon(Painter* p, Icon* icon)
 {
     if (!icon->enabled())
@@ -321,6 +328,22 @@ Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
 }
 
 void
+Stylist::drawScrollArea(Painter* p, ScrollArea* area)
+{
+    // TODO draw ScrollArea frame.
+    p->drawRectangle(0, 0, area->width(), area->height());
+}
+
+void
+Stylist::drawScrollBar(Painter* p, int x, int y, int w, int h, Orientation orientation)
+{
+    if (orientation == Horizontal)
+        draw3Frame(p, x, y, w, h, _style->hScr);
+    else
+        draw3Frame(p, x, y, w, h, _style->vScr, true);
+}
+
+void
 Stylist::drawSlider(Painter* p, Slider* bar)
 {
     const WidgetState state = bar->state();
@@ -525,12 +548,12 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
 
         DFBPoint blitPoints[2];
         blitPoints[0] =
-        {   0,0};
+        {   x,y};
         blitPoints[1] =
-        {   0, h - rect.r.height()};
+        {   x, y + h - rect.r.height()};
 
         p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
-        p->stretchImage(_style->_pack, Rectangle(0, rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m);
+        p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m);
     } else
     {
         DFBRectangle blitRects[2];
@@ -539,12 +562,12 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
 
         DFBPoint blitPoints[2];
         blitPoints[0] =
-        {   0,0};
+        {   x,y};
         blitPoints[1] =
-        {   w - rect.r.width(), 0};
+        {   x + w - rect.r.width(), y};
 
         p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
-        p->stretchImage(_style->_pack, Rectangle(rect.l.width(), 0, w - rect.l.width() - rect.r.width(), h), rect.m);
+        p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m);
     }
 }
 
