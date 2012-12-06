@@ -43,6 +43,7 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
 //    initDFB(argc, argv);
 
     setStylist(new Stylist());
+    setBackgroundImage(PlatformManager::instance().getBackground());
     setBackgroundFilled(false);
     setMargins(0, 0, 0, 0);
 
