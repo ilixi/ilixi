@@ -232,9 +232,8 @@ Image::loadImage()
     if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
         ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
 
-    desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+    desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT);
     desc.caps = DSCAPS_PREMULTIPLIED;
-    desc.pixelformat = DSPF_ARGB;
 
     if (width() > 0)
         desc.width = width();
