@@ -294,32 +294,36 @@ ScrollArea::pointerWheelEvent(const PointerEvent& event)
 void
 ScrollArea::compose(const PaintEvent& event)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     Painter p(this);
     p.begin(event);
+
     if (_options & DrawFrame)
-        p.drawRectangle(0, 0, width(), height());
+        stylist()->drawScrollArea(&p, this);
+
     if (_tween->value())
     {
-        p.setBrush(Color(0, 0, 0, _tween->value() * 255));
+//        p.setBrush(Color(0, 0, 0, _tween->value() * 255));
         if (_options & DrawHorizontalThumb)
         {
             int y = _thumbs.y();
-            int h = 10;
+            int h = 4;
             int w = _thumbs.width();
             int x = 1 + (width() - w - 12.0) * _cx / _sMax.x();
-            p.fillRectangle(x, y, w, h);
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> Horizontal: %d, %d, %d, %d\n", x, y, w, h);
+            stylist()->drawScrollBar(&p, x, y, w, h, Horizontal);
         }
 
         if (_options & DrawVerticalThumb)
         {
             int x = _thumbs.x();
-            int w = 10;
+            int w = 4;
             int h = _thumbs.height();
             int y = 1 + (height() - h - 12.0) * _cy / _sMax.y();
-            p.fillRectangle(x, y, w, h);
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> Vertical: %d, %d, %d, %d\n", x, y, w, h);
+            stylist()->drawScrollBar(&p, x, y, w, h, Vertical);
         }
     }
-    p.end();
 }
 
 void
