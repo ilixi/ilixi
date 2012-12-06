@@ -1,2 +1,2 @@
 ## Makefile.am for data/themes
-SUBDIRS			= 	default
+SUBDIRS			= 	dark default
