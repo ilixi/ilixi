@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>navit</name>
+	<author>navit developers</author>
+	<licence>XXX</licence>
+	<category>Default</category>
+	<version>1.0</version>
+	<icon>@DATADIR:navit.png</icon>
+	<exec>navits</exec>
+	<args></args>
+	<flags>APP_SURFACE_DONTBLOCK, APP_AUTO_START, APP_VIS_NOTIFY</flags>
+	<deps>DEP_MOUSE</deps>
+</app>

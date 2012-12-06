@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>Dashboard</name>
+	<author>Denis Oliver Kropp</author>
+	<licence>GPL</licence>
+	<category>Default</category>
+	<version>1.0</version>
+	<icon></icon>
+	<exec>dashboard</exec>
+	<args>--dfb:force-windowed,window-surface-policy=videoonly</args>
+	<flags>APP_SYSTEM</flags>
+	<deps>DEP_NONE</deps>
+</app>
