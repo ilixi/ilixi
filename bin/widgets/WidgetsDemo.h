@@ -26,13 +26,13 @@
 
 #include "ui/Application.h"
 
-class Demo3 : public ilixi::Application
+class WidgetsDemo : public ilixi::Application
 {
 public:
-  Demo3(int argc, char* argv[]);
+  WidgetsDemo(int argc, char* argv[]);
 
   virtual
-  ~Demo3();
+  ~WidgetsDemo();
 };
 
 #endif /* ILIXI_DEMO3_H_ */
