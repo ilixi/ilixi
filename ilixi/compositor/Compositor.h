@@ -32,6 +32,10 @@
 #include <compositor/Switcher.h>
 #include <lib/FPSCalculator.h>
 #include <ui/Application.h>
+extern "C"
+{
+#include <directfb_windows.h>
+}
 
 namespace ilixi
 {
