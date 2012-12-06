@@ -104,9 +104,9 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->cb.def.width();
 
     case StyleHint::RadioHeight:
-        return _style->rb.def.height();
+        return _style->rbOn.def.height();
     case StyleHint::RadioWidth:
-        return _style->rb.def.width();
+        return _style->rbOn.def.width();
 
     case StyleHint::ButtonOffset:
         return 5;

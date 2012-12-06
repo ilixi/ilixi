@@ -251,6 +251,54 @@ Style::parseTheme(xmlNodePtr node)
 
                 state = state->next;
             }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "PushButtonOK") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
+                    get3Rectangle(state->children, pbOK.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre3") == 0)
+                    get3Rectangle(state->children, pbOK.pre);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp3") == 0)
+                    get3Rectangle(state->children, pbOK.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
+                    get3Rectangle(state->children, pbOK.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc3") == 0)
+                    get3Rectangle(state->children, pbOK.foc);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "PushButtonCANCEL") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
+                    get3Rectangle(state->children, pbCAN.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre3") == 0)
+                    get3Rectangle(state->children, pbCAN.pre);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp3") == 0)
+                    get3Rectangle(state->children, pbCAN.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
+                    get3Rectangle(state->children, pbCAN.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc3") == 0)
+                    get3Rectangle(state->children, pbCAN.foc);
+
+                state = state->next;
+            }
         } else if (xmlStrcmp(node->name, (xmlChar*) "CheckBox") == 0)
         {
             state = node->children;
@@ -273,15 +321,9 @@ Style::parseTheme(xmlNodePtr node)
                 else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
                     getRectangle(state->children, cb.foc);
 
-                else if (xmlStrcmp(state->name, (xmlChar*) "check") == 0)
-                    getRectangle(state, check);
-
-                else if (xmlStrcmp(state->name, (xmlChar*) "tri-check") == 0)
-                    getRectangle(state, tri_check);
-
                 state = state->next;
             }
-        } else if (xmlStrcmp(node->name, (xmlChar*) "RadioButton") == 0)
+        } else if (xmlStrcmp(node->name, (xmlChar*) "CheckBoxChecked") == 0)
         {
             state = node->children;
             while (state != NULL)
@@ -289,31 +331,95 @@ Style::parseTheme(xmlNodePtr node)
                 ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
                 if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
-                    getRectangle(state->children, rb.def);
+                    getRectangle(state->children, cbC.def);
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
-                    getRectangle(state->children, rb.pre);
+                    getRectangle(state->children, cbC.pre);
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
-                    getRectangle(state->children, rb.exp);
+                    getRectangle(state->children, cbC.exp);
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
-                    getRectangle(state->children, rb.dis);
+                    getRectangle(state->children, cbC.dis);
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
-                    getRectangle(state->children, rb.foc);
-
-                else if (xmlStrcmp(state->name, (xmlChar*) "radioOff") == 0)
-                    getRectangle(state, radioOff);
-
-                else if (xmlStrcmp(state->name, (xmlChar*) "radioOn") == 0)
-                    getRectangle(state, radioOn);
+                    getRectangle(state->children, cbC.foc);
 
                 state = state->next;
             }
-        }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "CheckBoxTriChecked") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-        else if (xmlStrcmp(node->name, (xmlChar*) "ProgressBar") == 0)
+                if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
+                    getRectangle(state->children, cbT.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
+                    getRectangle(state->children, cbT.pre);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
+                    getRectangle(state->children, cbT.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                    getRectangle(state->children, cbT.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
+                    getRectangle(state->children, cbT.foc);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "RadioButtonOn") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
+                    getRectangle(state->children, rbOn.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
+                    getRectangle(state->children, rbOn.pre);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
+                    getRectangle(state->children, rbOn.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                    getRectangle(state->children, rbOn.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
+                    getRectangle(state->children, rbOn.foc);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "RadioButtonOff") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
+                    getRectangle(state->children, rbOff.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
+                    getRectangle(state->children, rbOff.pre);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
+                    getRectangle(state->children, rbOff.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                    getRectangle(state->children, rbOff.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
+                    getRectangle(state->children, rbOff.foc);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "ProgressBar") == 0)
         {
             state = node->children;
             while (state != NULL)
@@ -343,9 +449,7 @@ Style::parseTheme(xmlNodePtr node)
 
                 state = state->next;
             }
-        }
-
-        else if (xmlStrcmp(node->name, (xmlChar*) "Slider") == 0)
+        } else if (xmlStrcmp(node->name, (xmlChar*) "Slider") == 0)
         {
             state = node->children;
             while (state != NULL)
@@ -461,6 +565,30 @@ Style::parseTheme(xmlNodePtr node)
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "foc9") == 0)
                     get9Rectangle(state->children, tb.foc);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "HScrollBar") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
+                    get3Rectangle(state->children, hScr);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "VScrollBar") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
+                    get3Rectangle(state->children, vScr);
 
                 state = state->next;
             }

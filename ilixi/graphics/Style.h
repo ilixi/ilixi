@@ -60,8 +60,6 @@ public:
     bool
     parseStyle(const char* filename);
 
-
-
     //--------------------------------------------------------------
     // Fonts
     //--------------------------------------------------------------
@@ -97,7 +95,7 @@ public:
         Rectangle l;
         Rectangle m;
         Rectangle r;
-    };
+    } hScr, vScr;
 
     struct r9
     {
@@ -119,7 +117,7 @@ public:
         r3 exp;
         r3 dis;
         r3 foc;
-    } pb;
+    } pb, pbOK, pbCAN;
 
     struct onesInput
     {
@@ -128,7 +126,7 @@ public:
         Rectangle exp;
         Rectangle dis;
         Rectangle foc;
-    } cb, rb, slI;
+    } cb, cbC, cbT, rbOn, rbOff, slI;
 
     struct ninesInput
     {
@@ -158,11 +156,6 @@ public:
         r9 def;
         r9 dis;
     } fr, tab;
-
-    Rectangle check;
-    Rectangle tri_check;
-    Rectangle radioOff;
-    Rectangle radioOn;
 
 protected:
     void

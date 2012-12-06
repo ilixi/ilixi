@@ -121,23 +121,48 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
     const WidgetState state = checkbox->state();
 
     // Frame
-    if (state & DisabledState)
-        p->blitImage(_style->_pack, _style->cb.dis, 0, 0);
-    else if ((state & PressedState) || (checkbox->checkable() && checkbox->checked()))
-        p->blitImage(_style->_pack, _style->cb.pre, 0, 0);
-    else if (state & ExposedState)
-        p->blitImage(_style->_pack, _style->cb.exp, 0, 0);
-    else
-        p->blitImage(_style->_pack, _style->cb.def, 0, 0);
-
-    if (state & FocusedState)
-        p->blitImage(_style->_pack, _style->cb.foc, 0, 0);
 
     // Indicator
     if (checkbox->checked())
-        p->blitImage(_style->_pack, _style->check, 2, -2);
-    else if (checkbox->partial())
-        p->blitImage(_style->_pack, _style->tri_check, 0, 0);
+    {
+        if (state & DisabledState)
+            p->blitImage(_style->_pack, _style->cbC.dis, 0, 0);
+        else if (state & PressedState)
+            p->blitImage(_style->_pack, _style->cbC.pre, 0, 0);
+        else if (state & ExposedState)
+            p->blitImage(_style->_pack, _style->cbC.exp, 0, 0);
+        else
+            p->blitImage(_style->_pack, _style->cbC.def, 0, 0);
+
+        if (state & FocusedState)
+            p->blitImage(_style->_pack, _style->cbC.foc, 0, 0);
+    } else if (checkbox->partial())
+    {
+        if (state & DisabledState)
+            p->blitImage(_style->_pack, _style->cbT.dis, 0, 0);
+        else if (state & PressedState)
+            p->blitImage(_style->_pack, _style->cbT.pre, 0, 0);
+        else if (state & ExposedState)
+            p->blitImage(_style->_pack, _style->cbT.exp, 0, 0);
+        else
+            p->blitImage(_style->_pack, _style->cbT.def, 0, 0);
+
+        if (state & FocusedState)
+            p->blitImage(_style->_pack, _style->cbT.foc, 0, 0);
+    } else
+    {
+        if (state & DisabledState)
+            p->blitImage(_style->_pack, _style->cb.dis, 0, 0);
+        else if ((state & PressedState) || (checkbox->checkable() && checkbox->checked()))
+            p->blitImage(_style->_pack, _style->cb.pre, 0, 0);
+        else if (state & ExposedState)
+            p->blitImage(_style->_pack, _style->cb.exp, 0, 0);
+        else
+            p->blitImage(_style->_pack, _style->cb.def, 0, 0);
+
+        if (state & FocusedState)
+            p->blitImage(_style->_pack, _style->cb.foc, 0, 0);
+    }
 
     // Text
     if (!checkbox->text().empty())
@@ -236,24 +261,33 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
 {
     const WidgetState state = button->state();
 
-    // Frame
-    if (state & DisabledState)
-        p->blitImage(_style->_pack, _style->rb.dis, 0, 0);
-    else if (state & PressedState)
-        p->blitImage(_style->_pack, _style->rb.pre, 0, 0);
-    else if (state & ExposedState)
-        p->blitImage(_style->_pack, _style->rb.exp, 0, 0);
-    else
-        p->blitImage(_style->_pack, _style->rb.def, 0, 0);
-
-    if (state & FocusedState)
-        p->blitImage(_style->_pack, _style->rb.foc, 0, 0);
-
-    // Indicator
     if (button->checked())
-        p->blitImage(_style->_pack, _style->radioOn, 0, 0);
-    else
-        p->blitImage(_style->_pack, _style->radioOff, 0, 0);
+    {
+        if (state & DisabledState)
+            p->blitImage(_style->_pack, _style->rbOn.dis, 0, 0);
+        else if (state & PressedState)
+            p->blitImage(_style->_pack, _style->rbOn.pre, 0, 0);
+        else if (state & ExposedState)
+            p->blitImage(_style->_pack, _style->rbOn.exp, 0, 0);
+        else
+            p->blitImage(_style->_pack, _style->rbOn.def, 0, 0);
+
+        if (state & FocusedState)
+            p->blitImage(_style->_pack, _style->rbOn.foc, 0, 0);
+    } else
+    {
+        if (state & DisabledState)
+            p->blitImage(_style->_pack, _style->rbOff.dis, 0, 0);
+        else if (state & PressedState)
+            p->blitImage(_style->_pack, _style->rbOff.pre, 0, 0);
+        else if (state & ExposedState)
+            p->blitImage(_style->_pack, _style->rbOff.exp, 0, 0);
+        else
+            p->blitImage(_style->_pack, _style->rbOff.def, 0, 0);
+
+        if (state & FocusedState)
+            p->blitImage(_style->_pack, _style->rbOff.foc, 0, 0);
+    }
 
     // Text
     if (!button->text().empty())
