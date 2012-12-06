@@ -223,46 +223,56 @@ ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
 
 AC_CONFIG_FILES([ \
-		Makefile  \
-		bin/Makefile \
-		bin/carousel/Makefile \
-		bin/compositor/images/Makefile \
-		bin/compositor/Makefile \
-		bin/demo2/Makefile \
-		bin/demo3/Makefile \
-		bin/demo4/Makefile \
-		bin/gallery/images/Makefile \
-		bin/gallery/Makefile \
-		bin/home/Makefile \
-		bin/monitor/Makefile \
-		bin/navigation/Makefile \
-		bin/osk/images/Makefile \
-		bin/osk/Makefile \
-		bin/settings/Makefile \
-		bin/soundmixer/images/Makefile \
-		bin/soundmixer/Makefile \
-		bin/stacking/Makefile \
-		bin/statusbar/images/Makefile \
-		bin/statusbar/Makefile \
-		data/Makefile \
-		data/apps/icons/Makefile \
-		data/apps/Makefile \
-		data/ilixi_catalog.xml \
-		data/images/Makefile \
-		data/themes/Makefile \
-		data/themes/default/Makefile \
-		doc/Makefile \
-		doc/resources/Makefile \
-		doc/uml/Makefile \
-		examples/Makefile \
-		examples/animations/Makefile \
-		ilixi/Makefile \
-		ilixi/core/Makefile \
-		ilixi/graphics/Makefile \
-		ilixi/lib/Makefile \
-		ilixi/types/Makefile \
-		ilixi/ui/Makefile \
-		ilixi.pc:ilixi.pc.in
+        Makefile  \
+        bin/car/appdefs/Makefile \
+        bin/car/ccompositor/images/Makefile \
+        bin/car/ccompositor/Makefile \
+        bin/car/home/Makefile \
+        bin/car/Makefile \
+        bin/car/statusbar/images/Makefile \
+        bin/car/statusbar/Makefile \
+        bin/carousel/Makefile \
+        bin/demo2/Makefile \
+        bin/demo4/Makefile \
+        bin/gallery/images/Makefile \
+        bin/gallery/Makefile \
+        bin/Makefile \
+        bin/monitor/Makefile \
+        bin/navigation/Makefile \
+        bin/osk/images/Makefile \
+        bin/osk/Makefile \
+        bin/phone/appdefs/Makefile \
+        bin/phone/home/Makefile \
+        bin/phone/Makefile \
+        bin/phone/pcompositor/Makefile \
+        bin/phone/statusbar/images/Makefile \
+        bin/phone/statusbar/Makefile \
+        bin/settings/Makefile \
+        bin/soundmixer/images/Makefile \
+        bin/soundmixer/Makefile \
+        bin/stacking/Makefile \
+        bin/widgets/Makefile \
+        data/apps/icons/Makefile \
+        data/apps/Makefile \
+        data/ilixi_catalog.xml \
+        data/images/Makefile \
+        data/Makefile \
+        data/themes/dark/Makefile \
+        data/themes/default/Makefile \
+        data/themes/Makefile \
+        doc/Makefile \
+        doc/resources/Makefile \
+        doc/uml/Makefile \
+        examples/animations/Makefile \
+        examples/Makefile \
+        ilixi.pc:ilixi.pc.in
+        ilixi/compositor/Makefile \
+        ilixi/core/Makefile \
+        ilixi/graphics/Makefile \
+        ilixi/lib/Makefile \
+        ilixi/Makefile \
+        ilixi/types/Makefile \
+        ilixi/ui/Makefile \
 ])
 AC_OUTPUT
 
