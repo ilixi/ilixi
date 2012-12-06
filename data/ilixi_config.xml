@@ -21,9 +21,9 @@
 	</Screen>
 
 	<Theme>
-		<Background>@THEMEDIR:default/bg.png</Background>
-		<Style>@THEMEDIR:default/style.xml</Style>
-		<Palette>@THEMEDIR:default/palette.xml</Palette>
+		<Background>@THEMEDIR:dark/bg.png</Background>
+		<Style>@THEMEDIR:dark/style.xml</Style>
+		<Palette>@THEMEDIR:dark/palette.xml</Palette>
 	</Theme>
 
 	<Cursor visible="yes" useLayer="yes">@DATADIR:pointer.png</Cursor>
