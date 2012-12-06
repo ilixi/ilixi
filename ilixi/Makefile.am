@@ -1,5 +1,5 @@
 ## Makefile.am for /ilixi
-SUBDIRS 									= 	core graphics lib types ui
+SUBDIRS 									= 	core graphics lib types ui compositor
 INCLUDES 									= 	-I$(top_srcdir)/ilixi
 lib_LTLIBRARIES 							= 	lib@PACKAGE@-@ILIXI_VERSION@.la
 lib@PACKAGE@_@ILIXI_VERSION@_la_CPPFLAGS	=	$(AM_CPPFLAGS) @DEPS_CFLAGS@ 
@@ -9,7 +9,8 @@ lib@PACKAGE@_@ILIXI_VERSION@_la_LIBADD 		= 	@DEPS_LIBS@ \
                        							graphics/libilixi_graphics.la \
                        							lib/libilixi_lib.la \
                        							types/libilixi_types.la \
-                       							ui/libilixi_ui.la
+                       							ui/libilixi_ui.la \
+                       							compositor/libilixi_compositor.la
 lib@PACKAGE@_@ILIXI_VERSION@_la_SOURCES 	= 
 lib@PACKAGE@_@ILIXI_VERSION@_la_LDFLAGS 	= 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -release $(LT_RELEASE)
 
