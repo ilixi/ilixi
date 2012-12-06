@@ -6,7 +6,6 @@ miscdata_DATA 	=	\
 					8tracks.appdef \
 					bbc.appdef \
 					clanbomber.appdef \
-					dashboard.appdef \
 					dfbterm.appdef \
 					facebook.appdef \
 					fire.appdef \
@@ -16,7 +15,6 @@ miscdata_DATA 	=	\
 					googlemaps.appdef \
 					googleplus.appdef \
 					ilixi_animations.appdef \
-					ilixi_home.appdef \
 					ilixi_monitor.appdef \
 					ilixi_settings.appdef \
 					ilixi_WebKit.appdef \
@@ -24,13 +22,11 @@ miscdata_DATA 	=	\
 					knuckles.appdef \
 					lite_web.appdef \
 					matrix.appdef \
-					navit.appdef \
 					neo.appdef \
 					osk.appdef \
 					particle.appdef \
 					penguins.appdef \
 					soundmixer.appdef \
-					statusbar.appdef \
 					texture.appdef \
 					twitter.appdef \
 					windows.appdef \
