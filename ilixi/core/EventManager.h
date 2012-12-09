@@ -85,8 +85,7 @@ public:
      * @return true if successful.
      */
     bool
-    setExposedWidget(Widget* widget, const PointerEvent& pointerEvent =
-                             PointerEvent());
+    setExposedWidget(Widget* widget, const PointerEvent& pointerEvent = PointerEvent());
 
     /*!
      * Sets widgets focused flag and executes focusInEvent/focusOutEvent methods of widgets.
@@ -106,8 +105,7 @@ public:
      * @return true if successful.
      */
     bool
-    setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent =
-                             PointerEvent());
+    setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent = PointerEvent());
 
     /*!
      * Sets the target of OSK app.
@@ -130,8 +128,7 @@ public:
     selectNext(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
 
     bool
-    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL,
-                   int iter = 0);
+    selectPrevious(Widget* target = NULL, Widget* startFrom = NULL, int iter = 0);
 
     void
     setOSKWidgetText(const std::string& text);
@@ -162,6 +159,9 @@ private:
         pid_t process;
     };
 #endif
+
+    void
+    clear();
 };
 
 }

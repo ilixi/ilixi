@@ -75,6 +75,9 @@ EventManager::oskWidget() const
 bool
 EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
+
     if (widget == _exposedWidget)
         return false;
 
@@ -100,6 +103,9 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setFocusedWidget(Widget* widget)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
+
     if (widget && !(widget->acceptsKeyInput()))
         return false;
 
@@ -140,9 +146,7 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
         _grabbedWidget = widget;
         if (_grabbedWidget)
             _grabbedWidget->pointerGrabEvent(pointerEvent);
-        ILOG_DEBUG(
-                ILX_EVENTMANAGER,
-                "setGrabbedWidget ( widget %p, event.x %d, event.y %d )\n", widget, pointerEvent.x, pointerEvent.y);
+        ILOG_DEBUG( ILX_EVENTMANAGER, "setGrabbedWidget ( widget %p, event.x %d, event.y %d )\n", widget, pointerEvent.x, pointerEvent.y);
         return true;
     }
     return false;
@@ -237,8 +241,8 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 
     Widget* targetChild;
     if (direction == Left || direction == Up)
-        for (Widget::WidgetListReverseIterator it = target->_children.rbegin(),
-                end = target->_children.rend(); it != end; ++it)
+        for (Widget::WidgetListReverseIterator it = target->_children.rbegin(), end = target->_children.rend();
+                it != end; ++it)
         {
             targetChild = (Widget*) *it;
             // check children of child recursively...
@@ -250,8 +254,7 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
                 return true;
         }
     else
-        for (Widget::WidgetListIterator it = target->_children.begin(),
-                end = target->_children.end(); it != end; ++it)
+        for (Widget::WidgetListIterator it = target->_children.begin(), end = target->_children.end(); it != end; ++it)
         {
             targetChild = (Widget*) *it;
             // check children of child recursively...
@@ -268,6 +271,11 @@ EventManager::selectNeighbourFromChildren(Widget* target, Direction direction)
 bool
 EventManager::selectNext(Widget* target, Widget* startFrom, int iter)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> target: %p\n", target);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> startFrom: %p\n", startFrom);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> iter: %d\n", iter);
+
     if (iter)
         return true;
 
@@ -283,11 +291,13 @@ EventManager::selectNext(Widget* target, Widget* startFrom, int iter)
             target = _creator;
     }
 
+    if (setFocusedWidget(target))
+        return true;
+
     if (target->_children.size())
     {
         Widget* targetChild;
-        for (Widget::WidgetListIterator it = target->_children.begin(),
-                end = target->_children.end(); it != end; ++it)
+        for (Widget::WidgetListIterator it = target->_children.begin(), end = target->_children.end(); it != end; ++it)
         {
             targetChild = (Widget*) *it;
 
@@ -332,8 +342,8 @@ EventManager::selectPrevious(Widget* target, Widget* startFrom, int iter)
     if (target->_children.size())
     {
         Widget* targetChild;
-        for (Widget::WidgetListReverseIterator it = target->_children.rbegin(),
-                end = target->_children.rend(); it != end; ++it)
+        for (Widget::WidgetListReverseIterator it = target->_children.rbegin(), end = target->_children.rend();
+                it != end; ++it)
         {
             targetChild = (Widget*) *it;
 
@@ -372,6 +382,34 @@ EventManager::clear(Widget* widget)
         _grabbedWidget = NULL;
     if (_exposedWidget == widget)
         _exposedWidget = NULL;
+}
+
+void
+EventManager::clear()
+{
+    if (_focusedWidget)
+    {
+        _focusedWidget->_state = (WidgetState) (_focusedWidget->_state & ~FocusedState);
+        _focusedWidget->focusOutEvent();
+        _focusedWidget->sigStateChanged(_focusedWidget, _focusedWidget->_state);
+        _focusedWidget = NULL;
+    }
+
+    if (_exposedWidget)
+    {
+        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~ExposedState);
+        _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
+        _exposedWidget->leaveEvent(PointerEvent());
+        _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
+        _exposedWidget = NULL;
+    }
+
+    if (_grabbedWidget)
+    {
+        _grabbedWidget->pointerReleaseEvent(PointerEvent());
+        _grabbedWidget = NULL;
+    }
+
 }
 
 } /* namespace ilixi */
