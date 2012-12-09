@@ -10,25 +10,35 @@
 
 #include <ui/ToolButton.h>
 
-namespace ilixi {
+namespace ilixi
+{
 
-class ListItem: public ToolButton {
+class ListItem : public ToolButton
+{
 public:
-	ListItem(const std::string& title, Widget* parent = 0);
+    ListItem(const std::string& title, Widget* parent = 0);
 
-	virtual ~ListItem();
+    virtual
+    ~ListItem();
 
-	Size
-	preferredSize() const;
+    Size
+    preferredSize() const;
 
-	void setBg(Image* bg);
+    void
+    setBg(Image* bg);
 
 protected:
-	void
-	compose(const PaintEvent& event);
+    void
+    compose(const PaintEvent& event);
+
+    virtual void
+    focusInEvent();
+
+    virtual void
+    focusOutEvent();
 
 private:
-	Image* _bg;
+    Image* _bg;
 };
 
 }
