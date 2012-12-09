@@ -115,6 +115,13 @@ public:
     killApp(AppInstance* instance);
 
 protected:
+    //! Launcher instance.
+    AppInstance* _home;
+    //! StatusBar instance.
+    AppInstance* _statusBar;
+    //! Current application instance.
+    AppInstance* _currentApp;
+
     /*!
      * Shows OSK and centers given rect at top.
      */
@@ -157,8 +164,7 @@ protected:
 private:
     //! Application manager instance.
     ApplicationManager* _appMan;
-    //! Current application instance.
-    AppInstance* _currentApp;
+
     //! Previous application instance.
     AppInstance* _previousApp;
 
@@ -177,10 +183,6 @@ private:
     //! OSKComponent instance.
     OSKComponent* _oskComp;
 
-    //! Launcher instance.
-    AppInstance* _home;
-    //! StatusBar instance.
-    AppInstance* _statusBar;
     //! OSK instance.
     AppInstance* _osk;
     //! Dashboard instance.
@@ -308,6 +310,9 @@ private:
 
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
+
+    virtual bool
+    windowCustomEventFilter(const DFBWindowEvent& event);
 };
 
 } /* namespace ilixi */

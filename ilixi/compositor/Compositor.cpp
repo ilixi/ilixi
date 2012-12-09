@@ -670,15 +670,24 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 }
 
 bool
+ILXCompositor::windowCustomEventFilter(const DFBWindowEvent& event)
+{
+    return false;
+}
+
+bool
 ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
 {
+    if (windowCustomEventFilter(event))
+        return true;
+
     switch (event.type)
     {
     case DWET_KEYDOWN:
         if (event.key_symbol == DIKS_HOME)
         {
             if (_home->view()->visible())
-                toggleLauncher(false); // show launcher
+                toggleLauncher(false); // show current application
             else
                 toggleLauncher(true); // show launcher
             return true;
@@ -704,6 +713,14 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             return true;
         else if (event.key_symbol == DIKS_F12)
             quit();
+        else if (event.key_symbol == DIKS_CURSOR_UP)
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
+        else if (event.key_symbol == DIKS_CURSOR_DOWN)
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
+        else if (event.key_symbol == DIKS_CURSOR_LEFT)
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
+        else if (event.key_symbol == DIKS_CURSOR_RIGHT)
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
         break;
 
     case DWET_KEYUP:
