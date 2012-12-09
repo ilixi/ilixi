@@ -753,7 +753,7 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
         else
         {
             we.window.type = DWET_WHEEL;
-            we.window.step = event.axisrel;
+            we.window.step = -event.axisrel;
         }
     } else if (event.flags & DIEF_AXISABS)
     {
