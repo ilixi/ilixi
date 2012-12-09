@@ -49,7 +49,8 @@ enum WidgetInputMethod
     PointerInput = 0x0002,            //!< Widget is capable of consuming pointer events excluding motion.
     PointerInputTracking = 0x0004,    //!< Widget is capable of consuming pointer motion events only.
     PointerPassthrough = 0x0008,      //!< Widget passes all pointer events to children.
-    OSKInput = 0x0010,                //!< Widget is capable of consuming input from OSK component only.
+    PointerGrabbing = 0x0010,         //!< Widget can grab pointer events in certain cases.
+    OSKInput = 0x0020,                //!< Widget is capable of consuming input from OSK component only.
     KeyPointer = KeyInput | PointerInput,
     PointerTracking = PointerInput | PointerInputTracking,
     KeyPointerTracking = KeyInput | PointerInput | PointerInputTracking,
