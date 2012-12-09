@@ -17,6 +17,9 @@ public:
 private:
     void
     setUIGeomety();
+
+    bool
+    windowCustomEventFilter(const DFBWindowEvent& event);
 };
 
 } /* namespace ilixi */
