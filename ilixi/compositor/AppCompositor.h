@@ -56,6 +56,9 @@ public:
     void
     setZoomFactor(float zoomFactor);
 
+    void
+    setWindowFocus();
+
 protected:
     enum AppCompState
     {

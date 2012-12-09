@@ -109,6 +109,20 @@ AppCompositor::setZoomFactor(float zoomFactor)
 }
 
 void
+AppCompositor::setWindowFocus()
+{
+    for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
+    {
+        SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
+        if (view)
+        {
+            view->setFocus();
+            break;
+        }
+    }
+}
+
+void
 AppCompositor::compose(const PaintEvent& event)
 {
 }
