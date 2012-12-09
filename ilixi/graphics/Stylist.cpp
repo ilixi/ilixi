@@ -338,9 +338,9 @@ void
 Stylist::drawScrollBar(Painter* p, int x, int y, int w, int h, Orientation orientation)
 {
     if (orientation == Horizontal)
-        draw3Frame(p, x, y, w, h, _style->hScr);
+        draw3Frame(p, x, y, w, h, _style->hScr, false, (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
     else
-        draw3Frame(p, x, y, w, h, _style->vScr, true);
+        draw3Frame(p, x, y, w, h, _style->vScr, true, (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_BLEND_COLORALPHA));
 }
 
 void
@@ -538,7 +538,7 @@ Stylist::drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners
 }
 
 void
-Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rect, bool vertical)
+Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rect, bool vertical, const DFBSurfaceBlittingFlags& flags)
 {
     if (vertical)
     {
@@ -552,8 +552,8 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
         blitPoints[1] =
         {   x, y + h - rect.r.height()};
 
-        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
-        p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m);
+        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+        p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
     } else
     {
         DFBRectangle blitRects[2];
@@ -566,8 +566,8 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
         blitPoints[1] =
         {   x + w - rect.r.width(), y};
 
-        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
-        p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m);
+        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+        p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m, flags);
     }
 }
 

@@ -176,7 +176,7 @@ public:
 
 protected:
     virtual void
-    draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false);
+    draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     virtual void
     draw9Frame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect, Corners corners = AllCorners);
