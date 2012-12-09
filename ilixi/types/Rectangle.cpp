@@ -164,13 +164,13 @@ Rectangle::contains(const Rectangle &rect, bool edge) const
 {
     if (edge)
     {
-        if ((rect.left() >= left() && rect.width() <= width())
-                && (rect.top() >= top() && rect.height() <= height()))
+        if ((rect.left() >= left() && rect.right() <= right())
+                && (rect.top() >= top() && rect.bottom() <= bottom()))
             return true;
     } else
     {
-        if ((rect.left() > left() && rect.width() < width())
-                && (rect.top() > top() && rect.height() < height()))
+        if ((rect.left() > left() && rect.right() < right())
+                && (rect.top() > top() && rect.bottom() < bottom()))
             return true;
     }
     return false;
