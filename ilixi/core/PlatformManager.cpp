@@ -172,6 +172,7 @@ PlatformManager::renderCursor(const DFBPoint& point)
 #endif
             _cursorTarget->SetBlittingFlags(_cursorTarget, DSBLIT_BLEND_ALPHACHANNEL);
             _cursorTarget->Blit(_cursorTarget, _cursorImage, NULL, point.x, point.y);
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> %d, %d\n", point.x, point.y);
         } else
             _cursorLayer->SetScreenPosition(_cursorLayer, point.x, point.y);
     }
@@ -794,25 +795,33 @@ PlatformManager::setCursor(xmlNodePtr node)
 
     if (xmlStrcmp(useLayer, (xmlChar*) "yes") == 0)
     {
-        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Will try to use cursor logic layer...\n");
-        _cursorLayer = getLayer("cursor");
-        if (_cursorLayer)
+        // if cursor and ui are on same layer, use cursorTarget (i.e. not using individual hw layer)
+        if (getLayer("cursor") == getLayer("ui"))
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> setting layer rectangle (0, 0, %d, %d)\n", desc.width, desc.height);
-            _cursorLayer->SetScreenRectangle(_cursorLayer, 0, 0, desc.width, desc.height);
-            IDirectFBSurface* surface = getLayerSurface("cursor");
-            if (surface)
+            _cursorTarget = getLayerSurface("cursor");
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> using cursor/ui logic layer for cursor.\n");
+        } else // else if cursor is on an individual layer, try to use cursorLayer
+        {
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Will try to use cursor logic layer...\n");
+            _cursorLayer = getLayer("cursor");
+            if (_cursorLayer)
             {
-                surface->Blit(surface, _cursorImage, NULL, 0, 0);
-                surface->Flip(surface, NULL, DSFLIP_NONE);
-                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> now using cursor logic layer for cursor.\n");
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> setting layer rectangle (0, 0, %d, %d)\n", desc.width, desc.height);
+                _cursorLayer->SetScreenRectangle(_cursorLayer, 0, 0, desc.width, desc.height);
+                IDirectFBSurface* surface = getLayerSurface("cursor");
+                if (surface)
+                {
+                    surface->Blit(surface, _cursorImage, NULL, 0, 0);
+                    surface->Flip(surface, NULL, DSFLIP_NONE);
+                    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> now using cursor logic layer for cursor.\n");
+                } else
+                    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> cannot get cursor logic layer surface!\n");
             } else
-                ILOG_ERROR(ILX_PLATFORMMANAGER, " -> cannot get cursor logic layer surface!\n");
-        } else
-            ILOG_ERROR(ILX_PLATFORMMANAGER, " -> cannot get cursor logic layer!\n");
+                ILOG_ERROR(ILX_PLATFORMMANAGER, " -> cannot get cursor logic layer!\n");
+        }
     }
 
-    if (!_cursorLayer)
+    if (!_cursorTarget && !_cursorLayer)
     {
         _cursorTarget = getLayerSurface("ui");
         ILOG_INFO(ILX_PLATFORMMANAGER, " -> using ui logic layer for cursor.\n");
