@@ -32,21 +32,10 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_SCROLLAREA, "ilixi/ui/ScrollArea", "ScrollArea");
 
-// maximum number of pointer events in queue.
-const int queueSize = 41;
-// this variable specifies how fast content bounces back when it is outside edges (greater = faster bounce).
-const int rubber = 35;
-// this variable specifies how much velocity is reduced in each update (greater = faster decrease).
-const float friction = 0.08;
-
 ScrollArea::ScrollArea(Widget* parent)
         : Widget(parent),
           _options(HorizontalAuto | VerticalAuto),
-          _content(NULL),
-          _cx(0),
-          _cy(0),
-          _vx(0),
-          _vy(0)
+          _content(NULL)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
     setInputMethod(PointerTracking);
@@ -56,8 +45,18 @@ ScrollArea::ScrollArea(Widget* parent)
     _ani = new TweenAnimation();
     _tween = new Tween(Tween::BACK, Tween::EASE_OUT, 1, 0);
     _ani->addTween(_tween);
+
+    _barTween = new Tween(Tween::LINEAR, Tween::EASE_OUT, 1, 0);
+    _ani->addTween(_barTween);
+
+    _xTween = new Tween(Tween::BACK, Tween::EASE_OUT, 0, 0);
+    _ani->addTween(_xTween);
+
+    _yTween = new Tween(Tween::BACK, Tween::EASE_OUT, 0, 0);
+    _ani->addTween(_yTween);
+
     _ani->setDuration(300);
-    _ani->sigStep.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
+    _ani->sigExec.connect(sigc::mem_fun(this, &ScrollArea::updateScrollArea));
 }
 
 ScrollArea::~ScrollArea()
@@ -139,46 +138,62 @@ ScrollArea::setSmoothScrolling(bool smoothScroll)
 void
 ScrollArea::scrollTo(int x, int y)
 {
-    _vx = x == _cx ? 0 : x + _cx;
-    _vy = y == _cy ? 0 : y + _cy;
-
-    if (_vx || _vy)
-    {
-        _sCur = Point(_cx, _cy);
-        _ani->stop();
-        _options |= TargetedScroll;
-        _ani->start();
-    }
+    _ani->stop();
+    _xTween->setInitialValue(_xTween->value());
+    _yTween->setInitialValue(_yTween->value());
+    _xTween->setEndValue(x);
+    _yTween->setEndValue(y);
+    _options |= TargetedScroll;
+    _ani->start();
 }
 
 void
 ScrollArea::scrollTo(Widget* widget, bool center)
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (widget == NULL)
         return;
 
     if (!_content->isChild(widget))
         return;
 
-    if (center)
+    Rectangle wRect = Rectangle(_content->x() + widget->x(), _content->y() + widget->y(), widget->width(), widget->height());
+    if (!center && surfaceGeometry().contains(wRect, true))
     {
-        if (widget->x() != _cx)
-            _vx = widget->x() - (width() - widget->width()) / 2.0 + _cx;
-        else
-            _vx = 0;
+        ILOG_DEBUG(ILX_SCROLLAREA, " -> widget is fully visible.\n");
+        return;
+    } else
+    {
+        Point endP = wRect.topLeft();
+        if (wRect.right() > x() + width())
+            endP.setX(wRect.right() - (x() + width()));
 
-        if (widget->y() != _cy)
-            _vy = widget->y() - (height() - widget->height()) / 2.0 + _cy;
-        else
-            _vy = 0;
+        if (wRect.bottom() > y() + height())
+            endP.setY(wRect.bottom() - (y() + height()));
 
-        if (_vx || _vy)
+        if (endP.x() < x())
+            endP.setX(wRect.x() - x());
+
+        if (endP.y() < y())
+            endP.setY(wRect.y() - y());
+
+        _ani->stop();
+
+        if (center)
         {
-            _ani->stop();
-            _sCur = Point(_cx, _cy);
-            _options |= TargetedScroll;
-            _ani->start();
+            _xTween->setRange(_content->x(), _content->x() - endP.x() + (width() - widget->width()) / 2.0);
+            _yTween->setRange(_content->y(), _content->y() - endP.y() + (height() - widget->height()) / 2.0);
+        } else
+        {
+            _xTween->setRange(_content->x(), _content->x() - endP.x());
+            _yTween->setRange(_content->y(), _content->y() - endP.y());
         }
+
+        _options |= TargetedScroll;
+        ILOG_DEBUG(ILX_SCROLLAREA, " -> content %d, %d\n", _content->x(), _content->y());
+        ILOG_DEBUG(ILX_SCROLLAREA, " -> endP %d, %d\n", endP.x(), endP.y());
+        ILOG_DEBUG(ILX_SCROLLAREA, " -> scrolling content to %f, %f\n", _xTween->endValue(), _yTween->endValue());
+        _ani->start();
     }
 }
 
@@ -193,18 +208,15 @@ ScrollArea::paint(const PaintEvent& event)
         {
             if (_options & SmoothScrolling)
             {
-                _content->moveTo(_cx, _cy);
+
                 if (_content->surface())
                     _content->surface()->clear();
 
                 _content->paint(PaintEvent(Rectangle(0, 0, _content->width(), _content->height()), evt.eye));
                 _content->surface()->flip();
-                surface()->blit(_content->surface(), Rectangle(-_cx, -_cy, width(), height()), 0, 0);
+//                surface()->blit(_content->surface(), Rectangle(-_cx, -_cy, width(), height()), 0, 0);
             } else
-            {
-                _content->moveTo(_cx, _cy);
                 paintChildren(evt);
-            }
             compose(evt);
         }
     }
@@ -220,10 +232,9 @@ void
 ScrollArea::pointerGrabEvent(const PointerEvent& event)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    _sCur = Point(event.x, event.y);
-    _sPre = _sCur;
+
     _ani->stop();
-    updateScrollArea(1);
+    updateScrollArea();
     _options &= ~TargetedScroll;
 }
 
@@ -231,8 +242,9 @@ void
 ScrollArea::pointerReleaseEvent(const PointerEvent& event)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    _vx = 0;
-    _vy = 0;
+    _ani->stop();
+    float vx = 0;
+    float vy = 0;
     if (_events.size() > 1)
     {
         int deltaX = 0;
@@ -251,15 +263,15 @@ ScrollArea::pointerReleaseEvent(const PointerEvent& event)
             deltaX = cur.x - pre.x;
             deltaY = cur.y - pre.y;
             deltaT = cur.timestamp - pre.timestamp;
-            _vx += deltaX == 0 ? 0 : deltaT > 0 ? w * deltaX / deltaT : 0;
-            _vy += deltaY == 0 ? 0 : deltaT > 0 ? w * deltaY / deltaT : 0;
+            vx += deltaX == 0 ? 0 : deltaT > 0 ? w * deltaX / deltaT : 0;
+            vy += deltaY == 0 ? 0 : deltaT > 0 ? w * deltaY / deltaT : 0;
             pre = cur;
             w += k;
             wT += w;
             _events.pop();
         }
-        _vx /= wT;
-        _vy /= wT;
+        vx /= wT;
+        vy /= wT;
     }
     _options &= ~TargetedScroll;
     _ani->start();
@@ -271,11 +283,11 @@ ScrollArea::pointerMotionEvent(const PointerEvent& event)
     ILOG_TRACE_W(ILX_SCROLLAREA);
     if (pressed())
     {
-        _sCur = Point(event.x, event.y);
-        _events.push(event);
-        if (_events.size() == queueSize)
-            _events.pop();
-        updateScrollArea(1);
+//        _sCur = Point(event.x, event.y);
+//        _events.push(event);
+//        if (_events.size() == queueSize)
+//            _events.pop();
+        updateScrollArea();
     }
 }
 
@@ -283,11 +295,26 @@ void
 ScrollArea::pointerWheelEvent(const PointerEvent& event)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
+    ILOG_DEBUG(ILX_SCROLLAREA, " -> step: %d\n", event.wheelStep);
     _ani->stop();
     if (_options & VerticalScroll)
-        _cy += height() / 10 * event.wheelStep;
-    else if (_options & HorizontalScroll)
-        _cx += width() / 10 * event.wheelStep;
+    {
+        int y = _yTween->endValue() + height() / 10 * event.wheelStep;
+        if (y < height() - _content->height())
+            y = height() - _content->height();
+        else if (y > 0)
+            y = 0;
+        _yTween->setRange(_content->y(), y);
+    } else if (_options & HorizontalScroll)
+    {
+        int x = _xTween->endValue() + width() / 10 * event.wheelStep;
+        if (x < width() - _content->width())
+            x = width() - _content->width();
+        else if (x > 0)
+            x = 0;
+        _xTween->setRange(_content->x(), x);
+    }
+    _options |= TargetedScroll;
     _ani->start();
 }
 
@@ -301,15 +328,15 @@ ScrollArea::compose(const PaintEvent& event)
     if (_options & DrawFrame)
         stylist()->drawScrollArea(&p, this);
 
-    if (_tween->value())
+    if (_barTween->value())
     {
-//        p.setBrush(Color(0, 0, 0, _tween->value() * 255));
+        p.setBrush(Color(0, 0, 0, _barTween->value() * 255));
         if (_options & DrawHorizontalThumb)
         {
             int y = _thumbs.y();
             int h = 4;
             int w = _thumbs.width();
-            int x = 1 + (width() - w - 12.0) * _cx / _sMax.x();
+            int x = 1 + (width() - w - 12.0) * _xTween->value() / _sMax.x();
             ILOG_DEBUG(ILX_SCROLLAREA, " -> Horizontal: %d, %d, %d, %d\n", x, y, w, h);
             stylist()->drawScrollBar(&p, x, y, w, h, Horizontal);
         }
@@ -319,7 +346,7 @@ ScrollArea::compose(const PaintEvent& event)
             int x = _thumbs.x();
             int w = 4;
             int h = _thumbs.height();
-            int y = 1 + (height() - h - 12.0) * _cy / _sMax.y();
+            int y = 1 + (height() - h - 12.0) * _yTween->value() / _sMax.y();
             ILOG_DEBUG(ILX_SCROLLAREA, " -> Vertical: %d, %d, %d, %d\n", x, y, w, h);
             stylist()->drawScrollBar(&p, x, y, w, h, Vertical);
         }
@@ -380,68 +407,44 @@ ScrollArea::updateScollAreaGeometry()
 }
 
 void
-ScrollArea::updateScrollArea(int step)
+ScrollArea::updateScrollArea()
 {
     if (pressed())
     {
-        if (_options & HorizontalScroll)
-        {
-            float deltaX = _sCur.x() - _sPre.x();
-
-            if (_cx > 0)
-                deltaX *= 1.0 - (_cx / _sMax.width());
-            else if (_cx < _sMax.x())
-                deltaX *= 1.0 - ((_sMax.x() - _cx) / _sMax.width());
-
-            _cx += deltaX;
-        }
-
-        if (_options & VerticalScroll)
-        {
-            float deltaY = _sCur.y() - _sPre.y();
-
-            if (_cy > 0)
-                deltaY *= 1.0 - (_cy / _sMax.height());
-            else if (_cy < _sMax.y())
-                deltaY *= 1.0 - ((_sMax.y() - _cy) / _sMax.height());
-
-            _cy += deltaY;
-        }
-
-        _sPre = _sCur;
+//        if (_options & HorizontalScroll)
+//        {
+//            float deltaX = _sCur.x() - _sPre.x();
+//
+//            if (_cx > 0)
+//                deltaX *= 1.0 - (_cx / _sMax.width());
+//            else if (_cx < _sMax.x())
+//                deltaX *= 1.0 - ((_sMax.x() - _cx) / _sMax.width());
+//
+//            _cx += deltaX;
+//        }
+//
+//        if (_options & VerticalScroll)
+//        {
+//            float deltaY = _sCur.y() - _sPre.y();
+//
+//            if (_cy > 0)
+//                deltaY *= 1.0 - (_cy / _sMax.height());
+//            else if (_cy < _sMax.y())
+//                deltaY *= 1.0 - ((_sMax.y() - _cy) / _sMax.height());
+//
+//            _cy += deltaY;
+//        }
+//
+//        _sPre = _sCur;
     } else if (_options & TargetedScroll)
     {
         if (_options & HorizontalScroll)
-            _cx = _sCur.x() - (1 - _tween->value()) * _vx;
+            _content->setX(_xTween->value());
         if (_options & VerticalScroll)
-            _cy = _sCur.y() - (1 - _tween->value()) * _vy;
+            _content->setY(_yTween->value());
+        ILOG_DEBUG(ILX_SCROLLAREA, " -> content at %f, %f\n", _xTween->value(), _yTween->value());
     } else
     {
-        if (_options & HorizontalScroll)
-        {
-            if (_cx >= 0)
-                _vx = -(1 - _tween->value()) * (_cx) / rubber;
-            else if (_cx <= _sMax.x())
-                _vx = (1 - _tween->value()) * (_sMax.x() - _cx) / rubber;
-            else if (fabs(_vx) > friction)
-                _vx -= _vx * friction;
-            else
-                _vx = 0;
-            _cx += _vx * step;
-        }
-
-        if (_options & VerticalScroll)
-        {
-            if (_cy >= 0)
-                _vy = -(1 - _tween->value()) * (_cy) / rubber;
-            else if (_cy <= _sMax.y())
-                _vy = (1 - _tween->value()) * (_sMax.y() - _cy) / rubber;
-            else if (fabs(_vy) > friction)
-                _vy -= _vy * friction;
-            else
-                _vy = 0;
-            _cy += _vy * step;
-        }
     }
 
     update();

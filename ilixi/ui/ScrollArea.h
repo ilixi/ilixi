@@ -96,9 +96,11 @@ public:
 
     /*!
      * Scrolls to widget, and centers the view.
+     *
+     * @param center if true, widget will be centered inside visible rectangle.
      */
     void
-    scrollTo(Widget* widget, bool center = true);
+    scrollTo(Widget* widget, bool center = false);
 
     /*!
      * Paints scroll area.
@@ -143,17 +145,17 @@ private:
     //! These options control the functionality of ScrollArea.
     enum ScrollAreaOptions
     {
-        DrawFrame           = 0x00001,  //!< Draws frame around scroll area
+        DrawFrame = 0x00001,  //!< Draws frame around scroll area
         DrawHorizontalThumb = 0x00002,  //!< Flag controlling drawing of horizontal thumb
-        DrawVerticalThumb   = 0x00004,  //!< Flag controlling drawing of vertical thumb
-        HorizontalAlways    = 0x00010,  //!< Makes horizontal thumb always visible.
-        HorizontalAuto      = 0x00020,  //!< Makes horizontal thumb visible automatically.
-        HorizontalScroll    = 0x00040,  //!< Whether horizontal scrolling is enabled.
-        SmoothScrolling     = 0x00100,  //!< Content has its own surface.
-        TargetedScroll      = 0x00200,  //!< Alters scrolling mode, used for scrolling to desired coordinates.
-        VerticalAlways      = 0x01000,  //!< Makes vertical thumb always visible automatically.
-        VerticalAuto        = 0x02000,  //!< Makes vertical thumb visible automatically.
-        VerticalScroll      = 0x04000,  //!< Whether vertical scrolling is enabled .
+        DrawVerticalThumb = 0x00004,  //!< Flag controlling drawing of vertical thumb
+        HorizontalAlways = 0x00010,  //!< Makes horizontal thumb always visible.
+        HorizontalAuto = 0x00020,  //!< Makes horizontal thumb visible automatically.
+        HorizontalScroll = 0x00040,  //!< Whether horizontal scrolling is enabled.
+        SmoothScrolling = 0x00100,  //!< Content has its own surface.
+        TargetedScroll = 0x00200,  //!< Alters scrolling mode, used for scrolling to desired coordinates.
+        VerticalAlways = 0x01000,  //!< Makes vertical thumb always visible automatically.
+        VerticalAuto = 0x02000,  //!< Makes vertical thumb visible automatically.
+        VerticalScroll = 0x04000,  //!< Whether vertical scrolling is enabled .
     };
 
     //! This property stores the options for ScrollArea.
@@ -161,23 +163,13 @@ private:
     //! This is the content of scroll area.
     Widget* _content;
 
-    //! This property stores the X coordinate of content.
-    float _cx;
-    //! This property stores the Y coordinate of content.
-    float _cy;
-    //! This property stores velocity in horizontal direction.
-    double _vx;
-    //! This property stores velocity in vertical direction.
-    double _vy;
-
     //! This tween animation is essentially used for fading thumbs.
     TweenAnimation* _ani;
     Tween* _tween;
+    Tween* _barTween;
+    Tween* _xTween;
+    Tween* _yTween;
 
-    //! Current point.
-    Point _sCur;
-    //! Previous point.
-    Point _sPre;
     //! Content can not go beyond this point.
     Rectangle _sMax;
     //! This rectangle stores the thumbs.
@@ -198,7 +190,7 @@ private:
 
     //! Updates position of content.
     void
-    updateScrollArea(int step);
+    updateScrollArea();
 };
 
 }
