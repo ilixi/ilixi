@@ -127,6 +127,14 @@ public:
     position() const;
 
     /*!
+     * Returns absolute position.
+     *
+     * \sa absX(), absY().
+     */
+    Point
+    absPosition() const;
+
+    /*!
      * Returns height of widget.
      */
     int

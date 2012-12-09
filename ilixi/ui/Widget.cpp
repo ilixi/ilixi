@@ -136,6 +136,12 @@ Widget::position() const
     return _surfaceGeometry;
 }
 
+Point
+Widget::absPosition() const
+{
+    return Point(_frameGeometry.x(), _frameGeometry.y());
+}
+
 int
 Widget::height() const
 {
