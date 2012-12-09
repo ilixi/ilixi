@@ -348,6 +348,7 @@ WindowWidget::closeWindow()
 bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
+//    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     // handle all other events...
     Widget* target = this;
     Widget* grabbed = _eventManager->grabbedWidget();
@@ -356,11 +357,24 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     switch (event.type)
     {
+
+    case DWET_GOTFOCUS:
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_GOTFOCUS\n");
+        _eventManager->selectNext(this);
+        return true;
+
+    case DWET_LOSTFOCUS:
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_LOSTFOCUS\n");
+        _eventManager->clear();
+        return true;
+
     case DWET_CLOSE: // handle Close, can be signalled by viewport manager.
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_CLOSE\n");
         sigAbort();
         return true;
 
     case DWET_LEAVE: // handle Leave, can be signalled if pointer moves outside window.
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_LEAVE\n");
         _eventManager->setExposedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
         _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
         return true;
