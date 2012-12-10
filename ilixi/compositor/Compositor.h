@@ -265,6 +265,7 @@ private:
     Rectangle _oskGeometry;
     Rectangle _appGeometry;
     Rectangle _barGeometry;
+    Rectangle _switcherGeometry;
 
     //! Starts auto-start applications using application manager.
     void

@@ -131,9 +131,9 @@ ILXCompositor::showInstance(AppInstance* instance)
     // osk & _previousApp
     if (_osk && _osk->view()->visible())
     {
-        _osk->view()->hide(AppView::Position, 0, height());
+        _osk->view()->hide(AppView::Position, _oskGeometry.x(), height());
         if (_previousApp)
-            _previousApp->view()->hide(AppView::AnimatedProperty(settings.hideAnimProps | AppView::Position), 0, 0);
+            _previousApp->view()->hide(AppView::AnimatedProperty(settings.hideAnimProps | AppView::Position), _appGeometry.x(), _appGeometry.y());
     } else if (_previousApp)
         _previousApp->view()->hide(settings.hideAnimProps);
 
@@ -206,8 +206,8 @@ ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
-    if (rect.y > height() - 450)
-        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - 450), rect.w, rect.h);
+    if (rect.y + rect.h > height() - _oskGeometry.height())
+        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - _oskGeometry.height()), rect.w, rect.h);
     else
         _oskTargetRect.setRectangle(rect.x, 0, rect.w, rect.h);
 
@@ -226,13 +226,13 @@ ILXCompositor::toggleOSK(bool show)
         ILOG_TRACE_W(ILX_COMPOSITOR);
         if (show)
         {
-            _currentApp->view()->slideTo(0, -_oskTargetRect.y());
-            _osk->view()->show(AppView::Position, 0, height() - 450);
+            _currentApp->view()->slideTo(_appGeometry.x(), -_oskTargetRect.y());
+            _osk->view()->show(AppView::Position, _oskGeometry.x(), height() - _oskGeometry.height());
             toggleSwitcher(false);
         } else
         {
-            _currentApp->view()->slideTo(0, 0);
-            _osk->view()->hide(AppView::Position, 0, height());
+            _currentApp->view()->slideTo(_appGeometry.x(), _appGeometry.y());
+            _osk->view()->hide(AppView::Position, _oskGeometry.x(), _oskGeometry.y());
             _oskTargetPID = 0;
         }
     }
@@ -309,13 +309,15 @@ ILXCompositor::setBarGeometry(const Rectangle& rect)
 void
 ILXCompositor::setSwitcherGeometry(const Rectangle& rect)
 {
-    if (_switcher)
-        _switcher->setSwitcherGeometry(rect);
+    _switcherGeometry = rect;
 }
 
 void
 ILXCompositor::onVisible()
 {
+    if (_switcher)
+        _switcher->setSwitcherGeometry(_switcherGeometry);
+
     if (_fps)
         _fpsLabel->bringToFront();
 

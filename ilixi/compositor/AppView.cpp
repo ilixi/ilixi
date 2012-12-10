@@ -74,6 +74,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
 
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+    ILOG_DEBUG(ILX_APPVIEW, " -> geom: %d, %d, %d, %d\n", x(), y(), width(), height());
 
     _animProps = props;
     bool anim = false;
@@ -115,7 +116,9 @@ AppView::show(AnimatedProperty props, int tx, int ty)
             _xTween->setEndValue(tx);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
-        }
+        } else
+            _xTween->setEnabled(false);
+
         if (y() != ty)
         {
             _yTween->setEnabled(true);
@@ -123,7 +126,8 @@ AppView::show(AnimatedProperty props, int tx, int ty)
             _yTween->setEndValue(ty);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
-        }
+        } else
+            _yTween->setEnabled(false);
     } else
     {
         _xTween->setEnabled(false);
@@ -193,7 +197,9 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
             _xTween->setEndValue(tx);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
-        }
+        } else
+            _xTween->setEnabled(false);
+
         if (y() != ty)
         {
             _yTween->setEnabled(true);
@@ -201,7 +207,8 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
             _yTween->setEndValue(ty);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
-        }
+        } else
+            _yTween->setEnabled(false);
     } else
     {
         _xTween->setEnabled(false);
@@ -241,6 +248,7 @@ AppView::slideTo(int tx, int ty)
 {
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+    ILOG_DEBUG(ILX_APPVIEW, " -> geom: %d, %d, %d, %d\n", x(), y(), width(), height());
 
     if ((_cState != APPCOMP_READY) || (_animProps & AnimShowing) || (_animProps & AnimHiding))
         return;
@@ -254,7 +262,8 @@ AppView::slideTo(int tx, int ty)
         _xTween->setEndValue(tx);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> x=%d\n", tx);
-    }
+    } else
+        _xTween->setEnabled(false);
 
     if (y() != ty)
     {
@@ -263,7 +272,8 @@ AppView::slideTo(int tx, int ty)
         _yTween->setEndValue(ty);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> y=%d\n", ty);
-    }
+    } else
+        _yTween->setEnabled(false);
 
     _opacityTween->setEnabled(false);
     _zoomTween->setEnabled(false);
@@ -285,8 +295,11 @@ AppView::tweenSlot()
     if (_zoomTween->enabled())
         setZoomFactor(_zoomTween->value());
 
-    if (_xTween->enabled() || _yTween->enabled())
-        moveTo(_xTween->value(), _yTween->value());
+    if (_xTween->enabled())
+        setX(_xTween->value());
+
+    if (_yTween->enabled())
+        setY(_yTween->value());
 
     update();
 }
