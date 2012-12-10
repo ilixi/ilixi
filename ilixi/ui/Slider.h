@@ -161,7 +161,7 @@ protected:
     compose(const PaintEvent& event);
 
     virtual void
-    keyUpEvent(const KeyEvent& keyEvent);
+    keyDownEvent(const KeyEvent& keyEvent);
 
     virtual void
     pointerButtonDownEvent(const PointerEvent& pointerEvent);

@@ -41,7 +41,7 @@ Slider::Slider(Widget* parent)
           _inverted(false)
 {
     _range = _maximum - _minimum;
-    setInputMethod(KeyPointerTracking);
+    setInputMethod((WidgetInputMethod) (KeyPointerTracking | PointerGrabbing));
     setConstraints(ExpandingConstraint, FixedConstraint);
     sigGeometryUpdated.connect(
             sigc::mem_fun(this, &Slider::updateIndicatorPosition));
@@ -230,7 +230,7 @@ Slider::compose(const PaintEvent& event)
 }
 
 void
-Slider::keyUpEvent(const KeyEvent& keyEvent)
+Slider::keyDownEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.keySymbol)
     {
