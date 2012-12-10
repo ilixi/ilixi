@@ -104,7 +104,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
 
     Slider* slider1 = new Slider();
 //    slider1->setInverted(true);
-    slider1->setRange(-30, 30);
+    slider1->setRange(0, 100);
     slider1->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
     vBox3->addWidget(slider1);
 
