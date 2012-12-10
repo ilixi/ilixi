@@ -30,6 +30,7 @@
 #include <map>
 #include <types/Enums.h>
 #include <types/Point.h>
+#include <types/Size.h>
 #include <lib/Util.h>
 
 namespace ilixi
@@ -74,6 +75,12 @@ public:
      */
     IDirectFBSurface*
     getLayerSurface(const std::string& name = "ui") const;
+
+    /*!
+     * Returns the dimensions of given logic layer.
+     */
+    Size
+    getLayerSize(const std::string& name = "ui") const;
 
     /*!
      * Returns application options.

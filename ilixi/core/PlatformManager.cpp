@@ -98,6 +98,21 @@ PlatformManager::getLayerSurface(const std::string& name) const
     return NULL;
 }
 
+Size
+PlatformManager::getLayerSize(const std::string& name) const
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    IDirectFBDisplayLayer* layer = getLayer(name);
+    if (layer)
+    {
+        int w, h;
+        DFBDisplayLayerConfig config;
+        layer->GetConfiguration(layer, &config);
+        return Size(config.width, config.height);
+    }
+    return Size(0, 0);
+}
+
 AppOptions
 PlatformManager::appOptions() const
 {
