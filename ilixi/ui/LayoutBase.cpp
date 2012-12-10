@@ -104,9 +104,9 @@ LayoutBase::addWidget(Widget* widget)
 {
     if (addChild(widget))
     {
-//      RadioButton* radio = dynamic_cast<RadioButton*>(widget);
-//      if (radio)
-//        _group->add(radio);
+      RadioButton* radio = dynamic_cast<RadioButton*>(widget);
+      if (radio)
+        _group->add(radio);
         doLayout();
         return true;
     }
@@ -119,9 +119,9 @@ LayoutBase::removeWidget(Widget* widget, bool destroy)
     if (removeChild(widget, destroy))
     {
         // FIXME remove from radiogroup
-//      RadioButton* radio = dynamic_cast<RadioButton*>(widget);
-//      if (radio)
-//        _group->remove(radio);
+      RadioButton* radio = dynamic_cast<RadioButton*>(widget);
+      if (radio)
+        _group->remove(radio);
 
         doLayout();
         return true;
