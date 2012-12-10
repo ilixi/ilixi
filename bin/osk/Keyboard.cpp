@@ -38,8 +38,7 @@ Keyboard::Keyboard(Widget* parent)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
     setInputMethod(PointerInput);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
     DaleDFB::comaGetComponent("OSK", &_oskComponent);
 }
@@ -75,11 +74,7 @@ Keyboard::parseLayoutFile(const char* file)
         return false;
     }
 
-    doc = xmlCtxtReadFile(
-            ctxt,
-            file,
-            NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+    doc = xmlCtxtReadFile(ctxt, file, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
@@ -249,9 +244,7 @@ Keyboard::getRow(xmlNodePtr node)
         row->setKeyHeight(atoi((char*) h));
     }
 
-    ILOG_DEBUG(
-            ILX_KEYBOARD,
-            "Row: %s Gap: %u Height: %d\n", (char*) id, row->gap(), row->keyHeight());
+    ILOG_DEBUG( ILX_KEYBOARD, "Row: %s Gap: %u Height: %d\n", (char*) id, row->gap(), row->keyHeight());
 
     xmlFree(id);
     xmlFree(gap);
@@ -277,7 +270,7 @@ Keyboard::updateKeyboardGeometry()
 {
     if (!_buttonFont)
     {
-        _buttonFont = new Font("Sans", 36);
+        _buttonFont = new Font("Sans", width() > 800 ? 36 : 24);
         _buttonFont->setStyle(Font::Bold);
     }
 
@@ -287,8 +280,7 @@ Keyboard::updateKeyboardGeometry()
     {
         _rows[i]->setKeyFont(_buttonFont);
         h = height() * _rows[i]->keyHeight() / 100;
-        _rows[i]->setGeometry(_rows[i]->gap(), y, width() - 2 * _rows[i]->gap(),
-                              h);
+        _rows[i]->setGeometry(_rows[i]->gap(), y, width() - 2 * _rows[i]->gap(), h);
         y += h;
     }
 }
