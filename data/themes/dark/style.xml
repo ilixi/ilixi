@@ -114,9 +114,9 @@
 			</dis3>
 
 			<foc3>
-				<left x="10" y="110" w="15" h="40" />
-				<mid x="30" y="110" w="30" h="40" />
-				<right x="95" y="110" w="15" h="40" />
+				<left x="10" y="60" w="15" h="40" />
+				<mid x="30" y="60" w="30" h="40" />
+				<right x="95" y="60" w="15" h="40" />
 			</foc3>
 		</PushButton>
 
@@ -311,24 +311,6 @@
 
 		<RadioButtonOn>
 			<def1>
-				<left x="230" y="240" w="18" h="18" />
-			</def1>
-			<pre1>
-				<left x="260" y="240" w="18" h="18" />
-			</pre1>
-			<exp1>
-				<left x="290" y="240" w="18" h="18" />
-			</exp1>
-			<dis1>
-				<left x="320" y="240" w="18" h="18" />
-			</dis1>
-			<foc1>
-				<left x="350" y="240" w="18" h="18" />
-			</foc1>
-		</RadioButtonOn>
-
-		<RadioButtonOff>
-			<def1>
 				<left x="230" y="260" w="18" h="18" />
 			</def1>
 			<pre1>
@@ -343,6 +325,24 @@
 			<foc1>
 				<left x="350" y="260" w="18" h="18" />
 			</foc1>
+		</RadioButtonOn>
+
+		<RadioButtonOff>
+			<def1>
+				<left x="230" y="240" w="18" h="18" />
+			</def1>
+			<pre1>
+				<left x="260" y="240" w="18" h="18" />
+			</pre1>
+			<exp1>
+				<left x="290" y="240" w="18" h="18" />
+			</exp1>
+			<dis1>
+				<left x="320" y="240" w="18" h="18" />
+			</dis1>
+			<foc1>
+				<left x="350" y="240" w="18" h="18" />
+			</foc1>
 		</RadioButtonOff>
 
 
@@ -354,16 +354,16 @@
 				<right x="210" y="160" w="10" h="10" />
 			</def3>
 			<dis3>
-				<left x="10" y="180" w="10" h="10" />
-				<mid x="20" y="180" w="160" h="10" />
-				<right x="210" y="180" w="10" h="10" />
+				<left x="10" y="200" w="10" h="10" />
+				<mid x="20" y="200" w="160" h="10" />
+				<right x="210" y="200" w="10" h="10" />
 			</dis3>
 
 			<pIndicator>
 				<def3>
-					<left x="10" y="200" w="10" h="10" />
-					<mid x="20" y="200" w="160" h="10" />
-					<right x="210" y="200" w="10" h="10" />
+					<left x="10" y="180" w="10" h="10" />
+					<mid x="20" y="180" w="160" h="10" />
+					<right x="210" y="180" w="10" h="10" />
 				</def3>
 
 				<dis3>
