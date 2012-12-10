@@ -235,7 +235,7 @@ PlatformManager::release()
 #if ILIXI_HAVE_FUSIONDALE
         if (_options & OptDale)
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionDale...");
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionDale...\n");
             DaleDFB::releaseDale();
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionDale interfaces are released.\n");
         }
@@ -244,17 +244,20 @@ PlatformManager::release()
 #if ILIXI_HAVE_FUSIONSOUND
         if (_options & OptSound)
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionSound...");
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionSound...\n");
             SoundDFB::releaseSound();
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionSound interfaces are released.\n");
         }
 #endif
 
-        for (LogicLayerMap::iterator it = _layerMap.begin(); it != _layerMap.end(); ++it)
+        if (_options & OptExclusive)
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing logic layer [%s] surface.\n", it->first.c_str());
-            it->second.surface->Release(it->second.surface);
-            it->second.surface = NULL;
+            for (LogicLayerMap::iterator it = _layerMap.begin(); it != _layerMap.end(); ++it)
+            {
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing logic layer [%s] surface.\n", it->first.c_str());
+                it->second.surface->Release(it->second.surface);
+                it->second.surface = NULL;
+            }
         }
 
         for (HardwareLayerMap::iterator it = _hwLayerMap.begin(); it != _hwLayerMap.end(); ++it)
