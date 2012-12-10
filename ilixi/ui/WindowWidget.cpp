@@ -257,12 +257,13 @@ WindowWidget::setBackgroundFilled(bool fill)
 bool
 WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
         if (_children.size())
         {
             for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+                if (((Widget*) *it)->consumePointerEvent(pointerEvent))
                     return true;
         }
 
@@ -350,10 +351,12 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
 //    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     // handle all other events...
-    Widget* target = this;
+    Widget* target = _eventManager->focusedWidget();
     Widget* grabbed = _eventManager->grabbedWidget();
     if (grabbed && grabbed->acceptsPointerInput())
         target = grabbed;
+    else
+        target = this;
 
     switch (event.type)
     {
@@ -437,56 +440,49 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
             return true;
 
         case DIKS_CURSOR_LEFT:
-            if (target == this)
-            {
+            if (_eventManager->grabbedWidget())
+                _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else
                 _eventManager->selectNeighbour(Left);
-                return true;
-            }
-            break;
+            return true;
 
         case DIKS_CURSOR_RIGHT:
-            if (target == this)
-            {
+            if (_eventManager->grabbedWidget())
+                _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else
                 _eventManager->selectNeighbour(Right);
-                return true;
-            }
-            break;
+            return true;
 
         case DIKS_CURSOR_UP:
-            if (target == this)
-            {
+            if (_eventManager->grabbedWidget())
+                _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else
                 _eventManager->selectNeighbour(Up);
-                return true;
-            }
-            break;
+            return true;
 
         case DIKS_CURSOR_DOWN:
-            if (target == this)
-            {
+            if (_eventManager->grabbedWidget())
+                _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else
                 _eventManager->selectNeighbour(Down);
+            return true;
+
+        case DIKS_OK:
+        case DIKS_RETURN:
+            {
+                if (_eventManager->grabbedWidget() != _eventManager->focusedWidget())
+                    _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
+                else
+                    _eventManager->setGrabbedWidget(NULL);
                 return true;
             }
             break;
-// TODO Grab using key input.
-//    case DIKS_OK:
-//    case DIKS_RETURN:
-//      if (_eventManager->focusedWidget())
-//        {
-//          if (_eventManager->focusedWidget() != target)
-//            _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
-//          else
-//            _eventManager->setGrabbedWidget(NULL);
-//          return true;
-//        }
-//      break;
 
         case DIKS_TAB: // handle TAB release.
             if (event.modifiers == DIMM_SHIFT)
-//        _eventManager->selectPrevious();
-                ILOG_DEBUG( ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectPrevious());
+                _eventManager->selectPrevious();
             else
-//        _eventManager->selectNext();
-                ILOG_DEBUG(ILX_WINDOWWIDGET, "TAB %d\n", _eventManager->selectNext());
+                _eventManager->selectNext();
             return true;
 
         default:

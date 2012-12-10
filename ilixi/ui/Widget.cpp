@@ -271,7 +271,7 @@ Widget::state() const
 bool
 Widget::acceptsPointerInput() const
 {
-    return ((_inputMethod & PointerInput) || (_inputMethod & PointerTracking) || (_inputMethod & PointerPassthrough)) && visible() && enabled();
+    return ((_inputMethod & PointerInput) || (_inputMethod & PointerTracking) || (_inputMethod & PointerPassthrough) || (_inputMethod & PointerGrabbing)) && visible() && enabled();
 }
 
 bool
@@ -729,17 +729,16 @@ Widget::mapFromSurface(const Point& point) const
 bool
 Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
+    if (acceptsPointerInput() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
-        if ((_inputMethod & PointerInputTracking) && (pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion))
+        if ((_inputMethod & PointerGrabbing) && ((pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion)))
         {
-            if (!(_state & PressedState))
+            if (!(_state & GrabbedState))
             {
-                _state = (WidgetState) (_state | PressedState);
                 _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
                 sigStateChanged(this, _state);
             }
-        } else if ((_inputMethod & PointerInputTracking) && (pointerEvent.eventType == PointerWheel))
+        } else if ((_inputMethod & PointerGrabbing) && (pointerEvent.eventType == PointerWheel))
         {
             ILOG_DEBUG(ILX_WIDGET, "WheelEvent 1\n");
             pointerWheelEvent(pointerEvent);
@@ -747,7 +746,7 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         } else if (_children.size())
         {
             for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-                if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+                if (((Widget*) *it)->consumePointerEvent(pointerEvent))
                     return true;
         }
 
@@ -761,7 +760,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
         {
             _state = (WidgetState) (_state & ~PressedState);
             pointerButtonUpEvent(pointerEvent);
-            _rootWindow->_eventManager->setGrabbedWidget(NULL, pointerEvent);
+            if (_state & GrabbedState)
+                _rootWindow->_eventManager->setGrabbedWidget(NULL, pointerEvent);
             sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerWheel)
         {
@@ -771,8 +771,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             sigStateChanged(this, _state);
         } else if (pointerEvent.eventType == PointerMotion)
         {
-            if (_state & PressedState)
-                _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
+//            if (_state & PressedState)
+//                _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             pointerMotionEvent(pointerEvent);
             _rootWindow->_eventManager->setExposedWidget(this, pointerEvent);
             sigStateChanged(this, _state);
