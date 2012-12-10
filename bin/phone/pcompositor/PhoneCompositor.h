@@ -15,9 +15,6 @@ public:
     ~PhoneCompositor();
 
 private:
-    void
-    setUIGeomety();
-
     bool
     windowCustomEventFilter(const DFBWindowEvent& event);
 };

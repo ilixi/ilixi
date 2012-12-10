@@ -1,6 +1,7 @@
 #include "PhoneCompositor.h"
 #include "CarouselSwitcher.h"
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
 
 namespace ilixi
 {
@@ -12,20 +13,15 @@ PhoneCompositor::PhoneCompositor(int argc, char* argv[])
     appMan()->parseFolder(ILIXI_DATADIR"phone/apps");
     setSwitcher(new CarouselSwitcher());
 
-    sigVisible.connect(sigc::mem_fun(this, &PhoneCompositor::setUIGeomety));
+    Size size = PlatformManager::instance().getLayerSize();
+    setAppGeometry(Rectangle(150, 0, size.width() - 150, size.height()));
+    setBarGeometry(Rectangle(0, 0, 150, size.height()));
+    setOSKGeometry(Rectangle(150, size.height(), size.width() - 150, 300));
+    setSwitcherGeometry(Rectangle(150, 0, size.width() - 150, size.height()));
 }
 
 PhoneCompositor::~PhoneCompositor()
 {
-}
-
-void
-PhoneCompositor::setUIGeomety()
-{
-    setAppGeometry(Rectangle(150, 0, width() - 150, height()));
-    setBarGeometry(Rectangle(0, 0, 150, height()));
-    setOSKGeometry(Rectangle(150, height(), width(), 400));
-    setSwitcherGeometry(Rectangle(150, 0, width() - 150, height()));
 }
 
 bool
@@ -37,7 +33,6 @@ PhoneCompositor::windowCustomEventFilter(const DFBWindowEvent& event)
         {
             if (event.key_symbol == DIKS_MENU || event.key_symbol == DIKS_F1)
             {
-                printf("menu on\n");
                 _statusBar->view()->setWindowFocus();
                 return true;
             } else if (event.key_symbol == DIKS_BACK || event.key_symbol == DIKS_F2)
@@ -46,7 +41,6 @@ PhoneCompositor::windowCustomEventFilter(const DFBWindowEvent& event)
                     _currentApp->view()->setWindowFocus();
                 else
                     _home->view()->setWindowFocus();
-                printf("menu off\n");
                 return true;
             }
         }
