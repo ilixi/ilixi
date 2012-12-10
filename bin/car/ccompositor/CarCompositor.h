@@ -20,10 +20,6 @@ public:
 
     virtual
     ~CarCompositor();
-
-private:
-    void
-    setUIGeomety();
 };
 
 } /* namespace ilixi */

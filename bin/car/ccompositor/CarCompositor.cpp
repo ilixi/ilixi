@@ -19,20 +19,15 @@ CarCompositor::CarCompositor(int argc, char* argv[])
     appMan()->parseFolder(ILIXI_DATADIR"car/apps");
     setSwitcher(new HorizontalSwitcher());
 
-    sigVisible.connect(sigc::mem_fun(this, &CarCompositor::setUIGeomety));
+    Size size = PlatformManager::instance().getLayerSize();
+    setAppGeometry(Rectangle(0, 0, size.width(), size.height() - 50));
+    setBarGeometry(Rectangle(0, size.height() - 55, size.width(), 55));
+    setOSKGeometry(Rectangle(0, size.height(), size.width(), 400));
+    setSwitcherGeometry(Rectangle(0, size.height() - 50, size.width(), 196));
 }
 
 CarCompositor::~CarCompositor()
 {
-}
-
-void
-CarCompositor::setUIGeomety()
-{
-    setAppGeometry(Rectangle(0, 0, width(), height() - 50));
-    setBarGeometry(Rectangle(0, height() - 55, width(), 55));
-    setOSKGeometry(Rectangle(0, height(), width(), 400));
-    setSwitcherGeometry(Rectangle(0, height() - 50, width(), 196));
 }
 
 } /* namespace ilixi */
