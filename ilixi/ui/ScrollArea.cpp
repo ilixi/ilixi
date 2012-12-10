@@ -38,7 +38,7 @@ ScrollArea::ScrollArea(Widget* parent)
           _content(NULL)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    setInputMethod(PointerTracking);
+    setInputMethod((WidgetInputMethod) (PointerTracking | PointerGrabbing));
     setConstraints(NoConstraint, NoConstraint);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
 
@@ -177,8 +177,6 @@ ScrollArea::scrollTo(Widget* widget, bool center)
         if (endP.y() < y())
             endP.setY(wRect.y() - y());
 
-        _ani->stop();
-
         if (center)
         {
             _xTween->setRange(_content->x(), _content->x() - endP.x() + (width() - widget->width()) / 2.0);
@@ -189,11 +187,15 @@ ScrollArea::scrollTo(Widget* widget, bool center)
             _yTween->setRange(_content->y(), _content->y() - endP.y());
         }
 
-        _options |= TargetedScroll;
-        ILOG_DEBUG(ILX_SCROLLAREA, " -> content %d, %d\n", _content->x(), _content->y());
-        ILOG_DEBUG(ILX_SCROLLAREA, " -> endP %d, %d\n", endP.x(), endP.y());
-        ILOG_DEBUG(ILX_SCROLLAREA, " -> scrolling content to %f, %f\n", _xTween->endValue(), _yTween->endValue());
-        _ani->start();
+        if (endP.x() != 0 || endP.y() != 0)
+        {
+            _ani->stop();
+            _options |= TargetedScroll;
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> content %d, %d\n", _content->x(), _content->y());
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> endP %d, %d\n", endP.x(), endP.y());
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> scrolling content to %f, %f\n", _xTween->endValue(), _yTween->endValue());
+            _ani->start();
+        }
     }
 }
 
@@ -328,7 +330,7 @@ ScrollArea::compose(const PaintEvent& event)
     if (_options & DrawFrame)
         stylist()->drawScrollArea(&p, this);
 
-    if (_barTween->value())
+    if (_ani->state() == Animation::Running)
     {
         p.setBrush(Color(0, 0, 0, _barTween->value() * 255));
         if (_options & DrawHorizontalThumb)
