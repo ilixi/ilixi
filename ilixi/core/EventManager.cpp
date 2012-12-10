@@ -139,13 +139,23 @@ EventManager::setFocusedWidget(Widget* widget)
 bool
 EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
     if (_grabbedWidget != widget)
     {
         if (_grabbedWidget)
+        {
+            _grabbedWidget->_state = (WidgetState) (_grabbedWidget->_state & ~(GrabbedState | PressedState));
             _grabbedWidget->pointerReleaseEvent(pointerEvent);
+            _grabbedWidget->update();
+        }
         _grabbedWidget = widget;
         if (_grabbedWidget)
+        {
+            _grabbedWidget->_state = (WidgetState) (_grabbedWidget->_state | GrabbedState | PressedState);
             _grabbedWidget->pointerGrabEvent(pointerEvent);
+            _grabbedWidget->update();
+        }
         ILOG_DEBUG( ILX_EVENTMANAGER, "setGrabbedWidget ( widget %p, event.x %d, event.y %d )\n", widget, pointerEvent.x, pointerEvent.y);
         return true;
     }
