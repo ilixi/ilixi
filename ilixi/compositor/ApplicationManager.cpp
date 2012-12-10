@@ -785,11 +785,7 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
     if (infoByName(name))
         return;
 
-    std::string str("which ");
-    str.append(exec);
-    int ret = system(str.c_str());
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "%s return %d\n", str.c_str(), ret);
-    if (ret == 256)
+    if (!searchExec(exec))
         return;
 
     AppInfo* app = new AppInfo();
@@ -810,6 +806,33 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
     if (depFlags)
         app->setDepFlags(depFlags);
     _infos.push_back(app);
+}
+
+bool
+ApplicationManager::searchExec(const char* exec)
+{
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> searching: %s\n", exec);
+    char *path = getenv("PATH");
+    char* pathCp = strdup(path);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Path: %s\n", pathCp);
+    char *dir = strtok(pathCp, ":");
+
+    std::string file;
+    while (dir != NULL)
+    {
+        file = dir;
+        file.append("/").append(exec);
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> checking: %s\n", dir);
+        if (access(file.c_str(), X_OK) == 0)
+        {
+            free(pathCp);
+            return true;
+        }
+        dir = strtok(NULL, ":");
+    }
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> not found: %s\n", exec);
+    free(pathCp);
+    return false;
 }
 
 } /* namespace ilixi */

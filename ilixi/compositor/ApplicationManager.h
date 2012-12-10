@@ -159,6 +159,9 @@ private:
                    const char* depFlags);
 
 
+    bool
+    searchExec(const char* exec);
+
     friend void
     sigchild_handler(int sig, siginfo_t *siginfo, void *context);
 
