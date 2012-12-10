@@ -36,7 +36,8 @@ enum WidgetState
     FocusedState = 0x02,    //!< Widget has key input focus.
     PressedState = 0x04,    //!< Pointer is pressed over widget.
     DisabledState = 0x08,   //!< Widget is disabled.
-    InvisibleState = 0x10   //!< Widget is invisible.
+    InvisibleState = 0x10,   //!< Widget is invisible.
+    GrabbedState = 0x20
 };
 
 /*!
