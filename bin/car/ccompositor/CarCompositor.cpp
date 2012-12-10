@@ -8,6 +8,7 @@
 #include "CarCompositor.h"
 #include "HorizontalSwitcher.h"
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
 
 namespace ilixi
 {
