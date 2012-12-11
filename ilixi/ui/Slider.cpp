@@ -43,8 +43,7 @@ Slider::Slider(Widget* parent)
     _range = _maximum - _minimum;
     setInputMethod((WidgetInputMethod) (KeyPointerTracking | PointerGrabbing));
     setConstraints(ExpandingConstraint, FixedConstraint);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Slider::updateIndicatorPosition));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Slider::updateIndicatorPosition));
     ILOG_TRACE_W(ILX_SLIDER);
 }
 
@@ -122,7 +121,7 @@ Slider::setValue(float value, bool signal)
             _value = value;
 
         updateIndicatorPosition();
-        if(signal)
+        if (signal)
             sigValueChanged(_value);
         update();
         ILOG_DEBUG(ILX_SLIDER, "Value: %f\n", _value);
@@ -237,49 +236,42 @@ Slider::keyDownEvent(const KeyEvent& keyEvent)
     case DIKS_CURSOR_LEFT:
     case DIKS_CURSOR_UP:
         if (_orientation == Vertical && !_inverted)
-            _value += _step;
+            setValue(_value + _step);
         else
-            _value -= _step;
+            setValue(_value - _step);
 
         break;
     case DIKS_CURSOR_RIGHT:
     case DIKS_CURSOR_DOWN:
         if (_orientation == Vertical && !_inverted)
-            _value -= _step;
+            setValue(_value - _step);
         else
-            _value += _step;
+            setValue(_value + _step);
 
         break;
     case DIKS_PAGE_UP:
         if (_orientation == Vertical && !_inverted)
-            _value += _pageStep;
+            setValue(_value + _pageStep);
         else
-            _value -= _pageStep;
+            setValue(_value - _pageStep);
 
         break;
     case DIKS_PAGE_DOWN:
         if (_orientation == Vertical && !_inverted)
-            _value -= _pageStep;
+            setValue(_value - _pageStep);
         else
-            _value += _pageStep;
+            setValue(_value + _pageStep);
 
         break;
     case DIKS_HOME:
-        _value = _minimum;
+        setValue(_minimum);
         break;
     case DIKS_END:
-        _value = _maximum;
+        setValue(_maximum);
         break;
     default:
         break;
     }
-    if (_value < _minimum)
-        _value = _minimum;
-    else if (_value > _maximum)
-        _value = _maximum;
-
-    updateIndicatorPosition();
-    update();
 }
 void
 Slider::pointerButtonDownEvent(const PointerEvent& pointerEvent)
@@ -347,25 +339,17 @@ Slider::setValueUsingPoint(const Point& p)
     {
 
         if (_inverted)
-            cursor = width() - p.x() - stylist()->defaultParameter(
-                    StyleHint::SliderIndicatorWidth);
+            cursor = width() - p.x() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth);
         else
-            cursor = p.x() - stylist()->defaultParameter(
-                    StyleHint::SliderIndicatorWidth);
-        setValue(
-                (_range * cursor / (width() - stylist()->defaultParameter(
-                        StyleHint::SliderIndicatorWidth))) + _minimum);
+            cursor = p.x() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth);
+        setValue((_range * cursor / (width() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth))) + _minimum);
     } else
     {
         if (_inverted)
-            cursor = p.y() - stylist()->defaultParameter(
-                    StyleHint::SliderIndicatorHeight);
+            cursor = p.y() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight);
         else
-            cursor = height() - p.y() - stylist()->defaultParameter(
-                    StyleHint::SliderIndicatorHeight);
-        setValue(
-                (_range * cursor / (height() - stylist()->defaultParameter(
-                        StyleHint::SliderIndicatorHeight))) + _minimum);
+            cursor = height() - p.y() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight);
+        setValue((_range * cursor / (height() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight))) + _minimum);
     }
 }
 
@@ -382,10 +366,7 @@ Slider::updateIndicatorPosition()
         else
             percent = (_value - _minimum) / _range;
 
-        _indicator.moveTo(
-                (width() - stylist()->defaultParameter(
-                        StyleHint::SliderIndicatorWidth)) * percent,
-                0);
+        _indicator.moveTo((width() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth)) * percent, 0);
     } else
     {
         if (_inverted)
@@ -393,10 +374,7 @@ Slider::updateIndicatorPosition()
         else
             percent = (_maximum - _value) / _range;
 
-        _indicator.moveTo(
-                0,
-                (height() - stylist()->defaultParameter(
-                        StyleHint::SliderIndicatorHeight)) * percent);
+        _indicator.moveTo(0, (height() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight)) * percent);
     }
 }
 
