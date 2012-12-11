@@ -1,8 +1,24 @@
 /*
- * Settings.cpp
- *
- *  Created on: Sep 6, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Settings.h"
@@ -24,8 +40,7 @@ Settings::Settings(int argc, char* argv[])
           _comp(NULL)
 {
     setTitle("Compositor Settings");
-    setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
-    setMargin(20);
+    setMargin(5);
     setLayout(new VBoxLayout());
 
     _clickToFocus = new CheckBox("Click to focus");
@@ -45,10 +60,13 @@ Settings::Settings(int argc, char* argv[])
     _hideDuration->setRange(100, 1000);
     _hideDuration->setStep(100);
 
-    _showZoomTransition = new ComboBox("Zoom Transition");
-    _showOpacityTransition = new ComboBox("Opacity Transition");
+//    _showZoomTransition = new ComboBox("Zoom Transition");
+//    _showOpacityTransition = new ComboBox("Opacity Transition");
 
+    HBoxLayout* brightness = new HBoxLayout();
+    brightness->addWidget(new Label("Brightness"));
     _brightness = new Slider();
+    brightness->addWidget(_brightness);
 
     HBoxLayout* buttons = new HBoxLayout();
     buttons->addWidget(new Spacer(Horizontal));
@@ -67,20 +85,19 @@ Settings::Settings(int argc, char* argv[])
     box->addWidget(_clickToFocus);
     box->addWidget(_enableAnimations);
 
-    box->addWidget(new Label("Animation options for showing application"));
+    box->addWidget(new Label("Transition effects and duration for showing"));
     box->addWidget(_showZoom);
     box->addWidget(_showOpacity);
     box->addWidget(_showDuration);
 
-    box->addWidget(new Label("Animation options for hiding application"));
+    box->addWidget(new Label("Transition effects and duration for hiding"));
     box->addWidget(_hideZoom);
     box->addWidget(_hideOpacity);
     box->addWidget(_hideDuration);
 
-    box->addWidget(_showZoomTransition);
-    box->addWidget(_showOpacityTransition);
-    box->addWidget(new Label("Brightness"));
-    box->addWidget(_brightness);
+//    box->addWidget(_showZoomTransition);
+//    box->addWidget(_showOpacityTransition);
+    box->addWidget(brightness);
     box->addWidget(new Spacer(Vertical));
     box->addWidget(buttons);
 
@@ -108,7 +125,7 @@ Settings::setDefaults()
 void
 Settings::sendSettings()
 {
-//    if (_comp)
+    if (_comp)
     {
         xmlChar* xmlbuff;
         int buffersize;
@@ -118,8 +135,7 @@ Settings::sendSettings()
         xmlNodePtr root_node = xmlNewNode(NULL, BAD_CAST "Compositor");
         xmlDocSetRootElement(doc, root_node);
 
-        xmlNodePtr node = xmlNewChild(root_node, NULL, BAD_CAST "ClickToFocus",
-                                      NULL);
+        xmlNodePtr node = xmlNewChild(root_node, NULL, BAD_CAST "ClickToFocus", NULL);
         snprintf(value, 100, "%d", _clickToFocus->checked());
         xmlNewProp(node, BAD_CAST "enabled", BAD_CAST value);
 
@@ -153,8 +169,7 @@ Settings::sendSettings()
         DaleDFB::comaGetLocal(sizeof(char) * buffersize, &ptr);
         char* settings = (char*) ptr;
         snprintf(settings, buffersize, "%s", (char*) xmlbuff);
-        DaleDFB::comaCallComponent(_comp, Compositor::SetOptions,
-                                   (void*) settings);
+        DaleDFB::comaCallComponent(_comp, Compositor::SetOptions, (void*) settings);
 
         xmlFree(xmlbuff);
         xmlFreeDoc(doc);
