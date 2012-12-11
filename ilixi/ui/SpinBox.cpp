@@ -29,7 +29,7 @@ SpinBox::SpinBox(int value, Widget* parent)
 {
     ILOG_TRACE_W(ILX_SPINBOX);
     setConstraints(FixedConstraint, FixedConstraint);
-    setInputMethod(PointerInput);
+    setInputMethod(PointerPassthrough);
 
     _plus = new ToolButton("+");
     _plus->setRepeatable(true);
@@ -262,7 +262,9 @@ SpinBox::updateSpinBoxGeometry()
     ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", text.width(), text.height());
 
     _minus->setGeometry(0, 0, plus.width(), plus.height());
+    _minus->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), _plus);
     _plus->setGeometry(width() - minus.width(), 0, minus.width(), minus.height());
+    _plus->setNeighbours(getNeighbour(Up), getNeighbour(Down), _minus, getNeighbour(Right));
     _layout.setBounds(_plus->width(), (height() - text.height()) / 2, width() - _plus->width() - _minus->width(), text.height());
     _layout.doLayout(font);
 }
