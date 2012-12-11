@@ -31,7 +31,8 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_PUSHBUTTON, "ilixi/ui/PushButton", "PushButton");
 
 PushButton::PushButton(const std::string& text, Widget* parent)
-        : Button(text, parent)
+        : Button(text, parent),
+          _pbStyle(Default)
 {
     ILOG_TRACE_W(ILX_PUSHBUTTON);
     setConstraints(MinimumConstraint, FixedConstraint);
