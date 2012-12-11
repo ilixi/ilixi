@@ -104,28 +104,26 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
 
     Slider* slider1 = new Slider();
 //    slider1->setInverted(true);
-    slider1->setRange(0, 100);
     slider1->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
     vBox3->addWidget(slider1);
 
     Slider* slider2 = new Slider();
-    slider2->setRange(-30, 30);
     slider2->setOrientation(Vertical);
     slider2->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
     vBox3->addWidget(slider2);
 
-    ComboBox::StringList list;
-
-    char str[5];
-    for (int i = 2005; i > 1900; --i)
-    {
-        sprintf(str, "%d", i);
-        list.push_back(str);
-    }
-
-    ComboBox* co1 = new ComboBox("Select your date of birth:");
-    co1->addItems(list);
-    vBox3->addWidget(co1);
+//    ComboBox::StringList list;
+//
+//    char str[5];
+//    for (int i = 2005; i > 1900; --i)
+//    {
+//        sprintf(str, "%d", i);
+//        list.push_back(str);
+//    }
+//
+//    ComboBox* co1 = new ComboBox("Select your date of birth:");
+//    co1->addItems(list);
+//    vBox3->addWidget(co1);
 
     SpinBox* spin1 = new SpinBox(5);
     vBox3->addWidget(spin1);
