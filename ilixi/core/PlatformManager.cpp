@@ -841,12 +841,12 @@ PlatformManager::setCursor(xmlNodePtr node)
             } else
                 ILOG_ERROR(ILX_PLATFORMMANAGER, " -> cannot get cursor logic layer!\n");
         }
-    }
 
-    if (!_cursorTarget && !_cursorLayer)
-    {
-        _cursorTarget = getLayerSurface("ui");
-        ILOG_INFO(ILX_PLATFORMMANAGER, " -> using ui logic layer for cursor.\n");
+        if (!_cursorTarget && !_cursorLayer)
+        {
+            _cursorTarget = getLayerSurface("ui");
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> using ui logic layer for cursor.\n");
+        }
     }
 
     xmlFree(visible);
