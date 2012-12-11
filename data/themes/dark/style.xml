@@ -15,12 +15,12 @@
 
 		<inputFont>
 			<name>Serif</name>
-			<size>14</size>
+			<size>16</size>
 		</inputFont>
 
 		<titleFont>
 			<name>Sans</name>
-			<size>18</size>
+			<size>16</size>
 			<fontStyle>bold</fontStyle>
 		</titleFont>
 	</fonts>
