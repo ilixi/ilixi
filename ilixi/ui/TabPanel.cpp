@@ -32,7 +32,7 @@ namespace ilixi
 TabPanelButton::TabPanelButton(std::string label, Widget* parent)
         : Button(label, parent)
 {
-    setInputMethod(PointerInput);
+    setInputMethod(KeyPointer);
     setCheckable(true);
     _layout.setSingleLine(true);
 }
