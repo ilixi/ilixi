@@ -146,6 +146,7 @@ ILXCompositor::showInstance(AppInstance* instance)
 
     ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
     _currentApp->view()->show(settings.showAnimProps);
+    _currentApp->view()->setWindowFocus();
     _compComp->signalInstanceChanged(_currentApp, _previousApp);
 
     if (info->appFlags() & APP_USE_BACK)
