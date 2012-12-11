@@ -68,7 +68,7 @@ StylistBase::defaultSize(StyleHint::Size size) const
     switch (size)
     {
     case StyleHint::PushButton:
-        return Size(defaultParameter(StyleHint::PushButtonCorners),
+        return Size(defaultParameter(StyleHint::PushButtonLR),
                     _style->pb.def.m.height());
     case StyleHint::ProgressBar:
         return Size(100, _style->pr.def.m.height());
@@ -86,13 +86,13 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 {
     switch (parameter)
     {
-    case StyleHint::PushButtonCornerLeft:
+    case StyleHint::PushButtonLeft:
         return _style->pb.def.l.width();
 
-    case StyleHint::PushButtonCornerRight:
+    case StyleHint::PushButtonRight:
         return _style->pb.def.r.width();
 
-    case StyleHint::PushButtonCorners:
+    case StyleHint::PushButtonLR:
         return _style->pb.def.l.width() + _style->pb.def.r.width();
 
     case StyleHint::PushButtonHeight:

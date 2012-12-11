@@ -52,7 +52,7 @@ PushButton::preferredSize() const
     if (text().empty())
         return stylist()->defaultSize(StyleHint::PushButton);
 
-    int w = stylist()->defaultParameter(StyleHint::PushButtonCorners);
+    int w = stylist()->defaultParameter(StyleHint::PushButtonLR);
 
     if (!text().empty())
     {
@@ -95,8 +95,8 @@ PushButton::updateTextBaseGeometry()
     int y = (height() - textHeight) / 2;
 
     _layout.setBounds(
-            stylist()->defaultParameter(StyleHint::PushButtonCorners), y,
-            width() - 2 * stylist()->defaultParameter(StyleHint::PushButtonCorners),
+            stylist()->defaultParameter(StyleHint::PushButtonLR), y,
+            width() - 2 * stylist()->defaultParameter(StyleHint::PushButtonLR),
             textHeight);
     _layout.doLayout(font());
 }
