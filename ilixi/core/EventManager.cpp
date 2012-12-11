@@ -141,6 +141,9 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 {
     ILOG_TRACE_F(ILX_EVENTMANAGER);
     ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
+    if (widget && !(widget->inputMethod() & PointerGrabbing))
+        return false;
+
     if (_grabbedWidget != widget)
     {
         if (_grabbedWidget)
