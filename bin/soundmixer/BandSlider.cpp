@@ -32,7 +32,10 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_BANDSLIDER, "ilixi/Mixer/BandSlider", "BandSlider");
 
 BandSlider::BandSlider(const std::string& title, Widget* parent)
-        : ContainerBase(parent), _title(new Label(title)), _level(new Label("0.0 dB")), _slider(new Slider())
+        : ContainerBase(parent),
+          _title(new Label(title)),
+          _level(new Label("0.0 dB")),
+          _slider(new Slider())
 {
     ILOG_TRACE_W(ILX_BANDSLIDER);
     VBoxLayout* box = new VBoxLayout();
