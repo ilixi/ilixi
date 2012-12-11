@@ -37,11 +37,13 @@ Thread::Thread()
           _code(0),
           _stackSize(0)
 {
+    ILOG_TRACE_F(ILX_THREAD);
     pthread_mutex_init(&_runMutex, NULL);
 }
 
 Thread::~Thread()
 {
+    ILOG_TRACE_F(ILX_THREAD);
     cancel();
     pthread_mutex_destroy(&_runMutex);
 }
@@ -49,10 +51,9 @@ Thread::~Thread()
 bool
 Thread::start()
 {
-    pthread_mutex_lock(&_runMutex);
+    ILOG_TRACE_F(ILX_THREAD);
     if (_running)
         return false;
-    pthread_mutex_unlock(&_runMutex);
 
     int rc = 0;
     pthread_attr_t attr;
@@ -111,11 +112,10 @@ Thread::start()
 bool
 Thread::cancel()
 {
-    pthread_mutex_lock(&_runMutex);
+    ILOG_TRACE_F(ILX_THREAD);
+
     if (!_running)
         return false;
-    _running = false;
-    pthread_mutex_unlock(&_runMutex);
 
     void *status = NULL;
     int rc = 0;
@@ -124,10 +124,14 @@ Thread::cancel()
         ILOG_ERROR(ILX_THREAD, "pthread_cancel error: %d\n", rc);
 
     pthread_join(_pThread, &status);
+
+    pthread_mutex_lock(&_runMutex);
+    _running = false;
+    pthread_mutex_unlock(&_runMutex);
+
     if (status != PTHREAD_CANCELED )
     {
-        ILOG_ERROR(ILX_THREAD,
-                   "Thread (id: %lu) returned unexpected result!\n", _pThread);
+        ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) returned unexpected result!\n", _pThread);
         return false;
     }
 
@@ -139,28 +143,28 @@ Thread::cancel()
 bool
 Thread::join()
 {
+    ILOG_TRACE_F(ILX_THREAD);
+
+    void *status = NULL;
+    int rc = 0;
+    rc = pthread_join(_pThread, &status);
+
     pthread_mutex_lock(&_runMutex);
     if (!_running)
         return false;
     _running = false;
     pthread_mutex_unlock(&_runMutex);
 
-    void *status = NULL;
-    int rc = 0;
-    rc = pthread_join(_pThread, &status);
-
     switch (rc)
     {
     case EDEADLK:
-        ILOG_ERROR(ILX_THREAD,
-                   "Thread (id: %lu) A deadlock was detected.\n", _pThread);
+        ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) A deadlock was detected.\n", _pThread);
         return false;
     case EINVAL:
         ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) is not joinable.\n", _pThread);
         return false;
     case ESRCH:
-        ILOG_ERROR(ILX_THREAD,
-                   "No thread with the id (%lu) could be found.\n", _pThread);
+        ILOG_ERROR(ILX_THREAD, "No thread with the id (%lu) could be found.\n", _pThread);
         return false;
     case 0:
         ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) joined.\n", _pThread);
@@ -192,6 +196,7 @@ Thread::setStackSize(size_t stackSize)
 void
 Thread::executeRun()
 {
+    ILOG_TRACE_F(ILX_THREAD);
     sigStarted();
     pthread_mutex_lock(&_runMutex);
     _running = true;
@@ -206,9 +211,7 @@ Thread::executeRun()
     pthread_mutex_lock(&_runMutex);
     _running = false;
     pthread_mutex_unlock(&_runMutex);
-    ILOG_DEBUG(
-            ILX_THREAD,
-            "Thread (id: %lu) completed its execution with code: %d.\n", _pThread, _code);
+    ILOG_DEBUG( ILX_THREAD, "Thread (id: %lu) completed its execution with code: %d.\n", _pThread, _code);
     sigFinished();
 }
 
