@@ -334,7 +334,7 @@ TabPanel::updateChildrenFrameGeometry()
     for (unsigned int i = 0; i < _pages.size(); i++)
         _canvasOffsetY = std::max(_canvasOffsetY,
                                   _pages[i].button->preferredSize().height());
-    int buttonX = 30;
+    int buttonX = stylist()->defaultParameter(StyleHint::FrameOffsetLR);
     int buttonW = 0;
     int buttonH = _canvasOffsetY;
 
