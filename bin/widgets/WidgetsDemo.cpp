@@ -103,14 +103,28 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     vBox3->addWidget(bar1);
 
     Slider* slider1 = new Slider();
-//    slider1->setInverted(true);
     slider1->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
     vBox3->addWidget(slider1);
 
     Slider* slider2 = new Slider();
-    slider2->setOrientation(Vertical);
+    slider2->setInverted(true);
     slider2->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
     vBox3->addWidget(slider2);
+
+
+    HBoxLayout* vSliderLayout = new HBoxLayout();
+    vBox3->addWidget(vSliderLayout);
+
+    Slider* slider3 = new Slider();
+    slider3->setOrientation(Vertical);
+    slider3->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
+    vSliderLayout->addWidget(slider3);
+
+    Slider* slider4 = new Slider();
+    slider4->setOrientation(Vertical);
+    slider4->setInverted(true);
+    slider4->sigValueChanged.connect(sigc::mem_fun(bar1, &ProgressBar::setValue));
+    vSliderLayout->addWidget(slider4);
 
 //    ComboBox::StringList list;
 //

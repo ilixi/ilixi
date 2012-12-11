@@ -356,9 +356,8 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         if (bar->value() > bar->minimum())
         {
             if (bar->inverted())
-            {
-                // FIXME not implemented!
-            } else
+                draw3Frame(p, bar->_indicator.x(), 0, bar->width() - bar->_indicator.x(), bar->height(), _style->sl.dis);
+            else
                 draw3Frame(p, 0, 0, bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth), bar->height(), _style->sl.dis);
         }
     } else // Vertical
@@ -369,20 +368,13 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         if (bar->value() > bar->minimum())
         {
             if (bar->inverted())
-            {
-                // FIXME not implemented!
-            } else
-            {
-//                draw3Frame(p, 0, 0, bar->width(), bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight), _style->sl.defV, true);
-                int fillHeight = bar->_indicator.y();
-                p->blitImage(_style->_pack, _style->sl.disV.l, 0, fillHeight);
-                p->stretchImage(_style->_pack, Rectangle(0, fillHeight + defaultParameter(StyleHint::SliderIndicatorHeight), bar->width(), bar->height() - fillHeight - _style->sl.dis.l.height()), _style->sl.disV.m);
-                p->blitImage(_style->_pack, _style->sl.disV.r, 0, bar->height() - _style->sl.disV.r.height());
-            }
+                draw3Frame(p, 0, 0, bar->width(), bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight), _style->sl.disV, true);
+            else
+                draw3Frame(p, 0, bar->_indicator.y(), bar->width(), bar->height() - bar->_indicator.y(), _style->sl.disV, true);
         }
     }
 
-// control
+    // control
     if (state & DisabledState)
         p->blitImage(_style->_pack, _style->slI.dis, bar->_indicator.x(), bar->_indicator.y());
     else if (state & PressedState)
@@ -393,7 +385,6 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         p->blitImage(_style->_pack, _style->slI.def, bar->_indicator.x(), bar->_indicator.y());
     if (state & FocusedState)
         p->blitImage(_style->_pack, _style->slI.foc, bar->_indicator.x(), bar->_indicator.y());
-
 }
 
 void
