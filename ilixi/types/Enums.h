@@ -299,6 +299,13 @@ enum LayerFlipMode
     FlipNew
 };
 
+enum PushButtonStyle
+{
+    Default,
+    OK,
+    CANCEL
+};
+
 }
 
 #endif /* ILIXI_ENUMS_H_ */

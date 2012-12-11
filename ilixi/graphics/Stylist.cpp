@@ -242,17 +242,46 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     const WidgetState state = button->state();
 
     // Frame
-    if (state & DisabledState)
-        draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.dis);
-    else if ((state & PressedState) || (button->checkable() && button->checked()))
-        draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.pre);
-    else if (state & ExposedState)
-        draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.exp);
-    else
-        draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.def);
+    if (button->getPushButtonStyle() == Default)
+    {
+        if (state & DisabledState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.dis);
+        else if ((state & PressedState) || (button->checkable() && button->checked()))
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.pre);
+        else if (state & ExposedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.exp);
+        else
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.def);
 
-    if (state & FocusedState)
-        draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.foc);
+        if (state & FocusedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.foc);
+    } else if (button->getPushButtonStyle() == OK)
+    {
+        if (state & DisabledState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.dis);
+        else if ((state & PressedState) || (button->checkable() && button->checked()))
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.pre);
+        else if (state & ExposedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.exp);
+        else
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.def);
+
+        if (state & FocusedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.foc);
+    } else if (button->getPushButtonStyle() == CANCEL)
+    {
+        if (state & DisabledState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.dis);
+        else if ((state & PressedState) || (button->checkable() && button->checked()))
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.pre);
+        else if (state & ExposedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.exp);
+        else
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.def);
+
+        if (state & FocusedState)
+            draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.foc);
+    }
 
     // Text
     if (!button->text().empty())

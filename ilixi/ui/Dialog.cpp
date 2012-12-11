@@ -22,7 +22,7 @@
  */
 
 #include <ui/Dialog.h>
-#include <ui/ToolButton.h>
+#include <ui/PushButton.h>
 #include <ui/Spacer.h>
 #include <graphics/Painter.h>
 #include <sigc++/bind.h>
@@ -138,39 +138,45 @@ Dialog::setButtonLayoutOption(ButtonOption option)
     _buttonLayout = new HBoxLayout();
     _buttonLayout->addWidget(new Spacer());
 
-    ToolButton* button;
+    PushButton* button;
     if (option == OKButtonOption)
     {
-        button = new ToolButton("OK");
+        button = new PushButton("OK");
+        button->setPushButtonStyle(OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
     } else if (option == CancelButtonOption)
     {
-        button = new ToolButton("Cancel");
+        button = new PushButton("Cancel");
+        button->setPushButtonStyle(CANCEL);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
     } else if (option == OKCancelButtonOption)
     {
-        button = new ToolButton("OK");
+        button = new PushButton("OK");
+        button->setPushButtonStyle(OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
 
-        button = new ToolButton("Cancel");
+        button = new PushButton("Cancel");
+        button->setPushButtonStyle(CANCEL);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
     } else
     {
-        button = new ToolButton("Yes");
+        button = new PushButton("Yes");
+        button->setPushButtonStyle(OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
 
-        button = new ToolButton("No");
+        button = new PushButton("No");
+        button->setPushButtonStyle(CANCEL);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
 
         if (option == YesNoCancelButtonOption)
         {
-            button = new ToolButton("Cancel");
+            button = new PushButton("Cancel");
             _buttonLayout->addWidget(button);
             button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &Dialog::finish), -1));
         }

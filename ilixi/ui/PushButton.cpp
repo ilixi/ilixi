@@ -62,6 +62,18 @@ PushButton::preferredSize() const
     return Size(w, stylist()->defaultParameter(StyleHint::PushButtonHeight));
 }
 
+PushButtonStyle
+PushButton::getPushButtonStyle() const
+{
+    return _pbStyle;
+}
+
+void
+PushButton::setPushButtonStyle(PushButtonStyle pbStyle)
+{
+    _pbStyle = pbStyle;
+}
+
 void
 PushButton::focusInEvent()
 {
@@ -94,10 +106,7 @@ PushButton::updateTextBaseGeometry()
     int textHeight = textExtents().height();
     int y = (height() - textHeight) / 2;
 
-    _layout.setBounds(
-            stylist()->defaultParameter(StyleHint::PushButtonLR), y,
-            width() - 2 * stylist()->defaultParameter(StyleHint::PushButtonLR),
-            textHeight);
+    _layout.setBounds(stylist()->defaultParameter(StyleHint::PushButtonLR), y, width() - 2 * stylist()->defaultParameter(StyleHint::PushButtonLR), textHeight);
     _layout.doLayout(font());
 }
 

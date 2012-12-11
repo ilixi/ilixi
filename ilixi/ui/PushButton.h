@@ -40,7 +40,16 @@ public:
     virtual Size
     preferredSize() const;
 
+    PushButtonStyle
+    getPushButtonStyle() const;
+
+    void
+    setPushButtonStyle(PushButtonStyle pbStyle);
+
 private:
+    //! This property is used to draw PushButton in three styles.
+    PushButtonStyle _pbStyle;
+
     /*!
      * Just updates button.
      */
