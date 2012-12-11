@@ -66,8 +66,8 @@ ToolButtonThread::run()
         if (!_target->enabled())
             return 1;
         _target->click(sleepNS);
-        if (sleepNS > 20)
-            sleepNS -= 20;
+        if (sleepNS > 50)
+            sleepNS -= 50;
     }
     return 1;
 }
@@ -128,12 +128,14 @@ ToolButton::preferredSize() const
     int imgH = 0;
     if (_icon)
     {
-        imgW = _icon->width();
-        imgH = _icon->height() + 2; // 1px for button down movement
+        Size s = _icon->preferredSize();
+        imgW = s.width();
+        imgH = s.height() + 2; // 1px for button down movement
     }
 
     if (_toolButtonStyle == IconOnly)
     {
+        ILOG_DEBUG(ILX_TOOLBUTTON, " -> icon only: %d, %d\n", w + imgW, h + imgH);
         if (imgW)
             return Size(w + imgW, h + imgH);
         return stylist()->defaultSize(StyleHint::PushButton);

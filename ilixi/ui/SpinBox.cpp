@@ -19,6 +19,8 @@ SpinBox::SpinBox(int value, Widget* parent)
         : Widget(parent),
           _plus(NULL),
           _minus(NULL),
+          _prefix(""),
+          _postfix(""),
           _min(0),
           _max(value > 100 ? value : 100),
           _value(value),
@@ -31,7 +33,6 @@ SpinBox::SpinBox(int value, Widget* parent)
 
     _plus = new ToolButton("+");
     _plus->setRepeatable(true);
-    _plus->setDrawFrame(false);
     _plus->setToolButtonStyle(ToolButton::IconOnly);
     _plus->setIcon(StyleHint::Plus);
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
@@ -41,7 +42,6 @@ SpinBox::SpinBox(int value, Widget* parent)
 
     _minus = new ToolButton("-");
     _minus->setRepeatable(true);
-    _minus->setDrawFrame(false);
     _minus->setToolButtonStyle(ToolButton::IconOnly);
     _minus->setIcon(StyleHint::Minus);
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
@@ -63,11 +63,14 @@ SpinBox::~SpinBox()
 Size
 SpinBox::preferredSize() const
 {
-    Font* font = stylist()->defaultFont(StyleHint::InputFont);
-    std::stringstream ss;
-    ss << _prefix << _value << _postfix;
-    Size text = font->extents(ss.str());
-    return Size(text.width() + 90, _plus->preferredSize().height());
+    ILOG_TRACE_W(ILX_SPINBOX);
+    Size plus = _plus->preferredSize();
+    Size minus = _minus->preferredSize();
+    Size text = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
+    ILOG_DEBUG(ILX_SPINBOX, " -> plus: %d, %d\n", plus.width(), plus.height());
+    ILOG_DEBUG(ILX_SPINBOX, " -> minus: %d, %d\n", minus.width(), minus.height());
+    ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", text.width(), text.height());
+    return Size(text.width() + 20 + plus.width() + minus.width(), std::max(plus.height(), text.height() + stylist()->defaultParameter(StyleHint::LineInputTB)));
 }
 
 int
@@ -127,6 +130,7 @@ SpinBox::setMax(int max)
         _plus->setDisabled();
     else
         _plus->setEnabled();
+    doLayout();
 }
 
 void
@@ -138,6 +142,7 @@ SpinBox::setMin(int min)
         _minus->setDisabled();
     else
         _minus->setEnabled();
+    doLayout();
 }
 
 void
@@ -182,6 +187,7 @@ SpinBox::setValue(int value)
         ss << _prefix << _value << _postfix;
         _layout.setText(ss.str());
 
+        doLayout();
         sigValueChanged(_value);
         update();
     }
@@ -202,6 +208,7 @@ SpinBox::setPostfix(const std::string& postfix)
         std::stringstream ss;
         ss << _prefix << _value << _postfix;
         _layout.setText(ss.str());
+        doLayout();
         update();
     }
 }
@@ -215,6 +222,7 @@ SpinBox::setPrefix(const std::string& prefix)
         std::stringstream ss;
         ss << _prefix << _value << _postfix;
         _layout.setText(ss.str());
+        doLayout();
         update();
     }
 }
@@ -244,12 +252,19 @@ void
 SpinBox::updateSpinBoxGeometry()
 {
     ILOG_TRACE_W(ILX_SPINBOX);
-    _minus->setGeometry(0, 0, 40, height());
-    _plus->setGeometry(width() - 40, 0, 40, height());
-    Size s = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
-    int y = (height() - s.height()) / 2;
-    _layout.setBounds(45, y, width() - 90, s.height());
-    _layout.doLayout(stylist()->defaultFont(StyleHint::InputFont));
+    Size plus = _plus->preferredSize();
+    Size minus = _minus->preferredSize();
+    Font* font = stylist()->defaultFont(StyleHint::InputFont);
+    Size text = font->extents(_layout.text());
+
+    ILOG_DEBUG(ILX_SPINBOX, " -> plus: %d, %d\n", plus.width(), plus.height());
+    ILOG_DEBUG(ILX_SPINBOX, " -> minus: %d, %d\n", minus.width(), minus.height());
+    ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", text.width(), text.height());
+
+    _minus->setGeometry(0, 0, plus.width(), plus.height());
+    _plus->setGeometry(width() - minus.width(), 0, minus.width(), minus.height());
+    _layout.setBounds(_plus->width(), (height() - text.height()) / 2, width() - _plus->width() - _minus->width(), text.height());
+    _layout.doLayout(font);
 }
 
 } /* namespace ilixi */

@@ -406,8 +406,8 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box)
         draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.dis);
     else if (state & PressedState)
         draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.pre);
-    else if (state & ExposedState)
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.exp);
+//    else if (state & ExposedState)
+//        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.exp);
     else
         draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.def);
 
