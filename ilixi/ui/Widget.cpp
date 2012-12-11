@@ -479,6 +479,9 @@ Widget::setDisabled()
 {
     if (!(_state & DisabledState))
     {
+        if (_state & FocusedState)
+            _rootWindow->_eventManager->setFocusedWidget(NULL);
+
         _state = (WidgetState) (_state | DisabledState);
         sigStateChanged(this, _state);
         update();
