@@ -140,6 +140,13 @@ public:
 protected:
     //! This property holds button's icon.
     Icon* _icon;
+
+    /*!
+     * Paints ToolButton.
+     */
+    void
+    compose(const PaintEvent& event);
+
     /*!
      * Emits sigPressed.
      */
@@ -152,6 +159,9 @@ protected:
     virtual void
     pointerButtonUpEvent(const PointerEvent& event);
 
+    virtual void
+    leaveEvent(const PointerEvent& event);
+
 private:
     //! This property holds tool button's style.
     ToolButtonStyle _toolButtonStyle;
@@ -159,13 +169,6 @@ private:
     ToolButtonOptions _tbOptions;
     //! This thread helps create repeated clicks.
     static ToolButtonThread* __tbThread;
-
-    /*!
-     * Paints ToolButton on its surface using current designer.
-     * @param rect Clipped rectangle to paint.
-     */
-    void
-    compose(const PaintEvent& event);
 
     virtual void
     updateTextBaseGeometry();
@@ -175,6 +178,7 @@ private:
  */
 class ToolButtonThread : public Thread
 {
+    friend class ToolButton;
 public:
     ToolButtonThread();
 

@@ -28,13 +28,17 @@
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN( ILX_TOOLBUTTONTH, "ilixi/ui/ToolButtonThread", "ToolButtonThread");
 D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
 
 //*********************************************************************
 // ToolButtonThread
 //*********************************************************************
 ToolButtonThread::ToolButtonThread()
+        : Thread(),
+          _target(NULL)
 {
+    ILOG_TRACE_F(ILX_TOOLBUTTONTH);
 }
 
 ToolButtonThread::~ToolButtonThread()
@@ -44,21 +48,26 @@ ToolButtonThread::~ToolButtonThread()
 void
 ToolButtonThread::setTarget(ToolButton* target)
 {
+    ILOG_TRACE_F(ILX_TOOLBUTTONTH);
     _target = target;
 }
 
 int
 ToolButtonThread::run()
 {
+    ILOG_TRACE_F(ILX_TOOLBUTTONTH);
     int sleepNS = 300;
+    if (!_target)
+        return 1;
+
     while (true)
     {
         pthread_testcancel();
         if (!_target->enabled())
             return 1;
         _target->click(sleepNS);
-        if (sleepNS > 50)
-            sleepNS -= 50;
+        if (sleepNS > 20)
+            sleepNS -= 20;
     }
     return 1;
 }
@@ -95,19 +104,15 @@ ToolButton::preferredSize() const
     if (text().empty() && !icon())
         return stylist()->defaultSize(StyleHint::PushButton);
 
-    int w = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(
-            StyleHint::ToolButtonLR) : 0;
-    int h = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(
-            StyleHint::ToolButtonTB) : 0;
+    int w = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
+    int h = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(StyleHint::ToolButtonTB) : 0;
 
     if (checkable())
     {
         if ((_toolButtonStyle == IconBelowText) || (_toolButtonStyle == IconAboveText))
-            h += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
-                    StyleHint::ButtonOffset);
+            h += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(StyleHint::ButtonOffset);
         else
-            w += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
-                    StyleHint::ButtonOffset);
+            w += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(StyleHint::ButtonOffset);
     }
 
     if (_toolButtonStyle == TextOnly)
@@ -184,6 +189,7 @@ ToolButton::setToolButtonStyle(ToolButtonStyle style)
 void
 ToolButton::setIcon(Icon* icon)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     removeChild(_icon);
     _icon = icon;
     addChild(_icon);
@@ -192,6 +198,7 @@ ToolButton::setIcon(Icon* icon)
 void
 ToolButton::setIcon(const std::string& iconPath, const Size& size)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     removeChild(_icon);
     _icon = new Icon(iconPath, this);
     setIconSize(size);
@@ -201,6 +208,7 @@ ToolButton::setIcon(const std::string& iconPath, const Size& size)
 void
 ToolButton::setIcon(StyleHint::PackedIcon icon)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     removeChild(_icon);
     _icon = new Icon(icon, this);
     addChild(_icon);
@@ -230,6 +238,7 @@ ToolButton::setDrawFrame(bool drawFrame)
 void
 ToolButton::setRepeatable(bool repeatable)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     if (repeatable)
         _tbOptions = (ToolButtonOptions) (_tbOptions | Repeatable);
     else
@@ -239,14 +248,16 @@ ToolButton::setRepeatable(bool repeatable)
 void
 ToolButton::pointerButtonDownEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     if (_tbOptions & Repeatable)
     {
+        __tbThread->cancel();
         __tbThread->setTarget(this);
         __tbThread->start();
     }
 
     _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
-    if(_icon)
+    if (_icon)
         _icon->setState(PressedState);
 
     sigPressed();
@@ -256,19 +267,30 @@ ToolButton::pointerButtonDownEvent(const PointerEvent& event)
 void
 ToolButton::pointerButtonUpEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
     sigReleased();
     if (_buttonFlag & PressedDown)
     {
-        if (_tbOptions & Repeatable)
+        if (__tbThread->_target == this && (_tbOptions & Repeatable))
             __tbThread->cancel();
 
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
-        if(_icon)
+        if (_icon)
             _icon->setState(DefaultState);
 
         sigClicked();
         toggleChecked();
     }
+}
+
+void
+ToolButton::leaveEvent(const PointerEvent& event)
+{
+    ILOG_TRACE_W(ILX_TOOLBUTTON);
+    if (__tbThread->_target == this && (_tbOptions & Repeatable))
+        __tbThread->cancel();
+
+    update();
 }
 
 void
@@ -288,17 +310,14 @@ ToolButton::updateTextBaseGeometry()
     int textHeight = textExtents().height();
     int iconW = 0;
     int iconH = 0;
-    int wUsed =
-            drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
-    int x = drawFrame() ? stylist()->defaultParameter(
-            StyleHint::ToolButtonLeft) : 0;
+    int wUsed = drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
+    int x = drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLeft) : 0;
 
     if (checkable())
     {
         if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly) || (_toolButtonStyle == IconBeforeText))
         {
-            x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(
-                    StyleHint::ButtonOffset);
+            x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(StyleHint::ButtonOffset);
             wUsed = x;
         }
     }
@@ -328,29 +347,18 @@ ToolButton::updateTextBaseGeometry()
     {
         if (iconW)
         {
-            _icon->moveTo(
-                    x,
-                    stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
+            _icon->moveTo(x, stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
             x += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
-            wUsed += iconW + stylist()->defaultParameter(
-                    StyleHint::ButtonOffset);
+            wUsed += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
         }
 
-        _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed,
-                          textHeight);
+        _layout.setBounds(x, (height() - textHeight) / 2, width() - wUsed, textHeight);
 
     } else if (_toolButtonStyle == IconBelowText)
     {
-        _layout.setBounds(x,
-                          stylist()->defaultParameter(StyleHint::ToolButtonTop),
-                          width() - wUsed, textHeight);
+        _layout.setBounds(x, stylist()->defaultParameter(StyleHint::ToolButtonTop), width() - wUsed, textHeight);
         if (iconW)
-        {
-            _icon->moveTo(
-                    (width() - iconW) / 2,
-                    stylist()->defaultParameter(StyleHint::ToolButtonTop) + textHeight + 1 + stylist()->defaultParameter(
-                            StyleHint::ButtonOffset));
-        }
+            _icon->moveTo((width() - iconW) / 2, stylist()->defaultParameter(StyleHint::ToolButtonTop) + textHeight + 1 + stylist()->defaultParameter(StyleHint::ButtonOffset));
     } else //  IconAboveText
     {
         int y = stylist()->defaultParameter(StyleHint::ToolButtonTop);

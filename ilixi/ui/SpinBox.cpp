@@ -53,8 +53,7 @@ SpinBox::SpinBox(int value, Widget* parent)
     _layout.setText(ss.str());
     _layout.setAlignment(TextLayout::Center);
 
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &SpinBox::updateSpinBoxGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &SpinBox::updateSpinBoxGeometry));
 }
 
 SpinBox::~SpinBox()
@@ -247,8 +246,7 @@ SpinBox::updateSpinBoxGeometry()
     ILOG_TRACE_W(ILX_SPINBOX);
     _minus->setGeometry(0, 0, 40, height());
     _plus->setGeometry(width() - 40, 0, 40, height());
-    Size s = stylist()->defaultFont(StyleHint::InputFont)->extents(
-            _layout.text());
+    Size s = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
     int y = (height() - s.height()) / 2;
     _layout.setBounds(45, y, width() - 90, s.height());
     _layout.doLayout(stylist()->defaultFont(StyleHint::InputFont));
