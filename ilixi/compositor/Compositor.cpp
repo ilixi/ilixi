@@ -686,43 +686,67 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
     switch (event.type)
     {
     case DWET_KEYDOWN:
-        if (event.key_symbol == DIKS_HOME)
+        switch (event.key_symbol)
         {
+        case DIKS_HOME:
             if (_home->view()->visible())
                 toggleLauncher(false); // show current application
             else
                 toggleLauncher(true); // show launcher
             return true;
-        } else if (event.key_symbol == DIKS_TAB && event.modifiers == DIMM_ALT)
-        {
-            if (_appMan->instanceCount() < 2)
-                return true;
 
-            if (_switcher)
+        case DIKS_TAB:
+            if (event.modifiers == DIMM_ALT)
             {
-                if (!_switcher->visible())
-                    toggleSwitcher(true);
-                _switcher->scrollTo(_switcher->nextThumb());
+                if (_appMan->instanceCount() < 2)
+                    return true;
+
+                if (_switcher)
+                {
+                    if (!_switcher->visible())
+                        toggleSwitcher(true);
+                    _switcher->scrollTo(_switcher->nextThumb());
+                }
+                return true;
             }
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_TAB));
+
+        case DIKS_ESCAPE:
             return true;
-        } else if (event.key_symbol == DIKS_F11)
-        {
-            Notify notify("Hi there!", "This is a notification...");
-            notify.setIcon(ILIXI_DATADIR"images/default.png");
-            notify.show();
-            return true;
-        } else if (event.key_symbol == DIKS_ESCAPE)
-            return true;
-        else if (event.key_symbol == DIKS_F12)
-            quit();
-        else if (event.key_symbol == DIKS_CURSOR_UP)
+
+        case DIKS_OK:
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_OK));
+
+        case DIKS_RETURN:
+            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
+
+        case DIKS_CURSOR_UP:
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
-        else if (event.key_symbol == DIKS_CURSOR_DOWN)
+
+        case DIKS_CURSOR_DOWN:
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
-        else if (event.key_symbol == DIKS_CURSOR_LEFT)
+
+        case DIKS_CURSOR_LEFT:
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
-        else if (event.key_symbol == DIKS_CURSOR_RIGHT)
+
+        case DIKS_CURSOR_RIGHT:
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
+
+        case DIKS_F11:
+            {
+                Notify notify("Hi there!", "This is a notification...");
+                notify.setIcon(ILIXI_DATADIR"images/default.png");
+                notify.show();
+                return true;
+            }
+
+        case DIKS_F12:
+            quit();
+            return true;
+
+        default:
+            break;
+        }
         break;
 
     case DWET_KEYUP:
