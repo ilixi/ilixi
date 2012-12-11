@@ -56,7 +56,6 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
           _music(NULL)
 {
     setTitle("SoundMixer");
-    setBackgroundImage(ILIXI_DATADIR"compositor/bg.png");
     setMargin(20);
     setLayout(new VBoxLayout());
 
