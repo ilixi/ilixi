@@ -37,8 +37,6 @@ ILXOSK::ILXOSK(int argc, char* argv[])
     setBackgroundFilled(true);
     _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
     setMargin(10);
-    setPaletteFromFile(ILIXI_DATADIR"statusbar/def_palette.xml");
-    setStyleFromFile(ILIXI_DATADIR"osk/osk-style.xml");
 
     setLayout(new VBoxLayout());
 

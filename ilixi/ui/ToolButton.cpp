@@ -128,7 +128,11 @@ ToolButton::preferredSize() const
     int imgH = 0;
     if (_icon)
     {
-        Size s = _icon->preferredSize();
+        Size s;
+        if (_icon->size().isValid())
+            s = _icon->size();
+        else
+            s = _icon->preferredSize();
         imgW = s.width();
         imgH = s.height() + 2; // 1px for button down movement
     }

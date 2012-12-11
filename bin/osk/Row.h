@@ -18,6 +18,7 @@ namespace ilixi
 
 class Row : public Widget
 {
+    friend class Keyboard;
 public:
     Row(const std::string& id, Widget* parent = 0);
 

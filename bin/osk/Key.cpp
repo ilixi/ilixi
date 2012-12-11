@@ -44,7 +44,7 @@ Key::Key(const std::string& id, Keyboard* keyboard, Widget* parent)
           _keyState(1),
           _keyboard(keyboard)
 {
-    setInputMethod(PointerInput);
+//    setInputMethod(PointerInput);
     setConstraints(MinimumConstraint, MinimumConstraint);
     setToolButtonStyle(TextOnly);
 

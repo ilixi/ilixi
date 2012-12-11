@@ -101,6 +101,7 @@ void
 Row::updateRowGeometry()
 {
     _box->setGeometry(_gap, 0, width() - 2 * _gap, height());
+    _box->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
 }
 
 } /* namespace ilixi */

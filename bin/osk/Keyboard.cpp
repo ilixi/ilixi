@@ -55,7 +55,8 @@ Keyboard::~Keyboard()
 void
 Keyboard::setSymbolState(unsigned char state)
 {
-    ILOG_DEBUG(ILX_KEYBOARD, "State: %d\n", state);
+    ILOG_TRACE_W(ILX_KEYBOARD);
+    ILOG_DEBUG(ILX_KEYBOARD, " -> State: %d\n", state);
     for (unsigned int i = 0; i < _rows.size(); ++i)
         _rows[i]->setSymbolState(state);
 }
@@ -63,7 +64,8 @@ Keyboard::setSymbolState(unsigned char state)
 bool
 Keyboard::parseLayoutFile(const char* file)
 {
-    ILOG_DEBUG(ILX_KEYBOARD, "Parsing layout file: %s\n", file);
+    ILOG_TRACE_W(ILX_KEYBOARD);
+    ILOG_DEBUG(ILX_KEYBOARD, " -> Parsing layout file: %s\n", file);
     xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
 
@@ -153,6 +155,7 @@ Keyboard::compose(const PaintEvent& event)
 Key*
 Keyboard::getKey(xmlNodePtr node)
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     xmlChar* id = xmlGetProp(node, (xmlChar*) "id");
     xmlChar* modifier = xmlGetProp(node, (xmlChar*) "modifier");
     xmlChar* constraint = xmlGetProp(node, (xmlChar*) "constraint");
@@ -167,7 +170,7 @@ Keyboard::getKey(xmlNodePtr node)
     if (xmlStrcmp(modifier, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Modifier);
 
-    if (xmlStrcmp(constraint, (xmlChar*) "expand") == 0)
+    if (xmlStrcmp(constraint, (xmlChar*) "extend") == 0)
         key->setXConstraint(MinimumExpandingConstraint);
     else if (xmlStrcmp(constraint, (xmlChar*) "minimum") == 0)
         key->setXConstraint(MinimumConstraint);
@@ -230,6 +233,7 @@ Keyboard::getKey(xmlNodePtr node)
 Row*
 Keyboard::getRow(xmlNodePtr node)
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     xmlChar* id = xmlGetProp(node, (xmlChar*) "id");
     xmlChar* gap = xmlGetProp(node, (xmlChar*) "gap");
     xmlChar* height = xmlGetProp(node, (xmlChar*) "height");
@@ -268,6 +272,7 @@ Keyboard::release()
 void
 Keyboard::updateKeyboardGeometry()
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     if (!_buttonFont)
     {
         _buttonFont = new Font("Sans", width() > 800 ? 36 : 24);
@@ -282,6 +287,14 @@ Keyboard::updateKeyboardGeometry()
         h = height() * _rows[i]->keyHeight() / 100;
         _rows[i]->setGeometry(_rows[i]->gap(), y, width() - 2 * _rows[i]->gap(), h);
         y += h;
+
+        // set neighbours
+        if (i == 0)
+            _rows[0]->setNeighbours(_rows[_rows.size() - 1]->_box, _rows[1]->_box, _rows[_rows.size() - 1], _rows[1]);
+        else if (i < _rows.size() - 1)
+            _rows[i]->setNeighbours(_rows[i - 1]->_box, _rows[i + 1]->_box, _rows[i - 1], _rows[i + 1]);
+        else
+            _rows[i]->setNeighbours(_rows[i - 1]->_box, _rows[0]->_box, _rows[i - 1], _rows[0]);
     }
 }
 

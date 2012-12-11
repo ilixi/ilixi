@@ -352,6 +352,9 @@ EventManager::selectPrevious(Widget* target, Widget* startFrom, int iter)
             target = _creator;
     }
 
+    if (setFocusedWidget(target))
+        return true;
+
     if (target->_children.size())
     {
         Widget* targetChild;
