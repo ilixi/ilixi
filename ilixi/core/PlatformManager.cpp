@@ -373,12 +373,6 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
             info.fsu = true;
 
         info.flipMode = FlipNone;
-        if (xmlStrcmp(flipModeC, (xmlChar*) "onSync") == 0)
-            info.flipMode = FlipOnSync;
-        else if (xmlStrcmp(flipModeC, (xmlChar*) "waitForSync") == 0)
-            info.flipMode = FlipWaitForSync;
-        else if (xmlStrcmp(flipModeC, (xmlChar*) "new") == 0)
-            info.flipMode = FlipNew;
 
         IDirectFBDisplayLayer* layer = NULL;
         DFBResult res = getDFB()->GetDisplayLayer(getDFB(), id, &layer);
@@ -432,6 +426,16 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                         config.buffermode = DLBM_BACKVIDEO;
                         //setAppOption(OptTripleAccelerated);
                     }
+                }
+
+                if (config.buffermode != DLBM_FRONTONLY)
+                {
+                    if (xmlStrcmp(flipModeC, (xmlChar*) "onSync") == 0)
+                        ret.first->second.flipMode = FlipOnSync;
+                    else if (xmlStrcmp(flipModeC, (xmlChar*) "waitForSync") == 0)
+                        ret.first->second.flipMode = FlipWaitForSync;
+                    else if (xmlStrcmp(flipModeC, (xmlChar*) "new") == 0)
+                        ret.first->second.flipMode = FlipNew;
                 }
 
 #ifdef ILIXI_STEREO_OUTPUT
