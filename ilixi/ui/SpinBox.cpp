@@ -31,6 +31,13 @@ SpinBox::SpinBox(int value, Widget* parent)
     setConstraints(FixedConstraint, FixedConstraint);
     setInputMethod(PointerPassthrough);
 
+    _minus = new ToolButton("-");
+    _minus->setRepeatable(true);
+    _minus->setToolButtonStyle(ToolButton::IconOnly);
+    _minus->setIcon(StyleHint::Minus);
+    _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
+    addChild(_minus);
+
     _plus = new ToolButton("+");
     _plus->setRepeatable(true);
     _plus->setToolButtonStyle(ToolButton::IconOnly);
@@ -39,13 +46,6 @@ SpinBox::SpinBox(int value, Widget* parent)
     if (_max == _value)
         _plus->setDisabled();
     addChild(_plus);
-
-    _minus = new ToolButton("-");
-    _minus->setRepeatable(true);
-    _minus->setToolButtonStyle(ToolButton::IconOnly);
-    _minus->setIcon(StyleHint::Minus);
-    _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
-    addChild(_minus);
 
     std::stringstream ss;
     ss << _prefix << _value << _postfix;
