@@ -229,6 +229,7 @@ ILXCompositor::toggleOSK(bool show)
             _currentApp->view()->slideTo(_appGeometry.x(), -_oskTargetRect.y());
             _osk->view()->show(AppView::Position, _oskGeometry.x(), height() - _oskGeometry.height());
             toggleSwitcher(false);
+            _osk->view()->setWindowFocus();
         } else
         {
             _currentApp->view()->slideTo(_appGeometry.x(), _appGeometry.y());
