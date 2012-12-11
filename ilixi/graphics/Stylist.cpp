@@ -436,7 +436,7 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box)
 
     if (box->layout().text().size())
     {
-        p->setFont(*defaultFont(StyleHint::DefaultFont));
+        p->setFont(*defaultFont(StyleHint::InputFont));
         p->setBrush(_palette->getGroup(state).baseText);
         p->drawLayout(box->layout());
         p->resetClip();
