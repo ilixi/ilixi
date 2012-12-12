@@ -14,4 +14,6 @@ ilixi_monitor_SOURCES	= 	CPUMonitor.cpp \
 							NETMonitor.cpp \
 							NETMonitor.h \
 							OSMonitor.cpp \
-							OSMonitor.h
+							OSMonitor.h \
+							BarChart.h \
+							BarChart.cpp

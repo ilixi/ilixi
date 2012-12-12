@@ -26,7 +26,7 @@
 
 CPUMonitor::CPUMonitor()
 {
-  readCpuInfo();
+    readCpuInfo();
 }
 
 CPUMonitor::~CPUMonitor()
@@ -36,219 +36,225 @@ CPUMonitor::~CPUMonitor()
 void
 CPUMonitor::refresh()
 {
-  readTicks();
-  readLoadAverages();
+    readTicks();
+    readLoadAverages();
 }
 
 void
 CPUMonitor::readTicks()
 {
-  if ((fd = fopen("/proc/stat", "r")) == 0)
+    if ((fd = fopen("/proc/stat", "r")) == 0)
     {
-      printf("Unable to open file: /proc/stat\n");
-      return;
+        printf("Unable to open file: /proc/stat\n");
+        return;
     }
-  if (!all.parse(fd))
+    if (!all.parse(fd))
     {
-      printf("Parse failed\n");
-      return;
+        printf("Parse failed\n");
+        return;
     }
-  _cores.clear();
-  CPU c;
-  while (c.parse(fd))
-    _cores.push_back(c);
-  fclose(fd); // proc/stat
+
+    for (unsigned int i = 0; i < _cpuCores; ++i)
+        _cores[i].parse(fd);
+
+    fclose(fd); // proc/stat
 }
 
 void
 CPUMonitor::readCpuInfo()
 {
-  std::ifstream infile;
-  infile.open("/proc/cpuinfo", std::ifstream::in);
-  std::string line;
-  while (infile.good())
+    std::ifstream infile;
+    infile.open("/proc/cpuinfo", std::ifstream::in);
+    std::string line;
+    while (infile.good())
     {
-      std::string tagbuffer;
-      std::string item;
-      bool readingItem = false;
-      getline(infile, line);
-      for (unsigned int i = 0; i < line.length(); i++)
+        std::string tagbuffer;
+        std::string item;
+        bool readingItem = false;
+        getline(infile, line);
+        for (unsigned int i = 0; i < line.length(); i++)
         {
-          if (line[i] != ':' && readingItem == false)
-            tagbuffer.append(1, line[i]);
-          else if (line[i] == ':')
+            if (line[i] != ':' && readingItem == false)
+                tagbuffer.append(1, line[i]);
+            else if (line[i] == ':')
             {
-              readingItem = true;
-              i += 2;
+                readingItem = true;
+                i += 2;
             }
-          if (readingItem)
-            item.append(1, line[i]);
+            if (readingItem)
+                item.append(1, line[i]);
         }
 
-      if (tagbuffer.find("vendor_id", 0) != std::string::npos)
-        _vendor = item;
+        if (tagbuffer.find("vendor_id", 0) != std::string::npos)
+            _vendor = item;
 
-      else if (tagbuffer.find("model name", 0) != std::string::npos)
-        _model = item;
+        else if (tagbuffer.find("model name", 0) != std::string::npos)
+            _model = item;
 
-      else if (tagbuffer.find("cpu MHz", 0) != std::string::npos)
-        sscanf(item.c_str(), "%f", &_cpuMHz);
+        else if (tagbuffer.find("cpu MHz", 0) != std::string::npos)
+            sscanf(item.c_str(), "%f", &_cpuMHz);
 
-      else if (tagbuffer.find("cache size", 0) != std::string::npos)
-        sscanf(item.c_str(), "%d", &_cacheSize);
+        else if (tagbuffer.find("cache size", 0) != std::string::npos)
+            sscanf(item.c_str(), "%d", &_cacheSize);
 
-      else if (tagbuffer.find("cpu cores", 0) != std::string::npos)
+        else if (tagbuffer.find("siblings", 0) != std::string::npos)
         {
-          sscanf(item.c_str(), "%d", &_cpuCores);
-          break;
+            sscanf(item.c_str(), "%u", &_cpuCores);
+            for (unsigned int i = 0; i < _cpuCores; ++i)
+            {
+                CPU c;
+                _cores.push_back(c);
+            }
+            break;
         }
     }
-  infile.close();
+    infile.close();
 }
 
 void
 CPUMonitor::readLoadAverages()
 {
-  std::string line;
-  std::ifstream infile;
-  infile.open("/proc/loadavg", std::ifstream::in);
-  if (infile.good())
+    std::string line;
+    std::ifstream infile;
+    infile.open("/proc/loadavg", std::ifstream::in);
+    if (infile.good())
     {
-      char processBuffer[20];
-      getline(infile, line);
-      sscanf(line.c_str(), "%f%f%f%s%*s", &_loadAvg1, &_loadAvg5, &_loadAvg10,
-          processBuffer);
-      _processes = processBuffer;
+        char processBuffer[20];
+        getline(infile, line);
+        sscanf(line.c_str(), "%f%f%f%s%*s", &_loadAvg1, &_loadAvg5, &_loadAvg10, processBuffer);
+        _processes = processBuffer;
     }
-  infile.close();
+    infile.close();
 }
 
 int
 CPUMonitor::getCacheSize() const
 {
-  return _cacheSize;
+    return _cacheSize;
 }
 
-int
+unsigned int
 CPUMonitor::getCpuCores() const
 {
-  return _cpuCores;
+    return _cpuCores;
 }
 
 float
 CPUMonitor::getCpuMHz() const
 {
-  return _cpuMHz;
+    return _cpuMHz;
 }
 
 std::string
 CPUMonitor::getModel() const
 {
-  return _model;
+    return _model;
 }
 
 std::string
 CPUMonitor::getVendor() const
 {
-  return _vendor;
+    return _vendor;
 }
 
 float
 CPUMonitor::getLoadAvg1() const
 {
-  return _loadAvg1;
+    return _loadAvg1;
 }
 
 float
 CPUMonitor::getLoadAvg10() const
 {
-  return _loadAvg10;
+    return _loadAvg10;
 }
 
 float
 CPUMonitor::getLoadAvg5() const
 {
-  return _loadAvg5;
+    return _loadAvg5;
 }
 
 std::string
 CPUMonitor::getProcesses() const
 {
-  return _processes;
+    return _processes;
 }
 
 const CPUMonitor::CPU&
 CPUMonitor::getCpu(unsigned int index) const
 {
-  if (index == 0)
-    return all;
-  else
+    if (index == 0)
+        return all;
+    else
     {
-      if (index > _cores.size())
-        index = _cores.size();
-      return _cores.at(index - 1);
+        if (index > _cores.size())
+            index = _cores.size();
+        return _cores.at(index - 1);
     }
 }
 
-CPUMonitor::CPU::Ticks::Ticks() :
-  U(0), S(0), N(0), I(0)
+CPUMonitor::CPU::Ticks::Ticks()
+        : U(0),
+          S(0),
+          N(0),
+          I(0)
 {
 }
 
 bool
 CPUMonitor::CPU::parse(FILE* fd)
 {
-  char tagbuffer[32];
-  Ticks n; // new ticks
-  if (fscanf(fd, "%32s%d%d%d%d", tagbuffer, &n.U, &n.N, &n.S, &n.I) != 5)
+    char tagbuffer[32];
+    Ticks n; // new ticks
+    if (fscanf(fd, "%32s%d%d%d%d", tagbuffer, &n.U, &n.N, &n.S, &n.I) != 5)
     {
-      printf("Parse failure\n");
-      return false;
+        printf("Parse failure\n");
+        return false;
     }
 
-  tagbuffer[31] = '\0';
+    tagbuffer[31] = '\0';
 
-  if (strncmp(tagbuffer, "cpu", 3) != 0)
-    return false; // tag mismatch
+    if (strncmp(tagbuffer, "cpu", 3) != 0)
+        return false; // tag mismatch
 
-  // shift readings
-  previous = current;
-  current = n;
+    // shift readings
+    previous = current;
+    current = n;
 
-  // ignore the rest of the line
-  int ch;
-  do
+    // ignore the rest of the line
+    int ch;
+    do
     {
-      ch = getc(fd);
-    }
-  while (ch != '\n' && ch != EOF);
-  return true;
+        ch = getc(fd);
+    } while (ch != '\n' && ch != EOF);
+    return true;
 }
 
 int
 CPUMonitor::CPU::getIdle() const
 {
-  int tot = current.elapsed() - previous.elapsed();
-  return (tot > 0 ? (100 * (current.I - previous.I)) / tot : 0);
+    int tot = current.elapsed() - previous.elapsed();
+    return (tot > 0 ? (100 * (current.I - previous.I)) / tot : 0);
 }
 
 int
 CPUMonitor::CPU::getUser() const
 {
-  int tot = current.elapsed() - previous.elapsed();
-  return (tot > 0 ? (100 * (current.user() - previous.user())) / tot : 0);
+    int tot = current.elapsed() - previous.elapsed();
+    return (tot > 0 ? (100 * (current.user() - previous.user())) / tot : 0);
 }
 
 int
 CPUMonitor::CPU::getSystem() const
 {
-  int tot = current.elapsed() - previous.elapsed();
-  return (tot > 0 ? (100 * (current.system() - previous.system())) / tot : 0);
+    int tot = current.elapsed() - previous.elapsed();
+    return (tot > 0 ? (100 * (current.system() - previous.system())) / tot : 0);
 }
 
 int
 CPUMonitor::CPU::getUsage() const
 {
-  int tot = current.elapsed() - previous.elapsed();
-  return (tot > 0 ? (100 * (current.total() - previous.total())) / tot : 0);
+    int tot = current.elapsed() - previous.elapsed();
+    return (tot > 0 ? (100 * (current.total() - previous.total())) / tot : 0);
 }

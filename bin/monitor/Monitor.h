@@ -32,6 +32,7 @@
 #include "MEMMonitor.h"
 #include "NETMonitor.h"
 #include "OSMonitor.h"
+#include "BarChart.h"
 
 using namespace ilixi;
 
@@ -53,10 +54,8 @@ private:
 
     CPUMonitor* _cpuMon;
     Label* _uptime;
-    ProgressBar* _cpuUsage;
     ProgressBar* _cpuIdle;
-    ProgressBar* _cpuUser;
-    ProgressBar* _cpuSystem;
+    BarChart* _cpuChart;
 
     FSMonitor* _fsMon;
     ProgressBar* _fsUsage;

@@ -79,10 +79,11 @@ Monitor::Monitor(int argc, char* argv[])
     overviewLayout->addWidget(new Label("Version: " + _osMon->getVersion()));
     overviewLayout->addWidget(new Label("Machine: " + _osMon->getMachine()));
 
+    overviewLayout->addWidget(new Label("CPU Vendor: " + _cpuMon->getVendor()));
     overviewLayout->addWidget(new Label("CPU Model: " + _cpuMon->getModel()));
-    overviewLayout->addWidget(
-            new Label(
-                    "CPU Cache: " + toString(_cpuMon->getCacheSize()) + " KB"));
+    overviewLayout->addWidget(new Label("CPU Cores: " + toString(_cpuMon->getCpuCores())));
+    overviewLayout->addWidget(new Label("CPU Cache: " + toString(_cpuMon->getCacheSize()) + " KB"));
+    overviewLayout->addWidget(new Label("Processes: " + _cpuMon->getProcesses()));
 
     overviewLayout->addWidget(new Spacer(Vertical));
 
@@ -96,14 +97,10 @@ Monitor::Monitor(int argc, char* argv[])
     memGroup->setLayout(new VBoxLayout());
     fm->addWidget(memGroup);
 
-    memGroup->addWidget(
-            new Label("Total: " + toString(_memMon->getTotal()) + " MB"));
-    memGroup->addWidget(
-            new Label("Cached: " + toString(_memMon->getCached()) + " MB"));
-    memGroup->addWidget(
-            new Label("Free: " + toString(_memMon->getFree()) + " MB"));
-    memGroup->addWidget(
-            new Label("Buffers: " + toString(_memMon->getBuffers()) + " MB"));
+    memGroup->addWidget(new Label("Total: " + toString(_memMon->getTotal()) + " MB"));
+    memGroup->addWidget(new Label("Cached: " + toString(_memMon->getCached()) + " MB"));
+    memGroup->addWidget(new Label("Free: " + toString(_memMon->getFree()) + " MB"));
+    memGroup->addWidget(new Label("Buffers: " + toString(_memMon->getBuffers()) + " MB"));
     memGroup->addWidget(new Spacer(Vertical));
 
     memGroup->addWidget(new Label("Usage:"));
@@ -116,10 +113,8 @@ Monitor::Monitor(int argc, char* argv[])
     fsGroup->setLayout(new VBoxLayout());
     fm->addWidget(fsGroup);
 
-    fsGroup->addWidget(
-            new Label("Total: " + toString(_fsMon->getTotal()) + " GB"));
-    fsGroup->addWidget(
-            new Label("Free: " + toString(_fsMon->getFree()) + " GB"));
+    fsGroup->addWidget(new Label("Total: " + toString(_fsMon->getTotal()) + " GB"));
+    fsGroup->addWidget(new Label("Free: " + toString(_fsMon->getFree()) + " GB"));
     fsGroup->addWidget(new Spacer(Vertical));
 
     fsGroup->addWidget(new Label("Usage:"));
@@ -142,13 +137,31 @@ Monitor::Monitor(int argc, char* argv[])
     _netTXT = new Label("Total Sent:" + _netMon->getTotalTransmitted());
     netGroup->addWidget(_netTXT);
     netGroup->addWidget(new Spacer(Vertical));
+    //**************************************
+    GroupBox* cpuGroup = new GroupBox("CPU");
+    cpuGroup->setTitleIcon(StyleHint::CPU);
+    VBoxLayout* cpuGroupLayout = new VBoxLayout();
+    cpuGroup->setLayout(cpuGroupLayout);
+    fm->addWidget(cpuGroup);
 
-    fm->addWidget(new Spacer(Vertical), 2, 1);
+    cpuGroupLayout->addWidget(new Label("Idle:"));
+    _cpuIdle = new ProgressBar();
+    cpuGroupLayout->addWidget(_cpuIdle);
+
+    _cpuChart = new BarChart();
+    char core[10];
+    for (unsigned int i = 0; i < _cpuMon->getCpuCores(); ++i)
+    {
+        snprintf(core, 10, "Core %d", i);
+        _cpuChart->addBar(core, Color(rand() % 255, rand() % 255, rand() % 255));
+    }
+    cpuGroupLayout->addWidget(_cpuChart);
+
+//    fm->addWidget(new Spacer(Vertical));
     //****************************************************************************
 
     _monitorTimer = new Timer();
-    _monitorTimer->sigExec.connect(
-            sigc::mem_fun(this, &Monitor::updateMonitor));
+    _monitorTimer->sigExec.connect(sigc::mem_fun(this, &Monitor::updateMonitor));
     _monitorTimer->start(1000);
 }
 
@@ -178,6 +191,10 @@ Monitor::updateMonitor()
     _netTXC->setText("Sending:" + _netMon->getTransmitting());
     _netRXT->setText("Total Received:" + _netMon->getTotalReceived());
     _netTXT->setText("Total Sent:" + _netMon->getTotalTransmitted());
+    for (unsigned int i = 0; i < _cpuMon->getCpuCores(); ++i)
+        _cpuChart->addValue(i, _cpuMon->getCpu(i + 1).getUsage());
+
+    _cpuIdle->setValue(_cpuMon->getCpu(0).getIdle());
 }
 
 int
