@@ -94,7 +94,8 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     mainLayout->setSpacing(5);
     setLayout(mainLayout);
 
-    addWidget(new Clock());
+    Clock* clock = new Clock();
+    addWidget(clock);
 
     HBoxLayout* iconLayout = new HBoxLayout();
     iconLayout->setYConstraint(FixedConstraint);
@@ -171,11 +172,25 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->setIcon(ILIXI_DATADIR"phone/statusbar/dialer.png", Size(32, 32));
     _list->addItem(item);
 
+    _cpuMon = new CPUMonitor();
+    _cpuMon->refresh();
+
+    _cpuChart = new BarChart(10);
+    _cpuChart->addBar("CPU Total", Color(28, 127, 192));
+    _cpuChart->setMaximumSize(150, 50);
+    _cpuChart->setDrawBG(false);
+    addWidget(_cpuChart);
+
     sigVisible.connect(sigc::mem_fun(this, &PStatusBar::onShow));
+
+    _timer = new Timer();
+    _timer->sigExec.connect(sigc::mem_fun(this, &PStatusBar::timerSlot));
+    _timer->start(1000);
 }
 
 PStatusBar::~PStatusBar()
 {
+    delete _timer;
     delete _bg;
     delete _listFont;
     delete _listBG;
@@ -217,6 +232,13 @@ PStatusBar::compose(const PaintEvent& event)
     p.blitImage(_bg, Rectangle(0, 0, 150, 20), 0, 0);
     p.stretchImage(_bg, Rectangle(0, 20, 150, height() - 80), Rectangle(0, 20, 150, 380));
     p.blitImage(_bg, Rectangle(0, 400, 150, 80), 0, height() - 80);
+}
+
+void
+PStatusBar::timerSlot()
+{
+    _cpuMon->refresh();
+    _cpuChart->addValue(0, _cpuMon->getCpu(0).getUsage());
 }
 
 }

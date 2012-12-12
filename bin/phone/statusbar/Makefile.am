@@ -2,7 +2,7 @@
 SUBDIRS					= 	images
 bin_PROGRAMS 			= 	ilixi_pstatus
 ilixi_pstatus_LDADD		=	@DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
-ilixi_pstatus_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
+ilixi_pstatus_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) -I$(top_srcdir)/bin/monitor $(AM_CPPFLAGS) @DEPS_CFLAGS@
 ilixi_pstatus_CFLAGS	=	$(AM_CFLAGS)
 ilixi_pstatus_SOURCES	= 	Clock.h \
 							Clock.cpp \
@@ -11,4 +11,8 @@ ilixi_pstatus_SOURCES	= 	Clock.h \
 							NotificationIcon.h \
 							NotificationIcon.cpp \
 							ListItem.h \
-							ListItem.cpp
+							ListItem.cpp \
+							$(top_srcdir)/bin/monitor/BarChart.h \
+							$(top_srcdir)/bin/monitor/BarChart.cpp \
+							$(top_srcdir)/bin/monitor/CPUMonitor.h \
+							$(top_srcdir)/bin/monitor/CPUMonitor.cpp

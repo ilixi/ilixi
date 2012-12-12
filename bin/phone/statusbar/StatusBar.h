@@ -28,47 +28,60 @@
 #include <ui/Label.h>
 #include <ui/ListBox.h>
 #include <core/DaleDFB.h>
+#include <lib/Timer.h>
+
+#include "CPUMonitor.h"
+#include "BarChart.h"
 
 #include "NotificationIcon.h"
 
-namespace ilixi {
+namespace ilixi
+{
 
-class PStatusBar: public Application {
+class PStatusBar : public Application
+{
 public:
-	PStatusBar(int argc, char* argv[]);
+    PStatusBar(int argc, char* argv[]);
 
-	virtual
-	~PStatusBar();
+    virtual
+    ~PStatusBar();
 
 protected:
-	void
-	onShow();
+    void
+    onShow();
 
-	void
-	showApp(const std::string& title);
+    void
+    showApp(const std::string& title);
 
-	void
-	compose(const PaintEvent& event);
+    void
+    compose(const PaintEvent& event);
+
+    void
+    timerSlot();
 
 private:
-	Image* _bg;
-	Image* _listBG;
-	Font* _listFont;
+    Image* _bg;
+    Image* _listBG;
+    Font* _listFont;
 
-	NotificationIcon* _headset;
-	NotificationIcon* _mic;
-	NotificationIcon* _vol;
+    NotificationIcon* _headset;
+    NotificationIcon* _mic;
+    NotificationIcon* _vol;
 
-	ListBox* _list;
+    ListBox* _list;
 
-	IComaComponent* _soundComponent;
-	IComaComponent* _compComponent;
+    IComaComponent* _soundComponent;
+    IComaComponent* _compComponent;
 
-	friend void
-	volumeListener(void* ctx, void* arg);
+    Timer* _timer;
+    CPUMonitor* _cpuMon;
+    BarChart* _cpuChart;
 
-	friend void
-	appVisibilty(void* ctx, void* arg);
+    friend void
+    volumeListener(void* ctx, void* arg);
+
+    friend void
+    appVisibilty(void* ctx, void* arg);
 
 };
 
