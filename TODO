@@ -1,10 +1,6 @@
-o Set Font attributes, e.g. for vertical text.    
-o StyleHints need revision.
-o Horizontal and Vertical layout H4W
-o LineInput text layout should move
-o TextArea
-o SurfaceView widget
-o ProgressBar and Slider
-o 9 segment stylist (uses images for drawing widget borders and filling)
-o Cairo and Pango support and painter/stylist methods
-o Multi Application Mode
+Pango support
+More widget layouts
+Fixed point maths for transformations 
+IBUS integration?
+Declarative UI
+Widgets: GLWidget, Table, TextArea

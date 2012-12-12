@@ -19,11 +19,11 @@ you can build and install ilixi as follows:
 	make
 	make install
 
-Ilixi uses Doxygen for documentation. If your system has required software, 
+ilixi uses Doxygen for documentation. If your system has required software, 
 you can generate an up-to-date html documentation as follows:
 
 	./configure
-	make doxygen-doc
+	make doxygen-doc-html
 
 License
 =======
