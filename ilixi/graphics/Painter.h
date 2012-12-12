@@ -114,7 +114,7 @@ public:
      * @param y2 Y coordinate of end point.
      */
     void
-    drawLine(double x1, double y1, double x2, double y2);
+    drawLine(double x1, double y1, double x2, double y2, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a line between two given points p1 and p2 using Pen.
@@ -123,7 +123,7 @@ public:
      * @param p2 End point.
      */
     void
-    drawLine(const Point& p1, const Point& p2);
+    drawLine(const Point& p1, const Point& p2, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a line inside the bounding rectangle using Pen.
@@ -131,7 +131,7 @@ public:
      * @param rect Bounding rectangle.
      */
     void
-    drawLine(const Rectangle& rect);
+    drawLine(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a rectangle inside the bounding rectangle defined by top left point (x, y)
@@ -143,7 +143,7 @@ public:
      * @param height Height of bounding rectangle.
      */
     void
-    drawRectangle(double x, double y, double width, double height);
+    drawRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a rectangle inside the bounding rectangle using Pen.
@@ -151,7 +151,7 @@ public:
      * @param rect Bounding rectangle.
      */
     void
-    drawRectangle(const Rectangle& rect);
+    drawRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Fills inside the given rectangle using Brush.
@@ -162,7 +162,7 @@ public:
      * @param height
      */
     void
-    fillRectangle(double x, double y, double width, double height);
+    fillRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Fills inside the given rectangle using Brush.
@@ -170,7 +170,7 @@ public:
      * @param rect
      */
     void
-    fillRectangle(const Rectangle& rect);
+    fillRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws the text with its topleft positioned at given point (x, y) using Brush and Font.
@@ -191,19 +191,19 @@ public:
      * @param length Maximum length of text.
      */
     void
-    drawText(const std::string& text, int x, int y);
+    drawText(const std::string& text, int x, int y, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a layout using its bounding rectangle using Brush and Font.
      */
     void
-    drawLayout(const TextLayout& layout);
+    drawLayout(const TextLayout& layout, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Draws a layout on given x and y coordinates using Brush and Font.
      */
     void
-    drawLayout(const TextLayout& layout, int x, int y);
+    drawLayout(const TextLayout& layout, int x, int y, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
      * Streches image inside given rectangle.

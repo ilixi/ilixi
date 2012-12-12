@@ -122,11 +122,12 @@ Painter::pen()
 }
 
 void
-Painter::drawLine(double x1, double y1, double x2, double y2)
+Painter::drawLine(double x1, double y1, double x2, double y2, const DFBSurfaceDrawingFlags& flags)
 {
     if (_state & Active)
     {
         applyPen();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2);
         else
@@ -135,23 +136,24 @@ Painter::drawLine(double x1, double y1, double x2, double y2)
 }
 
 void
-Painter::drawLine(const Rectangle& rect)
+Painter::drawLine(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags)
 {
-    drawLine(rect.x(), rect.y(), rect.right(), rect.bottom());
+    drawLine(rect.x(), rect.y(), rect.right(), rect.bottom(), flags);
 }
 
 void
-Painter::drawLine(const Point& p1, const Point& p2)
+Painter::drawLine(const Point& p1, const Point& p2, const DFBSurfaceDrawingFlags& flags)
 {
-    drawLine(p1.x(), p1.y(), p2.x(), p2.y());
+    drawLine(p1.x(), p1.y(), p2.x(), p2.y(), flags);
 }
 
 void
-Painter::drawRectangle(double x, double y, double width, double height)
+Painter::drawRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags)
 {
     if (_state & Active)
     {
         applyPen();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
         else
@@ -160,17 +162,18 @@ Painter::drawRectangle(double x, double y, double width, double height)
 }
 
 void
-Painter::drawRectangle(const Rectangle& rect)
+Painter::drawRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags)
 {
-    drawRectangle(rect.x(), rect.y(), rect.width(), rect.height());
+    drawRectangle(rect.x(), rect.y(), rect.width(), rect.height(), flags);
 }
 
 void
-Painter::fillRectangle(double x, double y, double width, double height)
+Painter::fillRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags)
 {
     if (_state & Active)
     {
         applyBrush();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
         else
@@ -179,13 +182,13 @@ Painter::fillRectangle(double x, double y, double width, double height)
 }
 
 void
-Painter::fillRectangle(const Rectangle& rect)
+Painter::fillRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags)
 {
     fillRectangle(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
 void
-Painter::drawText(const std::string& text, int x, int y)
+Painter::drawText(const std::string& text, int x, int y, const DFBSurfaceDrawingFlags& flags)
 {
     if (text.empty())
         return;
@@ -194,6 +197,7 @@ Painter::drawText(const std::string& text, int x, int y)
     {
         applyBrush();
         applyFont();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x, _myWidget->absY() + y, DSTF_TOPLEFT);
         else
@@ -202,7 +206,7 @@ Painter::drawText(const std::string& text, int x, int y)
 }
 
 void
-Painter::drawLayout(const TextLayout& layout)
+Painter::drawLayout(const TextLayout& layout, const DFBSurfaceDrawingFlags& flags)
 {
     ILOG_TRACE(ILX_PAINTER);
     if (layout.text().empty())
@@ -212,6 +216,7 @@ Painter::drawLayout(const TextLayout& layout)
     {
         applyBrush();
         applyFont();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             layout.drawTextLayout(dfbSurface, _myWidget->absX(), _myWidget->absY());
         else
@@ -220,7 +225,7 @@ Painter::drawLayout(const TextLayout& layout)
 }
 
 void
-Painter::drawLayout(const TextLayout& layout, int x, int y)
+Painter::drawLayout(const TextLayout& layout, int x, int y, const DFBSurfaceDrawingFlags& flags)
 {
     if (layout.text().empty())
         return;
@@ -229,6 +234,7 @@ Painter::drawLayout(const TextLayout& layout, int x, int y)
     {
         applyBrush();
         applyFont();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             layout.drawTextLayout(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y);
         else
