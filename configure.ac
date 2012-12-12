@@ -254,6 +254,7 @@ AC_CONFIG_FILES([ \
         bin/widgets/Makefile \
         data/apps/icons/Makefile \
         data/apps/Makefile \
+        data/fonts/Makefile \
         data/ilixi_catalog.xml \
         data/images/Makefile \
         data/Makefile \
