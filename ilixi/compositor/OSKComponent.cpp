@@ -77,9 +77,10 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
     case OSK::ConsumeKey:
         {
             ILOG_DEBUG(ILX_OSKCOMP, "ConsumeKey\n");
-            uint32_t key = *((uint32_t*) arg);
+            uint32_t key  = ((uint32_t*) arg)[0];
+            uint32_t mask = ((uint32_t*) arg)[1];
             ILOG_DEBUG(ILX_OSKCOMP, " -> U+%04X\n", key);
-            _compositor->sendOSKInput(key);
+            _compositor->sendOSKInput(key, mask);
         }
         break;
     default:

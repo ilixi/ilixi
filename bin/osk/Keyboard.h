@@ -47,7 +47,7 @@ public:
     parseLayoutFile(const char* file);
 
     void
-    forwardKeyData(const std::vector<uint32_t>& ucs32);
+    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers=DIMM_SHIFT);
 
     void
     setModifier(Key* modifier);

@@ -39,7 +39,7 @@ PhoneCompositor::PhoneCompositor(int argc, char* argv[])
     Size size = PlatformManager::instance().getLayerSize();
     setAppGeometry(Rectangle(150, 0, size.width() - 150, size.height()));
     setBarGeometry(Rectangle(0, 0, 150, size.height()));
-    setOSKGeometry(Rectangle(150, size.height(), size.width() - 150, 300));
+    setOSKGeometry(Rectangle(150, size.height(), size.width() - 150, 250));
     setSwitcherGeometry(Rectangle(150, 0, size.width() - 150, size.height()));
 }
 

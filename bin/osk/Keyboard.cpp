@@ -118,7 +118,7 @@ Keyboard::parseLayoutFile(const char* file)
 }
 
 void
-Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
+Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers)
 {
     for (unsigned int i = 0; i < ucs32.size(); ++i)
     {
@@ -126,9 +126,10 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32)
         ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32[i]);
 
         void *ptr;
-        DaleDFB::comaGetLocal(sizeof(uint32_t), &ptr);
+        DaleDFB::comaGetLocal(sizeof(uint32_t) * 2, &ptr);
         uint32_t* key = (uint32_t*) ptr;
-        *key = ucs32[i];
+        key[0] = ucs32[i];
+        key[1] = modifiers;
 
         DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
     }

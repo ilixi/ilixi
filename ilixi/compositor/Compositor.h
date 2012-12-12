@@ -132,7 +132,7 @@ protected:
      * Sends given key to current application instance.
      */
     void
-    sendOSKInput(uint32_t key);
+    sendOSKInput(uint32_t key, unsigned int mask = 0);
 
     void
     showSound(bool show);

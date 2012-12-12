@@ -241,9 +241,11 @@ ILXCompositor::toggleOSK(bool show)
 }
 
 void
-ILXCompositor::sendOSKInput(uint32_t key)
+ILXCompositor::sendOSKInput(uint32_t key, unsigned int mask)
 {
-    _currentApp->view()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
+    KeyEvent k = KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key);
+    k.modifierMask = (DFBInputDeviceModifierMask) mask;
+    _currentApp->view()->consumeKeyEvent(k);
     if (key == DIKS_ENTER)
         toggleOSK(false);
 }
