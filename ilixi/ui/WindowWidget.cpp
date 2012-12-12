@@ -445,6 +445,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_LEFT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else if (event.modifiers & DIMM_SHIFT)
+                _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Left);
             return true;
@@ -452,6 +454,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_RIGHT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else if (event.modifiers & DIMM_SHIFT)
+                _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Right);
             return true;
@@ -459,6 +463,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_UP:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else if (event.modifiers & DIMM_SHIFT)
+                _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Up);
             return true;
@@ -466,6 +472,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_DOWN:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
+            else if (event.modifiers & DIMM_SHIFT)
+                _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Down);
             return true;
