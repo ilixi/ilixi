@@ -139,8 +139,7 @@ public:
      * @param offset number of bytes to use, -1 for whole string.
      */
     void
-    stringBreak(const char* text, int offset, int maxWidth, int* lineWidth,
-                int* length, const char** nextLine);
+    stringBreak(const char* text, int offset, int maxWidth, int* lineWidth, int* length, const char** nextLine);
 
     /*!
      * Returns the logical width of text in pixels.
@@ -221,6 +220,8 @@ private:
     std::string _name;
     //! Reference counter;
     unsigned int _ref;
+    //! Key returned from FontCache.
+    unsigned int _key;
 
     //! Applies font to surface.
     bool

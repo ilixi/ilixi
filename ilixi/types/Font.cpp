@@ -36,10 +36,12 @@ Font::Font()
           _font(NULL),
           _size(12),
           _attr(DFFA_NONE),
-          _name("decker"),
-          _ref(1)
+          _name("sans"),
+          _ref(1),
+          _key(0)
 {
     ILOG_TRACE(ILX_FONT);
+    ILOG_DEBUG(ILX_FONT, " -> name: %s, size: %d\n", _name.c_str(), _size);
 }
 
 Font::Font(const std::string& name, int size)
@@ -48,7 +50,8 @@ Font::Font(const std::string& name, int size)
           _size(size),
           _attr(DFFA_NONE),
           _name(name),
-          _ref(1)
+          _ref(1),
+          _key(0)
 {
     ILOG_TRACE(ILX_FONT);
     ILOG_DEBUG(ILX_FONT, " -> name: %s, size: %d\n", _name.c_str(), _size);
@@ -60,19 +63,19 @@ Font::Font(const Font& font)
           _size(font._size),
           _attr(font._attr),
           _name(font._name),
-          _ref(1)
+          _ref(1),
+          _key(font._key)
 {
     if (_font)
         _font->AddRef(_font);
     ILOG_TRACE(ILX_FONT);
-    ILOG_DEBUG(ILX_FONT,
-               " -> copied name: %s, size: %d\n", _name.c_str(), _size);
+    ILOG_DEBUG(ILX_FONT, " -> copied, name: %s, size: %d\n", _name.c_str(), _size);
 }
 
 Font::~Font()
 {
-    release();
     ILOG_TRACE(ILX_FONT);
+    release();
 }
 
 IDirectFBFont*
@@ -124,9 +127,7 @@ Font::extents(const std::string& text, int bytes)
     ILOG_TRACE(ILX_FONT);
     DFBRectangle rect;
     _font->GetStringExtents(_font, text.c_str(), bytes, &rect, NULL);
-    ILOG_DEBUG(
-            ILX_FONT,
-            " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
+    ILOG_DEBUG( ILX_FONT, " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
     return Size(rect.w, rect.h);
 }
 
@@ -153,14 +154,12 @@ Font::glyphAdvance(unsigned int c)
 }
 
 void
-Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth,
-                  int* length, const char** nextLine)
+Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth, int* length, const char** nextLine)
 {
     if (!loadFont())
         return;
 
-    DFBResult ret = _font->GetStringBreak(_font, text, offset, maxWidth,
-                                          lineWidth, length, nextLine);
+    DFBResult ret = _font->GetStringBreak(_font, text, offset, maxWidth, lineWidth, length, nextLine);
     if (ret)
     {
         ILOG_ERROR(ILX_FONT, "Error while getting string breaks!\n");
@@ -238,8 +237,7 @@ Font::operator=(const Font& font)
 bool
 Font::operator==(const Font &font)
 {
-    return ((_name == font._name) && (_size == font._size)
-            && (_attr == font._attr) && (_font == font._font));
+    return ((_name == font._name) && (_size == font._size) && (_attr == font._attr) && (_font == font._font));
 }
 
 bool
@@ -263,7 +261,7 @@ Font::applyFont(IDirectFBSurface* surface)
         return false;
 
     ILOG_TRACE(ILX_FONT);
-    ILOG_DEBUG(ILX_FONT, " -> Font: %p\n", _font);
+    ILOG_DEBUG(ILX_FONT, " -> Font: %p key: %u\n", _font, _key);
     DFBResult ret = surface->SetFont(surface, _font);
     if (ret)
     {
@@ -281,8 +279,8 @@ Font::loadFont()
     {
         release();
         ILOG_TRACE(ILX_FONT);
-        _font = FontCache::Instance()->getEntry(_name, _size, _attr);
-        ILOG_DEBUG(ILX_FONT, " -> Font: %p\n", _font);
+        _key = FontCache::Instance()->getEntry(_name, _size, _attr, &_font);
+        ILOG_DEBUG(ILX_FONT, " -> Font: %p key: %u\n", _font, _key);
         _modified = false;
     }
 
@@ -292,11 +290,11 @@ Font::loadFont()
 void
 Font::release()
 {
-    if (_font)
+    if (_font && _key)
     {
-        ILOG_TRACE(ILX_FONT);
-        FontCache::Instance()->releaseEntry(_name.c_str(), _size, _attr);
+        FontCache::Instance()->releaseEntry(_key);
         _font = NULL;
+        _key = 0;
     }
 }
 
@@ -309,6 +307,7 @@ Font::addRef()
 void
 Font::relRef()
 {
+    ILOG_TRACE(ILX_FONT);
     if (!--_ref)
         delete this;
 }

@@ -42,8 +42,8 @@ public:
     unsigned int
     getKey(const std::string& name, int size, DFBFontAttributes attr);
 
-    IDirectFBFont*
-    getEntry(const std::string& name, int size, DFBFontAttributes attr);
+    unsigned int
+    getEntry(const std::string& name, int size, DFBFontAttributes attr, IDirectFBFont** font);
 
     void
     releaseEntry(unsigned int key);
@@ -79,7 +79,7 @@ private:
     ~FontCache();
 
     IDirectFBFont*
-    getEntryFromFile(const std::string& name, int size, DFBFontAttributes attr);
+    getEntryFromFile(unsigned int key, const std::string& file, int size, DFBFontAttributes attr);
 
     std::string
     getFCFileName(const char* name, const char* style, double size, int slant);
