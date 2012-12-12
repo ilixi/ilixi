@@ -67,6 +67,9 @@ FontCache::~FontCache()
 unsigned int
 FontCache::getKey(const std::string& name, int size, DFBFontAttributes attr)
 {
+    ILOG_TRACE(ILX_FONTCACHE);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> name: %s\n", name.c_str());
+    ILOG_DEBUG(ILX_FONTCACHE, " -> size: %d\n", size);
     std::stringstream ss;
     ss << name << size << attr;
     return createHash(ss.str());
@@ -78,37 +81,40 @@ FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr)
     ILOG_TRACE(ILX_FONTCACHE);
     std::string style = "regular";
     int slant = 0;
+    ILOG_DEBUG(ILX_FONTCACHE, " -> name: %s\n", name.c_str());
+    ILOG_DEBUG(ILX_FONTCACHE, " -> size: %d\n", size);
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     if (attr & DFFA_STYLE_BOLD)
-    style = "bold";
+        style = "bold";
 
     if (attr & DFFA_STYLE_ITALIC)
-    slant = FC_SLANT_ITALIC;
+        slant = FC_SLANT_ITALIC;
 #endif
+    ILOG_DEBUG(ILX_FONTCACHE, " -> style: %s\n", style.c_str());
     return getEntryFromFile(getFCFileName(name.c_str(), style.c_str(), size, slant), size, attr);
 }
 
 void
 FontCache::releaseEntry(unsigned int key)
 {
+    ILOG_TRACE(ILX_FONTCACHE);
     pthread_mutex_lock(&_lock);
     CacheMap::iterator it = _cache.find(key);
     if (it != _cache.end())
     {
         if (--(it->second.ref))
         {
-            ILOG_TRACE(ILX_FONTCACHE);
-            ILOG_DEBUG( ILX_FONTCACHE, " -> Release entry (%u)\n", key);
+            ILOG_DEBUG( ILX_FONTCACHE, " -> Decrement ref counter for entry (%u)\n", key);
             pthread_mutex_unlock(&_lock);
             return;
         }
         // remove entry...
-        ILOG_TRACE(ILX_FONTCACHE);
-        ILOG_DEBUG(ILX_FONTCACHE, " -> Destroy entry (%u)\n", key);
+        ILOG_DEBUG(ILX_FONTCACHE, " -> Release font for entry (%u)\n", key);
         it->second.font->Release(it->second.font);
         _cache.erase(it);
-    }
+    } else
+        ILOG_DEBUG(ILX_FONTCACHE, " -> Key (%u) not found.\n", key);
     pthread_mutex_unlock(&_lock);
 }
 
@@ -121,6 +127,7 @@ FontCache::releaseEntry(const char* name, int size, DFBFontAttributes attr)
 IDirectFBFont*
 FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes attr)
 {
+    ILOG_TRACE(ILX_FONTCACHE);
     unsigned int key = getKey(name, size, attr);
 
     pthread_mutex_lock(&_lock);
@@ -138,7 +145,6 @@ FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes
         DFBResult ret = PlatformManager::instance().getDFB()->CreateFont(PlatformManager::instance().getDFB(), name.c_str(), &desc, &font);
         if (ret)
         {
-            ILOG_TRACE(ILX_FONTCACHE);
             ILOG_DEBUG(ILX_FONTCACHE, " -> Loading failed for (%s, %d)!\n", name.c_str(), size);
             pthread_mutex_unlock(&_lock);
             return NULL;
@@ -147,7 +153,6 @@ FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes
         CacheMap::iterator it2 = _cache.begin();
         FontData data(font);
         _cache.insert(it2, std::pair<unsigned int, FontData>(key, data));
-        ILOG_TRACE(ILX_FONTCACHE);
         ILOG_DEBUG(ILX_FONTCACHE, " -> Cached key (%u) for (%s, %d)\n", key, name.c_str(), size);
         pthread_mutex_unlock(&_lock);
 
@@ -155,7 +160,7 @@ FontCache::getEntryFromFile(const std::string& name, int size, DFBFontAttributes
 
     } else
     {
-        ILOG_DEBUG(ILX_FONTCACHE, "Got from cache using key (%u) (%s,%d)\n", key, name.c_str(), size);
+        ILOG_DEBUG(ILX_FONTCACHE, " -> Got from cache using key (%u) (%s,%d)\n", key, name.c_str(), size);
         pthread_mutex_unlock(&_lock);
         it->second.ref++;
         return it->second.font;
