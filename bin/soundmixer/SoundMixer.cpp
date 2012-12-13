@@ -73,8 +73,7 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     _volSlider = new Slider();
     _volSlider->setRange(0, 1);
     _volSlider->setValue(1);
-    _volSlider->sigValueChanged.connect(
-            sigc::mem_fun(this, &ILXSoundMixer::changeVolume));
+    _volSlider->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeVolume));
     volBox->addWidget(_volSlider, 1, 0, 0, 2);
 
     _mute = new PushButton("Mute");
@@ -116,8 +115,7 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     buttons->addWidget(new PushButton("Load Preset"));
     buttons->addWidget(new PushButton("Save Preset"));
     PushButton* testSound = new PushButton("Test");
-    testSound->sigClicked.connect(
-            sigc::mem_fun(this, &ILXSoundMixer::playTestSound));
+    testSound->sigClicked.connect(sigc::mem_fun(this, &ILXSoundMixer::playTestSound));
     buttons->addWidget(testSound);
     levels->addWidget(buttons);
 
@@ -141,8 +139,8 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     levels->addWidget(rowLevels);
 
     DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
-    _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged,
-                            volumeListener, this);
+    if (_soundComponent)
+        _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged, volumeListener, this);
 
     _music = new Music(ILIXI_DATADIR"soundmixer/test.wav");
     _music->setRepeat(true);
@@ -161,8 +159,7 @@ ILXSoundMixer::mute()
 {
     _volSlider->setValue(0);
     if (_soundComponent)
-        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute,
-                                   NULL);
+        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute, NULL);
 }
 
 void
@@ -183,8 +180,7 @@ ILXSoundMixer::changeVolume(float volume)
         DaleDFB::comaGetLocal(sizeof(float), &ptr);
         float* vol = (float*) ptr;
         *vol = volume;
-        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume,
-                                   (void*) vol);
+        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
     }
 }
 
