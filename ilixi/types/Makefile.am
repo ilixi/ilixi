@@ -5,7 +5,6 @@ libilixi_types_la_CPPFLAGS 	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@
 libilixi_types_la_CFLAGS 	= 	$(AM_CFLAGS)
 libilixi_types_la_LIBADD 	= 	@DEPS_LIBS@
 libilixi_types_la_SOURCES 	=	Affine2D.cpp \
-								BoxLayout.cpp \
 	          					Brush.cpp \
 	          					Color.cpp \
 	          					Event.cpp \
@@ -19,12 +18,10 @@ libilixi_types_la_SOURCES 	=	Affine2D.cpp \
 	          					Rectangle.cpp \
 	          					Size.cpp \
 	          					TextLayout.cpp \
-	          					Video.cpp \
-	          					WidgetLayout.cpp
+	          					Video.cpp
 
 ilixi_includedir 				= 	$(includedir)/$(PACKAGE)-$(VERSION)/types
 nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
-									BoxLayout.h \
 		          					Brush.h \
 		          					Color.h \
 		          					Enums.h \
@@ -39,8 +36,7 @@ nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
 		          					Rectangle.h \
 		          					Size.h \
 		          					TextLayout.h \
-		          					Video.h \
-		          					WidgetLayout.h
+		          					Video.h
 
 if WITH_FUSIONSOUND
 libilixi_types_la_SOURCES 		+= 	Music.cpp
@@ -49,7 +45,6 @@ endif
 
 if WITH_REFLEX
 TYPES_REFLEX				=	Affine2D_rflx.cpp \
-								BoxLayout_rflx.cpp \
 	          					Brush_rflx.cpp \
 	          					Color_rflx.cpp \
 	          					Event_rflx.cpp \
@@ -61,8 +56,7 @@ TYPES_REFLEX				=	Affine2D_rflx.cpp \
 	          					Point_rflx.cpp \
 	          					RadioGroup_rflx.cpp \
 	          					Rectangle_rflx.cpp \
-	          					Size_rflx.cpp \
-	          					WidgetLayout_rflx.cpp
+	          					Size_rflx.cpp
 
 libilixi_types_la_SOURCES 	+= $(TYPES_REFLEX)
 
