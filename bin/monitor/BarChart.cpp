@@ -33,7 +33,8 @@ D_DEBUG_DOMAIN( ILX_BARCHART, "ilixi/monitor/BarChart", "BarChart");
 BarChart::BarChart(unsigned int size, Widget* parent)
         : Widget(parent),
           _drawBackground(true),
-          _size(size)
+          _size(size),
+          _major(20)
 {
     ILOG_TRACE_W(ILX_BARCHART);
     setConstraints(ExpandingConstraint, ExpandingConstraint);
@@ -76,6 +77,12 @@ BarChart::setDrawBG(bool drawBackground)
 }
 
 void
+BarChart::setMajorTicks(unsigned int major)
+{
+    _major = major;
+}
+
+void
 BarChart::compose(const PaintEvent& event)
 {
     if (!_data.size())
@@ -95,6 +102,15 @@ BarChart::compose(const PaintEvent& event)
         w = width() / (_size * _data.size() + .0);
     float vCoef = height() / 100.0;
 
+    if (_major)
+    {
+        for (int i = 0; i < 100 / _major; ++i)
+        {
+            p.setBrush(Color(255, 255, 255, 20));
+            p.fillRectangle(0, _major * i * vCoef, width(), 1, (DFBSurfaceDrawingFlags) (DSDRAW_SRC_PREMULTIPLY | DSDRAW_BLEND));
+        }
+    }
+
     ILOG_TRACE_W(ILX_BARCHART);
     float x = 0;
     int h = 0;
@@ -106,7 +122,7 @@ BarChart::compose(const PaintEvent& event)
         {
             h = *it * vCoef;
             if (h > 0)
-                p.fillRectangle(x, height() - h, w, h);
+                p.fillRectangle(x, height() - h, w, h, (DFBSurfaceDrawingFlags) (DSDRAW_SRC_PREMULTIPLY | DSDRAW_BLEND));
             if (_data.size() == 1)
                 x += w + 1;
             else

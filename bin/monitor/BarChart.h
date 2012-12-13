@@ -48,6 +48,9 @@ public:
     void
     setDrawBG(bool drawBackground);
 
+    void
+    setMajorTicks(unsigned int major);
+
 protected:
     void
     compose(const PaintEvent& event);
@@ -55,6 +58,7 @@ protected:
 private:
     bool _drawBackground;
     unsigned int _size;
+    unsigned int _major;
     typedef std::list<float> BarList;
 
     struct BarData
