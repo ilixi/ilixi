@@ -9,6 +9,6 @@
 	<icon></icon>
 	<exec>ilixi_pstatus</exec>
 	<args></args>
-	<flags>APP_STATUSBAR, APP_SYSTEM, APP_NEEDS_BLENDING</flags>
+	<flags>APP_STATUSBAR, APP_SYSTEM</flags>
 	<deps>DEP_MOUSE</deps>
 </app>
