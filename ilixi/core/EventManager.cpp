@@ -202,16 +202,14 @@ EventManager::selectNeighbour(Direction direction)
     int step = 0;
     while (!found)
     {
-//      ILOG_DEBUG(
-//          "%s(%p, %d) - step: %d", __FUNCTION__, target, direction, step);
-//      ILOG_DEBUG(
-//          " %p %p %p %p", _focusedWidget->getNeighbour(Up), _focusedWidget->getNeighbour(Down), _focusedWidget->getNeighbour(Left), _focusedWidget->getNeighbour(Right));
-
         if (target == _creator || target == NULL)
         {
             if (selectNeighbourFromChildren(_creator, direction))
                 return true;
         }
+
+        if (!target->acceptsKeyInput())
+            target = target->getNeighbour(direction);
 
         // Should terminate if we can not find anything.
         if (step || target == NULL)
