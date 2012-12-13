@@ -34,13 +34,17 @@ D_DEBUG_DOMAIN( ILX_KEYBOARD, "ilixi/osk/Keyboard", "Keyboard");
 Keyboard::Keyboard(Widget* parent)
         : Widget(parent),
           _buttonFont(NULL),
-          _oskComponent(NULL)
+          _oskComponent(NULL),
+          _modifier(NULL),
+          _cycleKey(NULL)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
     setInputMethod(PointerInput);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
     DaleDFB::comaGetComponent("OSK", &_oskComponent);
+
+    _cycleTimer.sigExec.connect(sigc::mem_fun(this, &Keyboard::handleCycleTimer));
 }
 
 Keyboard::~Keyboard()
@@ -134,7 +138,7 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifi
         DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
     }
 
-    if (_modifier)
+    if (_modifier && !_cycleKey)
     {
         ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
         setSymbolState(_modifier->getNextState());
@@ -145,7 +149,110 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifi
 void
 Keyboard::setModifier(Key* modifier)
 {
+    if (_cycleKey)
+    {
+        /* send cursor right to remove selection and continue with next letter */
+        std::vector<uint32_t> c;
+        c.push_back(DIKS_CURSOR_RIGHT);
+        forwardKeyData(c, DIMM_SHIFT);
+
+        _cycleKey = NULL;
+
+        _cycleTimer.stop();
+    }
+
     _modifier = modifier;
+}
+
+void
+Keyboard::handleCycleKey(Key* key)
+{
+    std::vector<uint32_t> ucs32 = key->_symbols[key->_keyState].ucs32;
+
+    if (_cycleKey && _cycleKey == key)
+    {
+        uint32_t nextCharacter = _cycleCharacter;
+
+        for (int i=0; i<ucs32.size(); i++)
+        {
+            if (ucs32[i] == _cycleCharacter)
+            {
+                if (i == ucs32.size() - 1)
+                    nextCharacter = ucs32[0];
+                else
+                    nextCharacter = ucs32[i+1];
+
+                break;
+            }
+        }
+
+        _cycleCharacter = nextCharacter;
+    }
+    else {
+        if (_cycleKey)
+        {
+            /* send cursor right to remove selection and continue with next letter */
+            std::vector<uint32_t> c;
+            c.push_back(DIKS_CURSOR_RIGHT);
+            forwardKeyData(c, DIMM_SHIFT);
+        }
+
+        _cycleKey = key;
+        _cycleCharacter = ucs32[0];
+    }
+
+    /* send new character replacing the old selection (if any) */
+    std::vector<uint32_t> c;
+    c.push_back(_cycleCharacter);
+    forwardKeyData(c);
+
+    _cycleTimer.stop();
+
+    if (!(key->_keyMode & Key::Special))
+    {
+        /* send shift left to make new selection */
+        std::vector<uint32_t> c2;
+        c2.push_back(DIKS_CURSOR_LEFT);
+        forwardKeyData(c2, DIMM_SHIFT);
+
+        _cycleTimer.start( 800 );
+    }
+    else
+        _cycleKey = NULL;
+}
+
+void
+Keyboard::handleCycleTimer()
+{
+    if (_cycleKey)
+    {
+        /* send cursor right to remove selection and continue with next letter */
+        std::vector<uint32_t> c;
+        c.push_back(DIKS_CURSOR_RIGHT);
+        forwardKeyData(c, DIMM_SHIFT);
+
+        if (_modifier)
+        {
+            ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
+            setSymbolState(_modifier->getNextState());
+            _modifier = NULL;
+        }
+
+        _cycleKey = NULL;
+    }
+}
+
+void
+Keyboard::handleKeyPress(uint32_t symbol)
+{
+    std::map<uint32_t,Key*>::iterator it = _cycleMap.find(symbol);
+
+    if (it != _cycleMap.end())
+    {
+        Key *key = (*it).second;
+
+        key->click();
+    }
 }
 
 void
@@ -163,6 +270,7 @@ Keyboard::getKey(xmlNodePtr node)
     xmlChar* repeatable = xmlGetProp(node, (xmlChar*) "repeatable");
     xmlChar* sticky = xmlGetProp(node, (xmlChar*) "sticky");
     xmlChar* special = xmlGetProp(node, (xmlChar*) "special");
+    xmlChar* cycle = xmlGetProp(node, (xmlChar*) "cycle");
 
     ILOG_DEBUG(ILX_KEYBOARD, "Key: %s\n", (char*) id);
 
@@ -184,6 +292,9 @@ Keyboard::getKey(xmlNodePtr node)
 
     if (xmlStrcmp(special, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Special);
+
+    if (xmlStrcmp(cycle, (xmlChar*) "yes") == 0)
+        key->setKeyMode(Key::Cycle);
 
     xmlFree(id);
     xmlFree(modifier);
@@ -227,6 +338,9 @@ Keyboard::getKey(xmlNodePtr node)
         // TODO icon etc..
         element = element->next;
     }
+
+    if (key->_keyMode & Key::Cycle)
+        _cycleMap.insert( std::pair<uint32_t,Key*>(key->_cycleUCS, key) );
 
     return key;
 }

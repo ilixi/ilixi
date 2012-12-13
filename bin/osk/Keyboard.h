@@ -26,6 +26,7 @@
 
 #include "Row.h"
 #include <types/Font.h>
+#include <lib/Timer.h>
 #include <libxml/tree.h>
 #include <core/DaleDFB.h>
 
@@ -47,10 +48,16 @@ public:
     parseLayoutFile(const char* file);
 
     void
-    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers=DIMM_SHIFT);
+    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers=0);
 
     void
     setModifier(Key* modifier);
+
+    void
+    handleCycleKey(Key* key);
+
+    void
+    handleKeyPress(uint32_t symbol);
 
 protected:
     void
@@ -65,6 +72,12 @@ private:
     std::vector<Row*> _rows;
     //! Current modifier key.
     Key* _modifier;
+    //! Current cycling key.
+    Key* _cycleKey;
+    uint32_t _cycleCharacter;
+    Timer _cycleTimer;
+
+    std::map<uint32_t,Key*> _cycleMap;
 
     Key*
     getKey(xmlNodePtr node);
@@ -78,6 +91,8 @@ private:
     void
     updateKeyboardGeometry();
 
+    void
+    handleCycleTimer();
 };
 
 } /* namespace ilixi */

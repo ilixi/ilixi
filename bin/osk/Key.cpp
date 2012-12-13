@@ -24,6 +24,9 @@
 #include "Key.h"
 #include "utf8-decoder.h"
 #include "Keyboard.h"
+#include <ui/HBoxLayout.h>
+#include <ui/Label.h>
+#include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <algorithm>
 
@@ -49,6 +52,11 @@ Key::Key(const std::string& id, Keyboard* keyboard, Widget* parent)
     setToolButtonStyle(TextOnly);
 
     sigClicked.connect(sigc::mem_fun(this, &Key::pressSlot));
+
+    HBoxLayout *_box = new HBoxLayout();
+    addChild(_box);
+
+    _box->addWidget(new Label("X"));
 }
 
 Key::~Key()
@@ -92,7 +100,9 @@ Key::setSymbolState(unsigned char state)
     } else
     {
         _keyState = state;
+
         setText(_symbols[_keyState].str);
+
         ILOG_DEBUG(
                 ILX_KEY,
                 "%s (%d, %s)\n", _xmlID.c_str(), _keyState, _symbols[_keyState].str.c_str());
@@ -124,14 +134,28 @@ Key::addSymbol(const std::string& states, const std::string& symbol)
         utf8Data keyData;
         ILOG_DEBUG(ILX_KEY, "State: %d\n", state);
 
+        std::string sym;
+
+        if (_keyMode & Cycle) {
+            _cycleLabel = symbol.substr(0,1);
+
+            std::vector<uint32_t> ucs32;
+            decode((uint8_t*) _cycleLabel.c_str(), ucs32);
+            _cycleUCS = ucs32[0];
+
+            sym = symbol.substr(1);
+        }
+        else
+            sym = symbol;
+
         if (_keyMode & Special)
         {
             for (int i = 0; i < D_ARRAY_SIZE(symbol_names); i++)
-                if (symbol_names[i].name == symbol)
+                if (symbol_names[i].name == sym)
                     keyData.ucs32.push_back(symbol_names[i].symbol);
         } else
-            decode((uint8_t*) symbol.c_str(), keyData.ucs32);
-        keyData.str = symbol;
+            decode((uint8_t*) sym.c_str(), keyData.ucs32);
+        keyData.str = sym;
 
         _symbols.insert(std::pair<unsigned char, utf8Data>(state, keyData));
 
@@ -160,6 +184,22 @@ Key::toggleChecked()
 }
 
 void
+Key::compose(const PaintEvent& event)
+{
+    ToolButton::compose(event);
+
+    if (!_cycleLabel.empty())
+    {
+        Painter p(this);
+
+        p.begin(event);
+        p.setBrush(Color(0xdd,0xdd,0xdd));
+        p.drawText(_cycleLabel,20,10);
+        p.end();
+    }
+}
+
+void
 Key::pressSlot()
 {
     if (_keyMode & Modifier)
@@ -168,6 +208,11 @@ Key::pressSlot()
         if (_keyState == _rollStates[0])
             _keyboard->setModifier(this);
         _keyboard->setSymbolState(getNextState());
+    } else if (_keyMode & Cycle)
+    {
+        ILOG_DEBUG(ILX_KEY, "Cycle key\n");
+
+        _keyboard->handleCycleKey(this);
     } else if (_keyMode & Sticky)
     {
         ILOG_DEBUG(ILX_KEY, "Sticky state: %d\n", _keyState);

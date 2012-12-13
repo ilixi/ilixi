@@ -4,7 +4,7 @@
 	<!ATTLIST row id ID #REQUIRED height CDATA #IMPLIED gap CDATA #IMPLIED>
 
 <!ELEMENT key (symbol*, icon?, rollStates?)>
-	<!ATTLIST key id ID #REQUIRED modifier CDATA "no" constraint CDATA "minimum" repeatable CDATA "no" sticky CDATA "no" special CDATA #IMPLIED>
+	<!ATTLIST key id ID #REQUIRED modifier CDATA "no" constraint CDATA "minimum" repeatable CDATA "no" sticky CDATA "no" special CDATA #IMPLIED cycle (yes|no) "no">
 	<!ELEMENT icon (#PCDATA)>
 	<!ELEMENT rollStates (#PCDATA)>
 

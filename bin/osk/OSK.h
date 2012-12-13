@@ -42,6 +42,12 @@ public:
     virtual
     ~ILXOSK();
 
+    /*!
+     * This method gets window events first.
+     */
+    virtual bool
+    windowPreEventFilter(const DFBWindowEvent &event);
+
 private:
     Image* _bg;
     Keyboard* _keyboard;

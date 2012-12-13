@@ -52,6 +52,22 @@ ILXOSK::~ILXOSK()
     delete _bg;
 }
 
+bool
+ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
+{
+    switch (event.type) {
+        case DWET_KEYDOWN:
+            _keyboard->handleKeyPress(event.key_symbol);
+        case DWET_KEYUP:
+            return true;
+
+        default:
+            break;
+    }
+
+    return false;
+}
+
 void
 ILXOSK::compose(const PaintEvent& event)
 {
