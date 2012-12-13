@@ -76,8 +76,6 @@ Painter::begin(const PaintEvent& event)
 #endif
     _state = Active;
     applyBrush();
-    dfbSurface->SetBlittingFlags(dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
-    dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_BLEND);
     dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
 }
 
