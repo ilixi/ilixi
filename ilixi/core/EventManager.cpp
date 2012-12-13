@@ -208,7 +208,7 @@ EventManager::selectNeighbour(Direction direction)
                 return true;
         }
 
-        if (!target->acceptsKeyInput())
+        if (!target->acceptsKeyInput() && target->_children.size() == 0)
             target = target->getNeighbour(direction);
 
         // Should terminate if we can not find anything.
