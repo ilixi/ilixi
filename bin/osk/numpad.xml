@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!--
+<!DOCTYPE app SYSTEM "http://www.ilixi.org/keyboard.dtd">
+-->
+<!DOCTYPE keyboard SYSTEM "keyboard.dtd">
+
+<keyboard>
+    <row id="n123" height="%20">
+        <key id="N1" repeatable="yes" special="yes" cycle="yes">
+            <symbol states="1, 2" unicode="yes">1BACKSPACE</symbol>
+            <icon>@DATADIR:backspace.png</icon>
+        </key>
+
+        <key id="N2" cycle="yes">
+            <symbol states="1">2abc</symbol>
+            <symbol states="2">2ABC</symbol>
+        </key>
+
+        <key id="N3" cycle="yes">
+            <symbol states="1">3def</symbol>
+            <symbol states="2">3DEF</symbol>
+        </key>
+    </row>
+
+    <row id="n456" height="%20">
+        <key id="N4" cycle="yes">
+            <symbol states="1">4ghi</symbol>
+            <symbol states="2">4GHI</symbol>
+        </key>
+
+        <key id="N5" cycle="yes">
+            <symbol states="1">5jkl</symbol>
+            <symbol states="2">5JKL</symbol>
+        </key>
+
+        <key id="N6" cycle="yes">
+            <symbol states="1">6mno</symbol>
+            <symbol states="2">6MNO</symbol>
+        </key>
+    </row>
+
+    <row id="n789" height="%20">
+        <key id="N7" cycle="yes">
+            <symbol states="1">7pqrs</symbol>
+            <symbol states="2">7PQRS</symbol>
+        </key>
+
+        <key id="N8" cycle="yes">
+            <symbol states="1">8tuv</symbol>
+            <symbol states="2">8TUV</symbol>
+        </key>
+
+        <key id="N9" cycle="yes">
+            <symbol states="1">9wxyz</symbol>
+            <symbol states="2">9WXYZ</symbol>
+        </key>
+    </row>
+
+    <row id="n0" height="%20">
+        <key id="Nstar" cycle="yes">
+            <symbol states="1">*+-:;</symbol>
+            <symbol states="2">*+-:;</symbol>
+        </key>
+
+        <key id="N0" cycle="yes">
+            <symbol states="1">0 ,.</symbol>
+            <symbol states="2">0 ,.</symbol>
+        </key>
+
+        <key id="Nhash" modifier="yes" cycle="yes">
+            <symbol states="1, 2" unicode="yes">#</symbol>
+            <icon>@DATADIR:caps.png</icon>
+            <rollStates>1, 2</rollStates>
+        </key>
+    </row>
+
+
+</keyboard>
