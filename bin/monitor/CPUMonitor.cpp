@@ -26,6 +26,7 @@
 
 CPUMonitor::CPUMonitor()
 {
+    _cpuCores = 0;
     readCpuInfo();
 }
 
