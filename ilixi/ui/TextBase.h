@@ -143,6 +143,8 @@ private:
     Font* _font;
     //! Owner of this text layout.
     Widget* _owner;
+    //! Stores extents for speed.
+    Size _extents;
 
     //! Returns default font for this widget.
     virtual Font*

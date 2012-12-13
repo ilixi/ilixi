@@ -31,9 +31,10 @@ D_DEBUG_DOMAIN( ILX_BUTTON, "ilixi/ui/Button", "Button");
 
 Button::Button(const std::string& text, Widget* parent)
         : Widget(parent),
-          TextBase(text, this),
+          TextBase("", this),
           _buttonFlag(None)
 {
+    setText(text);
     setInputMethod(KeyPointer);
     ILOG_TRACE_W(ILX_BUTTON);
 }

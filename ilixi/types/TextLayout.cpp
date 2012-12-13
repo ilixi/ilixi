@@ -71,6 +71,12 @@ TextLayout::bounds() const
     return _bounds;
 }
 
+Size
+TextLayout::extents(Font* font) const
+{
+    return font->extents(_text, _text.length());
+}
+
 int
 TextLayout::x() const
 {
@@ -316,8 +322,7 @@ TextLayout::doLayout(Font* font)
         {
             l.offset = text - start;
 
-            font->stringBreak(text, -1, _bounds.width(), &l.lineWidth,
-                              &l.length, &next);
+            font->stringBreak(text, -1, _bounds.width(), &l.lineWidth, &l.length, &next);
             l.bytes = next - text;
             _lines.push_back(l);
 
@@ -369,13 +374,8 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     if (_alignment == Center)
         x += _bounds.width() / 2;
 
-    for (TextLayout::LineList::const_iterator it = _lines.begin();
-            it != _lines.end(); ++it)
-        surface->DrawString(surface,
-                            text + ((TextLayout::LayoutLine) *it).offset,
-                            ((TextLayout::LayoutLine) *it).bytes, x,
-                            y + ((TextLayout::LayoutLine) *it).y,
-                            (DFBSurfaceTextFlags) _alignment);
+    for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
+        surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
 }
 
 } /* namespace ilixi */

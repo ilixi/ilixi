@@ -57,8 +57,9 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
 
 ComboBox::ComboBox(const std::string& title, const StringList& items,
                    Widget* parent)
-        : TextBase(title, parent)
+        : TextBase("", parent)
 {
+    setText(title);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 

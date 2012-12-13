@@ -101,6 +101,12 @@ public:
     bounds() const;
 
     /*!
+     * Returns the dimension of text in pixels.
+     */
+    Size
+    extents(Font* font) const;
+
+    /*!
      * Returns x-coordinate of layout.
      */
     int

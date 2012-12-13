@@ -33,7 +33,7 @@ D_DEBUG_DOMAIN( ILX_LINEINPUT, "ilixi/ui/LineInput", "LineInput");
 
 LineInput::LineInput(const std::string& text, Widget* parent)
         : Widget(parent),
-          TextBase(text, this),
+          TextBase("", this),
           _lineInputFlags(DrawFrame),
           _cursorOn(false),
           _selecting(false),
@@ -43,6 +43,7 @@ LineInput::LineInput(const std::string& text, Widget* parent)
           _margin(0)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
+    setText(text);
     setConstraints(ExpandingConstraint, FixedConstraint);
     setInputMethod(KeyPointerTrackingOSK);
     _layout.setSingleLine(true);

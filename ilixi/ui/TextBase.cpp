@@ -31,31 +31,33 @@ D_DEBUG_DOMAIN( ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
 
 TextBase::TextBase(Widget* owner)
         : _owner(owner),
-          _font(NULL)
+          _font(NULL),
+          _extents(-1, -1)
 {
     ILOG_TRACE(ILX_TEXTBASE);
-    _owner->sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
+    _extents = _layout.extents(font());
+    _owner->sigGeometryUpdated.connect(sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::TextBase(const std::string& text, Widget* owner)
         : _owner(owner),
           _font(NULL),
-          _layout(text)
+          _layout(text),
+          _extents(-1, -1)
 {
     ILOG_TRACE(ILX_TEXTBASE);
-    _owner->sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
+    _extents = _layout.extents(font());
+    _owner->sigGeometryUpdated.connect(sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::TextBase(const TextBase& tb)
         : _owner(tb._owner),
           _font(tb._font),
-          _layout(tb._layout)
+          _layout(tb._layout),
+          _extents(tb._extents)
 {
     ILOG_TRACE(ILX_TEXTBASE);
-    _owner->sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
+    _owner->sigGeometryUpdated.connect(sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
 
 TextBase::~TextBase()
@@ -94,7 +96,7 @@ TextBase::text() const
 Size
 TextBase::textExtents() const
 {
-    return font()->extents(_layout.text(), _layout.text().length());
+    return _extents;
 }
 
 int
@@ -117,11 +119,11 @@ TextBase::setFont(Font* font)
         ILOG_TRACE(ILX_TEXTBASE);
         if (_font)
             _font->relRef();
-        ILOG_DEBUG(ILX_TEXTBASE,
-                   " -> Font changed to %p from %p\n", font, _font);
+        ILOG_DEBUG(ILX_TEXTBASE, " -> Font changed to %p from %p\n", font, _font);
         _font = font;
         _font->addRef();
         _layout.setModified();
+        _extents = _layout.extents(_font);
         _owner->doLayout();
         sigFontChanged();
     }
@@ -134,6 +136,7 @@ TextBase::setText(const std::string &text)
     {
         ILOG_DEBUG(ILX_TEXTBASE, "setText( %s )\n", text.c_str());
         _layout.setText(text);
+        _extents = _layout.extents(font());
         _owner->doLayout();
         sigTextChanged(text);
         _owner->update();

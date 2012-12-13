@@ -32,9 +32,10 @@ D_DEBUG_DOMAIN( ILX_LABEL, "ilixi/ui/Label", "Label");
 
 Label::Label(std::string text, Widget* parent)
         : Widget(parent),
-          TextBase(text, this),
+          TextBase("", this),
           _margin(0)
 {
+    setText(text);
     setConstraints(MinimumConstraint, MinimumConstraint);
     setSingleLine(true);
     ILOG_TRACE_W(ILX_LABEL);

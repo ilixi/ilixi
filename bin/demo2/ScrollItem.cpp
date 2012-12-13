@@ -31,12 +31,13 @@ D_DEBUG_DOMAIN( ILX_SCROLLITEM, "ilixi/ui/ScrollItem", "ScrollItem");
 
 ScrollItem::ScrollItem(const std::string& text, Widget* parent)
         : Widget(parent),
-          TextBase(text, this),
+          TextBase("", this),
           _val1(0)
 {
+    ILOG_TRACE_W(ILX_SCROLLITEM);
+    setText(text);
     setConstraints(MinimumConstraint, FixedConstraint);
     setInputMethod(KeyPointer);
-    ILOG_TRACE_W(ILX_SCROLLITEM);
 }
 
 ScrollItem::~ScrollItem()
