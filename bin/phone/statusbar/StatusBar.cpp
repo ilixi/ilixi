@@ -176,7 +176,7 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     _cpuMon->refresh();
 
     _cpuChart = new BarChart(10);
-    _cpuChart->addBar("CPU Total", Color(28, 127, 192));
+    _cpuChart->addBar("CPU Total", Color(28, 127, 192, 100));
     _cpuChart->setMaximumSize(150, 50);
     _cpuChart->setDrawBG(false);
     addWidget(_cpuChart);
