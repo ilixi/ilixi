@@ -115,7 +115,9 @@ protected:
     bool _modified;
     //! This property holds spacing between widgets inside the layout.
     unsigned int _spacing;
+    //! Default radio group for layout's elements.
     RadioGroup* _group;
+
     struct LayoutElement
     {
         Widget* widget;

@@ -35,6 +35,7 @@ GridLayout::GridLayout(unsigned int rows, unsigned int column, Widget* parent)
           _rows(rows),
           _cols(column)
 {
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     _cells.assign(_rows * _cols, (CellData*) NULL);
     _colWidths.assign(_cols, 0);
     _rowHeights.assign(_rows, 0);
@@ -42,6 +43,7 @@ GridLayout::GridLayout(unsigned int rows, unsigned int column, Widget* parent)
 
 GridLayout::~GridLayout()
 {
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     for (unsigned int c = 0; c < _cols; c++)
     {
         for (unsigned int r = 0; r < _rows; r++)
@@ -63,12 +65,16 @@ GridLayout::~GridLayout()
 int
 GridLayout::heightForWidth(int width) const
 {
+    // FIXME implement h4w
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     return -1;
 }
 
 Size
 GridLayout::preferredSize() const
 {
+    // FIXME implement preferredSize
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     return Size();
 
     //  Widget* widget;
@@ -162,45 +168,53 @@ GridLayout::setRowHeight(unsigned int row, unsigned int rowHeight)
 bool
 GridLayout::addWidget(Widget* widget)
 {
-    if (!widget)
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
+    if (!widget || isChild(widget))
         return false;
 
     bool result = false;
+
     for (unsigned int i = 0; i < _cells.size(); i++)
     {
         // add widget if cell is empty.
         if (_cells[i] == NULL)
         {
             addChild(widget);
-            _modified = true;
+
             RadioButton* radio = dynamic_cast<RadioButton*>(widget);
             if (radio)
                 _group->add(radio);
+
             int r = i / _cols;
             int c = r ? i % (r * _cols) : i;
             CellData* data = new CellData(widget, r, c, r, c);
             _cells[i] = data;
             result = true;
-            // LOG_DEBUG("Widget added from (%d, %d) to (%d, %d)", r, c, r, c);
+            doLayout();
+
+            ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Widget added at Cell(%d, %d) expands to Cell(%d, %d)\n", r, c, r, c);
             break;
         }
     }
+
     if (!result)
-        ILOG_ERROR(ILX_GRIDLAYOUT, "No more space in this layout!");
-    else
+    {
+        ILOG_ERROR(ILX_GRIDLAYOUT, "No more space in this layout!\n");
+        return false;
+    } else
         return true;
 }
 
 bool
-GridLayout::addWidget(Widget* widget, int row, int col, int rowSpan,
-                      int colSpan)
+GridLayout::addWidget(Widget* widget, int row, int col, int rowSpan, int colSpan)
 {
-    if (!widget)
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
+    if (!widget || isChild(widget))
         return false;
 
     if (row > _rows)
     {
-        ILOG_ERROR(ILX_GRIDLAYOUT, "Row index %d is outside grid!", row);
+        ILOG_ERROR(ILX_GRIDLAYOUT, "Row index %d is outside grid!\n", row);
         return false;
     }
 
@@ -218,7 +232,7 @@ GridLayout::addWidget(Widget* widget, int row, int col, int rowSpan,
     }
 
     addChild(widget);
-    _modified = true;
+
     RadioButton* radio = dynamic_cast<RadioButton*>(widget);
     if (radio)
         _group->add(radio);
@@ -239,31 +253,52 @@ GridLayout::addWidget(Widget* widget, int row, int col, int rowSpan,
     if (lastCol >= _cols)
         lastCol = _cols - 1;
 
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Request to add at Cell(%d, %d) expands to Cell(%d, %d)\n", row, col, lastRow, lastCol);
+
     CellData* data = new CellData(widget, row, col, lastRow, lastCol);
     _cells[index] = data;
 
     for (int r = row; r <= data->lastRow; r++)
     {
+//        if (_cells[r * _cols] != NULL)
+//        {
+//            lastRow = r;
+//            break;
+//        }
+
         for (int c = col; c <= data->lastCol; c++)
+        {
+//            if (_cells[r * _cols + c] != NULL)
+//            {
+//                lastCol = c;
+//                break;
+//            }
+
             _cells[r * _cols + c] = data;
+        }
     }
+//    data->lastRow = lastRow;
+//    data->lastCol = lastCol;
+
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Widget added at Cell(%d, %d) expands to Cell(%d, %d)\n", row, col, lastRow, lastCol);
+    doLayout();
     return true;
-    //  LOG_DEBUG("Widget added from (%d, %d) to (%d, %d)", row, col, lastRow, lastCol);
 }
 
 void
 GridLayout::tile()
 {
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     if (!_modified)
         return;
 
-    int index = 0; // Cell index
-    Widget* widget; // Widget at _cells[index]
-    int expanding = 0; // number of expanding columns or rows.
-    int spaceReq; // cell's required space in horizontal or vertical direction.
-    int spaceUsed = 0; // space made available to widget in horizontal or vertical direction.
-    int cActive = 0; // number of active columns
-    int rActive = 0; // number of active rows
+    int index = 0;      // Cell index
+    Widget* widget;     // Widget at _cells[index]
+    int expanding = 0;  // number of expanding columns or rows.
+    int spaceReq;       // cell's required space in horizontal or vertical direction.
+    int spaceUsed = 0;  // space made available to widget in horizontal or vertical direction.
+    int cActive = 0;    // number of active columns
+    int rActive = 0;    // number of active rows
 
     //***********************************************************
     //                    Clear Cell Data
@@ -281,7 +316,7 @@ GridLayout::tile()
     //***********************************************************
     //                  Initialise Column Data
     //***********************************************************
-    ILOG_DEBUG(ILX_GRIDLAYOUT, "Initialising column data...");
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Initialising column data...\n");
     LineDataVector cd;
     for (unsigned int c = 0; c < _cols; c++)
     {
@@ -310,9 +345,7 @@ GridLayout::tile()
             widget = _cells[index]->widget;
 
             // if the widget is ignored, go to next cell.
-            if (!widget->visible()
-                    && (widget->yConstraint() == IgnoredConstraint
-                            || widget->xConstraint() == IgnoredConstraint))
+            if (!widget->visible() && (widget->yConstraint() == IgnoredConstraint || widget->xConstraint() == IgnoredConstraint))
             {
                 // this cell becomes ignored from now on...
                 _cells[index]->ignored = true;
@@ -331,10 +364,10 @@ GridLayout::tile()
             }
 
             // This flag is used to specify that data for current column should be updated.
-            // If the widget does not span horizontally further this cell, then flag is set to true.
+            // If the widget does not span horizontally, flag is set to true.
             bool updateCol = false;
 
-            // the widget on the cell is not spanning.
+            // the widget occupies a single cell.
             if (_cells[index]->col == _cells[index]->lastCol)
             {
                 spaceUsed = 0;
@@ -342,15 +375,14 @@ GridLayout::tile()
                 updateCol = true;
             }
 
-            // the widget on the cell is not spanning no more.
+            // the widget on the cell is not spanning any more.
             else if (c == _cells[index]->lastCol)
             {
                 spaceUsed = 0;
 
                 // if previous cells can not shrink or they have min. width set, subtract their total width (cUsed) from this widget's width.
                 // this amount is always available to the widget for use.
-                for (int i = _cells[index]->col; i < _cells[index]->lastCol;
-                        i++)
+                for (int i = _cells[index]->col; i < _cells[index]->lastCol; i++)
                 {
                     if (cd[i].min)
                         spaceUsed += cd[i].min + spacing();
@@ -370,8 +402,7 @@ GridLayout::tile()
                 if (cd[c].min < (widget->minWidth() - spaceUsed))
                     cd[c].min = widget->minWidth() - spaceUsed;
 
-                if (widget->maxWidth() > 0
-                        && cd[c].max > (widget->maxWidth() - spaceUsed))
+                if (widget->maxWidth() > 0 && cd[c].max > (widget->maxWidth() - spaceUsed))
                     cd[c].max = widget->maxWidth() - spaceUsed;
 
                 // the widget's width is fixed.
@@ -381,36 +412,27 @@ GridLayout::tile()
                     if (spaceReq > cd[c].value)
                     {
                         cd[c].value = spaceReq;
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Column %d value is updated to %d on cell [%d, %d]", c, spaceReq, r, c);
+                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
                     }
                 } else
                 {
                     // the widget requires space.
-                    if (!(widget->xConstraint() & ShrinkPolicy)
-                            && cd[c].value < spaceReq)
+                    if (!(widget->xConstraint() & ShrinkPolicy) && cd[c].value < spaceReq)
                     {
                         cd[c].value = spaceReq;
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Column %d value is updated to %d on cell [%d, %d]", c, spaceReq, r, c);
+                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
                     }
 
-                    if (!(cd[c].constraint & GrowPolicy)
-                            && widget->xConstraint() & GrowPolicy)
+                    if (!(cd[c].constraint & GrowPolicy) && widget->xConstraint() & GrowPolicy)
                     {
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Column %d acquires GrowPolicy on cell [%d, %d]", c, r, c);
+                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d acquires GrowPolicy on cell [%d, %d]\n", c, r, c);
                         cd[c].constraint = cd[c].constraint | GrowPolicy;
                     }
 
                     // column does not grow but cell can not shrink
-                    else if (widget->xConstraint() & ShrinkPolicy
-                            && (cd[c].value < spaceReq))
+                    else if (widget->xConstraint() & ShrinkPolicy && (cd[c].value < spaceReq))
                     {
-                        ILOG_DEBUG(ILX_GRIDLAYOUT, "Column %d can shrink", c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d can shrink", c);
                         cd[c].constraint = cd[c].constraint | ShrinkPolicy;
                         cd[c].value = spaceReq;
                     }
@@ -424,9 +446,7 @@ GridLayout::tile()
                 }
             }
         }
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Col[%d] value: %d, min: %d, max: %d, cons: %d", c, cd[c].value, cd[c].min, cd[c].max, cd[c].constraint);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Col[%d] value: %d, min: %d, max: %d, cons: %d\n", c, cd[c].value, cd[c].min, cd[c].max, cd[c].constraint);
         if (cd[c].active)
             cActive++;
     }
@@ -437,14 +457,14 @@ GridLayout::tile()
     //***********************************************************
     //                  Initialise Row Data
     //***********************************************************
-    ILOG_DEBUG(ILX_GRIDLAYOUT, "Initialising row data...");
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Initialising row data...\n");
     expanding = 0;
     LineDataVector rd;
 
     for (unsigned int r = 0; r < _rows; r++)
     {
         rd.push_back(LineData());
-        rd[r].constraint = FixedConstraint;
+        rd[r].constraint = FixedConstraint; // FIXME ?
 
         // if row has user set height, fix it and ignore cell data.
         if (_rowHeights[r])
@@ -477,7 +497,7 @@ GridLayout::tile()
             rd[r].active = true;
 
             // This flag is used to specify that data for current row should be updated.
-            // If the widget does not span vertically further this cell, then flag is set to true.
+            // If the widget does not span vertically, then flag is set to true.
             bool updateRow = false;
 
             if (c != _cells[index]->lastCol)
@@ -493,21 +513,18 @@ GridLayout::tile()
                 if (_cells[index]->h4w)
                 {
                     // widget can shrink and h4w is less than widget's preferred height.
-                    if (widget->yConstraint() & ShrinkPolicy
-                            && _cells[index]->h4w < _cells[index]->height)
+                    if (widget->yConstraint() & ShrinkPolicy && _cells[index]->h4w < _cells[index]->height)
                         _cells[index]->height = _cells[index]->h4w;
 
                     // widget can grow and h4w is greater than widget's preferred height.
 
-                    else if (widget->yConstraint() & GrowPolicy
-                            && _cells[index]->h4w > _cells[index]->height)
+                    else if (widget->yConstraint() & GrowPolicy && _cells[index]->h4w > _cells[index]->height)
                         _cells[index]->height = _cells[index]->h4w;
                 }
 
                 spaceReq = _cells[index]->height;
                 updateRow = true;
-                ILOG_DEBUG(ILX_GRIDLAYOUT,
-                           "R-Single > req: %d used: %d", spaceReq, spaceUsed);
+                ILOG_DEBUG(ILX_GRIDLAYOUT, " -> R-Single > req: %d used: %d\n", spaceReq, spaceUsed);
             }
 
             //  spanning widget ends on this cell.
@@ -515,8 +532,7 @@ GridLayout::tile()
             else if (r == _cells[index]->lastRow)
             {
                 // if previous cells can not shrink or they have min. width set, subtract their total height (cUsed)from this widget's width
-                for (int i = _cells[index]->row; i < _cells[index]->lastRow;
-                        i++)
+                for (int i = _cells[index]->row; i < _cells[index]->lastRow; i++)
                 {
                     if (rd[i].min)
                         spaceUsed += rd[i].min + spacing();
@@ -528,19 +544,16 @@ GridLayout::tile()
                 }
 
                 // calculate height for width and update height if widget allows...
-                _cells[index]->h4w = widget->heightForWidth(
-                        spaceUsed + cd[c].value);
+                _cells[index]->h4w = widget->heightForWidth(spaceUsed + cd[c].value);
                 if (_cells[index]->h4w)
                 {
                     // can shrink
-                    if (widget->yConstraint() & ShrinkPolicy
-                            && _cells[index]->h4w < _cells[index]->height)
+                    if (widget->yConstraint() & ShrinkPolicy && _cells[index]->h4w < _cells[index]->height)
                         _cells[index]->height = _cells[index]->h4w;
 
                     // cannot grow
 
-                    else if (widget->yConstraint() & GrowPolicy
-                            && _cells[index]->h4w > _cells[index]->height)
+                    else if (widget->yConstraint() & GrowPolicy && _cells[index]->h4w > _cells[index]->height)
                         _cells[index]->height = _cells[index]->h4w;
                 }
 
@@ -548,8 +561,7 @@ GridLayout::tile()
                 if (spaceReq < 0)
                     spaceReq = 0;
                 updateRow = true;
-                ILOG_DEBUG(ILX_GRIDLAYOUT,
-                           "R-Span > req: %d used: %d", spaceReq, spaceUsed);
+                ILOG_DEBUG(ILX_GRIDLAYOUT, " -> R-Span > req: %d used: %d\n", spaceReq, spaceUsed);
             }
 
             // calculate best height for row.
@@ -560,8 +572,7 @@ GridLayout::tile()
                     rd[r].min = widget->minHeight() - spaceUsed;
 
                 // update max if it is greater than this cells' max. (smallest max)
-                if (widget->maxHeight() > 0
-                        && rd[r].max > (widget->maxHeight() - spaceUsed))
+                if (widget->maxHeight() > 0 && rd[r].max > (widget->maxHeight() - spaceUsed))
                     rd[r].max = widget->maxHeight() - spaceUsed;
 
                 if (widget->yConstraint() == FixedConstraint)
@@ -570,36 +581,27 @@ GridLayout::tile()
                     if (spaceReq > rd[r].value)
                     {
                         rd[r].value = spaceReq;
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Row %d value is updated to %d on cell [%d, %d]", r, spaceReq, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d value is updated to %d on cell [%d, %d]\n", r, spaceReq, r, c);
                     }
                 } else
                 {
                     // the widget requires space.
-                    if (!(widget->yConstraint() & ShrinkPolicy)
-                            && rd[r].value < spaceReq)
+                    if (!(widget->yConstraint() & ShrinkPolicy) && rd[r].value < spaceReq)
                     {
                         rd[r].value = spaceReq;
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Row %d value is updated to %d on cell [%d, %d]", r, spaceReq, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d value is updated to %d on cell [%d, %d]\n", r, spaceReq, r, c);
                     }
 
-                    if (!(rd[r].constraint & GrowPolicy)
-                            && widget->yConstraint() & GrowPolicy)
+                    if (!(rd[r].constraint & GrowPolicy) && widget->yConstraint() & GrowPolicy)
                     {
-                        ILOG_DEBUG(
-                                ILX_GRIDLAYOUT,
-                                "Row %d acquires GrowPolicy on cell [%d, %d]", r, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d acquires GrowPolicy on cell [%d, %d]\n", r, r, c);
                         rd[r].constraint = rd[r].constraint | GrowPolicy;
                     }
 
                     // row does not grow but cell can not shrink
-                    else if (widget->yConstraint() & ShrinkPolicy
-                            && rd[r].value < spaceReq)
+                    else if (widget->yConstraint() & ShrinkPolicy && rd[r].value < spaceReq)
                     {
-                        ILOG_DEBUG(ILX_GRIDLAYOUT, "Row %d can shrink", r);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d can shrink", r);
                         rd[r].constraint = rd[r].constraint | ShrinkPolicy;
                         rd[r].value = spaceReq;
                     }
@@ -613,9 +615,7 @@ GridLayout::tile()
                 }
             }
         }
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Row[%d] h: %d constraint: %d", r, rd[r].value, rd[r].constraint);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Row[%d] h: %d constraint: %d\n", r, rd[r].value, rd[r].constraint);
         if (rd[r].active)
             rActive++;
     }
@@ -630,7 +630,7 @@ GridLayout::tile()
 
     int wX = 0;
     int wY = 0;
-
+    int up, down, left;
     bool updateWidget = false;
 
     for (unsigned int c = 0; c < _cols; c++)
@@ -657,14 +657,14 @@ GridLayout::tile()
 
             updateWidget = false;
 
-            if (_cells[index]->lastRow == _cells[index]->row
-                    && _cells[index]->lastCol == _cells[index]->col)
+            // update widget if it occupies a single cell.
+            if (_cells[index]->lastRow == _cells[index]->row && _cells[index]->lastCol == _cells[index]->col)
             {
                 wWidth = cd[c].value;
                 wHeight = rd[r].value;
                 updateWidget = true;
             }
-
+            // update widget if we are on its last cell in south east direction.
             else if (_cells[index]->lastRow == r && _cells[index]->lastCol == c)
             {
                 wWidth = 0;
@@ -690,12 +690,10 @@ GridLayout::tile()
                 if (widget->xConstraint() == FixedConstraint)
                     widget->setWidth(_cells[index]->width);
 
-                else if (wWidth < _cells[index]->width
-                        && !(widget->xConstraint() & ShrinkPolicy))
+                else if (wWidth < _cells[index]->width && !(widget->xConstraint() & ShrinkPolicy))
                     widget->setWidth(_cells[index]->width);
 
-                else if (wWidth > _cells[index]->width
-                        && !(widget->xConstraint() & GrowPolicy))
+                else if (wWidth > _cells[index]->width && !(widget->xConstraint() & GrowPolicy))
                     widget->setWidth(_cells[index]->width);
 
                 else
@@ -708,12 +706,10 @@ GridLayout::tile()
                     y += (rd[_cells[index]->row].value - widget->height()) / 2;
                 }
 
-                else if (wHeight < _cells[index]->height
-                        && !(widget->yConstraint() & ShrinkPolicy))
+                else if (wHeight < _cells[index]->height && !(widget->yConstraint() & ShrinkPolicy))
                     widget->setHeight(_cells[index]->height);
 
-                else if (wHeight > _cells[index]->height
-                        && !(widget->yConstraint() & GrowPolicy))
+                else if (wHeight > _cells[index]->height && !(widget->yConstraint() & GrowPolicy))
                     widget->setHeight(_cells[index]->height);
 
                 else
@@ -721,7 +717,53 @@ GridLayout::tile()
 
                 widget->moveTo(x, y);
 
-                // LOG_DEBUG("Widget in Cell[%d, %d] - Pos(%d, %d) - Size(%d, %d)", _cells[index]->row, _cells[index]->col, widget->x(), widget->y(), widget->width(), widget->height());
+                ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Widget in Cell[%d, %d] - Pos(%d, %d) - Size(%d, %d)\n", _cells[index]->row, _cells[index]->col, widget->x(), widget->y(), widget->width(), widget->height());
+
+//                index = r * _cols + c;
+                up = (r - (_cells[index]->lastRow - _cells[index]->row) - 1) * _cols + c - (_cells[index]->lastCol - _cells[index]->col);
+                down = (r + 1) * _cols + c;
+                left = (r - (_cells[index]->lastRow - _cells[index]->row)) * _cols + c - (_cells[index]->lastCol - _cells[index]->col) - 1;
+
+                // set Neighbours
+                if (c == 0)
+                {
+                    widget->setNeighbour(Left, getNeighbour(Left));
+                    if (_cols > 1)
+                        widget->setNeighbour(Right, _cells[index + 1] ? _cells[index + 1]->widget : NULL);
+                    else
+                        widget->setNeighbour(Right, getNeighbour(Right)); // single column case
+                } else if (c == _cols - 1)
+                {
+                    if (left >= 0)
+                        widget->setNeighbour(Left, _cells[left] ? _cells[left]->widget : NULL);
+                    else
+                        widget->setNeighbour(Left, getNeighbour(Left));
+                    widget->setNeighbour(Right, getNeighbour(Right));
+                } else
+                {
+                    widget->setNeighbour(Left, _cells[left] ? _cells[left]->widget : NULL);
+                    widget->setNeighbour(Right, _cells[index + 1] ? _cells[index + 1]->widget : NULL);
+                }
+
+                if (r == 0)
+                {
+                    widget->setNeighbour(Up, getNeighbour(Up));
+                    if (_rows > 1)
+                        widget->setNeighbour(Down, _cells[down] ? _cells[down]->widget : NULL);
+                    else
+                        widget->setNeighbour(Down, getNeighbour(Down)); // single row case
+                } else if (r == _rows - 1)
+                {
+                    if (up >= 0)
+                        widget->setNeighbour(Up, _cells[up] ? _cells[up]->widget : NULL);
+                    else
+                        widget->setNeighbour(Up, getNeighbour(Up));
+                    widget->setNeighbour(Down, getNeighbour(Down));
+                } else
+                {
+                    widget->setNeighbour(Up, _cells[up] ? _cells[up]->widget : NULL);
+                    widget->setNeighbour(Down, _cells[down] ? _cells[down]->widget : NULL);
+                }
             }
         }
     }
@@ -729,18 +771,16 @@ GridLayout::tile()
 }
 
 void
-GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
-                        int expanding)
+GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int expanding)
 {
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
     availableSpace -= ((nActive - 1) * spacing());
     int lineAverage = availableSpace / nActive;
-    ILOG_DEBUG(
-            ILX_GRIDLAYOUT,
-            "Count: %d\t availableSpace: %d\t average: %d", nActive, availableSpace, lineAverage);
+    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count: %d\t availableSpace: %d\t average: %d\n", nActive, availableSpace, lineAverage);
     LineDataVector ldCopy = ld;
-    //***********************************************************
-    //                    FixedConstraint
-    //***********************************************************
+//***********************************************************
+//                    FixedConstraint
+//***********************************************************
     int spaceUsed = 0;
     LineDataVectorIterator it = ldCopy.begin();
     while (it != ldCopy.end())
@@ -748,8 +788,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         //        ignore non-active columns...
         if (!((LineData) *it).active)
             it = ldCopy.erase(it);
-        else if (((LineData) *it).constraint == FixedConstraint
-                && ((LineData) *it).min == 0)
+        else if (((LineData) *it).constraint == FixedConstraint && ((LineData) *it).min == 0)
         //          && ((ActiveWidget) *it).widget->maxHeight() < 0)
 
         {
@@ -764,22 +803,19 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Count@fixed: %d\t availableSpace: %d\t average: %d", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@fixed: %u\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
-    // TODO: Error in max-min size.
+// TODO: Error in max-min size.
 
-    //***********************************************************
-    //                      MaximumSize
-    //***********************************************************
+//***********************************************************
+//                      MaximumSize
+//***********************************************************
     spaceUsed = 0;
     it = ldCopy.begin();
     while (it != ldCopy.end())
     {
-        if (!(((LineData) *it).constraint & ExpandPolicy)
-                && lineAverage > ((LineData) *it).max)
+        if (!(((LineData) *it).constraint & ExpandPolicy) && lineAverage > ((LineData) *it).max)
         {
             spaceUsed += ((LineData) *it).max;
             it = ldCopy.erase(it);
@@ -791,14 +827,12 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Count@Max: %d\t availableSpace: %d\t average: %d", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@Max: %u\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
-    //***********************************************************
-    //                       MinimumSize
-    //***********************************************************
+//***********************************************************
+//                       MinimumSize
+//***********************************************************
     spaceUsed = 0;
     it = ldCopy.begin();
     while (it != ldCopy.end())
@@ -815,20 +849,17 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Count@Min: %d\t spaceUsed=%d\t availableSpace: %d\t average: %d", ldCopy.size(), spaceUsed, availableSpace, lineAverage);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@Min: %u\t spaceUsed=%d\t availableSpace: %d\t average: %d\n", ldCopy.size(), spaceUsed, availableSpace, lineAverage);
     }
 
-    //***********************************************************
-    //                     ShrinkPolicy
-    //***********************************************************
+//***********************************************************
+//                     ShrinkPolicy
+//***********************************************************
     spaceUsed = 0;
     it = ldCopy.begin();
     while (it != ldCopy.end())
     {
-        if (lineAverage < ((LineData) *it).value
-                && !(((LineData) *it).constraint & ShrinkPolicy))
+        if (lineAverage < ((LineData) *it).value && !(((LineData) *it).constraint & ShrinkPolicy))
         {
             spaceUsed += ((LineData) *it).value;
             it = ldCopy.erase(it);
@@ -840,20 +871,17 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Count@MiC: %d\t availableSpace: %d\t average: %d", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@MiC: %u\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
-    //***********************************************************
-    //                     GrowPolicy
-    //***********************************************************
+//***********************************************************
+//                     GrowPolicy
+//***********************************************************
     spaceUsed = 0;
     it = ldCopy.begin();
     while (it != ldCopy.end())
     {
-        if (lineAverage > ((LineData) *it).value
-                && !(((LineData) *it).constraint & GrowPolicy))
+        if (lineAverage > ((LineData) *it).value && !(((LineData) *it).constraint & GrowPolicy))
         {
             spaceUsed += ((LineData) *it).value;
             it = ldCopy.erase(it);
@@ -865,40 +893,31 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG(
-                ILX_GRIDLAYOUT,
-                "Count@MaC: %d\t availableSpace: %d\t average: %d", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@MaC: %u\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
-    //***********************************************************
-    //                       ExpandPolicy
-    //***********************************************************
+//***********************************************************
+//                       ExpandPolicy
+//***********************************************************
     int expandAvg = 0;
     if (expanding)
     {
-        ILOG_DEBUG(ILX_GRIDLAYOUT,
-                   "Entering expanding... Avg: %d", lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Entering expanding... Avg: %d\n", lineAverage);
         int expandSpace = 0;
         it = ldCopy.begin();
         while (it != ldCopy.end())
         {
             if (!(((LineData) *it).constraint & ExpandPolicy))
             {
-                if (((LineData) *it).min > 0
-                        && lineAverage > ((LineData) *it).min
-                        && ((LineData) *it).min > ((LineData) *it).value)
+                if (((LineData) *it).min > 0 && lineAverage > ((LineData) *it).min && ((LineData) *it).min > ((LineData) *it).value)
                 {
                     expandSpace += lineAverage - ((LineData) *it).min;
                     // FIXME ((LineData) *it).value = ((LineData) *it).min;
-                    ILOG_DEBUG(
-                            ILX_GRIDLAYOUT,
-                            "Additional space found: %d, min: %d", lineAverage - ((LineData) *it).min, ((LineData) *it).min);
+                    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Additional space found: %d, min: %d\n", lineAverage - ((LineData) *it).min, ((LineData) *it).min);
                 } else if (lineAverage > ((LineData) *it).value)
                 {
                     expandSpace += lineAverage - ((LineData) *it).value;
-                    ILOG_DEBUG(
-                            ILX_GRIDLAYOUT,
-                            "Additional space found: %d, value: %d", lineAverage - ((LineData) *it).value, ((LineData) *it).value);
+                    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Additional space found: %d, value: %d\n", lineAverage - ((LineData) *it).value, ((LineData) *it).value);
                 }
             }
             ++it;
@@ -906,20 +925,16 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
         if (expandSpace)
         {
             expandAvg = expandSpace / expanding;
-            ILOG_DEBUG(
-                    ILX_GRIDLAYOUT,
-                    "expandAverage: %d, average: %d", expandAvg, lineAverage);
+            ILOG_DEBUG(ILX_GRIDLAYOUT, " -> expandAverage: %d, average: %d\n", expandAvg, lineAverage);
         }
     }
 
-    //***********************************************************
-    //                    Set Line Geometry
-    //***********************************************************
+//***********************************************************
+//                    Set Line Geometry
+//***********************************************************
     int artifact = availableSpace - lineAverage * ldCopy.size();
     int pos = 0;
-    ILOG_DEBUG(
-            ILX_GRIDLAYOUT,
-            "available: %d, average: %d, artifact: %d", availableSpace, lineAverage, artifact);
+    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> available: %d, average: %d, artifact: %d\n", availableSpace, lineAverage, artifact);
 
     for (unsigned int i = 0; i < ld.size(); i++)
     {
@@ -942,8 +957,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
             else if (ld[i].max < ld[i].value)
                 ld[i].value = ld[i].max;
 
-            else if (ld[i].constraint & ShrinkPolicy
-                    && lineAverage < ld[i].value)
+            else if (ld[i].constraint & ShrinkPolicy && lineAverage < ld[i].value)
                 ld[i].value = lineAverage;
         } else
         {
@@ -953,8 +967,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
             else if (ld[i].max < lineAverage)
                 ld[i].value = ld[i].max;
 
-            else if (ld[i].constraint & ShrinkPolicy
-                    && ld[i].value > lineAverage)
+            else if (ld[i].constraint & ShrinkPolicy && ld[i].value > lineAverage)
                 ld[i].value = lineAverage;
 
             else if (ld[i].constraint & GrowPolicy && ld[i].value < lineAverage)
@@ -968,7 +981,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive,
             }
         }
         ld[i].pos = pos;
-        //LOG_DEBUG(">> line[%d] - pos=%d, value=%d, cons=%d", i, pos, ld[i].value, ld[i].constraint);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> line[%d] - pos=%d, value=%d, cons=%d\n", i, pos, ld[i].value, ld[i].constraint);
         pos += ld[i].value + spacing();
     }
 }
