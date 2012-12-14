@@ -41,7 +41,11 @@ FontCache*
 FontCache::Instance()
 {
     if (!__instance)
+    {
         __instance = new FontCache;
+        FcConfig* config = FcConfigGetCurrent();
+        FcConfigAppFontAddDir(config, (FcChar8*) ILIXI_DATADIR"fonts");
+    }
     return __instance;
 }
 
