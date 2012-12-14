@@ -76,6 +76,13 @@ LayoutBase::preferredSize() const
     return Size(0, 0); // FIXME default size for layout.
 }
 
+void
+LayoutBase::clear()
+{
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+        removeWidget(*it);
+}
+
 unsigned int
 LayoutBase::count() const
 {

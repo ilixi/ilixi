@@ -63,6 +63,12 @@ public:
     preferredSize() const;
 
     /*!
+     * Removes all widgets from layout.
+     */
+    virtual void
+    clear();
+
+    /*!
      * Returns number of widgets inside this layout.
      */
     unsigned int
