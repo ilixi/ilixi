@@ -25,35 +25,33 @@
 #define HOME_H_
 
 #include <ui/Application.h>
+#include <ui/GridView.h>
 #include <core/DaleDFB.h>
-#include "NumPages.h"
+#include <core/ComponentData.h>
 
 namespace ilixi
 {
 
-class Home : public Application
+class PHome : public Application
 {
     typedef std::vector<Compositor::AppData> AppDataVector;
 
 public:
-    Home(int argc, char* argv[]);
+    PHome(int argc, char* argv[]);
 
     virtual
-    ~Home();
+    ~PHome();
 
     void
-    runApp(const char* name);
-
-    static Image* _circle;
-    static Image* _circle_sm;
+    runApp(const std::string& name);
 
 protected:
     void
-    initButtons(const Home::AppDataVector& dataVector);
+    initButtons(const PHome::AppDataVector& dataVector);
 
 private:
     IComaComponent* _compositor;
-    NumPages* _pages;
+    GridView* _view;
 
     void
     requestAppList();

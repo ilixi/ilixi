@@ -25,8 +25,7 @@ AppButton::AppButton(const std::string& text, Widget* parent)
     _tween = new Tween(Tween::LINEAR, Tween::EASE_IN, 0, 20);
     _anim->addTween(_tween);
     _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &AppButton::updateIconGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &AppButton::updateIconGeometry));
     setConstraints(MinimumConstraint, FixedConstraint);
 }
 
@@ -39,6 +38,7 @@ AppButton::~AppButton()
 Size
 AppButton::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
     return Size(150, 150);
 }
 
@@ -56,9 +56,7 @@ AppButton::setAppVisible(bool visible)
     if (_appVisible)
     {
         _anim->stop();
-        _icon->moveTo(
-                (width() - 96) / 2,
-                stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
+        _icon->moveTo((width() - 96) / 2, stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
         _icon->setSize(96, 96);
         update();
     }

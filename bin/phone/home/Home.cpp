@@ -22,44 +22,44 @@
  */
 
 #include "Home.h"
+#include "AppButton.h"
+#include <ui/HBoxLayout.h>
 #include <core/Logger.h>
+#include <sigc++/bind.h>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_HOMEAPP, "ilixi/phone/Home", "Home");
-
-Image* Home::_circle = NULL;
-Image* Home::_circle_sm = NULL;
+D_DEBUG_DOMAIN(ILX_HOMEAPP, "ilixi/phone/PHome", "PHome");
 
 void
 appVisibility(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
-    Home* home = (Home*) ctx;
+    PHome* home = (PHome*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-    home->_pages->setAppStatus(notification);
+//    home->_pages->setAppStatus(notification);
 }
 
 void
 appStarting(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
-    Home* home = (Home*) ctx;
+    PHome* home = (PHome*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-    home->_pages->setAppStarting(notification);
+//    home->_pages->setAppStarting(notification);
 }
 
 void
 receiveAppList(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
-    Home* home = (Home*) ctx;
+    PHome* home = (PHome*) ctx;
 
     int* size = ((int*) arg);
     ILOG_DEBUG(ILX_HOMEAPP, " -> Size: %d\n", *size);
     Compositor::AppData *srcdata = (Compositor::AppData*) (size + 1);
-    Home::AppDataVector vec;
+    PHome::AppDataVector vec;
 
     for (int i = 0; i < *size; ++i)
     {
@@ -73,64 +73,69 @@ receiveAppList(void* ctx, void* arg)
     home->initButtons(vec);
 }
 
-Home::Home(int argc, char* argv[])
+PHome::PHome(int argc, char* argv[])
         : Application(&argc, &argv, OptDale),
           _compositor(NULL)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    setTitle("Home");
+    setTitle("PHome");
     setBackgroundFilled(true);
-    setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
+//    setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
 
-    if (!_circle)
-    {
-        _circle = new Image(ILIXI_DATADIR"phone/home/circle.png", Size(48, 48));
-        _circle_sm = new Image(ILIXI_DATADIR"phone/home/circle_small.png", Size(38, 38));
-    }
+    setMargin(10);
+    setLayout(new HBoxLayout());
 
-    _pages = new NumPages();
-    _pages->sigAppStart.connect(sigc::mem_fun(this, &Home::runApp));
-    addWidget(_pages);
+    _view = new GridView();
+    _view->setGridSize(10, 3);
+    addWidget(_view);
 
     DaleDFB::comaGetComponent("Compositor", &_compositor);
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
-    sigVisible.connect(sigc::mem_fun(this, &Home::requestAppList));
+//    sigGeometryUpdated.connect(sigc::mem_fun(this, &PHome::updateHomeGeometry));
+    sigVisible.connect(sigc::mem_fun(this, &PHome::requestAppList));
 }
 
-Home::~Home()
+PHome::~PHome()
 {
-    delete _circle;
-    delete _circle_sm;
+    ILOG_TRACE_W(ILX_HOMEAPP);
     if (_compositor)
         _compositor->Release(_compositor);
 }
 
 void
-Home::runApp(const char* name)
+PHome::runApp(const std::string& name)
 {
+    ILOG_TRACE_W(ILX_HOMEAPP);
     if (_compositor)
     {
         void *ptr;
         DaleDFB::comaGetLocal(128, &ptr);
         char* n = (char*) ptr;
-        snprintf(n, 128, "%s", name);
+        snprintf(n, 128, "%s", name.c_str());
         DaleDFB::comaCallComponent(_compositor, Compositor::StartApp, (void*) n);
     }
 }
 
 void
-Home::initButtons(const Home::AppDataVector& dataVector)
+PHome::initButtons(const PHome::AppDataVector& dataVector)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    for (Home::AppDataVector::const_iterator it = dataVector.begin(); it != dataVector.end(); ++it)
-        _pages->addItem(((Compositor::AppData) *it).name, ((Compositor::AppData) *it).icon);
-    _pages->initPages();
+    for (PHome::AppDataVector::const_iterator it = dataVector.begin(); it != dataVector.end(); ++it)
+    {
+        AppButton* button = new AppButton(((Compositor::AppData) *it).name);
+        button->setToolButtonStyle(ToolButton::IconAboveText);
+//        button->setDrawFrame(false);
+        button->setIcon(((Compositor::AppData) *it).icon, Size(96, 96));
+        button->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PHome::runApp), button->text()));
+
+        _view->addItem(button);
+    }
 }
 
 void
-Home::requestAppList()
+PHome::requestAppList()
 {
+    ILOG_TRACE_W(ILX_HOMEAPP);
     if (_compositor)
     {
         _compositor->Listen(_compositor, Compositor::AppVisibilty, appVisibility, this);
@@ -141,10 +146,10 @@ Home::requestAppList()
 }
 
 void
-Home::updateHomeGeometry()
+PHome::updateHomeGeometry()
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    _pages->setGeometry(0, 100, width(), height() - 200);
+    _view->setGeometry(10, 10, width() - 20, height() - 20);
 }
 
 }
@@ -152,7 +157,7 @@ Home::updateHomeGeometry()
 int
 main(int argc, char* argv[])
 {
-    ilixi::Home app(argc, argv);
+    ilixi::PHome app(argc, argv);
     app.exec();
     return 0;
 }
