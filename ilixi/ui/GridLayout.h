@@ -63,8 +63,7 @@ public:
         int lastCol;
         int width;
         int height;
-        int h4w;
-        bool ignored;
+        int h4w;bool ignored;
     };
 
     struct LineData
@@ -140,6 +139,12 @@ public:
      */
     unsigned int
     rowHeight(int row) const;
+
+    /*!
+     * Removes all widgets from layout.
+     */
+    void
+    clear();
 
     /*!
      * Sets the width of a given column.

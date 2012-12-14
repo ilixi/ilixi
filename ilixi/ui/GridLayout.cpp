@@ -73,54 +73,126 @@ GridLayout::heightForWidth(int width) const
 Size
 GridLayout::preferredSize() const
 {
-    // FIXME implement preferredSize
     ILOG_TRACE_W(ILX_GRIDLAYOUT);
-    return Size();
 
-    //  Widget* widget;
-    //  int index = 0;
-    //
-    //  for (int i = 0; i < _rows * _cols; i++)
-    //    {
-    //      if (!_cells[i])
-    //        continue;
-    //      _cells[i]->ignored = false;
-    //      _cells[i]->width = -2;
-    //      _cells[i]->height = -2;
-    //      _cells[i]->h4w = -2;
-    //    }
-    //
-    //  std::vector<int> colW, rowH;
-    //  colW.assign(_cols, 0);
-    //  rowH.assign(_rows, 0);
-    //
-    //  for (int c = 0; c < _cols; ++c)
-    //    {
-    //      for (int r = 0; r < _rows; ++r)
-    //        {
-    //          index = r * _cols + c;
-    //
-    //          // request preferred size from the widget only once.
-    //          if (_cells[index]->width == -2)
-    //            {
-    //              Size s = widget->preferredSize();
-    //              _cells[index]->width = s.width();
-    //              _cells[index]->height = s.height();
-    //            }
-    //
-    //          if (_cells[index]->lastRow == r && _cells[index]->lastCol == c)
-    //            {
-    //              // calculate H space required
-    //              for (int i = _cells[index]->col; i < _cells[index]->lastCol; i++)
-    //                {
-    //                  spaceUsed += cd[c] + spacing();
-    //                }
-    //              spaceReq = _cells[index]->width - spaceUsed;
-    //              cd[c].value = spaceReq;
-    //              // integrate c and r sums.
-    //            }
-    //        }
-    //    }
+    int index = 0;
+    std::vector<int> cols;
+    std::vector<int> rows;
+    cols.assign(_cols, 0);
+    rows.assign(_rows, 0);
+
+    // Clear Cell Data
+    for (int i = 0; i < _rows * _cols; i++)
+    {
+        if (!_cells[i])
+            continue;
+
+        _cells[i]->ignored = false;
+        _cells[i]->width = -2;
+        _cells[i]->height = -2;
+        _cells[i]->h4w = -2;
+    }
+
+    for (int c = 0; c < _cols; ++c)
+    {
+        for (int r = 0; r < _rows; ++r)
+        {
+            index = r * _cols + c;
+
+            if (!_cells[index])
+                continue;
+
+            // request preferred size from the widget only once.
+            if (_cells[index]->width == -2)
+            {
+                Size s = _cells[index]->widget->preferredSize();
+                _cells[index]->width = s.width();
+                _cells[index]->height = s.height();
+                ILOG_DEBUG(ILX_GRIDLAYOUT, "   -> cells[%d] -> %d, %d\n", index, _cells[index]->width, _cells[index]->height);
+//                if (_cells[index]->widget->minWidth() && _cells[index]->width < _cells[index]->widget->minWidth())
+//                    _cells[index]->width = _cells[index]->widget->minWidth();
+//                else if (_cells[index]->widget->maxWidth() && _cells[index]->width > _cells[index]->widget->maxWidth())
+//                    _cells[index]->width = _cells[index]->widget->maxWidth();
+//
+//                if (_cells[index]->widget->minHeight() && _cells[index]->height < _cells[index]->widget->minHeight())
+//                    _cells[index]->height = _cells[index]->widget->minHeight();
+//                else if (_cells[index]->widget->maxHeight() && _cells[index]->height > _cells[index]->widget->maxHeight())
+//                    _cells[index]->height = _cells[index]->widget->maxHeight();
+
+                ILOG_DEBUG(ILX_GRIDLAYOUT, "   -> cells[%d] -> %d, %d\n", index, _cells[index]->width, _cells[index]->height);
+            }
+        }
+    }
+
+    // single cell
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Single\n");
+    for (int c = 0; c < _cols; ++c)
+    {
+        for (int r = 0; r < _rows; ++r)
+        {
+            index = r * _cols + c;
+
+            if (!_cells[index])
+                continue;
+
+            if (_cells[index]->lastRow == _cells[index]->row && _cells[index]->lastCol == _cells[index]->col)
+            {
+                if (cols[c] < _cells[index]->width)
+                    cols[c] = _cells[index]->width;
+
+                if (rows[r] < _cells[index]->height)
+                    rows[r] = _cells[index]->height;
+
+                ILOG_DEBUG(ILX_GRIDLAYOUT, "   -> Index %d -> %d, %d\n", index, cols[c], rows[r]);
+            }
+        }
+    }
+
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Multiple\n");
+    int colUsed = 0;
+    int rowUsed = 0;
+    for (int c = 0; c < _cols; ++c)
+    {
+        for (int r = 0; r < _rows; ++r)
+        {
+            index = r * _cols + c;
+
+            if (!_cells[index])
+                continue;
+
+            if (_cells[index]->lastRow == r && _cells[index]->lastCol == c)
+            {
+                colUsed = 0;
+                rowUsed = 0;
+                // XXX left here...
+                for (int i = _cells[index]->col; i < _cells[index]->lastCol; i++)
+                    colUsed += cols[i];
+                for (int i = _cells[index]->row; i < _cells[index]->lastRow; i++)
+                    rowUsed += rows[i];
+
+                int cW = _cells[index]->width - colUsed;
+                int cH = _cells[index]->height - rowUsed;
+
+                if (cW && cols[c] < cW)
+                    cols[c] = cW;
+                if (cH && rows[r] < cH)
+                    rows[r] = cH;
+
+                ILOG_DEBUG(ILX_GRIDLAYOUT, "   -> Index %d -> %d, %d\n", index, cols[c], rows[r]);
+            }
+        }
+    }
+
+    int w = 0;
+    for (int i = 0; i < _cols; ++i)
+        w += cols[i] + spacing();
+    int h = 0;
+    for (int i = 0; i < _rows; ++i)
+        h += rows[i] + spacing();
+
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Size: %d, %d\n", w, h);
+
+    return Size(w, h);
 }
 
 unsigned int
@@ -149,6 +221,32 @@ GridLayout::rowHeight(int row) const
     if (row < _rows)
         return _rowHeights[row];
     return 0;
+}
+
+void
+GridLayout::clear()
+{
+    for (unsigned int c = 0; c < _cols; c++)
+    {
+        for (unsigned int r = 0; r < _rows; r++)
+        {
+            int index = r * _cols + c;
+
+            if (_cells[index] == NULL)
+                continue;
+
+            else if (_cells[index]->lastRow == r && _cells[index]->lastCol == c)
+            {
+                delete _cells[index];
+                _cells[index] = NULL;
+            }
+        }
+    }
+
+    _cells.assign(_rows * _cols, (CellData*) NULL);
+
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+        removeWidget(*it);
 }
 
 void
@@ -192,7 +290,7 @@ GridLayout::addWidget(Widget* widget)
             result = true;
             doLayout();
 
-            ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Widget added at Cell(%d, %d) expands to Cell(%d, %d)\n", r, c, r, c);
+            ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Widget added at Cell [%d] (%d, %d) expands to (%d, %d)\n", i, r, c, r, c);
             break;
         }
     }
