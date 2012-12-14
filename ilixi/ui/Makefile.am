@@ -13,6 +13,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							Dialog.cpp \
 							Frame.cpp \
 							GridLayout.cpp \
+							GridView.cpp \
 							GroupBox.cpp \
 							HBoxLayout.cpp \
 							Icon.cpp \
@@ -45,6 +46,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Dialog.h \
 							Frame.h \
 							GridLayout.h \
+							GridView.h \
 							GroupBox.h \
 							HBoxLayout.h \
 							Icon.h \
@@ -82,6 +84,7 @@ UI_REFLEX				= 	Application_rflx.cpp \
 							Dialog_rflx.cpp \
 							Frame_rflx.cpp \
 							GridLayout_rflx.cpp \
+							GridView_rflx.cpp \
 							GroupBox_rflx.cpp \
 							HBoxLayout_rflx.cpp \
 							Icon_rflx.cpp \

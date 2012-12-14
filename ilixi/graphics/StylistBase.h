@@ -43,6 +43,7 @@ class CheckBox;
 class ComboBox;
 class Dialog;
 class Frame;
+class GridView;
 class GroupBox;
 class Icon;
 class Label;
@@ -165,6 +166,12 @@ public:
      */
     virtual void
     drawLineInput(Painter* painter, LineInput* input, bool cursor = false)=0;
+
+    /*!
+     * Draws a GridView frame.
+     */
+    virtual void
+    drawGridView(Painter* painter, GridView* grid)=0;
 
     /*!
      * Draws a groupbox.

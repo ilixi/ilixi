@@ -100,6 +100,12 @@ public:
     drawLineInput(Painter* painter, LineInput* input, bool cursor = false);
 
     /*!
+     * Draws a GridView frame.
+     */
+    virtual void
+    drawGridView(Painter* painter, GridView* grid);
+
+    /*!
      * Draws a groupbox.
      */
     virtual void

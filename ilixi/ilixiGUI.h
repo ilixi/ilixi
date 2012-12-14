@@ -29,6 +29,7 @@
 #include <ui/ComboBox.h>
 #include <ui/Dialog.h>
 #include <ui/GridLayout.h>
+#include <ui/GridView.h>
 #include <ui/GroupBox.h>
 #include <ui/HBoxLayout.h>
 #include <ui/Icon.h>

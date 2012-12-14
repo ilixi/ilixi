@@ -225,6 +225,13 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
 }
 
 void
+Stylist::drawGridView(Painter* p, GridView* grid)
+{
+    // TODO: draw GridView frame
+    p->drawRectangle(0, 0, grid->width(), grid->height());
+}
+
+void
 Stylist::drawGroupBox(Painter* p, GroupBox* box)
 {
     const WidgetState state = box->state();
