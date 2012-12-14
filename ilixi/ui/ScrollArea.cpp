@@ -228,6 +228,7 @@ void
 ScrollArea::doLayout()
 {
     updateScollAreaGeometry();
+    update();
 }
 
 void
