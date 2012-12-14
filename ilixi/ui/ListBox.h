@@ -57,6 +57,9 @@ public:
     unsigned int
     currentIndex() const;
 
+    bool
+    drawFrame() const;
+
     int
     itemIndex(Widget* item);
 
@@ -83,9 +86,6 @@ public:
 
     void
     setOrientation(Orientation orientation);
-
-    bool
-    drawFrame() const;
 
     void
     setDrawFrame(bool drawFrame);

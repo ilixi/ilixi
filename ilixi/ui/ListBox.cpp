@@ -79,6 +79,7 @@ void
 ListBox::clear()
 {
     ILOG_TRACE_W(ILX_LISTBOX);
+    _layout->clear();
     _items.clear();
 }
 
@@ -86,7 +87,7 @@ unsigned int
 ListBox::count() const
 {
     ILOG_TRACE_W(ILX_LISTBOX);
-    return _items.size();
+    return _layout->count();
 }
 
 Widget*
