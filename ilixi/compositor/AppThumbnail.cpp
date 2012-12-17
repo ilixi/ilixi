@@ -42,6 +42,7 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
     _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);
     _ani.addTween(_opacityTween);
     _ani.sigExec.connect(sigc::mem_fun(this, &AppThumbnail::tweenSlot));
+
     if (!(instance->appInfo()->appFlags() & APP_AUTO_START))
     {
         _close = new ToolButton("");
@@ -52,7 +53,7 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         _close->sigPressed.connect(sigc::bind<AppInstance*>(sigc::mem_fun(_compositor, &ILXCompositor::killApp), _instance));
         addChild(_close);
     }
-
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &AppThumbnail::updateThumbGeometry));
     setVisible(false);
     ILOG_TRACE_W(ILX_APPTHUMB);
 }
@@ -102,6 +103,12 @@ void
 AppThumbnail::tweenSlot()
 {
     update();
+}
+
+void
+AppThumbnail::updateThumbGeometry()
+{
+    _close->setGeometry(width() - 32, 0, 32, 32);
 }
 
 } /* namespace ilixi */

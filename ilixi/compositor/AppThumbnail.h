@@ -70,6 +70,9 @@ namespace ilixi
 
     void
     tweenSlot();
+
+    void
+    updateThumbGeometry();
   };
 
 } /* namespace ilixi */
