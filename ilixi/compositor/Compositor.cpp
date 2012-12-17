@@ -57,6 +57,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 {
     setenv("WEBKIT_IGNORE_SSL_ERRORS", "1", 0);
     setenv("LITE_WINDOW_DOUBLEBUFFER", "1", 0);
+    setenv("LITE_NO_THEME", "1", 0);
 
     _soundComp = new SoundComponent();
     _compComp = new CompositorComponent(this);
