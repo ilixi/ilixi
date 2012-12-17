@@ -44,8 +44,7 @@ CarouselItem::CarouselItem(Carousel* parent)
           _scale(0)
 {
     setInputMethod(KeyPointer);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &CarouselItem::updateCarouselItemGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &CarouselItem::updateCarouselItemGeometry));
 }
 
 CarouselItem::~CarouselItem()
@@ -79,8 +78,7 @@ CarouselItem::setScale(float scale)
 {
     _scale = scale;
     setZ(-15 + _scale * 20);
-    setSize(_carousel->itemSize().width() * _scale,
-            _carousel->itemSize().height() * _scale);
+    setSize(_carousel->itemSize().width() * _scale, _carousel->itemSize().height() * _scale);
 }
 
 Widget*
@@ -147,17 +145,16 @@ CarouselItem::updateCarouselItemGeometry()
 //****************************************************************************
 
 Carousel::Carousel(Widget* parent)
-        : Widget(parent)
+        : Widget(parent),
+          _selected(NULL)
 {
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &Carousel::updateCarouselGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &Carousel::updateCarouselGeometry));
     setInputMethod(PointerInput);
     _animation.setDuration(500);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _animation.addTween(_tween);
     _animation.sigExec.connect(sigc::mem_fun(this, &Carousel::tweenSlot));
-    _animation.sigFinished.connect(
-            sigc::mem_fun(this, &Carousel::tweenEndSlot));
+    _animation.sigFinished.connect(sigc::mem_fun(this, &Carousel::tweenEndSlot));
 }
 
 Carousel::~Carousel()
@@ -170,14 +167,18 @@ Carousel::itemSize() const
     return _itemSize;
 }
 
+CarouselItem*
+Carousel::itemAtFront() const
+{
+    return _selected;
+}
+
 void
 Carousel::addItem(CarouselItem* item)
 {
     if (addChild(item))
     {
-        item->sigFocused.connect(
-                sigc::bind<CarouselItem*>(
-                        sigc::mem_fun(this, &Carousel::showItem), item));
+        item->sigFocused.connect(sigc::bind<CarouselItem*>(sigc::mem_fun(this, &Carousel::showItem), item));
         updateCarouselGeometry();
     }
 }
@@ -195,9 +196,7 @@ Carousel::addWidget(Widget* widget)
     CarouselItem* item = new CarouselItem(this);
     addChild(item);
     item->setSource(widget);
-    item->sigFocused.connect(
-            sigc::bind<CarouselItem*>(sigc::mem_fun(this, &Carousel::showItem),
-                                      item));
+    item->sigFocused.connect(sigc::bind<CarouselItem*>(sigc::mem_fun(this, &Carousel::showItem), item));
     updateCarouselGeometry();
 }
 
@@ -237,6 +236,22 @@ Carousel::showItem(CarouselItem* widget)
 }
 
 void
+Carousel::showWidget(Widget* widget)
+{
+    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
+    {
+        if (((CarouselItem*) *it)->source() == widget)
+        {
+            float target = PI_HALF - ((CarouselItem*) *it)->angle();
+            _animation.stop();
+            _tween->setEndValue(target);
+            _animation.start();
+            break;
+        }
+    }
+}
+
+void
 Carousel::compose(const PaintEvent& event)
 {
 }
@@ -256,8 +271,7 @@ Carousel::tweenSlot()
 
         item->setScale(1.0 * item->y() / (_center.y() + _radiusY));
 
-        item->setX(
-                std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
+        item->setX(std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
     }
 
     update();
@@ -268,8 +282,7 @@ Carousel::tweenEndSlot()
 {
     CarouselItem* selected;
     int i = 0;
-    for (WidgetListIterator it = _children.begin(); it != _children.end();
-            ++it, ++i)
+    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it, ++i)
     {
 
         CarouselItem* item = dynamic_cast<CarouselItem*>(*it);
@@ -278,14 +291,13 @@ Carousel::tweenEndSlot()
         item->setAngle(item->angle() + _tween->endValue());
         if (item->scale() == 1)
             selected = item;
-        ILOG_DEBUG(
-                ILX_CAROUSEL,
-                "%d z%d "
-                "angle: %f "
-                "scale %f - "
-                "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
+        ILOG_DEBUG( ILX_CAROUSEL, "%d z%d "
+        "angle: %f "
+        "scale %f - "
+        "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
     }
-    sigItemSelected(selected);
+    _selected = selected;
+//    sigItemSelected(selected);
 }
 
 void
@@ -307,16 +319,13 @@ Carousel::updateCarouselGeometry()
 
     _itemSize = Size(xUnit * 3, yUnit * 3);
 
-    ILOG_DEBUG(
-            ILX_CAROUSEL,
-            "AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
+    ILOG_DEBUG( ILX_CAROUSEL, "AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
 
     float angle = PI_HALF;
 
     Widget* right = getNeighbour(Right);
     Widget* first = NULL;
-    for (WidgetListIterator it = _children.begin(); it != _children.end();
-            ++it, ++i)
+    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it, ++i)
     {
 
         CarouselItem* item = dynamic_cast<CarouselItem*>(*it);
@@ -329,19 +338,16 @@ Carousel::updateCarouselGeometry()
 
         item->setScale(1.0 * item->y() / (_center.y() + _radiusY));
 
-        item->setX(
-                std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
+        item->setX(std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
 
         if (right)
             right->setNeighbour(Right, item);
         item->setNeighbour(Right, right);
 
-        ILOG_DEBUG(
-                ILX_CAROUSEL,
-                "%d z%d "
-                "angle: %f "
-                "scale %f - "
-                "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
+        ILOG_DEBUG( ILX_CAROUSEL, "%d z%d "
+        "angle: %f "
+        "scale %f - "
+        "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
 
         angle += _angleStep;
         right = item;

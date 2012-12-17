@@ -145,6 +145,9 @@ public:
     Size
     itemSize() const;
 
+    CarouselItem*
+    itemAtFront() const;
+
     /*!
      * Adds a CarouselItem and updates.
      */
@@ -176,6 +179,12 @@ public:
     showItem(CarouselItem* item);
 
     /*!
+     * Brings the given CarouselItem to front.
+     */
+    void
+    showWidget(Widget* widget);
+
+    /*!
      * This signal is emitted once an item is selected.
      */
     sigc::signal<void, CarouselItem*> sigItemSelected;
@@ -185,6 +194,8 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    //! This property stores the item at front.
+    CarouselItem* _selected;
     //! This property stores the radius on x axis.
     int _radiusX;
     //! This property stores the radius on y axis.
