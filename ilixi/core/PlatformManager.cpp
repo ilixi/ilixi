@@ -210,6 +210,34 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
     {
         _options = opts;
 
+        if (argc && argv)
+        {
+            for (int i = 1; i < *argc; i++)
+            {
+                if (strncmp((*argv)[i], "--ilx:", 6) == 0)
+                {
+                    parseArgs((*argv)[i] + 6);
+                    (*argv)[i] = NULL;
+                }
+            }
+
+            for (int i = 1; i < *argc; i++)
+            {
+                int k;
+                for (k = i; k < *argc; k++)
+                    if ((*argv)[k] != NULL)
+                        break;
+
+                if (k > i)
+                {
+                    k -= i;
+                    for (int j = i + k; j < *argc; j++)
+                        (*argv)[j - k] = (*argv)[j];
+                    *argc -= k;
+                }
+            }
+        }
+
         ILOG_DEBUG(ILX_PLATFORMMANAGER, "Initialising DirectFB interfaces...\n");
 
         if (DirectFBInit(argc, argv) != DFB_OK)
@@ -289,6 +317,26 @@ PlatformManager::release()
 
         ILOG_INFO(ILX_PLATFORMMANAGER, "DirectFB interfaces are released.\n");
     }
+}
+
+void
+PlatformManager::parseArgs(const char *args)
+{
+    char* arg = strdup(args);
+    char *next;
+
+    while (arg && arg[0])
+    {
+        if ((next = strchr(arg, ',')) != NULL)
+            *next++ = '\0';
+
+        if (strcmp(arg, "exclusive") == 0)
+            _options = (AppOptions) (_options | OptExclusive);
+
+        arg = next;
+    }
+
+    free(arg);
 }
 
 bool

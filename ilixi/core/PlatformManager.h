@@ -179,6 +179,9 @@ private:
     void
     release();
 
+    void
+    parseArgs(const char *args);
+
     bool
     parseConfig();
 
