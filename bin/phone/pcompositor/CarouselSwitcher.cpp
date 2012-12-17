@@ -98,6 +98,7 @@ CarouselSwitcher::removeThumb(AppThumbnail* thumb)
 void
 CarouselSwitcher::scrollTo(AppThumbnail* thumb)
 {
+    _carousel->showWidget(thumb);
 }
 
 void
@@ -106,7 +107,7 @@ CarouselSwitcher::compose(const PaintEvent& event)
     Painter p(this);
     p.begin(event);
     p.setBrush(Color(0, 0, 0, 80));
-    p.fillRectangle(0, 0, width(), height());
+    p.fillRectangle(0, 0, width(), height(), (DFBSurfaceDrawingFlags) (DSDRAW_SRC_PREMULTIPLY | DSDRAW_BLEND));
     p.end();
 }
 
