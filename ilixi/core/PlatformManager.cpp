@@ -413,25 +413,24 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
         xmlChar* flipModeC = xmlGetProp(node, (xmlChar*) "flipMode");
         xmlChar* bufferModeC = xmlGetProp(node, (xmlChar*) "bufferMode");
 
-        HardwareLayer info;
         unsigned int id = atoi((char*) idC);
-
-        info.fsu = false;
-        if (xmlStrcmp(fsuC, (xmlChar*) "on") == 0)
-            info.fsu = true;
-
-        info.flipMode = FlipNone;
 
         IDirectFBDisplayLayer* layer = NULL;
         DFBResult res = getDFB()->GetDisplayLayer(getDFB(), id, &layer);
-        info.layer = layer;
 
         if (res != DFB_OK)
         {
-            ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot get layer with id (%d)!\n", id);
+            ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot get layer with id [%d]!\n", id);
             ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
         } else
         {
+            HardwareLayer info;
+            info.fsu = false;
+            if (xmlStrcmp(fsuC, (xmlChar*) "on") == 0)
+                info.fsu = true;
+            info.flipMode = FlipNone;
+            info.layer = layer;
+
             std::pair<HardwareLayerMap::iterator, bool> ret = _hwLayerMap.insert(std::pair<unsigned int, HardwareLayer>(id, info));
             if (ret.second == false)
                 ILOG_ERROR(ILX_PLATFORMMANAGER, "A layer with id [%d] already exists, cannot add duplicate record!\n", id);
@@ -495,7 +494,7 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                 res = layer->SetConfiguration(layer, &config);
                 if (res != DFB_OK)
                 {
-                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer %d - %s\n", config.buffermode, id, DirectFBErrorString(res));
+                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
                     ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
                 } else
                     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
@@ -527,7 +526,7 @@ PlatformManager::setLogicLayers(xmlNodePtr node)
 
         HardwareLayerMap::iterator it = _hwLayerMap.find(id);
         if (it == _hwLayerMap.end())
-            ILOG_ERROR(ILX_PLATFORMMANAGER, "There is no hw layer with id!\n", id);
+            ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot add %s because there is no hw layer with id [%d]!\n", (char*) nameC, id);
         else
         {
             std::pair<LogicLayerMap::iterator, bool> ret = _layerMap.insert(std::pair<std::string, LogicLayer>((char*) nameC, info));
