@@ -763,6 +763,8 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
 
                 if (_switcher->visible())
                     toggleSwitcher(false);
+
+                _switcher->sigSwitchRequest(_switcher->currentThumb()->instance());
                 return true;
             }
         }
