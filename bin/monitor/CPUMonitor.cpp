@@ -101,15 +101,27 @@ CPUMonitor::readCpuInfo()
         else if (tagbuffer.find("siblings", 0) != std::string::npos)
         {
             sscanf(item.c_str(), "%u", &_cpuCores);
-            for (unsigned int i = 0; i < _cpuCores; ++i)
-            {
-                CPU c;
-                _cores.push_back(c);
-            }
+            _cores.assign(_cpuCores, CPU());
             break;
         }
     }
     infile.close();
+
+    if (_cpuCores == 0)
+    {
+        infile.open("/proc/stat", std::ifstream::in);
+        while (infile.good())
+        {
+            std::string tagbuffer;
+            getline(infile, line);
+
+            if (strncmp(line.c_str(), "cpu", 3) == 0)
+                ++_cpuCores;
+        }
+        if (_cpuCores--)
+            _cores.assign(_cpuCores, CPU());
+        infile.close();
+    }
 }
 
 void
