@@ -55,7 +55,6 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
           _soundComponent(NULL),
           _music(NULL)
 {
-    setTitle("SoundMixer");
     setMargin(20);
     setLayout(new VBoxLayout());
 

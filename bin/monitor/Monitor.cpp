@@ -44,7 +44,6 @@ template<class T>
 Monitor::Monitor(int argc, char* argv[])
         : Application(&argc, &argv)
 {
-    setTitle("System Monitor");
     setMargin(15);
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
 

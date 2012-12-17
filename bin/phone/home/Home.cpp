@@ -78,7 +78,6 @@ PHome::PHome(int argc, char* argv[])
           _compositor(NULL)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    setTitle("PHome");
     setBackgroundFilled(true);
 //    setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
 

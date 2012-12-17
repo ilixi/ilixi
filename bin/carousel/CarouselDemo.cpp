@@ -33,7 +33,6 @@ namespace ilixi
   CarouselDemo::CarouselDemo(int argc, char* argv[]) :
       Application(&argc, &argv)
   {
-    setTitle("CarouselDemo");
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
 
     setLayout(new VBoxLayout());

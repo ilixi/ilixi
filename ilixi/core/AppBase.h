@@ -78,18 +78,6 @@ public:
     ~AppBase();
 
     /*!
-     * Returns title of application.
-     */
-    static std::string
-    title();
-
-    /*!
-     * Sets application title.
-     */
-    void
-    setTitle(std::string title);
-
-    /*!
      * Returns EventBuffer interface.
      */
     static IDirectFBEventBuffer*
@@ -113,7 +101,7 @@ protected:
     handleUserEvent(const DFBUserEvent& event);
 
     /*!
-     * This method gets window events first.
+     * This method gets all window events first.
      */
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
@@ -133,15 +121,6 @@ protected:
     IDirectFBWindow*
     activeDFBWindow() const;
 
-    static AppOptions
-    appOptions();
-
-    static void
-    setAppOption(AppOptions option);
-
-    static void
-    unSetAppOption(AppOptions option);
-
     static DFBPoint
     cursorPosition();
 
@@ -149,10 +128,6 @@ protected:
     setLayerSize(int width, int height);
 
 private:
-    //! This property stores various options for application behaviour.
-    AppOptions __options;
-    //! Application title.
-    std::string __title;
     //! Application state.
     AppState __state;
 

@@ -39,7 +39,6 @@ Settings::Settings(int argc, char* argv[])
         : Application(&argc, &argv, OptDale),
           _comp(NULL)
 {
-    setTitle("Compositor Settings");
     setMargin(5);
     setLayout(new VBoxLayout());
 

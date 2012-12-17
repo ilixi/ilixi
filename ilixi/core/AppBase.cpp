@@ -50,9 +50,7 @@ IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
-        : __options(options),
-          __title(""),
-          __state(APS_HIDDEN),
+        : __state(APS_HIDDEN),
           __activeWindow(NULL)
 {
     if (__instance)
@@ -95,18 +93,6 @@ AppBase::~AppBase()
     __activeWindow = NULL;
 
     ILOG_TRACE_F(ILX_APPBASE);
-}
-
-std::string
-AppBase::title()
-{
-    return __instance->__title;
-}
-
-void
-AppBase::setTitle(std::string title)
-{
-    __title = title;
 }
 
 void
@@ -172,26 +158,6 @@ IDirectFBWindow*
 AppBase::activeDFBWindow() const
 {
     return __activeWindow->_window->_dfbWindow;
-}
-
-AppOptions
-AppBase::appOptions()
-{
-    return __instance->__options;
-}
-
-void
-AppBase::setAppOption(AppOptions option)
-{
-    ILOG_DEBUG(ILX_APPBASE, "Setting option: 0x%02x\n", option);
-    __instance->__options = (AppOptions) (__instance->__options | option);
-}
-
-void
-AppBase::unSetAppOption(AppOptions option)
-{
-    ILOG_DEBUG(ILX_APPBASE, "Clearing option: 0x%02x\n", option);
-    __instance->__options = (AppOptions) (__instance->__options & ~option);
 }
 
 DFBPoint

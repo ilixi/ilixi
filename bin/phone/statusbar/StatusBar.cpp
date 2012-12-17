@@ -84,7 +84,6 @@ PStatusBar::PStatusBar(int argc, char* argv[])
           _soundComponent(NULL),
           _compComponent(NULL)
 {
-    setTitle("StatusBar");
     setBackgroundFilled(true);
     _bg = new Image(ILIXI_DATADIR"phone/statusbar/bg.png");
 

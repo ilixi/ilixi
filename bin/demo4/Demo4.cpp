@@ -34,7 +34,6 @@ using namespace ilixi;
 Demo4::Demo4(int argc, char* argv[]) :
     Application(&argc, &argv)
 {
-  setTitle("Demo4");
   setMargin(0);
 //  setBackgroundFilled(false);
 //  setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");

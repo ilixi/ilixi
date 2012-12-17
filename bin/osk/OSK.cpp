@@ -33,7 +33,6 @@ ILXOSK::ILXOSK(int argc, char* argv[])
           _bg(NULL),
           _keyboard(NULL)
 {
-    setTitle("OSK");
     setBackgroundFilled(true);
     _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
     setMargin(10);

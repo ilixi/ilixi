@@ -38,16 +38,13 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
           WindowWidget(),
           _backgroundImage(NULL)
 {
-    // parse app-meta file...
     ILOG_TRACE_W(ILX_APPLICATION);
-//    initDFB(argc, argv);
 
     setStylist(new Stylist());
     setBackgroundImage(PlatformManager::instance().getBackground());
     setBackgroundFilled(false);
     setMargins(0, 0, 0, 0);
 
-    setTitle("Untitled");
     sigAbort.connect(sigc::mem_fun(this, &Application::quit));
 }
 

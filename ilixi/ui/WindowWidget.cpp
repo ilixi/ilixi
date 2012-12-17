@@ -50,13 +50,10 @@ WindowWidget::WindowWidget(Widget* parent)
     setMargins(5, 5, 5, 5);
     setNeighbours(this, this, this, this);
 
-    if (AppBase::appOptions() & OptExclusive)
+    if (PlatformManager::instance().appOptions() & OptExclusive)
     {
         if (AppBase::activeWindow())
-        {
-            ILOG_ERROR( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
-            exit(1);
-        }
+            ILOG_THROW( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
     } else
         _window = new Window();
 
@@ -322,7 +319,7 @@ WindowWidget::showWindow()
     updateWindow();
 #endif
 
-    if (!(AppBase::appOptions() & OptExclusive))
+    if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->showWindow();
 
     AppBase::setActiveWindow(this);
@@ -334,7 +331,7 @@ WindowWidget::closeWindow()
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
 
-    if (!(AppBase::appOptions() & OptExclusive))
+    if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->hideWindow();
 
     _eventManager->setGrabbedWidget(NULL);
@@ -342,7 +339,7 @@ WindowWidget::closeWindow()
 
     AppBase::removeWindow(this);
 
-    if (!(AppBase::appOptions() & OptExclusive))
+    if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->releaseDFBWindow();
 }
 
@@ -576,7 +573,7 @@ WindowWidget::updateWindow()
 IDirectFBSurface*
 WindowWidget::windowSurface()
 {
-    if ((AppBase::appOptions() & OptExclusive))
+    if ((PlatformManager::instance().appOptions() & OptExclusive))
         return _exclusiveSurface;
     else if (_window)
         return _window->dfbSurface();

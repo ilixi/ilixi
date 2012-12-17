@@ -33,8 +33,6 @@ namespace ilixi
   Navigation::Navigation(int argc, char* argv[]) :
       Application(&argc, &argv)
   {
-    setTitle("Navigation");
-
     setLayout(new HBoxLayout());
 
     VBoxLayout* vb1 = new VBoxLayout();

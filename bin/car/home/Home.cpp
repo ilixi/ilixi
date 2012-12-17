@@ -78,7 +78,6 @@ Home::Home(int argc, char* argv[])
           _compositor(NULL)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
-    setTitle("Home");
     setBackgroundFilled(true);
     setPaletteFromFile(ILIXI_DATADIR"car/statusbar/palette.xml");
 
