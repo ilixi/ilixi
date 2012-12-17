@@ -213,10 +213,11 @@ WindowWidget::paint(const PaintEvent& event)
                 surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
 #else
                 surface()->clip(evt.rect);
+                if (_backgroundFlags & BGFClear)
+                    surface()->clear(evt.rect);
+
                 if (_backgroundFlags & BGFFill)
                     compose(evt);
-                else if (_backgroundFlags & BGFClear)
-                    surface()->clear(evt.rect);
 
                 paintChildren(evt);
 
