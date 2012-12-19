@@ -15,6 +15,6 @@ ilixi_osk_SOURCES	= 	Key.cpp \
 						utf8-decoder.h
 						
 miscdatadir 	=	$(ILIXI_DATADIR)/osk
-miscdata_DATA 	=	keyboard.xml keyboard.dtd
+miscdata_DATA 	=	keyboard.xml keyboard.dtd numpad.xml
 EXTRA_DIST 		= 	$(miscdata_DATA)
 						

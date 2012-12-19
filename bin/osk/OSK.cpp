@@ -42,7 +42,18 @@ ILXOSK::ILXOSK(int argc, char* argv[])
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ILXOSK::updateOSKGeometry));
 
     _keyboard = new Keyboard(this);
-    _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
+
+    bool numpad = false;
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "numpad") == 0)
+            numpad = true;
+    }
+
+    if (numpad)
+        _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/numpad.xml");
+    else
+        _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
     addWidget(_keyboard);
 }
 
@@ -54,14 +65,16 @@ ILXOSK::~ILXOSK()
 bool
 ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 {
-    switch (event.type) {
-        case DWET_KEYDOWN:
-            _keyboard->handleKeyPress(event.key_symbol);
-        case DWET_KEYUP:
-            return true;
+    switch (event.type)
+    {
+    case DWET_KEYDOWN:
+        return _keyboard->handleKeyPress(event.key_symbol);
 
-        default:
-            break;
+    case DWET_KEYUP:
+        return true;
+
+    default:
+        break;
     }
 
     return false;

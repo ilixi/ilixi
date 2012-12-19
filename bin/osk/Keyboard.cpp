@@ -173,22 +173,22 @@ Keyboard::handleCycleKey(Key* key)
     {
         uint32_t nextCharacter = _cycleCharacter;
 
-        for (int i=0; i<ucs32.size(); i++)
+        for (int i = 0; i < ucs32.size(); i++)
         {
             if (ucs32[i] == _cycleCharacter)
             {
                 if (i == ucs32.size() - 1)
                     nextCharacter = ucs32[0];
                 else
-                    nextCharacter = ucs32[i+1];
+                    nextCharacter = ucs32[i + 1];
 
                 break;
             }
         }
 
         _cycleCharacter = nextCharacter;
-    }
-    else {
+    } else
+    {
         if (_cycleKey)
         {
             /* send cursor right to remove selection and continue with next letter */
@@ -215,9 +215,8 @@ Keyboard::handleCycleKey(Key* key)
         c2.push_back(DIKS_CURSOR_LEFT);
         forwardKeyData(c2, DIMM_SHIFT);
 
-        _cycleTimer.start( 800 );
-    }
-    else
+        _cycleTimer.start(800);
+    } else
         _cycleKey = NULL;
 }
 
@@ -242,17 +241,19 @@ Keyboard::handleCycleTimer()
     }
 }
 
-void
+bool
 Keyboard::handleKeyPress(uint32_t symbol)
 {
-    std::map<uint32_t,Key*>::iterator it = _cycleMap.find(symbol);
+    std::map<uint32_t, Key*>::iterator it = _cycleMap.find(symbol);
 
     if (it != _cycleMap.end())
     {
         Key *key = (*it).second;
 
         key->click();
+        return true;
     }
+    return false;
 }
 
 void
@@ -328,6 +329,7 @@ Keyboard::getKey(xmlNodePtr node)
             ILOG_DEBUG(ILX_KEYBOARD, "ICON: %s\n", iconPath.c_str());
 
             key->setIcon(iconPath, Size(48, 48));
+            key->icon()->setColorize(true);
             key->setToolButtonStyle(ToolButton::IconOnly);
         } else if (xmlStrcmp(element->name, (xmlChar*) "rollStates") == 0)
         {
@@ -340,7 +342,7 @@ Keyboard::getKey(xmlNodePtr node)
     }
 
     if (key->_keyMode & Key::Cycle)
-        _cycleMap.insert( std::pair<uint32_t,Key*>(key->_cycleUCS, key) );
+        _cycleMap.insert(std::pair<uint32_t, Key*>(key->_cycleUCS, key));
 
     return key;
 }

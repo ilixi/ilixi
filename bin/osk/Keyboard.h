@@ -56,7 +56,7 @@ public:
     void
     handleCycleKey(Key* key);
 
-    void
+    bool
     handleKeyPress(uint32_t symbol);
 
 protected:
