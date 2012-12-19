@@ -449,7 +449,7 @@ Style::parseTheme(xmlNodePtr node)
 
                 state = state->next;
             }
-        } else if (xmlStrcmp(node->name, (xmlChar*) "Slider") == 0)
+        } else if (xmlStrcmp(node->name, (xmlChar*) "HSlider") == 0)
         {
             state = node->children;
             while (state != NULL)
@@ -457,36 +457,48 @@ Style::parseTheme(xmlNodePtr node)
                 ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
                 if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
-                    get3Rectangle(state->children, sl.def);
+                    get3Rectangle(state->children, hSl.def);
+
                 else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
-                    get3Rectangle(state->children, sl.dis);
-                else if (xmlStrcmp(state->name, (xmlChar*) "pre3") == 0)
-                    get3Rectangle(state->children, sl.defV);
-                else if (xmlStrcmp(state->name, (xmlChar*) "exp3") == 0)
-                    get3Rectangle(state->children, sl.disV);
-                else if (xmlStrcmp(state->name, (xmlChar*) "sIndicator") == 0)
-                {
-                    xmlNodePtr iState = state->children;
-                    while (iState != NULL)
-                    {
+                    get3Rectangle(state->children, hSl.dis);
 
-                        if (xmlStrcmp(iState->name, (xmlChar*) "def1") == 0)
-                            getRectangle(iState->children, slI.def);
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "VSlider") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        else if (xmlStrcmp(iState->name, (xmlChar*) "pre1") == 0)
-                            getRectangle(iState->children, slI.pre);
-                        else if (xmlStrcmp(iState->name, (xmlChar*) "exp1") == 0)
-                            getRectangle(iState->children, slI.exp);
+                if (xmlStrcmp(state->name, (xmlChar*) "def3") == 0)
+                    get3Rectangle(state->children, vSl.def);
 
-                        else if (xmlStrcmp(iState->name, (xmlChar*) "dis1") == 0)
-                            getRectangle(iState->children, slI.dis);
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis3") == 0)
+                    get3Rectangle(state->children, vSl.dis);
 
-                        else if (xmlStrcmp(iState->name, (xmlChar*) "foc1") == 0)
-                            getRectangle(iState->children, slI.foc);
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "SliderIndicator") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
 
-                        iState = iState->next;
-                    }
-                }
+                if (xmlStrcmp(state->name, (xmlChar*) "def1") == 0)
+                    getRectangle(state->children, slI.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "pre1") == 0)
+                    getRectangle(state->children, slI.pre);
+                else if (xmlStrcmp(state->name, (xmlChar*) "exp1") == 0)
+                    getRectangle(state->children, slI.exp);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis1") == 0)
+                    getRectangle(state->children, slI.dis);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "foc1") == 0)
+                    getRectangle(state->children, slI.foc);
 
                 state = state->next;
             }
@@ -502,6 +514,21 @@ Style::parseTheme(xmlNodePtr node)
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
                     get9Rectangle(state->children, fr.dis);
+
+                state = state->next;
+            }
+        } else if (xmlStrcmp(node->name, (xmlChar*) "Box") == 0)
+        {
+            state = node->children;
+            while (state != NULL)
+            {
+                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
+
+                if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
+                    get9Rectangle(state->children, box.def);
+
+                else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
+                    get9Rectangle(state->children, box.dis);
 
                 state = state->next;
             }
@@ -526,21 +553,6 @@ Style::parseTheme(xmlNodePtr node)
 
                 else if (xmlStrcmp(state->name, (xmlChar*) "foc9") == 0)
                     get9Rectangle(state->children, li.foc);
-
-                state = state->next;
-            }
-        } else if (xmlStrcmp(node->name, (xmlChar*) "Tab") == 0)
-        {
-            state = node->children;
-            while (state != NULL)
-            {
-                ILOG_DEBUG(ILX_STYLE, "  state: %s...\n", state->name);
-
-                if (xmlStrcmp(state->name, (xmlChar*) "def9") == 0)
-                    get9Rectangle(state->children, tab.def);
-
-                else if (xmlStrcmp(state->name, (xmlChar*) "dis9") == 0)
-                    get9Rectangle(state->children, tab.dis);
 
                 state = state->next;
             }

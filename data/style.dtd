@@ -15,7 +15,9 @@
 	<!ELEMENT icon EMPTY>
 	<!ATTLIST icon name CDATA #REQUIRED row CDATA #REQUIRED col CDATA #REQUIRED>
 
-<!ELEMENT pack (PushButton, PushButtonOK, PushButtonCANCEL, ToolButton, CheckBox, CheckBoxChecked, CheckBoxTriChecked, RadioButtonOn, RadioButtonOff, ProgressBar, Slider, Frame, Tab, LineInput, HScrollBar, VScrollBar)>
+<!ELEMENT pack (PushButton, PushButtonOK, PushButtonCANCEL, ToolButton, CheckBox, CheckBoxChecked, 
+				CheckBoxTriChecked, RadioButtonOn, RadioButtonOff, ProgressBar, HSlider, VSlider, 
+				SliderIndicator, Frame, Box, LineInput, HScrollBar, VScrollBar)>
 
 	<!ELEMENT PushButton (def3, pre3, exp3, dis3, foc3)>
 	<!ELEMENT PushButtonOK (def3, pre3, exp3, dis3, foc3)>
@@ -29,16 +31,17 @@
 	<!ELEMENT RadioButtonOff (def1, pre1, exp1, dis1, foc1)>
 	
 	<!ELEMENT ProgressBar (def3, dis3, pIndicator)>
-	<!ELEMENT Slider (def3, dis3, pre3, exp3, sIndicator)>
+	<!ELEMENT HSlider (def3, dis3)>
+	<!ELEMENT VSlider (def3, dis3)>
+	<!ELEMENT SliderIndicator (def1, pre1, exp1, dis1, foc1) >
 	<!ELEMENT Frame (def9, dis9)>
-	<!ELEMENT Tab (def9, dis9)>
+	<!ELEMENT Box (def9, dis9)>
 	<!ELEMENT ToolButton (def9, pre9, exp9, dis9, foc9)>
 	<!ELEMENT LineInput (def9, pre9, exp9, dis9, foc9)>
 	<!ELEMENT HScrollBar (def3) >
 	<!ELEMENT VScrollBar (def3) >
 	
 	<!ELEMENT pIndicator (def3, dis3) >
-	<!ELEMENT sIndicator (def1, pre1, exp1, dis1, foc1) >
 		
 	<!ELEMENT def1 (left) >
 	<!ELEMENT pre1 (left) >

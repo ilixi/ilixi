@@ -197,6 +197,8 @@ enum Parameter
     PushButtonHeight,
     RadioHeight,
     RadioWidth,
+    ScrollBarHeight,
+    ScrollBarWidth,
     SliderIndicatorHeight,
     SliderIndicatorWidth,
     TabOffsetBottom,

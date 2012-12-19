@@ -43,11 +43,6 @@ ScrollArea::ScrollArea(Widget* parent)
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
 
     _ani = new TweenAnimation();
-    _tween = new Tween(Tween::BACK, Tween::EASE_OUT, 1, 0);
-    _ani->addTween(_tween);
-
-    _barTween = new Tween(Tween::LINEAR, Tween::EASE_OUT, 1, 0);
-    _ani->addTween(_barTween);
 
     _xTween = new Tween(Tween::BACK, Tween::EASE_OUT, 0, 0);
     _ani->addTween(_xTween);
@@ -333,25 +328,16 @@ ScrollArea::compose(const PaintEvent& event)
 
     if (_ani->state() == Animation::Running)
     {
-        p.setBrush(Color(0, 0, 0, _barTween->value() * 255));
         if (_options & DrawHorizontalThumb)
         {
-            int y = _thumbs.y();
-            int h = 4;
-            int w = _thumbs.width();
-            int x = 1 + (width() - w - 12.0) * _xTween->value() / _sMax.x();
-            ILOG_DEBUG(ILX_SCROLLAREA, " -> Horizontal: %d, %d, %d, %d\n", x, y, w, h);
-            stylist()->drawScrollBar(&p, x, y, w, h, Horizontal);
+            int x = 1 + (width() - _thumbs.width() - 12.0) * _xTween->value() / _sMax.x();
+            stylist()->drawScrollBar(&p, x, height() - stylist()->defaultParameter(StyleHint::ScrollBarHeight), _thumbs.width(), stylist()->defaultParameter(StyleHint::ScrollBarHeight), Horizontal);
         }
 
         if (_options & DrawVerticalThumb)
         {
-            int x = _thumbs.x();
-            int w = 4;
-            int h = _thumbs.height();
-            int y = 1 + (height() - h - 12.0) * _yTween->value() / _sMax.y();
-            ILOG_DEBUG(ILX_SCROLLAREA, " -> Vertical: %d, %d, %d, %d\n", x, y, w, h);
-            stylist()->drawScrollBar(&p, x, y, w, h, Vertical);
+            int y = 1 + (height() - _thumbs.height() - 12.0) * _yTween->value() / _sMax.y();
+            stylist()->drawScrollBar(&p, width() - stylist()->defaultParameter(StyleHint::ScrollBarWidth), y, stylist()->defaultParameter(StyleHint::ScrollBarWidth), _thumbs.height(), Vertical);
         }
     }
 }
@@ -395,7 +381,7 @@ ScrollArea::updateScollAreaGeometry()
 
         _sMax = Rectangle(width() - _content->width(), height() - _content->height(), width() / 3, height() / 3);
 
-        _thumbs = Rectangle(width() - 11, height() - 11, width() * width() / _content->width() - 4, height() * height() / _content->height() - 4);
+        _thumbs = Size(width() * width() / _content->width() - 4, height() * height() / _content->height() - 4);
     }
 
     updateHThumb();

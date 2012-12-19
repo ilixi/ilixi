@@ -15,12 +15,12 @@
 
 		<inputFont>
 			<name>Serif</name>
-			<size>14</size>
+			<size>16</size>
 		</inputFont>
 
 		<titleFont>
 			<name>Sans</name>
-			<size>18</size>
+			<size>16</size>
 			<fontStyle>bold</fontStyle>
 		</titleFont>
 	</fonts>
@@ -90,318 +90,414 @@
 	<pack>
 		<PushButton>
 			<def3>
-				<left x="5" y="7" w="16" h="45" />
-				<mid x="21" y="7" w="47" h="45" />
-				<right x="68" y="7" w="16" h="45" />
+				<left x="0" y="0" w="15" h="40" />
+				<mid x="15" y="0" w="70" h="40" />
+				<right x="85" y="0" w="15" h="40" />
 			</def3>
-
 			<pre3>
-				<left x="90" y="7" w="16" h="45" />
-				<mid x="106" y="7" w="47" h="45" />
-				<right x="153" y="7" w="16" h="45" />
+				<left x="100" y="0" w="15" h="40" />
+				<mid x="115" y="0" w="70" h="40" />
+				<right x="185" y="0" w="15" h="40" />
 			</pre3>
-
 			<exp3>
-				<left x="175" y="7" w="16" h="45" />
-				<mid x="191" y="7" w="47" h="45" />
-				<right x="238" y="7" w="16" h="45" />
+				<left x="200" y="0" w="15" h="40" />
+				<mid x="215" y="0" w="70" h="40" />
+				<right x="285" y="0" w="15" h="40" />
 			</exp3>
-
 			<dis3>
-				<left x="260" y="7" w="16" h="45" />
-				<mid x="276" y="7" w="47" h="45" />
-				<right x="323" y="7" w="16" h="45" />
+				<left x="300" y="0" w="15" h="40" />
+				<mid x="315" y="0" w="70" h="40" />
+				<right x="385" y="0" w="15" h="40" />
 			</dis3>
-
 			<foc3>
-				<left x="345" y="7" w="16" h="45" />
-				<mid x="361" y="7" w="47" h="45" />
-				<right x="408" y="7" w="16" h="45" />
+				<left x="400" y="0" w="15" h="40" />
+				<mid x="415" y="0" w="70" h="40" />
+				<right x="485" y="0" w="15" h="40" />
 			</foc3>
 		</PushButton>
-
+		<PushButtonOK>
+			<def3>
+				<left x="0" y="40" w="15" h="40" />
+				<mid x="15" y="40" w="70" h="40" />
+				<right x="85" y="40" w="15" h="40" />
+			</def3>
+			<pre3>
+				<left x="100" y="40" w="15" h="40" />
+				<mid x="115" y="40" w="70" h="40" />
+				<right x="185" y="40" w="15" h="40" />
+			</pre3>
+			<exp3>
+				<left x="200" y="40" w="15" h="40" />
+				<mid x="215" y="40" w="70" h="40" />
+				<right x="285" y="40" w="15" h="40" />
+			</exp3>
+			<dis3>
+				<left x="300" y="40" w="15" h="40" />
+				<mid x="315" y="40" w="70" h="40" />
+				<right x="385" y="40" w="15" h="40" />
+			</dis3>
+			<foc3>
+				<left x="400" y="40" w="15" h="40" />
+				<mid x="415" y="40" w="70" h="40" />
+				<right x="485" y="40" w="15" h="40" />
+			</foc3>
+		</PushButtonOK>
+		<PushButtonCANCEL>
+			<def3>
+				<left x="10" y="80" w="15" h="40" />
+				<mid x="15" y="80" w="70" h="40" />
+				<right x="85" y="80" w="15" h="40" />
+			</def3>
+			<pre3>
+				<left x="100" y="80" w="15" h="40" />
+				<mid x="115" y="80" w="70" h="40" />
+				<right x="185" y="80" w="15" h="40" />
+			</pre3>
+			<exp3>
+				<left x="200" y="80" w="15" h="40" />
+				<mid x="215" y="80" w="70" h="40" />
+				<right x="285" y="80" w="15" h="40" />
+			</exp3>
+			<dis3>
+				<left x="300" y="80" w="15" h="40" />
+				<mid x="310" y="80" w="70" h="40" />
+				<right x="385" y="80" w="15" h="40" />
+			</dis3>
+			<foc3>
+				<left x="400" y="80" w="15" h="40" />
+				<mid x="415" y="80" w="70" h="40" />
+				<right x="485" y="80" w="15" h="40" />
+			</foc3>
+		</PushButtonCANCEL>
 		<ToolButton>
 			<def9>
-				<top-left x="5" y="57" w="5" h="5" />
-				<top-mid x="10" y="57" w="70" h="5" />
-				<top-right x="80" y="57" w="7" h="5" />
-				<left x="5" y="62" w="5" h="31" />
-				<mid x="10" y="62" w="70" h="31" />
-				<right x="80" y="62" w="7" h="31" />
-				<bottom-left x="5" y="93" w="5" h="7" />
-				<bottom-mid x="10" y="93" w="70" h="7" />
-				<bottom-right x="80" y="93" w="7" h="7" />
+				<top-left x="0" y="120" w="15" h="15" />
+				<top-mid x="15" y="120" w="70" h="15" />
+				<top-right x="85" y="120" w="15" h="15" />
+				<left x="0" y="135" w="15" h="10" />
+				<mid x="15" y="135" w="70" h="10" />
+				<right x="85" y="135" w="15" h="10" />
+				<bottom-left x="0" y="145" w="15" h="15" />
+				<bottom-mid x="15" y="145" w="70" h="15" />
+				<bottom-right x="85" y="145" w="15" h="15" />
 			</def9>
-
 			<pre9>
-				<top-left x="90" y="57" w="5" h="5" />
-				<top-mid x="95" y="57" w="70" h="5" />
-				<top-right x="165" y="57" w="7" h="5" />
-				<left x="90" y="62" w="5" h="31" />
-				<mid x="95" y="62" w="70" h="31" />
-				<right x="165" y="62" w="7" h="31" />
-				<bottom-left x="90" y="93" w="5" h="7" />
-				<bottom-mid x="95" y="93" w="70" h="7" />
-				<bottom-right x="165" y="93" w="7" h="7" />
+				<top-left x="100" y="120" w="15" h="15" />
+				<top-mid x="115" y="120" w="70" h="15" />
+				<top-right x="185" y="120" w="15" h="15" />
+				<left x="100" y="135" w="15" h="10" />
+				<mid x="115" y="135" w="70" h="10" />
+				<right x="185" y="135" w="15" h="10" />
+				<bottom-left x="100" y="145" w="15" h="15" />
+				<bottom-mid x="115" y="145" w="70" h="15" />
+				<bottom-right x="185" y="145" w="15" h="15" />
 			</pre9>
-
 			<exp9>
-				<top-left x="175" y="57" w="5" h="5" />
-				<top-mid x="180" y="57" w="70" h="5" />
-				<top-right x="250" y="57" w="7" h="5" />
-				<left x="175" y="62" w="5" h="31" />
-				<mid x="180" y="62" w="70" h="31" />
-				<right x="250" y="62" w="7" h="31" />
-				<bottom-left x="175" y="93" w="5" h="7" />
-				<bottom-mid x="180" y="93" w="70" h="7" />
-				<bottom-right x="250" y="93" w="7" h="7" />
+				<top-left x="200" y="120" w="15" h="15" />
+				<top-mid x="215" y="120" w="70" h="15" />
+				<top-right x="285" y="120" w="15" h="15" />
+				<left x="200" y="135" w="15" h="10" />
+				<mid x="215" y="135" w="70" h="10" />
+				<right x="285" y="135" w="15" h="10" />
+				<bottom-left x="200" y="145" w="15" h="15" />
+				<bottom-mid x="215" y="145" w="70" h="15" />
+				<bottom-right x="285" y="145" w="15" h="15" />
 			</exp9>
-
 			<dis9>
-				<top-left x="260" y="57" w="5" h="5" />
-				<top-mid x="265" y="57" w="70" h="5" />
-				<top-right x="335" y="57" w="7" h="5" />
-				<left x="260" y="62" w="5" h="31" />
-				<mid x="265" y="62" w="70" h="31" />
-				<right x="335" y="62" w="7" h="31" />
-				<bottom-left x="260" y="93" w="5" h="7" />
-				<bottom-mid x="265" y="93" w="70" h="7" />
-				<bottom-right x="335" y="93" w="7" h="7" />
+				<top-left x="300" y="120" w="15" h="15" />
+				<top-mid x="315" y="120" w="70" h="15" />
+				<top-right x="385" y="120" w="15" h="15" />
+				<left x="300" y="135" w="15" h="10" />
+				<mid x="315" y="135" w="70" h="10" />
+				<right x="385" y="135" w="15" h="10" />
+				<bottom-left x="300" y="145" w="15" h="15" />
+				<bottom-mid x="315" y="145" w="70" h="15" />
+				<bottom-right x="385" y="145" w="15" h="15" />
 			</dis9>
-
 			<foc9>
-				<top-left x="345" y="57" w="5" h="5" />
-				<top-mid x="350" y="57" w="70" h="5" />
-				<top-right x="420" y="57" w="7" h="5" />
-				<left x="345" y="62" w="5" h="31" />
-				<mid x="350" y="62" w="70" h="31" />
-				<right x="420" y="62" w="7" h="31" />
-				<bottom-left x="345" y="93" w="5" h="7" />
-				<bottom-mid x="350" y="93" w="70" h="7" />
-				<bottom-right x="420" y="93" w="7" h="7" />
+				<top-left x="400" y="120" w="15" h="15" />
+				<top-mid x="415" y="120" w="70" h="15" />
+				<top-right x="485" y="120" w="15" h="15" />
+				<left x="400" y="135" w="15" h="10" />
+				<mid x="415" y="135" w="70" h="10" />
+				<right x="485" y="135" w="15" h="10" />
+				<bottom-left x="400" y="145" w="15" h="15" />
+				<bottom-mid x="415" y="145" w="70" h="15" />
+				<bottom-right x="485" y="145" w="15" h="15" />
 			</foc9>
 		</ToolButton>
-
 		<CheckBox>
 			<def1>
-				<left x="5" y="107" w="18" h="18" />
+				<left x="500" y="0" w="20" h="20" />
 			</def1>
 			<pre1>
-				<left x="25" y="107" w="18" h="18" />
+				<left x="530" y="0" w="20" h="20" />
 			</pre1>
 			<exp1>
-				<left x="45" y="107" w="18" h="18" />
+				<left x="560" y="0" w="20" h="20" />
 			</exp1>
 			<dis1>
-				<left x="65" y="107" w="18" h="18" />
+				<left x="590" y="0" w="20" h="20" />
 			</dis1>
 
 			<foc1>
-				<left x="85" y="107" w="18" h="18" />
+				<left x="620" y="0" w="20" h="20" />
 			</foc1>
-			<check x="107" y="104" w="18" h="18" />
-			<tri-check x="128" y="107" w="18" h="18" />
 		</CheckBox>
-
-		<RadioButton>
+		<CheckBoxChecked>
 			<def1>
-				<left x="5" y="130" w="18" h="18" />
+				<left x="500" y="20" w="20" h="20" />
 			</def1>
 			<pre1>
-				<left x="25" y="130" w="18" h="18" />
+				<left x="530" y="20" w="20" h="20" />
 			</pre1>
 			<exp1>
-				<left x="45" y="130" w="18" h="18" />
+				<left x="560" y="20" w="20" h="20" />
 			</exp1>
 			<dis1>
-				<left x="65" y="130" w="18" h="18" />
+				<left x="590" y="20" w="20" h="20" />
+			</dis1>
+
+			<foc1>
+				<left x="620" y="20" w="20" h="20" />
+			</foc1>
+
+		</CheckBoxChecked>
+		<CheckBoxTriChecked>
+			<def1>
+				<left x="500" y="40" w="20" h="20" />
+			</def1>
+			<pre1>
+				<left x="530" y="40" w="20" h="20" />
+			</pre1>
+			<exp1>
+				<left x="560" y="40" w="20" h="20" />
+			</exp1>
+			<dis1>
+				<left x="590" y="40" w="20" h="20" />
 			</dis1>
 			<foc1>
-				<left x="85" y="130" w="18" h="18" />
+				<left x="620" y="40" w="20" h="20" />
 			</foc1>
-			<radioOff x="105" y="130" w="16" h="16" />
-			<radioOn x="125" y="130" w="16" h="16" />
-		</RadioButton>
-
+		</CheckBoxTriChecked>
+		<RadioButtonOn>
+			<def1>
+				<left x="500" y="80" w="20" h="20" />
+			</def1>
+			<pre1>
+				<left x="530" y="80" w="20" h="20" />
+			</pre1>
+			<exp1>
+				<left x="560" y="80" w="20" h="20" />
+			</exp1>
+			<dis1>
+				<left x="590" y="80" w="20" h="20" />
+			</dis1>
+			<foc1>
+				<left x="620" y="80" w="20" h="20" />
+			</foc1>
+		</RadioButtonOn>
+		<RadioButtonOff>
+			<def1>
+				<left x="500" y="60" w="20" h="20" />
+			</def1>
+			<pre1>
+				<left x="530" y="60" w="20" h="20" />
+			</pre1>
+			<exp1>
+				<left x="560" y="60" w="20" h="20" />
+			</exp1>
+			<dis1>
+				<left x="590" y="60" w="20" h="20" />
+			</dis1>
+			<foc1>
+				<left x="620" y="60" w="20" h="20" />
+			</foc1>
+		</RadioButtonOff>
 		<ProgressBar>
 			<def3>
-				<left x="5" y="150" w="5" h="8" />
-				<mid x="10" y="150" w="160" h="8" />
-				<right x="170" y="150" w="5" h="8" />
+				<left x="640" y="0" w="10" h="20" />
+				<mid x="650" y="0" w="190" h="20" />
+				<right x="840" y="0" w="10" h="20" />
 			</def3>
 			<dis3>
-				<left x="5" y="170" w="5" h="8" />
-				<mid x="10" y="170" w="160" h="8" />
-				<right x="170" y="170" w="5" h="8" />
+				<left x="640" y="40" w="10" h="20" />
+				<mid x="650" y="40" w="190" h="20" />
+				<right x="840" y="40" w="10" h="20" />
 			</dis3>
-
 			<pIndicator>
 				<def3>
-					<left x="5" y="160" w="5" h="8" />
-					<mid x="10" y="160" w="160" h="8" />
-					<right x="170" y="160" w="5" h="8" />
+					<left x="640" y="20" w="10" h="20" />
+					<mid x="650" y="20" w="190" h="20" />
+					<right x="840" y="20" w="10" h="20" />
 				</def3>
 
 				<dis3>
-					<left x="5" y="180" w="5" h="8" />
-					<mid x="10" y="180" w="160" h="8" />
-					<right x="170" y="180" w="5" h="8" />
+					<left x="640" y="60" w="10" h="20" />
+					<mid x="650" y="60" w="190" h="20" />
+					<right x="840" y="60" w="10" h="20" />
 				</dis3>
 			</pIndicator>
 		</ProgressBar>
-
-		<Slider>
+		<HSlider>
 			<def3>
-				<left x="5" y="191" w="10" h="16" />
-				<mid x="15" y="191" w="150" h="16" />
-				<right x="165" y="191" w="10" h="16" />
+				<left x="640" y="80" w="10" h="20" />
+				<mid x="650" y="80" w="190" h="20" />
+				<right x="840" y="80" w="10" h="20" />
 			</def3>
 			<dis3>
-				<left x="5" y="211" w="10" h="16" />
-				<mid x="15" y="211" w="150" h="16" />
-				<right x="165" y="211" w="10" h="16" />
+				<left x="640" y="100" w="10" h="20" />
+				<mid x="650" y="100" w="190" h="20" />
+				<right x="840" y="100" w="10" h="20" />
 			</dis3>
-
-			<pre3>
-				<left x="405" y="102" w="16" h="10" />
-				<mid x="405" y="112" w="16" h="150" />
-				<right x="405" y="262" w="16" h="10" />
-			</pre3>
-			<exp3>
-				<left x="385" y="102" w="16" h="10" />
-				<mid x="385" y="112" w="16" h="150" />
-				<right x="385" y="262" w="16" h="10" />
-			</exp3>
-
-			<sIndicator>
-				<def1>
-					<left x="6" y="232" w="14" h="14" />
-				</def1>
-				<pre1>
-					<left x="26" y="232" w="14" h="14" />
-				</pre1>
-				<exp1>
-					<left x="46" y="232" w="14" h="14" />
-				</exp1>
-				<dis1>
-					<left x="66" y="232" w="14" h="14" />
-				</dis1>
-				<foc1>
-					<left x="86" y="232" w="14" h="14" />
-				</foc1>
-			</sIndicator>
-		</Slider>
-
+		</HSlider>
+		<VSlider>
+			<def3>
+				<left x="850" y="0" w="20" h="10" />
+				<mid x="850" y="10" w="20" h="180" />
+				<right x="850" y="190" w="20" h="10" />
+			</def3>
+			<dis3>
+				<left x="870" y="0" w="20" h="10" />
+				<mid x="870" y="10" w="20" h="180" />
+				<right x="870" y="190" w="20" h="10" />
+			</dis3>
+		</VSlider>
+		<SliderIndicator>
+			<def1>
+				<left x="500" y="100" w="20" h="20" />
+			</def1>
+			<pre1>
+				<left x="530" y="100" w="20" h="20" />
+			</pre1>
+			<exp1>
+				<left x="560" y="100" w="20" h="20" />
+			</exp1>
+			<dis1>
+				<left x="590" y="100" w="20" h="20" />
+			</dis1>
+			<foc1>
+				<left x="620" y="100" w="20" h="20" />
+			</foc1>
+		</SliderIndicator>
 		<Frame>
 			<def9>
-				<top-left x="284" y="183" w="16" h="16" />
-				<top-mid x="300" y="183" w="53" h="16" />
-				<top-right x="353" y="183" w="16" h="16" />
-				<left x="284" y="199" w="16" h="52" />
-				<mid x="300" y="199" w="53" h="52" />
-				<right x="353" y="199" w="16" h="52" />
-				<bottom-left x="284" y="251" w="16" h="16" />
-				<bottom-mid x="300" y="251" w="53" h="16" />
-				<bottom-right x="353" y="251" w="16" h="16" />
+				<top-left x="500" y="120" w="15" h="15" />
+				<top-mid x="515" y="120" w="40" h="15" />
+				<top-right x="555" y="120" w="15" h="15" />
+				<left x="500" y="135" w="15" h="40" />
+				<mid x="515" y="135" w="40" h="40" />
+				<right x="555" y="135" w="15" h="40" />
+				<bottom-left x="500" y="175" w="15" h="15" />
+				<bottom-mid x="515" y="175" w="40" h="15" />
+				<bottom-right x="555" y="175" w="15" h="15" />
 			</def9>
 			<dis9>
-				<top-left x="194" y="183" w="16" h="16" />
-				<top-mid x="210" y="183" w="53" h="16" />
-				<top-right x="263" y="183" w="16" h="16" />
-				<left x="194" y="199" w="16" h="52" />
-				<mid x="210" y="199" w="53" h="52" />
-				<right x="263" y="199" w="16" h="52" />
-				<bottom-left x="194" y="251" w="16" h="16" />
-				<bottom-mid x="210" y="251" w="53" h="16" />
-				<bottom-right x="263" y="251" w="16" h="16" />
+				<top-left x="570" y="120" w="15" h="15" />
+				<top-mid x="585" y="120" w="40" h="15" />
+				<top-right x="625" y="120" w="15" h="15" />
+				<left x="570" y="135" w="15" h="40" />
+				<mid x="585" y="135" w="40" h="40" />
+				<right x="625" y="135" w="15" h="40" />
+				<bottom-left x="570" y="175" w="15" h="15" />
+				<bottom-mid x="585" y="175" w="40" h="15" />
+				<bottom-right x="625" y="175" w="15" h="15" />
 			</dis9>
 		</Frame>
-
-		<Tab>
+		<Box>
 			<def9>
-				<top-left x="194" y="108" w="16" h="16" />
-				<top-mid x="210" y="108" w="37" h="16" />
-				<top-right x="247" y="108" w="16" h="16" />
-				<left x="194" y="124" w="16" h="36" />
-				<mid x="210" y="124" w="37" h="36" />
-				<right x="247" y="124" w="16" h="36" />
-				<bottom-left x="194" y="160" w="16" h="16" />
-				<bottom-mid x="210" y="160" w="37" h="16" />
-				<bottom-right x="247" y="160" w="16" h="16" />
+				<top-left x="644" y="133" w="10" h="10" />
+				<top-mid x="654" y="133" w="42" h="10" />
+				<top-right x="696" y="133" w="10" h="10" />
+				<left x="644" y="143" w="10" h="42" />
+				<mid x="654" y="143" w="42" h="42" />
+				<right x="696" y="143" w="10" h="42" />
+				<bottom-left x="644" y="185" w="10" h="10" />
+				<bottom-mid x="654" y="185" w="42" h="10" />
+				<bottom-right x="696" y="185" w="10" h="10" />
 			</def9>
 			<dis9>
-				<top-left x="274" y="108" w="16" h="16" />
-				<top-mid x="290" y="108" w="37" h="16" />
-				<top-right x="327" y="108" w="16" h="16" />
-				<left x="274" y="124" w="16" h="36" />
-				<mid x="290" y="124" w="37" h="36" />
-				<right x="327" y="124" w="16" h="36" />
-				<bottom-left x="274" y="160" w="16" h="16" />
-				<bottom-mid x="290" y="160" w="37" h="16" />
-				<bottom-right x="327" y="160" w="16" h="16" />
+				<top-left x="714" y="133" w="10" h="10" />
+				<top-mid x="724" y="133" w="42" h="10" />
+				<top-right x="766" y="133" w="10" h="10" />
+				<left x="714" y="143" w="10" h="42" />
+				<mid x="724" y="143" w="42" h="42" />
+				<right x="766" y="143" w="10" h="42" />
+				<bottom-left x="714" y="185" w="10" h="10" />
+				<bottom-mid x="724" y="185" w="42" h="10" />
+				<bottom-right x="766" y="185" w="10" h="10" />
 			</dis9>
-		</Tab>
-
+		</Box>
 		<LineInput>
 			<def9>
-				<top-left x="5" y="275" w="8" h="8" />
-				<top-mid x="13" y="275" w="64" h="8" />
-				<top-right x="77" y="275" w="8" h="8" />
-				<left x="5" y="283" w="8" h="19" />
-				<mid x="13" y="283" w="64" h="19" />
-				<right x="77" y="283" w="8" h="19" />
-				<bottom-left x="5" y="302" w="8" h="8" />
-				<bottom-mid x="13" y="302" w="64" h="8" />
-				<bottom-right x="77" y="302" w="8" h="8" />
+				<top-left x="0" y="160" w="15" h="15" />
+				<top-mid x="15" y="160" w="70" h="15" />
+				<top-right x="185" y="160" w="15" h="15" />
+				<left x="0" y="175" w="15" h="10" />
+				<mid x="15" y="175" w="70" h="10" />
+				<right x="85" y="175" w="15" h="10" />
+				<bottom-left x="0" y="185" w="15" h="15" />
+				<bottom-mid x="15" y="185" w="70" h="15" />
+				<bottom-right x="185" y="185" w="15" h="15" />
 			</def9>
-
 			<pre9>
-				<top-left x="89" y="275" w="8" h="8" />
-				<top-mid x="97" y="275" w="64" h="8" />
-				<top-right x="161" y="275" w="8" h="8" />
-				<left x="89" y="283" w="8" h="19" />
-				<mid x="97" y="283" w="64" h="19" />
-				<right x="161" y="283" w="8" h="19" />
-				<bottom-left x="89" y="302" w="8" h="8" />
-				<bottom-mid x="97" y="302" w="64" h="8" />
-				<bottom-right x="161" y="302" w="8" h="8" />
+				<top-left x="100" y="160" w="15" h="15" />
+				<top-mid x="115" y="160" w="70" h="15" />
+				<top-right x="185" y="160" w="15" h="15" />
+				<left x="100" y="175" w="15" h="10" />
+				<mid x="115" y="175" w="70" h="10" />
+				<right x="185" y="175" w="15" h="10" />
+				<bottom-left x="100" y="185" w="15" h="15" />
+				<bottom-mid x="115" y="185" w="70" h="15" />
+				<bottom-right x="185" y="185" w="15" h="15" />
 			</pre9>
-
 			<exp9>
-				<top-left x="174" y="275" w="8" h="8" />
-				<top-mid x="182" y="275" w="64" h="8" />
-				<top-right x="246" y="275" w="8" h="8" />
-				<left x="174" y="283" w="8" h="19" />
-				<mid x="182" y="283" w="64" h="19" />
-				<right x="246" y="283" w="8" h="19" />
-				<bottom-left x="174" y="302" w="8" h="8" />
-				<bottom-mid x="182" y="302" w="64" h="8" />
-				<bottom-right x="246" y="302" w="8" h="8" />
+				<top-left x="200" y="160" w="15" h="15" />
+				<top-mid x="215" y="160" w="70" h="15" />
+				<top-right x="285" y="160" w="15" h="15" />
+				<left x="200" y="175" w="15" h="10" />
+				<mid x="215" y="175" w="70" h="10" />
+				<right x="285" y="175" w="15" h="10" />
+				<bottom-left x="200" y="185" w="15" h="15" />
+				<bottom-mid x="215" y="185" w="70" h="15" />
+				<bottom-right x="285" y="185" w="15" h="15" />
 			</exp9>
-
 			<dis9>
-				<top-left x="260" y="275" w="8" h="8" />
-				<top-mid x="268" y="275" w="64" h="8" />
-				<top-right x="332" y="275" w="8" h="8" />
-				<left x="260" y="283" w="8" h="19" />
-				<mid x="268" y="283" w="64" h="19" />
-				<right x="332" y="283" w="8" h="19" />
-				<bottom-left x="260" y="302" w="8" h="8" />
-				<bottom-mid x="268" y="302" w="64" h="8" />
-				<bottom-right x="332" y="302" w="8" h="8" />
+				<top-left x="300" y="160" w="15" h="15" />
+				<top-mid x="315" y="160" w="70" h="15" />
+				<top-right x="385" y="160" w="15" h="15" />
+				<left x="300" y="175" w="15" h="10" />
+				<mid x="315" y="175" w="70" h="10" />
+				<right x="385" y="175" w="15" h="10" />
+				<bottom-left x="300" y="185" w="15" h="15" />
+				<bottom-mid x="315" y="185" w="70" h="15" />
+				<bottom-right x="385" y="185" w="15" h="15" />
 			</dis9>
-
 			<foc9>
-				<top-left x="345" y="275" w="8" h="8" />
-				<top-mid x="353" y="275" w="64" h="8" />
-				<top-right x="417" y="275" w="8" h="8" />
-				<left x="345" y="283" w="8" h="19" />
-				<mid x="353" y="283" w="64" h="19" />
-				<right x="417" y="283" w="8" h="19" />
-				<bottom-left x="345" y="302" w="8" h="8" />
-				<bottom-mid x="353" y="302" w="64" h="8" />
-				<bottom-right x="417" y="302" w="8" h="8" />
+				<top-left x="400" y="160" w="15" h="15" />
+				<top-mid x="415" y="160" w="70" h="15" />
+				<top-right x="485" y="160" w="15" h="15" />
+				<left x="400" y="175" w="15" h="10" />
+				<mid x="415" y="175" w="70" h="10" />
+				<right x="485" y="175" w="15" h="10" />
+				<bottom-left x="400" y="185" w="15" h="15" />
+				<bottom-mid x="415" y="185" w="70" h="15" />
+				<bottom-right x="485" y="185" w="15" h="15" />
 			</foc9>
 		</LineInput>
+		<HScrollBar>
+			<def3>
+				<left x="640" y="120" w="10" h="10" />
+				<mid x="650" y="120" w="190" h="10" />
+				<right x="840" y="120" w="10" h="10" />
+			</def3>
+		</HScrollBar>
+		<VScrollBar>
+			<def3>
+				<left x="890" y="0" w="10" h="10" />
+				<mid x="890" y="10" w="10" h="180" />
+				<right x="890" y="190" w="10" h="10" />
+			</def3>
+		</VScrollBar>
 	</pack>
 </style>

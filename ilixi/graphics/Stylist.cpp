@@ -239,8 +239,8 @@ Stylist::drawGroupBox(Painter* p, GroupBox* box)
     int tabHeight = box->titleSize().height();
 
     // Frame
-    drawTabFrame(p, defaultParameter(StyleHint::TabOffsetLeft), 0, box->titleSize().width(), tabHeight, _style->tab.def);
-    draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight, _style->tab.def);
+    drawTabFrame(p, defaultParameter(StyleHint::TabOffsetLeft), 0, box->titleSize().width(), tabHeight, _style->box.def);
+    draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight, _style->box.def);
 }
 
 void
@@ -386,27 +386,27 @@ Stylist::drawSlider(Painter* p, Slider* bar)
 
     if (bar->orientation() == Horizontal)
     {
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->sl.def);
+        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->hSl.def);
 
         // fill
         if (bar->value() > bar->minimum())
         {
             if (bar->inverted())
-                draw3Frame(p, bar->_indicator.x(), 0, bar->width() - bar->_indicator.x(), bar->height(), _style->sl.dis);
+                draw3Frame(p, bar->_indicator.x(), 0, bar->width() - bar->_indicator.x(), bar->height(), _style->hSl.dis);
             else
-                draw3Frame(p, 0, 0, bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth), bar->height(), _style->sl.dis);
+                draw3Frame(p, 0, 0, bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth), bar->height(), _style->hSl.dis);
         }
     } else // Vertical
     {
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->sl.defV, true);
+        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.def, true);
 
         // fill
         if (bar->value() > bar->minimum())
         {
             if (bar->inverted())
-                draw3Frame(p, 0, 0, bar->width(), bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight), _style->sl.disV, true);
+                draw3Frame(p, 0, 0, bar->width(), bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight), _style->vSl.dis, true);
             else
-                draw3Frame(p, 0, bar->_indicator.y(), bar->width(), bar->height() - bar->_indicator.y(), _style->sl.disV, true);
+                draw3Frame(p, 0, bar->_indicator.y(), bar->width(), bar->height() - bar->_indicator.y(), _style->vSl.dis, true);
         }
     }
 
@@ -456,9 +456,9 @@ Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
     const WidgetState state = button->state();
 
     if (button->checked())
-        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->tab.def);
+        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->box.def);
     else
-        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->tab.dis);
+        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->box.dis);
 
     // Text
     if (!button->text().empty())
@@ -475,7 +475,7 @@ Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
 void
 Stylist::drawTabPanel(Painter* p, TabPanel* panel, int y)
 {
-    drawFrame(p, 0, y, panel->width(), panel->height() - y);
+    draw9Frame(p, 0, y, panel->width(), panel->height() - y, _style->box.def);
 }
 
 void

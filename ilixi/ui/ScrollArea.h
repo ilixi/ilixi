@@ -163,17 +163,15 @@ private:
     //! This is the content of scroll area.
     Widget* _content;
 
-    //! This tween animation is essentially used for fading thumbs.
+    //! Animation for sliding in x and y directions..
     TweenAnimation* _ani;
-    Tween* _tween;
-    Tween* _barTween;
     Tween* _xTween;
     Tween* _yTween;
 
     //! Content can not go beyond this point.
     Rectangle _sMax;
     //! This rectangle stores the thumbs.
-    Rectangle _thumbs;
+    Size _thumbs;
 
     //! This is used to calculate weighted average velocity.
     std::queue<PointerEvent> _events;

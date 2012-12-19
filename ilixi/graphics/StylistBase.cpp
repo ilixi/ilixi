@@ -40,7 +40,7 @@ StylistBase::StylistBase()
 {
     ILOG_TRACE(ILX_STYLISTBASE);
     _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
-    initAnimations();
+    //initAnimations();
 }
 
 StylistBase::~StylistBase()
@@ -68,14 +68,13 @@ StylistBase::defaultSize(StyleHint::Size size) const
     switch (size)
     {
     case StyleHint::PushButton:
-        return Size(defaultParameter(StyleHint::PushButtonLR),
-                    _style->pb.def.m.height());
+        return Size(defaultParameter(StyleHint::PushButtonLR), _style->pb.def.m.height());
     case StyleHint::ProgressBar:
         return Size(100, _style->pr.def.m.height());
     case StyleHint::Slider:
-        return Size(100, _style->sl.def.m.height());
+        return Size(100, _style->hSl.def.m.height());
     case StyleHint::SliderV:
-        return Size(_style->sl.defV.m.width(), 100);
+        return Size(_style->vSl.def.m.width(), 100);
     default:
         return Size();
     }
@@ -125,17 +124,17 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->fr.def.tm.height() + _style->fr.def.bm.height();
 
     case StyleHint::TabOffsetLeft:
-        return _style->tab.def.l.width();
+        return _style->box.def.l.width();
     case StyleHint::TabOffsetRight:
-        return _style->tab.def.r.width();
+        return _style->box.def.r.width();
     case StyleHint::TabOffsetTop:
-        return 5; //_style->tab.def.tm.height();
+        return _style->box.def.tm.height();
     case StyleHint::TabOffsetBottom:
-        return _style->tab.def.bm.height();
+        return _style->box.def.bm.height();
     case StyleHint::TabOffsetLR:
-        return _style->tab.def.l.width() + _style->tab.def.r.width();
+        return _style->box.def.l.width() + _style->box.def.r.width();
     case StyleHint::TabOffsetTB:
-        return _style->tab.def.tm.height() + _style->tab.def.bm.height();
+        return _style->box.def.tm.height() + _style->box.def.bm.height();
 
     case StyleHint::LineInputLeft:
         return _style->li.def.l.width();
@@ -170,6 +169,11 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->slI.def.width();
     case StyleHint::SliderIndicatorHeight:
         return _style->slI.def.height();
+
+    case StyleHint::ScrollBarHeight:
+        return _style->hScr.m.height();
+    case StyleHint::ScrollBarWidth:
+        return _style->vScr.m.width();
 
     default:
         return -1;
@@ -336,16 +340,12 @@ StylistBase::initAnimations()
     _focus.in = new TweenAnimation();
     _focus.in->setDuration(500);
     _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _focus.in->sigExec.connect(
-            sigc::bind<StylistBase::StyledAnimation>(
-                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
+    _focus.in->sigExec.connect(sigc::bind<StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
 
     _focus.out = new TweenAnimation();
     _focus.out->setDuration(250);
     _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
-    _focus.out->sigExec.connect(
-            sigc::bind<StylistBase::StyledAnimation>(
-                    sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
+    _focus.out->sigExec.connect(sigc::bind<StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
 }
 
 void
