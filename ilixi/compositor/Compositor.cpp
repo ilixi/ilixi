@@ -195,8 +195,8 @@ ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
-    if (rect.y + rect.h > height() - _oskGeometry.height())
-        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (height() - _oskGeometry.height()), rect.w, rect.h);
+    if (rect.y + rect.h > _appGeometry.bottom() - _oskGeometry.height())
+        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (_appGeometry.bottom() - _oskGeometry.height()), rect.w, rect.h);
     else
         _oskTargetRect.setRectangle(rect.x, 0, rect.w, rect.h);
 
