@@ -406,39 +406,39 @@
 		</Frame>
 		<Box>
 			<def9>
-				<top-left x="640" y="130" w="15" h="15" />
-				<top-mid x="655" y="130" w="40" h="15" />
-				<top-right x="695" y="130" w="15" h="15" />
-				<left x="640" y="145" w="15" h="40" />
+				<top-left x="645" y="135" w="10" h="10" />
+				<top-mid x="655" y="135" w="40" h="10" />
+				<top-right x="695" y="135" w="10" h="10" />
+				<left x="645" y="145" w="10" h="40" />
 				<mid x="655" y="145" w="40" h="40" />
-				<right x="695" y="145" w="15" h="40" />
-				<bottom-left x="640" y="185" w="15" h="15" />
-				<bottom-mid x="655" y="185" w="40" h="15" />
-				<bottom-right x="695" y="185" w="15" h="15" />
+				<right x="695" y="145" w="10" h="40" />
+				<bottom-left x="645" y="185" w="10" h="10" />
+				<bottom-mid x="655" y="185" w="40" h="10" />
+				<bottom-right x="695" y="185" w="10" h="10" />
 			</def9>
 			<dis9>
-				<top-left x="710" y="130" w="15" h="15" />
-				<top-mid x="725" y="130" w="40" h="15" />
-				<top-right x="765" y="130" w="15" h="15" />
-				<left x="710" y="145" w="15" h="40" />
+				<top-left x="715" y="135" w="10" h="10" />
+				<top-mid x="725" y="135" w="40" h="10" />
+				<top-right x="765" y="135" w="10" h="10" />
+				<left x="715" y="145" w="10" h="40" />
 				<mid x="725" y="145" w="40" h="40" />
-				<right x="765" y="145" w="15" h="40" />
-				<bottom-left x="710" y="185" w="15" h="15" />
-				<bottom-mid x="725" y="185" w="40" h="15" />
-				<bottom-right x="765" y="185" w="15" h="15" />
+				<right x="765" y="145" w="10" h="40" />
+				<bottom-left x="715" y="185" w="10" h="10" />
+				<bottom-mid x="725" y="185" w="40" h="10" />
+				<bottom-right x="765" y="185" w="10" h="10" />
 			</dis9>
 		</Box>
 		<LineInput>
 			<def9>
 				<top-left x="0" y="160" w="15" h="15" />
 				<top-mid x="15" y="160" w="70" h="15" />
-				<top-right x="185" y="160" w="15" h="15" />
+				<top-right x="85" y="160" w="15" h="15" />
 				<left x="0" y="175" w="15" h="10" />
 				<mid x="15" y="175" w="70" h="10" />
 				<right x="85" y="175" w="15" h="10" />
 				<bottom-left x="0" y="185" w="15" h="15" />
 				<bottom-mid x="15" y="185" w="70" h="15" />
-				<bottom-right x="185" y="185" w="15" h="15" />
+				<bottom-right x="85" y="185" w="15" h="15" />
 			</def9>
 			<pre9>
 				<top-left x="100" y="160" w="15" h="15" />

@@ -73,7 +73,7 @@
 		</base>
 		<baseText>
 			<color>
-				<hex>808080</hex>
+				<hex>4C4C4C</hex>
 			</color>
 		</baseText>
 		<baseAlt>
@@ -98,7 +98,7 @@
 		</border>
 		<fill>
 			<color>
-				<hex>45505D</hex>
+				<hex>26405E</hex>
 			</color>
 		</fill>
 		<text>
@@ -115,7 +115,7 @@
 		</base>
 		<baseText>
 			<color>
-				<hex>808080</hex>
+				<hex>FFFFFF</hex>
 			</color>
 		</baseText>
 		<baseAlt>
@@ -140,7 +140,7 @@
 		</border>
 		<fill>
 			<color>
-				<hex>45505D</hex>
+				<hex>4B6C92</hex>
 			</color>
 		</fill>
 		<text>
@@ -157,7 +157,7 @@
 		</base>
 		<baseText>
 			<color>
-				<hex>808080</hex>
+				<hex>FFFFFF</hex>
 			</color>
 		</baseText>
 		<baseAlt>
