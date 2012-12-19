@@ -5,7 +5,7 @@
 <!DOCTYPE keyboard SYSTEM "keyboard.dtd">
 
 <keyboard>
-    <row id="n123" height="%20">
+    <row id="n123" height="%25">
         <key id="N1" repeatable="yes" special="yes" cycle="yes">
             <symbol states="1, 2" unicode="yes">1BACKSPACE</symbol>
             <icon>@DATADIR:backspace.png</icon>
@@ -22,7 +22,7 @@
         </key>
     </row>
 
-    <row id="n456" height="%20">
+    <row id="n456" height="%25">
         <key id="N4" cycle="yes">
             <symbol states="1">4ghi</symbol>
             <symbol states="2">4GHI</symbol>
@@ -39,7 +39,7 @@
         </key>
     </row>
 
-    <row id="n789" height="%20">
+    <row id="n789" height="%25">
         <key id="N7" cycle="yes">
             <symbol states="1">7pqrs</symbol>
             <symbol states="2">7PQRS</symbol>
@@ -56,7 +56,7 @@
         </key>
     </row>
 
-    <row id="n0" height="%20">
+    <row id="n0" height="%25">
         <key id="Nstar" cycle="yes">
             <symbol states="1">*+-:;</symbol>
             <symbol states="2">*+-:;</symbol>
