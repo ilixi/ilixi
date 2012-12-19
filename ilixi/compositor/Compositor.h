@@ -171,8 +171,6 @@ private:
     //! Switcher instance.
     Switcher* _switcher;
 
-    //! FPS label
-    Label* _fpsLabel;
     //! FPS calculator refreshed with each paintEvent.
     FPSCalculator* _fps;
 
@@ -271,10 +269,6 @@ private:
     void
     onVisible();
 
-    //! Updates fps label text.
-    void
-    onFPSUpdate(float fps);
-
     //! Returns a window on ui layer given a DFBWindowID if found, else return NULL.
     IDirectFBWindow*
     getWindow(DFBWindowID id);
@@ -302,9 +296,6 @@ private:
 
     void
     processTerminated(AppInstance* instance);
-
-    void
-    updateCompositorGeometry();
 
     virtual void
     handleUserEvent(const DFBUserEvent& event);

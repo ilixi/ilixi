@@ -43,7 +43,6 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
           _currentApp(NULL),
           _previousApp(NULL),
           _switcher(NULL),
-          _fpsLabel(NULL),
           _fps(NULL),
           _compComp(NULL),
           _soundComp(NULL),
@@ -67,22 +66,10 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
     setMargin(0);
 
-    _backgroundFlags = BGFNone;
-    for (int i = 1; i < argc; i++)
-    {
-        if (strcmp(argv[i], "fps") == 0)
-        {
-            _backgroundFlags = BGFFill;
-            _fpsLabel = new Label("FPS: 0");
-            _fpsLabel->layout().setAlignment(TextLayout::Center);
-            addWidget(_fpsLabel);
+    _backgroundFlags = BGFFill;
 
-            _fps = new FPSCalculator();
-            _fps->sigUpdated.connect(sigc::mem_fun(this, &ILXCompositor::onFPSUpdate));
-        }
-    }
+    _fps = new FPSCalculator();
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &ILXCompositor::updateCompositorGeometry));
     sigVisible.connect(sigc::mem_fun(this, &ILXCompositor::onVisible));
 }
 
@@ -291,6 +278,7 @@ ILXCompositor::compose(const PaintEvent& event)
 {
     if (_fps)
         _fps->funck();
+    printf(" --+** %f\n", _fps->fps());
 }
 
 void
@@ -323,16 +311,7 @@ ILXCompositor::onVisible()
     if (_switcher)
         _switcher->setSwitcherGeometry(_switcherGeometry);
 
-    if (_fps)
-        _fpsLabel->bringToFront();
-
     _appMan->initStartup();
-}
-
-void
-ILXCompositor::onFPSUpdate(float fps)
-{
-    _fpsLabel->setText(_fps->fpsText());
 }
 
 IDirectFBWindow*
@@ -465,14 +444,6 @@ ILXCompositor::processTerminated(AppInstance* instance)
     data->instance = instance;
 
     postUserEvent(CET_Crash, data);
-}
-
-void
-ILXCompositor::updateCompositorGeometry()
-{
-
-    if (_fpsLabel)
-        _fpsLabel->setGeometry((width() - 100) / 2, 0, 100, height());
 }
 
 void
