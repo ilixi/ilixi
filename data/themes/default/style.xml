@@ -432,13 +432,13 @@
 			<def9>
 				<top-left x="0" y="160" w="15" h="15" />
 				<top-mid x="15" y="160" w="70" h="15" />
-				<top-right x="185" y="160" w="15" h="15" />
+				<top-right x="85" y="160" w="15" h="15" />
 				<left x="0" y="175" w="15" h="10" />
 				<mid x="15" y="175" w="70" h="10" />
 				<right x="85" y="175" w="15" h="10" />
 				<bottom-left x="0" y="185" w="15" h="15" />
 				<bottom-mid x="15" y="185" w="70" h="15" />
-				<bottom-right x="185" y="185" w="15" h="15" />
+				<bottom-right x="85" y="185" w="15" h="15" />
 			</def9>
 			<pre9>
 				<top-left x="100" y="160" w="15" h="15" />
