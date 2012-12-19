@@ -40,15 +40,15 @@ public:
           setLayout( new HBoxLayout() );
 
           ToolButton *b0 = new ToolButton( "  [.]  " );
-          b0->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button0Handler));
+          b0->sigClicked.connect(sigc::mem_fun(this, &AnimatedTiles::button0Handler));
           addWidget( b0 );
 
           ToolButton *b1 = new ToolButton( "  [o]  " );
-          b1->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button1Handler));
+          b1->sigClicked.connect(sigc::mem_fun(this, &AnimatedTiles::button1Handler));
           addWidget( b1 );
 
           ToolButton *b2 = new ToolButton( "  [8]  " );
-          b2->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button2Handler));
+          b2->sigClicked.connect(sigc::mem_fun(this, &AnimatedTiles::button2Handler));
           addWidget( b2 );
      }
 
