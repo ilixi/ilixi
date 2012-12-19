@@ -172,10 +172,10 @@ public:
 
          _fps->funck();
 
-         p.setBrush(Color(255, 255, 255));
+         p.setBrush(Color(255, 0, 0));
          std::string text = _fps->fpsText();
          Size s = stylist()->defaultFont()->extents(text);
-         p.drawText(text, (width() - s.width()) / 2, 0);
+         p.drawText(text, width() - s.width() - 10, 10);
 
          p.end();
      }
