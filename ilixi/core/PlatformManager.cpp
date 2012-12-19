@@ -495,7 +495,20 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                 if (res != DFB_OK)
                 {
                     ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
-                    ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
+
+                    if (config.buffermode != DLBM_BACKSYSTEM)
+                    {
+                        config.buffermode = DLBM_BACKSYSTEM;
+                        ILOG_INFO(ILX_PLATFORMMANAGER, "Setting buffermode to BACKSYSTEM...\n");
+                        res = layer->SetConfiguration(layer, &config);
+                        if (res != DFB_OK)
+                        {
+                            ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
+                            ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
+                        }
+                    } else
+                        ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
+
                 } else
                     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
             }
