@@ -32,6 +32,7 @@ D_DEBUG_DOMAIN( ILX_ICON, "ilixi/ui/Icon", "Icon");
 
 Icon::Icon(Widget* parent)
         : Widget(parent),
+          _colorize(false),
           _image(new Image())
 {
     ILOG_TRACE_W(ILX_ICON);
@@ -40,6 +41,7 @@ Icon::Icon(Widget* parent)
 
 Icon::Icon(const std::string& path, Widget* parent)
         : Widget(parent),
+          _colorize(false),
           _image(new Image(path))
 {
     ILOG_TRACE_W(ILX_ICON);
@@ -48,6 +50,7 @@ Icon::Icon(const std::string& path, Widget* parent)
 
 Icon::Icon(const Image& image, Widget* parent)
         : Widget(parent),
+          _colorize(false),
           _image(new Image(image))
 {
     ILOG_TRACE_W(ILX_ICON);
@@ -56,6 +59,7 @@ Icon::Icon(const Image& image, Widget* parent)
 
 Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
         : Widget(parent),
+          _colorize(true),
           _image(NULL)
 {
     ILOG_TRACE_W(ILX_ICON);
@@ -77,10 +81,22 @@ Icon::preferredSize() const
     return Size();
 }
 
+bool
+Icon::colorize() const
+{
+    return _colorize;
+}
+
 Image* const
 Icon::image()
 {
     return _image;
+}
+
+void
+Icon::setColorize(bool colorize)
+{
+    _colorize = colorize;
 }
 
 void

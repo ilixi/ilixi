@@ -82,10 +82,22 @@ public:
     preferredSize() const;
 
     /*!
+     * Returns whether image is colorized using default text color.
+     */
+    bool
+    colorize() const;
+
+    /*!
      * Returns image.
      */
     Image* const
     image();
+
+    /*!
+     * Sets whether image is colorized using default text color.
+     */
+    void
+    setColorize(bool colorize);
 
     /*!
      * Sets image using given path.
@@ -102,6 +114,8 @@ public:
     setState(WidgetState state);
 
 private:
+    //! This property specifies whether icon is colorized before painted by stylist.
+    bool _colorize;
     //! Image to show if icon is in default state.
     Image* _image;
 

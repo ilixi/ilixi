@@ -118,6 +118,10 @@ Stylist::drawIcon(Painter* p, Icon* icon)
     {
         p->setBrush(_palette->_disabled.text);
         p->stretchImage(icon->image(), Rectangle(0, 0, icon->width(), icon->height()), (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
+    } else if (icon->colorize())
+    {
+        p->setBrush(_palette->_default.text);
+        p->stretchImage(icon->image(), Rectangle(0, 0, icon->width(), icon->height()), (DFBSurfaceBlittingFlags) (DSBLIT_COLORIZE | DSBLIT_BLEND_ALPHACHANNEL));
     } else
         p->stretchImage(icon->image(), Rectangle(0, 0, icon->width(), icon->height()));
 }
