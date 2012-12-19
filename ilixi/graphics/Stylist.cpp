@@ -468,10 +468,7 @@ Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
     if (!button->text().empty())
     {
         p->setFont(*button->font());
-        if (button->checked())
-            p->setBrush(_palette->getGroup(state).fill);
-        else
-            p->setBrush(_palette->getGroup(state).text);
+        p->setBrush(_palette->getGroup(state).text);
         p->drawLayout(button->layout());
     }
 }
