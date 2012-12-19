@@ -106,7 +106,7 @@ Button::setChecked(bool checked)
 }
 
 void
-Button::keyUpEvent(const KeyEvent& event)
+Button::keyDownEvent(const KeyEvent& event)
 {
     if (event.keySymbol == DIKS_SPACE || event.keySymbol == DIKS_OK)
         click(100);

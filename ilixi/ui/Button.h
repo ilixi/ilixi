@@ -125,7 +125,7 @@ protected:
      * If key is SPACE then click.
      */
     virtual void
-    keyUpEvent(const KeyEvent& event);
+    keyDownEvent(const KeyEvent& event);
 
     /*!
      * Emits sigPressed.
