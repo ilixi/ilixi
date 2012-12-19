@@ -27,6 +27,11 @@
 #include <string>
 #include <directfb_version.h>
 
+extern "C"
+{
+#include <direct/util.h>
+}
+
 namespace ilixi
 {
 
@@ -53,6 +58,9 @@ createHash(const std::string& str);
  */
 std::string
 createUUID();
+
+std::string
+PrintF(const char *format, ...) D_FORMAT_PRINTF( 1 );
 
 } /* namespace ilixi */
 #endif /* ILIXI_UTIL_H_ */

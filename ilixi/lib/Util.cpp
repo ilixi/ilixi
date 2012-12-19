@@ -45,12 +45,48 @@ createUUID()
 {
     char uuid[37];
     srand(time(NULL));
-    snprintf(uuid, 37, "%x%x-%x-%x-%x-%x%x%x", (uint16_t) rand(),
-             (uint16_t) rand(), (uint16_t) rand(),
-             (((uint16_t) rand() & 0x0fff) | 0x4000),
-             (uint16_t) rand() % 0x3fff + 0x8000, (uint16_t) rand(),
-             (uint16_t) rand(), (uint16_t) rand());
+    snprintf(uuid, 37, "%x%x-%x-%x-%x-%x%x%x", (uint16_t) rand(), (uint16_t) rand(), (uint16_t) rand(), (((uint16_t) rand() & 0x0fff) | 0x4000), (uint16_t) rand() % 0x3fff + 0x8000, (uint16_t) rand(), (uint16_t) rand(), (uint16_t) rand());
     return std::string(uuid);
+}
+
+std::string
+PrintF(const char *format, ...)
+{
+    va_list args;
+    size_t len;
+    char buf[200];
+    char *ptr = buf;
+
+    va_start( args, format);
+    len = vsnprintf(buf, sizeof(buf), format, args);
+    va_end( args);
+
+    if (len < 0)
+        abort();
+
+    if (len >= sizeof(buf))
+    {
+        ptr = (char*) malloc(len + 1);
+        if (!ptr)
+            abort();
+
+        va_start( args, format);
+        len = vsnprintf(ptr, len + 1, format, args);
+        va_end( args);
+
+        if (len < 0)
+        {
+            free(ptr);
+            abort();
+        }
+    }
+
+    std::string str(ptr);
+
+    if (ptr != buf)
+        free(ptr);
+
+    return str;
 }
 
 } /* namespace ilixi */
