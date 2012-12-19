@@ -167,6 +167,13 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         }
         break;
 
+    case Compositor::GetFPS:
+        {
+            *((float*) arg) = _compositor->_fps->fps();
+            printf(" ** %f\n", _compositor->_fps->fps());
+        }
+        break;
+
     case Compositor::GetAppList:
         ILOG_TRACE_F(ILX_COMPCOMP);
         sendAppList();

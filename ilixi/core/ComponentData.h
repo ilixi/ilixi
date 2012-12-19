@@ -142,6 +142,7 @@ typedef enum
 {
     AddNotification,    //!< Add notification using "NotificationData" as argument.
     GetAppList,         //!< Send list of registered applications to client.
+    GetFPS,             //!< Send current compositor fps.
     HideDashboard,      //!< Hide Dashboard application.
     HideHome,           //!< Hide Home application.
     HideSoundMixer,     //!< Hide SoundMixer application.
