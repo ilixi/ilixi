@@ -1,6 +1,8 @@
 #include <math.h>
 
 #include <ui/Application.h>
+#include <ui/ToolButton.h>
+#include <ui/HBoxLayout.h>
 #include <lib/FPSCalculator.h>
 #include <lib/TweenAnimation.h>
 #include <graphics/Painter.h>
@@ -32,6 +34,78 @@ public:
           sigVisible.connect(sigc::mem_fun(this, &AnimatedTiles::setStartPosition));
 
           _fps = new FPSCalculator();
+
+
+          setMargin( 10 );
+          setLayout( new HBoxLayout() );
+
+          ToolButton *b0 = new ToolButton( "  [.]  " );
+          b0->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button0Handler));
+          addWidget( b0 );
+
+          ToolButton *b1 = new ToolButton( "  [o]  " );
+          b1->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button1Handler));
+          addWidget( b1 );
+
+          ToolButton *b2 = new ToolButton( "  [8]  " );
+          b2->sigPressed.connect(sigc::mem_fun(this, &AnimatedTiles::button2Handler));
+          addWidget( b2 );
+     }
+
+     void
+     button0Handler()
+     {
+          Size size = _image->size();     // FIXME: make width/height() validate the size as well
+
+          Point dest[64];
+          float x = (width()  - size.width())  / 2.0f;
+          float y = (height() - size.height()) / 2.0f;
+          float w = (width()  - 200) / 2.0f;
+          float h = (height() - 200) / 2.0f;
+
+          for (int i = 0; i < 64; i++) {
+               dest[i].moveTo( x, y );
+          }
+
+          transitionTo( dest );
+     }
+
+     void
+     button1Handler()
+     {
+          Size size = _image->size();     // FIXME: make width/height() validate the size as well
+
+          Point dest[64];
+          float x = (width()  - size.width())  / 2.0f;
+          float y = (height() - size.height()) / 2.0f;
+          float w = (width()  - 200) / 2.0f;
+          float h = (height() - 200) / 2.0f;
+
+          for (int i = 0; i < 64; i++) {
+               dest[i].moveTo( x + cos((i / 63.0) * 6.28) * w,
+                               y + sin((i / 63.0) * 6.28) * h );
+          }
+
+          transitionTo( dest );
+     }
+
+     void
+     button2Handler()
+     {
+          Size size = _image->size();     // FIXME: make width/height() validate the size as well
+
+          Point dest[64];
+          float x = (width()  - size.width())  / 2.0f;
+          float y = (height() - size.height()) / 2.0f;
+          float w = (width()  - 200) / 2.0f;
+          float h = (height() - 200) / 2.0f;
+
+          for (int i = 0; i < 64; i++) {
+               dest[i].moveTo( x + sin((i / 63.0) * 6.28) * w,
+                               y + sin(((i * 2)/63.0) * 6.28) * h );
+          }
+
+          transitionTo( dest );
      }
 
      void
@@ -109,42 +183,20 @@ public:
      bool
      windowPreEventFilter(const DFBWindowEvent& event)
      {
-          Size size = _image->size();     // FIXME: make width/height() validate the size as well
-
-          Point dest[64];
-          float x = (width()  - size.width())  / 2.0f;
-          float y = (height() - size.height()) / 2.0f;
-          float w = (width()  - 200) / 2.0f;
-          float h = (height() - 200) / 2.0f;
-
           switch (event.type) {
                case DWET_KEYDOWN:
                     switch (event.key_symbol) {
                          case DIKS_0:
-                              for (int i = 0; i < 64; i++) {
-                                   dest[i].moveTo( x, y );
-                              }
-
-                              transitionTo( dest );
-                              break;
+                              button0Handler();
+                              return true;
 
                          case DIKS_1:
-                              for (int i = 0; i < 64; i++) {
-                                   dest[i].moveTo( x + cos((i / 63.0) * 6.28) * w,
-                                                   y + sin((i / 63.0) * 6.28) * h );
-                              }
-
-                              transitionTo( dest );
-                              break;
+                              button1Handler();
+                              return true;
 
                          case DIKS_2:
-                              for (int i = 0; i < 64; i++) {
-                                   dest[i].moveTo( x + sin((i / 63.0) * 6.28) * w,
-                                                   y + sin(((i * 2)/63.0) * 6.28) * h );
-                              }
-
-                              transitionTo( dest );
-                              break;
+                              button2Handler();
+                              return true;
 
                          default:
                               break;
@@ -155,7 +207,7 @@ public:
                     break;
           }
 
-          return true;
+          return false;
      }
 
 
