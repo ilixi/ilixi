@@ -248,7 +248,6 @@ PStatusBar::timerSlot()
         DaleDFB::comaGetLocal(sizeof(float), &ptr);
         DaleDFB::comaCallComponent(_compComponent, Compositor::GetFPS, (void*) ptr);
         fps = *((float*)ptr);
-        printf(" --- %f \n", fps);
     }
 
     _fpsLabel->setText(PrintF("FPS: %.1f", fps));

@@ -276,9 +276,7 @@ ILXCompositor::setLayerOpacity(u8 opacity)
 void
 ILXCompositor::compose(const PaintEvent& event)
 {
-    if (_fps)
-        _fps->funck();
-    printf(" --+** %f\n", _fps->fps());
+    _fps->funck();
 }
 
 void

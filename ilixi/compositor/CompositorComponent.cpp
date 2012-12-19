@@ -170,7 +170,6 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     case Compositor::GetFPS:
         {
             *((float*) arg) = _compositor->_fps->fps();
-            printf(" ** %f\n", _compositor->_fps->fps());
         }
         break;
 
