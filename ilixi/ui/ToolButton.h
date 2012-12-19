@@ -76,7 +76,7 @@ public:
     /*!
      * Returns button icon, if any.
      */
-    const Icon*
+    Icon*
     icon() const;
 
     /*!

@@ -168,7 +168,7 @@ ToolButton::preferredSize() const
     }
 }
 
-const Icon*
+Icon*
 ToolButton::icon() const
 {
     return _icon;
