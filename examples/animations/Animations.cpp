@@ -88,7 +88,7 @@ Animations::compose(const PaintEvent& event)
         p.stretchImage(background(), frameGeometry());
 
     p.setBrush(Color(255, 0, 0));
-    std::string text = _fps->fpsText();
+    std::string text = PrintF("FPS: %.1f", _fps->fps());
     Size s = stylist()->defaultFont()->extents(text);
     p.drawText(text, width() - s.width() - 10, 10);
     p.end();
