@@ -54,12 +54,6 @@ public:
     fps() const;
 
     /*!
-     * Returns formatted FPS text.
-     */
-    const char*
-    fpsText();
-
-    /*!
      * Callback method which actually calculated FPS.
      */
     bool
@@ -77,8 +71,6 @@ private:
     float _fps;
     //! Time at FPS calculation.
     long long _fpsTime;
-    //! This field stores formatted FPS text.
-    char _fpsText[20];
 };
 
 } /* namespace ilixi */

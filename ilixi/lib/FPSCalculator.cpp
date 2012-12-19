@@ -48,13 +48,6 @@ FPSCalculator::fps() const
     return _fps;
 }
 
-const char*
-FPSCalculator::fpsText()
-{
-    snprintf(_fpsText, sizeof(_fpsText), "FPS: %.1f\0", _fps);
-    return _fpsText;
-}
-
 bool
 FPSCalculator::funck()
 {
