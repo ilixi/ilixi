@@ -115,6 +115,7 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     iconLayout->addWidget(_vol);
 
     _list = new ListBox();
+    _list->setYConstraint(ExpandingConstraint);
     addWidget(_list);
 
     _listFont = new Font("Gafata", 12);
@@ -170,6 +171,10 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->setBg(_listBG);
     item->setIcon(ILIXI_DATADIR"phone/statusbar/dialer.png", Size(32, 32));
     _list->addItem(item);
+
+    _fpsLabel = new Label("");
+    _fpsLabel->setLayoutAlignment(TextLayout::Center);
+    addWidget(_fpsLabel);
 
     _cpuMon = new CPUMonitor();
     _cpuMon->refresh();
@@ -236,6 +241,17 @@ PStatusBar::compose(const PaintEvent& event)
 void
 PStatusBar::timerSlot()
 {
+    float fps = 0;
+    if (_compComponent)
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(sizeof(float), &ptr);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::GetFPS, (void*) ptr);
+        fps = *((float*)ptr);
+        printf(" --- %f \n", fps);
+    }
+
+    _fpsLabel->setText(PrintF("FPS: %.1f", fps));
     _cpuMon->refresh();
     _cpuChart->addValue(0, _cpuMon->getCpu(0).getUsage());
 }

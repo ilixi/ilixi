@@ -77,6 +77,8 @@ private:
     CPUMonitor* _cpuMon;
     BarChart* _cpuChart;
 
+    Label* _fpsLabel;
+
     friend void
     volumeListener(void* ctx, void* arg);
 
