@@ -35,7 +35,8 @@ Image::Image()
         : _dfbSurface(NULL),
           _imagePath(""),
           _size(),
-          _state(Initialised)
+          _state(Initialised),
+          _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -44,7 +45,8 @@ Image::Image(const std::string& path)
         : _dfbSurface(NULL),
           _imagePath(path),
           _size(),
-          _state(Initialised)
+          _state(Initialised),
+          _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -53,7 +55,8 @@ Image::Image(const std::string& path, int width, int height)
         : _dfbSurface(NULL),
           _imagePath(path),
           _size(width, height),
-          _state(Initialised)
+          _state(Initialised),
+          _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -62,7 +65,8 @@ Image::Image(const std::string& path, const Size& size)
         : _dfbSurface(NULL),
           _imagePath(path),
           _size(size),
-          _state(Initialised)
+          _state(Initialised),
+          _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
 }
@@ -71,7 +75,8 @@ Image::Image(Image* source, const Rectangle& sourceRect)
         : _dfbSurface(NULL),
           _imagePath(""),
           _size(sourceRect.size()),
-          _state((ImageFlags) (Initialised | SubImage))
+          _state((ImageFlags) (Initialised | SubImage)),
+          _caps(source->_caps)
 {
     ILOG_TRACE(ILX_IMAGE);
     ILOG_DEBUG(ILX_IMAGE, " -> Size: %d, %d\n", _size.width(), _size.height());
@@ -82,7 +87,8 @@ Image::Image(const Image& img)
         : _dfbSurface(NULL),
           _imagePath(img._imagePath),
           _size(img._size),
-          _state(_state)
+          _state(_state),
+          _caps(img._caps)
 {
     ILOG_TRACE(ILX_IMAGE);
     if (_state & SubImage)
@@ -232,6 +238,10 @@ Image::loadImage()
     if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
         ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
 
+    DFBImageDescription iDesc;
+    if (provider->GetImageDescription(provider, &iDesc) == DFB_OK)
+        _caps = iDesc.caps;
+
     desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT);
     desc.caps = DSCAPS_PREMULTIPLIED;
 
@@ -266,6 +276,12 @@ Image::loadImage()
     }
 }
 
+DFBImageCapabilities
+Image::getCaps() const
+{
+    return _caps;
+}
+
 bool
 Image::loadSubImage(Image* source, const Rectangle& sourceRect)
 {
@@ -279,6 +295,7 @@ Image::loadSubImage(Image* source, const Rectangle& sourceRect)
         return false;
     }
 
+    _caps = source->getCaps();
     _state = (ImageFlags) (_state | Ready);
     return true;
 }

@@ -107,6 +107,12 @@ public:
     preferredSize() const;
 
     /*!
+     * Returns image description's capabilities.
+     */
+    DFBImageCapabilities
+    getCaps() const;
+
+    /*!
      * Returns a pointer to DirectFB surface.
      */
     IDirectFBSurface*
@@ -147,6 +153,8 @@ public:
     void
     setSize(const Size& size);
 
+
+
 private:
     enum ImageFlags
     {
@@ -165,6 +173,8 @@ private:
     Size _size;
     //! This property stores the state of image.
     ImageFlags _state;
+    //! This property stores the image capabilities acquired from image provider.
+    DFBImageCapabilities _caps;
 
     /*!
      * Release surface and set it to NULL.
