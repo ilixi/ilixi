@@ -32,6 +32,7 @@ D_DEBUG_DOMAIN( ILX_GRIDLAYOUT, "ilixi/ui/GridLayout", "GridLayout");
 
 GridLayout::GridLayout(unsigned int rows, unsigned int column, Widget* parent)
         : LayoutBase(parent),
+          _keyNavChildrenFirst(false),
           _rows(rows),
           _cols(column)
 {
@@ -164,7 +165,7 @@ GridLayout::preferredSize() const
             {
                 colUsed = 0;
                 rowUsed = 0;
-                // XXX left here...
+
                 for (int i = _cells[index]->col; i < _cells[index]->lastCol; i++)
                     colUsed += cols[i];
                 for (int i = _cells[index]->row; i < _cells[index]->lastRow; i++)
@@ -192,7 +193,7 @@ GridLayout::preferredSize() const
 
     ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Size: %d, %d\n", w, h);
 
-    return Size(w, h);
+    return Size(w - spacing(), h - spacing());
 }
 
 unsigned int
@@ -261,6 +262,12 @@ GridLayout::setRowHeight(unsigned int row, unsigned int rowHeight)
 {
     if (row < _rows)
         _rowHeights[row] = rowHeight;
+}
+
+void
+GridLayout::setKeyNavChildrenFirst(bool navChildrenFirst)
+{
+    _keyNavChildrenFirst = navChildrenFirst;
 }
 
 bool
@@ -530,7 +537,7 @@ GridLayout::tile()
                     // column does not grow but cell can not shrink
                     else if (widget->xConstraint() & ShrinkPolicy && (cd[c].value < spaceReq))
                     {
-                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d can shrink", c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d can shrink\n", c);
                         cd[c].constraint = cd[c].constraint | ShrinkPolicy;
                         cd[c].value = spaceReq;
                     }
@@ -699,7 +706,7 @@ GridLayout::tile()
                     // row does not grow but cell can not shrink
                     else if (widget->yConstraint() & ShrinkPolicy && rd[r].value < spaceReq)
                     {
-                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d can shrink", r);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row %d can shrink\n", r);
                         rd[r].constraint = rd[r].constraint | ShrinkPolicy;
                         rd[r].value = spaceReq;
                     }
@@ -825,7 +832,13 @@ GridLayout::tile()
                 // set Neighbours
                 if (c == 0)
                 {
-                    widget->setNeighbour(Left, getNeighbour(Left));
+                    if (_keyNavChildrenFirst)
+                    {
+                        int lC = r * _cols - 1;
+                        widget->setNeighbour(Left, lC > 0 ? _cells[lC]->widget : getNeighbour(Left));
+                    } else
+                        widget->setNeighbour(Left, getNeighbour(Left));
+
                     if (_cols > 1)
                         widget->setNeighbour(Right, _cells[index + 1] ? _cells[index + 1]->widget : NULL);
                     else
@@ -836,7 +849,12 @@ GridLayout::tile()
                         widget->setNeighbour(Left, _cells[left] ? _cells[left]->widget : NULL);
                     else
                         widget->setNeighbour(Left, getNeighbour(Left));
-                    widget->setNeighbour(Right, getNeighbour(Right));
+                    if (_keyNavChildrenFirst)
+                    {
+                        int rC = (r + 1) * _cols;
+                        widget->setNeighbour(Right, rC < _rows * _cols ? _cells[rC]->widget : getNeighbour(Right));
+                    } else
+                        widget->setNeighbour(Right, getNeighbour(Right));
                 } else
                 {
                     widget->setNeighbour(Left, _cells[left] ? _cells[left]->widget : NULL);
@@ -1085,3 +1103,4 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
 }
 
 } /* namespace ilixi */
+

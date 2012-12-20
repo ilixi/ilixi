@@ -46,6 +46,7 @@ GridView::GridView(Widget* parent)
     addChild(_scrollArea);
 
     _layout = new GridLayout(2, 2);
+    _layout->setKeyNavChildrenFirst(true);
     _scrollArea->setContent(_layout);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &GridView::updateGridViewGeometry));
@@ -194,9 +195,9 @@ GridView::setGridSize(unsigned int rows, unsigned int cols)
 {
     if (rows != _layout->rows() || cols != _layout->columns())
     {
-//        delete _layout;
         _layout = new GridLayout(rows, cols);
         _scrollArea->setContent(_layout);
+        _layout->setKeyNavChildrenFirst(true);
     }
 }
 

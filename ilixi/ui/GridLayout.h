@@ -165,6 +165,14 @@ public:
     setRowHeight(unsigned int row, unsigned int rowHeight);
 
     /*!
+     * Sets whether children are navigated first using key input.
+     *
+     * This setting will take effect next time the layout is tiled.
+     */
+    void
+    setKeyNavChildrenFirst(bool navChildrenFirst);
+
+    /*!
      * Adds widget to first empty cell.
      *
      * @param widget is owned by layout.
@@ -192,6 +200,7 @@ public:
     tile();
 
 private:
+    bool _keyNavChildrenFirst;
     //! This property stores the number of rows.
     int _rows;
     //! This property stores the number of columns.
