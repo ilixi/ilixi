@@ -138,7 +138,7 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifi
         DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
     }
 
-    if (_modifier && !_cycleKey)
+    if (_modifier && _modifier->symbolState() == 2 && !_cycleKey)
     {
         ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
         setSymbolState(_modifier->getNextState());
@@ -149,6 +149,7 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifi
 void
 Keyboard::setModifier(Key* modifier)
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     if (_cycleKey)
     {
         /* send cursor right to remove selection and continue with next letter */
@@ -162,6 +163,8 @@ Keyboard::setModifier(Key* modifier)
     }
 
     _modifier = modifier;
+
+    ILOG_DEBUG(ILX_KEYBOARD, " -> modifier = %s\n", _modifier->xmlID().c_str());
 }
 
 void
