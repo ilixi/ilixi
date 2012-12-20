@@ -258,7 +258,10 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const DFBSurfaceB
             dest.x += _myWidget->absX();
             dest.y += _myWidget->absY();
         }
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), NULL, &dest);
     }
 }
@@ -276,7 +279,10 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const Rectangle& 
             dest.x += _myWidget->absX();
             dest.y += _myWidget->absY();
         }
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         dfbSurface->StretchBlit(dfbSurface, image->getDFBSurface(), &source, &dest);
     }
 }
@@ -287,7 +293,10 @@ Painter::drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
         else
@@ -307,7 +316,10 @@ Painter::tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
         else
@@ -321,7 +333,10 @@ Painter::tileImage(Image* image, int x, int y, const Rectangle& source, const DF
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         DFBRectangle r = source.dfbRect();
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
@@ -336,7 +351,10 @@ Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DF
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         DFBRectangle r = source.dfbRect();
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
             dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
@@ -351,7 +369,10 @@ Painter::batchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFB
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
         {
             DFBPoint dfbP[num];
@@ -373,7 +394,10 @@ Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point*
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
         {
             DFBRectangle dfbR[num];
@@ -403,12 +427,15 @@ Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point*
 }
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-void
-Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
+
+void Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
 {
     if ((_state & Active) && image)
     {
         applyBrush();
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+        dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
         dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
         {
@@ -423,7 +450,7 @@ Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, co
 
             dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), sourceRects, dfbR, num);
         } else
-            dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), sourceRects, destRects, num);
+        dfbSurface->BatchStretchBlit(dfbSurface, image->getDFBSurface(), sourceRects, destRects, num);
     }
 }
 
@@ -433,7 +460,10 @@ Painter::batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const
     if ((_state & Active) && image)
     {
         applyBrush();
-        dfbSurface->SetBlittingFlags(dfbSurface, flags);
+        if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
+            dfbSurface->SetBlittingFlags(dfbSurface, (DFBSurfaceBlittingFlags) (flags & ~DSBLIT_BLEND_ALPHACHANNEL));
+        else
+            dfbSurface->SetBlittingFlags(dfbSurface, flags);
         if (_myWidget->surface()->flags() & Surface::SharedSurface)
         {
             DFBRectangle dfbS[num];
