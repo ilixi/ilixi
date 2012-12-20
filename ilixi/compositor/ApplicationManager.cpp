@@ -815,6 +815,15 @@ bool
 ApplicationManager::searchExec(const char* exec)
 {
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> searching: %s\n", exec);
+
+    if (exec && exec[0] == '/')
+    {
+        if ((access(exec, X_OK) == 0))
+            return true;
+        else
+            return false;
+    }
+
     char *path = getenv("PATH");
     char* pathCp = strdup(path);
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Path: %s\n", pathCp);
