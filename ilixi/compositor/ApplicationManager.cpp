@@ -564,7 +564,10 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> App: %s Window: %u\n", appInfo->name().c_str(), instance->windowCount());
 
-    if (appInfo->appFlags() & APP_OSK)
+    if ((info->config.options & DWOP_KEEP_SIZE) || (appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG))
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> keeping window size.\n");
+    } else if (appInfo->appFlags() & APP_OSK)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK.\n");
         DFBRectangle r = _compositor->_oskGeometry.dfbRect();
@@ -576,7 +579,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
         DFBRectangle r = _compositor->_barGeometry.dfbRect();
         info->config.bounds = r;
         _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE), &info->config);
-    } else if (!(appInfo->appFlags() & APP_ALLOW_WINDOW_CONFIG) && instance->windowCount() == 0)
+    } else if (instance->windowCount() == 0)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for Default.\n");
         DFBRectangle r = _compositor->_appGeometry.dfbRect();
