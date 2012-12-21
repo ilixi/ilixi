@@ -30,22 +30,6 @@
 namespace ilixi
 {
 
-class CarouselSwitcherItem : public CarouselItem
-{
-public:
-    CarouselSwitcherItem(Carousel* parent = 0);
-
-    ~CarouselSwitcherItem();
-
-protected:
-    void
-    compose(const PaintEvent& event);
-
-private:
-    void
-    updateCarouselItemGeometry();
-};
-
 class CarouselSwitcher : public Switcher
 {
 public:

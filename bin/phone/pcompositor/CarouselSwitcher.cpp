@@ -28,34 +28,6 @@
 namespace ilixi
 {
 
-CarouselSwitcherItem::CarouselSwitcherItem(Carousel* parent)
-        : CarouselItem(parent)
-{
-}
-
-CarouselSwitcherItem::~CarouselSwitcherItem()
-{
-}
-
-void
-CarouselSwitcherItem::compose(const PaintEvent& event)
-{
-    Painter p(this);
-    p.begin(event);
-    p.setBrush(Color(0, 0, 0, 128));
-    p.fillRectangle(0, 0, width(), height());
-    p.end();
-}
-
-void
-CarouselSwitcherItem::updateCarouselItemGeometry()
-{
-    if (source())
-        source()->setGeometry(5, 5, width() - 10, height() - 10);
-}
-
-//****************************************************************************
-
 CarouselSwitcher::CarouselSwitcher(Widget* parent)
         : Switcher(parent)
 {
@@ -81,7 +53,7 @@ void
 CarouselSwitcher::addThumb(AppThumbnail* thumb)
 {
     thumb->setVisible(true);
-    CarouselSwitcherItem* item = new CarouselSwitcherItem(_carousel);
+    CarouselItem* item = new CarouselItem(_carousel);
     item->setSource(thumb);
     _carousel->addItem(item);
     _thumbs.push_back(thumb);
