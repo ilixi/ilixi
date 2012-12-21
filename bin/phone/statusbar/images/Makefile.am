@@ -11,6 +11,7 @@ miscdata_DATA 	=	applications.png \
 					mic.png \
 					settings.png \
 					soundmixer.png \
+					switch.png \
 					vol0.png \
 					vol1.png \
 					vol2.png

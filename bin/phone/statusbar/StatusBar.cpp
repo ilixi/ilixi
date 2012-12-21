@@ -49,32 +49,6 @@ volumeListener(void* ctx, void* arg)
         bar->_vol->setState(2);
 }
 
-void
-appVisibilty(void* ctx, void* arg)
-{
-    PStatusBar* bar = (PStatusBar*) ctx;
-//	Compositor::VisibilityData data = *((Compositor::VisibilityData*) arg);
-
-//	ILOG_INFO(ILX_STATUSBAR, "App: %s - %d\n", data.name, data.visible);
-//	if (strcmp(data.name, "Home") == 0) {
-//		if (data.visible)
-//			bar->_home->setActive(1);
-//		else
-//			bar->_home->setActive(0);
-//	} else if (strcmp(data.name, "SoundMixer") == 0) {
-//		if (data.visible)
-//			bar->_sound->setActive(1);
-//		else
-//			bar->_sound->setActive(0);
-//
-//	} else if (strcmp(data.name, "Dashboard") == 0) {
-//		if (data.visible)
-//			bar->_dash->setActive(1);
-//		else
-//			bar->_dash->setActive(0);
-//	}
-}
-
 //*****************************************************************
 
 PStatusBar::PStatusBar(int argc, char* argv[])
@@ -128,22 +102,17 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PStatusBar::showApp), "Home"));
     _list->addItem(item);
 
+    item = new ListItem("Switcher");
+    item->setFont(_listFont);
+    item->setBg(_listBG);
+    item->setIcon(ILIXI_DATADIR"phone/statusbar/switch.png", Size(32, 32));
+    item->sigClicked.connect(sigc::mem_fun(this, &PStatusBar::showSwitcher));
+    _list->addItem(item);
+
     item = new ListItem("Dialer");
     item->setFont(_listFont);
     item->setBg(_listBG);
     item->setIcon(ILIXI_DATADIR"phone/statusbar/dialer.png", Size(32, 32));
-    _list->addItem(item);
-
-    item = new ListItem("Directory");
-    item->setFont(_listFont);
-    item->setBg(_listBG);
-    item->setIcon(ILIXI_DATADIR"phone/statusbar/directory.png", Size(32, 32));
-    _list->addItem(item);
-
-    item = new ListItem("History");
-    item->setFont(_listFont);
-    item->setBg(_listBG);
-    item->setIcon(ILIXI_DATADIR"phone/statusbar/history.png", Size(32, 32));
     _list->addItem(item);
 
     item = new ListItem("SoundMixer");
@@ -158,18 +127,6 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->setBg(_listBG);
     item->setIcon(ILIXI_DATADIR"phone/statusbar/settings.png", Size(32, 32));
     item->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PStatusBar::showApp), "Settings"));
-    _list->addItem(item);
-
-    item = new ListItem("Demo Mode");
-    item->setFont(_listFont);
-    item->setBg(_listBG);
-    item->setIcon(ILIXI_DATADIR"phone/statusbar/directory.png", Size(32, 32));
-    _list->addItem(item);
-
-    item = new ListItem("Switcher");
-    item->setFont(_listFont);
-    item->setBg(_listBG);
-    item->setIcon(ILIXI_DATADIR"phone/statusbar/dialer.png", Size(32, 32));
     _list->addItem(item);
 
     _fpsLabel = new Label("");
@@ -210,9 +167,6 @@ PStatusBar::onShow()
 
     if (_soundComponent)
         _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged, volumeListener, this);
-
-    if (_compComponent)
-        _compComponent->Listen(_compComponent, Compositor::AppVisibilty, appVisibilty, this);
 }
 
 void
@@ -247,12 +201,19 @@ PStatusBar::timerSlot()
         void *ptr;
         DaleDFB::comaGetLocal(sizeof(float), &ptr);
         DaleDFB::comaCallComponent(_compComponent, Compositor::GetFPS, (void*) ptr);
-        fps = *((float*)ptr);
+        fps = *((float*) ptr);
     }
 
     _fpsLabel->setText(PrintF("FPS: %.1f", fps));
     _cpuMon->refresh();
     _cpuChart->addValue(0, _cpuMon->getCpu(0).getUsage());
+}
+
+void
+PStatusBar::showSwitcher()
+{
+    if (_compComponent)
+        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowSwitcher, NULL);
 }
 
 }

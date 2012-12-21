@@ -79,12 +79,11 @@ private:
 
     Label* _fpsLabel;
 
+    void
+    showSwitcher();
+
     friend void
     volumeListener(void* ctx, void* arg);
-
-    friend void
-    appVisibilty(void* ctx, void* arg);
-
 };
 
 }
