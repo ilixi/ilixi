@@ -429,6 +429,12 @@ AppBase::activeWindow()
     return NULL;
 }
 
+Size
+AppBase::appSize()
+{
+    return __instance->__windowList.front()->size();
+}
+
 void
 AppBase::setActiveWindow(WindowWidget* window)
 {

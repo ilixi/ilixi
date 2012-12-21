@@ -132,17 +132,18 @@ Window::initDFBWindow(const Size& size)
         desc.stacking = DWSC_MIDDLE;
     } else // other windows
     {
+        Size appSize = AppBase::appSize();
         ILOG_DEBUG(ILX_WINDOW, "Window is initialising...\n");
         int w = size.width();
         int h = size.height();
-        if (w > (conf.width - 20))
-            w = conf.width - 20;
+        if (w > (appSize.width() - 20))
+            w = appSize.width() - 20;
 
-        if (h > (conf.height - 20))
-            h = conf.height - 20;
+        if (h > (appSize.height() - 20))
+            h = appSize.height() - 20;
 
-        int x = (conf.width - w) / 2.0;
-        int y = (conf.height - h) / 2.0;
+        int x = (appSize.width() - w) / 2.0;
+        int y = (appSize.height() - h) / 2.0;
 
         desc.posx = x;
         desc.posy = y;

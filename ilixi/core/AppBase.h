@@ -221,6 +221,9 @@ private:
     static WindowWidget*
     activeWindow();
 
+    static Size
+    appSize();
+
     /*!
      * Sets active window.
      */
