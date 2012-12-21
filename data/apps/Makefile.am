@@ -30,6 +30,7 @@ miscdata_DATA 	=	\
 					texture.appdef \
 					twitter.appdef \
 					windows.appdef \
-					youtube.appdef
+					youtube.appdef \
+					qt_affine.appdef
 					
 EXTRA_DIST 		= 	$(miscdata_DATA)
