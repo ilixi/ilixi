@@ -32,9 +32,12 @@
 namespace ilixi
 {
 
+class AppButton;
+
 class PHome : public Application
 {
     typedef std::vector<Compositor::AppData> AppDataVector;
+    typedef std::vector<AppButton*> AppButtonVector;
 
 public:
     PHome(int argc, char* argv[]);
@@ -52,6 +55,9 @@ protected:
 private:
     IComaComponent* _compositor;
     GridView* _view;
+
+
+    AppButtonVector _buttons;
 
     void
     requestAppList();

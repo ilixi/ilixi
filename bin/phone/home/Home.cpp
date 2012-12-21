@@ -38,7 +38,21 @@ appVisibility(void* ctx, void* arg)
     ILOG_TRACE_F(ILX_HOMEAPP);
     PHome* home = (PHome*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-//    home->_pages->setAppStatus(notification);
+
+    AppButton* button = NULL;
+    for (PHome::AppButtonVector::iterator it = home->_buttons.begin(); it != home->_buttons.end(); ++it)
+    {
+        if (((AppButton*) *it)->text() == notification.name)
+            button = ((AppButton*) *it);
+    }
+
+    if (button)
+    {
+        if (notification.visible)
+            button->setAppVisible(true);
+        else
+            button->setAppVisible(false);
+    }
 }
 
 void
@@ -47,7 +61,15 @@ appStarting(void* ctx, void* arg)
     ILOG_TRACE_F(ILX_HOMEAPP);
     PHome* home = (PHome*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-//    home->_pages->setAppStarting(notification);
+    AppButton* button = NULL;
+    for (PHome::AppButtonVector::iterator it = home->_buttons.begin(); it != home->_buttons.end(); ++it)
+    {
+        if (((AppButton*) *it)->text() == notification.name)
+            button = ((AppButton*) *it);
+    }
+
+    if (button)
+        button->appStarting();
 }
 
 void
@@ -85,7 +107,7 @@ PHome::PHome(int argc, char* argv[])
     setLayout(new HBoxLayout());
 
     _view = new GridView();
-    _view->setGridSize(10, 3);
+    _view->setGridSize(10, 4);
     addWidget(_view);
 
     DaleDFB::comaGetComponent("Compositor", &_compositor);
@@ -128,6 +150,7 @@ PHome::initButtons(const PHome::AppDataVector& dataVector)
         button->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PHome::runApp), button->text()));
 
         _view->addItem(button);
+        _buttons.push_back(button);
     }
 }
 

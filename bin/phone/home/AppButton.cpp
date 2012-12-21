@@ -27,6 +27,7 @@ AppButton::AppButton(const std::string& text, Widget* parent)
     _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppButton::updateIconGeometry));
     setConstraints(MinimumConstraint, FixedConstraint);
+    setDrawFrame(false);
 }
 
 AppButton::~AppButton()
@@ -67,6 +68,19 @@ AppButton::appStarting()
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
     _anim->start();
+}
+
+void
+AppButton::compose(const PaintEvent& event)
+{
+    if (state() & FocusedState)
+    {
+        Painter p(this);
+        p.begin(event);
+        p.setBrush(stylist()->palette()->focus);
+        p.fillRectangle(0, 0, width(), height());
+    }
+    ToolButton::compose(event);
 }
 
 void

@@ -35,6 +35,10 @@ public:
     void
     appStarting();
 
+protected:
+    void
+    compose(const PaintEvent& event);
+
 private:
     bool _appVisible;
     Point _iconPos;
