@@ -35,7 +35,7 @@ Switcher::Switcher(Widget* parent)
           _currentIndex(0)
 {
     ILOG_TRACE_W(ILX_SWITCHER);
-    setInputMethod(PointerInput);
+    setInputMethod(PointerPassthrough);
     setConstraints(ExpandingConstraint, FixedConstraint);
     setVisible(false);
 }

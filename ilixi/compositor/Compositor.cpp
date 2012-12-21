@@ -165,10 +165,14 @@ ILXCompositor::toggleSwitcher(bool show)
         _compComp->signalSwitcher(true);
         eventManager()->setGrabbedWidget(NULL);
         toggleOSK(false);
+        if (_switcher->currentThumb())
+            _switcher->currentThumb()->setFocus();
     } else
     {
         _switcher->hide();
         _compComp->signalSwitcher(false);
+        if (_currentApp)
+            _currentApp->view()->setWindowFocus();
     }
 }
 
@@ -689,7 +693,20 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             return true;
 
         case DIKS_OK:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_OK));
+            if (_switcher && _switcher->visible())
+            {
+                _switcher->sigSwitchRequest(_switcher->currentThumb()->instance());
+                return true;
+            } else
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_OK));
+
+        case DIKS_SPACE:
+            if (_switcher && _switcher->visible())
+            {
+                _switcher->sigSwitchRequest(_switcher->currentThumb()->instance());
+                return true;
+            } else
+                return false;
 
         case DIKS_RETURN:
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
@@ -701,10 +718,20 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
 
         case DIKS_CURSOR_LEFT:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
+            if (_switcher && _switcher->visible())
+            {
+                _switcher->scrollTo(_switcher->nextThumb());
+                return true;
+            } else
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
 
         case DIKS_CURSOR_RIGHT:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
+            if (_switcher && _switcher->visible())
+            {
+                _switcher->scrollTo(_switcher->previousThumb());
+                return true;
+            } else
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
 
         case DIKS_F11:
             {
