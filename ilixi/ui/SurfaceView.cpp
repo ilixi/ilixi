@@ -272,8 +272,7 @@ SurfaceView::renderSource(const PaintEvent& event)
                 {
                     DFBConvolutionFilter filter = { { -65536, -65536 * 2, -65536, 0, 65536, 0, 65536, 65536 * 2, 65536 }, 65536, 0 };
 
-                    sscanf(conv, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", &filter.kernel[0], &filter.kernel[1], &filter.kernel[2], &filter.kernel[3], &filter.kernel[4], &filter.kernel[5], &filter.kernel[6], &filter.kernel[7], &filter.kernel[8],
-                           &filter.scale, &filter.bias);
+                    sscanf(conv, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", &filter.kernel[0], &filter.kernel[1], &filter.kernel[2], &filter.kernel[3], &filter.kernel[4], &filter.kernel[5], &filter.kernel[6], &filter.kernel[7], &filter.kernel[8], &filter.scale, &filter.bias);
 
                     //filter.scale += sin(direct_clock_get_millis()/1000.0) * 20000;
 
@@ -414,6 +413,7 @@ SurfaceView::keyUpEvent(const KeyEvent& keyEvent)
 void
 SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
     if (_sourceWindow)
     {
         DFBWindowEvent event;
@@ -422,8 +422,8 @@ SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
@@ -438,6 +438,7 @@ SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
 void
 SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_W(ILX_SURFACEVIEW);
     if (_sourceWindow)
     {
         DFBWindowEvent event;
@@ -446,8 +447,8 @@ SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
@@ -470,8 +471,8 @@ SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
@@ -494,8 +495,8 @@ SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
@@ -549,8 +550,8 @@ SurfaceView::enterEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
@@ -573,8 +574,8 @@ SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
         event.window_id = _windowID;
         event.flags = DWEF_NONE;
 
-        event.x = pointerEvent.x * hScale() - absX();
-        event.y = pointerEvent.y * vScale() - absY();
+        event.x = (pointerEvent.x - absX()) * hScale();
+        event.y = (pointerEvent.y - absY()) * vScale();
 
         event.cx = pointerEvent.x * hScale();
         event.cy = pointerEvent.y * vScale();
