@@ -353,7 +353,7 @@ ToolButton::updateTextBaseGeometry()
     {
         if (iconW)
         {
-            _icon->moveTo(x, stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
+            _icon->moveTo(x, (height() - iconH) / 2);
             x += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
             wUsed += iconW + stylist()->defaultParameter(StyleHint::ButtonOffset);
         }
