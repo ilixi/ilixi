@@ -512,6 +512,13 @@ Surface::updateSurface(const PaintEvent& event)
 {
     ILOG_TRACE_F(ILX_SURFACE);
     ILOG_DEBUG(ILX_SURFACE, " -> owner: %p\n", _owner);
+
+    if (_flags & DoZSort)
+    {
+        _owner->_children.sort(compareZ);
+        _flags = (SurfaceFlags) (_flags & ~DoZSort);
+    }
+
     if (_flags & Surface::ModifiedGeometry)
         _owner->sigGeometryUpdated();
 
@@ -564,12 +571,6 @@ Surface::updateSurface(const PaintEvent& event)
             unsetSurfaceFlag(Surface::InitialiseSurface);
     }
 #endif
-
-    if (_flags & DoZSort)
-    {
-        _owner->_children.sort(compareZ);
-        _flags = (SurfaceFlags) (_flags & ~DoZSort);
-    }
 }
 
 void
