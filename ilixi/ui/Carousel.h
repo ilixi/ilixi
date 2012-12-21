@@ -68,7 +68,7 @@ public:
      * Sets value for scaling attached widget.
      */
     void
-    setScale(float scale);
+    setScale(float scale, int z = 0);
 
     /*!
      * Returns attached widget.
@@ -185,6 +185,18 @@ public:
     showWidget(Widget* widget);
 
     /*!
+     * Returns whether carousel items draw frames.
+     */
+    bool
+    drawItemFrame() const;
+
+    /*!
+     * Sets whether carousel items draw frames.
+     */
+    void
+    setDrawItemFrame(bool drawFrame);
+
+    /*!
      * This signal is emitted once an item is selected.
      */
     sigc::signal<void, CarouselItem*> sigItemSelected;
@@ -192,6 +204,9 @@ public:
 protected:
     void
     compose(const PaintEvent& event);
+
+    virtual void
+    keyDownEvent(const KeyEvent& event);
 
 private:
     //! This property stores the item at front.
@@ -206,6 +221,8 @@ private:
     Size _itemSize;
     //! This property stores the difference in angles between carousel items.
     float _angleStep;
+    //! This property specifies whether a borders are drawn outside items.
+    bool _drawItemFrame;
 
     TweenAnimation _animation;
     Tween* _tween;

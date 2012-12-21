@@ -74,10 +74,10 @@ CarouselItem::scale() const
 }
 
 void
-CarouselItem::setScale(float scale)
+CarouselItem::setScale(float scale, int z)
 {
     _scale = scale;
-    setZ(-15 + _scale * 20);
+    setZ(-15 + _scale * 20 + z);
     setSize(_carousel->itemSize().width() * _scale, _carousel->itemSize().height() * _scale);
 }
 
@@ -98,16 +98,16 @@ CarouselItem::setSource(Widget* source)
 void
 CarouselItem::compose(const PaintEvent& event)
 {
-    Painter p(this);
-    p.begin(event);
-    if (state() & FocusedState)
-        p.setBrush(Color(128, 128, 255));
-    else if (state() & ExposedState)
-        p.setBrush(Color(128, 0, 255));
-    else
-        p.setBrush(Color(255, 255, 255));
-    p.fillRectangle(0, 0, width(), height());
-    p.end();
+    if (((Carousel*) parent())->drawItemFrame())
+    {
+        Painter p(this);
+        p.begin(event);
+        if (state() & FocusedState)
+            p.setBrush(stylist()->palette()->focus);
+        else
+            p.setBrush(stylist()->palette()->getGroup(state()).border);
+        p.fillRectangle(0, 0, width(), height());
+    }
 }
 
 void
@@ -139,18 +139,25 @@ void
 CarouselItem::updateCarouselItemGeometry()
 {
     if (_source)
-        _source->setGeometry(5, 5, width() - 10, height() - 10);
+    {
+        if (((Carousel*) parent())->drawItemFrame())
+            _source->setGeometry(5, 5, width() - 10, height() - 10);
+        else
+            _source->setGeometry(0, 0, width(), height());
+    }
+
 }
 
 //****************************************************************************
 
 Carousel::Carousel(Widget* parent)
         : Widget(parent),
-          _selected(NULL)
+          _selected(NULL),
+          _drawItemFrame(true)
 {
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Carousel::updateCarouselGeometry));
     setInputMethod(PointerInput);
-    _animation.setDuration(500);
+    _animation.setDuration(300);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _animation.addTween(_tween);
     _animation.sigExec.connect(sigc::mem_fun(this, &Carousel::tweenSlot));
@@ -227,6 +234,8 @@ Carousel::showItem(CarouselItem* widget)
         if (((CarouselItem*) *it) == widget)
         {
             float target = PI_HALF - widget->angle();
+            if (target < -PI)
+                target += 2*PI;
             _animation.stop();
             _tween->setEndValue(target);
             _animation.start();
@@ -243,6 +252,8 @@ Carousel::showWidget(Widget* widget)
         if (((CarouselItem*) *it)->source() == widget)
         {
             float target = PI_HALF - ((CarouselItem*) *it)->angle();
+            if (target < -PI)
+                target += 2*PI;
             _animation.stop();
             _tween->setEndValue(target);
             _animation.start();
@@ -251,9 +262,42 @@ Carousel::showWidget(Widget* widget)
     }
 }
 
+bool
+Carousel::drawItemFrame() const
+{
+    return _drawItemFrame;
+}
+
+void
+Carousel::setDrawItemFrame(bool drawFrame)
+{
+    if (_drawItemFrame != drawFrame)
+    {
+        _drawItemFrame = drawFrame;
+        update();
+    }
+}
+
 void
 Carousel::compose(const PaintEvent& event)
 {
+}
+
+void
+Carousel::keyDownEvent(const KeyEvent& event)
+{
+    switch (event.keySymbol)
+    {
+    case DIKS_CURSOR_LEFT:
+
+        break;
+
+    case DIKS_CURSOR_RIGHT:
+        break;
+
+    default:
+        break;
+    }
 }
 
 void
@@ -269,9 +313,9 @@ Carousel::tweenSlot()
 
         item->setY(std::sin(angle) * _radiusY + _center.y());
 
-        item->setScale(1.0 * item->y() / (_center.y() + _radiusY));
-
         item->setX(std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
+        item->setScale(1.0 * item->y() / (_center.y() + _radiusY), item->x() < _center.x() ? 1 :
+                                                                   item->y() < _center.y() ? 1 : 0);
     }
 
     update();
@@ -280,6 +324,7 @@ Carousel::tweenSlot()
 void
 Carousel::tweenEndSlot()
 {
+    ILOG_TRACE_W(ILX_CAROUSEL);
     CarouselItem* selected;
     int i = 0;
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it, ++i)
@@ -291,24 +336,20 @@ Carousel::tweenEndSlot()
         item->setAngle(item->angle() + _tween->endValue());
         if (item->scale() == 1)
             selected = item;
-        ILOG_DEBUG( ILX_CAROUSEL, "%d z%d "
-        "angle: %f "
-        "scale %f - "
-        "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
     }
     _selected = selected;
-//    sigItemSelected(selected);
+    _selected->setFocus();
 }
 
 void
 Carousel::updateCarouselGeometry()
 {
+    ILOG_TRACE_W(ILX_CAROUSEL);
     if (_children.empty())
         return;
 
     _angleStep = (PI_TWICE) / _children.size();
 
-    int i = 0;
     int xUnit = width() / 9.0;
     int yUnit = height() / 7.0;
 
@@ -319,39 +360,41 @@ Carousel::updateCarouselGeometry()
 
     _itemSize = Size(xUnit * 3, yUnit * 3);
 
-    ILOG_DEBUG( ILX_CAROUSEL, "AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
+    ILOG_DEBUG( ILX_CAROUSEL, " -> AngleStep: %f Radius(%d, %d) Center(%d, %d)\n", _angleStep, _radiusX, _radiusY, _center.x(), _center.y());
 
     float angle = PI_HALF;
 
-    Widget* right = getNeighbour(Right);
     Widget* first = NULL;
-    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it, ++i)
+    Widget* right = NULL;
+    Widget* left = NULL;
+    CarouselItem* item = NULL;
+    for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
     {
-
-        CarouselItem* item = dynamic_cast<CarouselItem*>(*it);
+        item = dynamic_cast<CarouselItem*>(*it);
         if (!item)
             continue;
+        if (!first)
+            first = item;
 
         item->setAngle(angle);
-
         item->setY(_center.y() + std::sin(angle) * _radiusY);
-
         item->setScale(1.0 * item->y() / (_center.y() + _radiusY));
-
         item->setX(std::cos(angle) * _radiusX + _center.x() - item->width() / 2);
+        angle += _angleStep;
 
         if (right)
-            right->setNeighbour(Right, item);
-        item->setNeighbour(Right, right);
+            right->setNeighbour(Left, item);
 
-        ILOG_DEBUG( ILX_CAROUSEL, "%d z%d "
-        "angle: %f "
-        "scale %f - "
-        "%d, %d, %d, %d\n", i, item->z(), item->angle(), item->scale(), item->x(), item->y(), item->width(), item->height());
+        if (left)
+            item->setNeighbour(Right, left);
+        else
+            item->setNeighbour(Right, _children.back());
 
-        angle += _angleStep;
-        right = item;
+        right = left = item;
     }
+
+    item->setNeighbour(Left, first);
+
 }
 
 } /* namespace ilixi */
