@@ -443,7 +443,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_LEFT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
-            else if (event.modifiers & DIMM_SHIFT)
+            else if (event.modifiers & DIMM_SHIFT || _eventManager->oskWidget())
                 _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Left);
@@ -452,7 +452,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_RIGHT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
-            else if (event.modifiers & DIMM_SHIFT)
+            else if (event.modifiers & DIMM_SHIFT || _eventManager->oskWidget())
                 _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Right);
