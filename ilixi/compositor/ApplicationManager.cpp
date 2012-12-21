@@ -788,7 +788,8 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
     if (infoByName(name))
         return;
 
-    if (!searchExec(exec))
+    std::string path;
+    if (!searchExec(exec, path))
         return;
 
     AppInfo* app = new AppInfo();
@@ -801,7 +802,7 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
     if (icon)
         app->setIcon(icon);
     if (exec)
-        app->setPath(exec);
+        app->setPath(path);
     if (args)
         app->setArgs(args);
     if (appFlags)
@@ -812,38 +813,65 @@ ApplicationManager::addApplication(const char* name, const char* author, const c
 }
 
 bool
-ApplicationManager::searchExec(const char* exec)
+ApplicationManager::searchExec(const char* exec, std::string& execPath)
 {
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> searching: %s\n", exec);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> exec: %s\n", exec);
 
-    if (exec && exec[0] == '/')
+    if (exec[0] == '/')
     {
         if ((access(exec, X_OK) == 0))
             return true;
         else
             return false;
-    }
-
-    char *path = getenv("PATH");
-    char* pathCp = strdup(path);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Path: %s\n", pathCp);
-    char *dir = strtok(pathCp, ":");
-
-    std::string file;
-    while (dir != NULL)
+    } else if (exec[0] == '$')
     {
-        file = dir;
-        file.append("/").append(exec);
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> checking: %s\n", dir);
-        if (access(file.c_str(), X_OK) == 0)
+        std::string file;
+        char* execCp = strdup(exec);
+        char* env = strtok(execCp, "$");
+        char* path = NULL;
+        while (env != NULL)
         {
-            free(pathCp);
-            return true;
+            if (!path)
+                path = env;
+            else
+            {
+                file = getenv(path);
+                file.append("/").append(env);
+                if (access(file.c_str(), X_OK) == 0)
+                {
+                    free(execCp);
+                    execPath = file;
+                    return true;
+                }
+            }
+            env = strtok(NULL, "$");
         }
-        dir = strtok(NULL, ":");
+        free(execCp);
+        return false;
+    } else
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> using $PATH\n");
+        char* path = getenv("PATH");
+        char* pathCp = strdup(path);
+        char* dir = strtok(pathCp, ":");
+
+        std::string file;
+        while (dir != NULL)
+        {
+            file = dir;
+            file.append("/").append(exec);
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, "   -> checking: %s\n", dir);
+            if (access(file.c_str(), X_OK) == 0)
+            {
+                free(pathCp);
+                execPath = file;
+                return true;
+            }
+            dir = strtok(NULL, ":");
+        }
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> not found: %s\n", exec);
+        free(pathCp);
     }
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> not found: %s\n", exec);
-    free(pathCp);
     return false;
 }
 

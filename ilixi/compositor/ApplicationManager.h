@@ -160,7 +160,7 @@ private:
 
 
     bool
-    searchExec(const char* exec);
+    searchExec(const char* exec, std::string& path);
 
     friend void
     sigchild_handler(int sig, siginfo_t *siginfo, void *context);
