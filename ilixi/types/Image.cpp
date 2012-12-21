@@ -277,8 +277,10 @@ Image::loadImage()
 }
 
 DFBImageCapabilities
-Image::getCaps() const
+Image::getCaps()
 {
+    if (!_dfbSurface)
+        loadImage();
     return _caps;
 }
 

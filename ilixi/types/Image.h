@@ -110,7 +110,7 @@ public:
      * Returns image description's capabilities.
      */
     DFBImageCapabilities
-    getCaps() const;
+    getCaps();
 
     /*!
      * Returns a pointer to DirectFB surface.
