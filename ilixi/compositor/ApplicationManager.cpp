@@ -835,7 +835,10 @@ ApplicationManager::searchExec(const char* exec, std::string& execPath)
                 path = env;
             else
             {
-                file = getenv(path);
+            	char* var = getenv(path);
+            	if (!var)
+            		break;
+                file = var;
                 file.append("/").append(env);
                 if (access(file.c_str(), X_OK) == 0)
                 {
