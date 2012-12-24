@@ -144,7 +144,7 @@
 		</PushButtonOK>
 		<PushButtonCANCEL>
 			<def3>
-				<left x="10" y="80" w="15" h="40" />
+				<left x="0" y="80" w="15" h="40" />
 				<mid x="15" y="80" w="70" h="40" />
 				<right x="85" y="80" w="15" h="40" />
 			</def3>
