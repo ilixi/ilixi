@@ -319,6 +319,9 @@ TabPanel::updateChildrenFrameGeometry()
     int pageWidth = canvasWidth();
     int pageHeight = canvasHeight();
 
+    Widget* left = NULL;
+    Widget* right = NULL;
+
     for (unsigned int i = 0; i < _pages.size(); i++)
     {
         // set button
@@ -344,6 +347,19 @@ TabPanel::updateChildrenFrameGeometry()
             _pages[i].widget->setHeight(pageHeight);
         else
             _pages[i].widget->setHeight(_pages[i].widgetSize.height());
+
+        if (i == 0)
+            left = _pages[_pages.size() - 1].button;
+        else
+            left = _pages[i - 1].button;
+
+        if (i == _pages.size() - 1)
+            right = _pages[0].button;
+        else
+            right = _pages[i + 1].button;
+
+        _pages[i].button->setNeighbours(getNeighbour(Up), _pages[i].widget, left, right);
+        _pages[i].widget->setNeighbours(_pages[i].button, getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
     }
 }
 
