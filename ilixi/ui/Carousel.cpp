@@ -235,7 +235,7 @@ Carousel::showItem(CarouselItem* widget)
         {
             float target = PI_HALF - widget->angle();
             if (target < -PI)
-                target += 2*PI;
+                target += 2 * PI;
             _animation.stop();
             _tween->setEndValue(target);
             _animation.start();
@@ -253,7 +253,7 @@ Carousel::showWidget(Widget* widget)
         {
             float target = PI_HALF - ((CarouselItem*) *it)->angle();
             if (target < -PI)
-                target += 2*PI;
+                target += 2 * PI;
             _animation.stop();
             _tween->setEndValue(target);
             _animation.start();
@@ -374,7 +374,10 @@ Carousel::updateCarouselGeometry()
         if (!item)
             continue;
         if (!first)
+        {
             first = item;
+            _selected = item;
+        }
 
         item->setAngle(angle);
         item->setY(_center.y() + std::sin(angle) * _radiusY);
@@ -394,7 +397,6 @@ Carousel::updateCarouselGeometry()
     }
 
     item->setNeighbour(Left, first);
-
 }
 
 } /* namespace ilixi */
