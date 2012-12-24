@@ -136,6 +136,7 @@ Application::show()
 {
     if (__state & APS_HIDDEN)
     {
+        _backgroundImage->setSize(size());
         showWindow();
         __state = APS_VISIBLE;
         sigVisible();
