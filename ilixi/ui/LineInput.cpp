@@ -60,9 +60,7 @@ LineInput::preferredSize() const
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
     Size s = font()->extents(text());
-    return Size(
-            s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + _margin.hSum(),
-            s.height() + stylist()->defaultParameter(StyleHint::LineInputTB) + _margin.vSum());
+    return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + _margin.hSum(), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB) + _margin.vSum());
 }
 
 int
@@ -72,14 +70,48 @@ LineInput::maxLength() const
 }
 
 void
-LineInput::clear()
+LineInput::clear(int from, int chars)
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
-    setText("");
-    _cursorIndex = 0;
+    if (from == -1 && chars == -1)
+    {
+        setText("");
+        _cursorIndex = 0;
+        updateCursorPosition();
+        updateSelectionRect();
+        update();
+    } else if (from == -1 && chars > 0)
+    {
+        if (chars > _cursorIndex)
+            chars = _cursorIndex;
+
+        _selecting = false;
+        if (_selection.isNull())
+        {
+            if (_cursorIndex)
+            {
+                int oldIndex = _cursorIndex;
+                _cursorIndex -= chars;
+                sigCursorMoved(oldIndex, _cursorIndex);
+                _layout.erase(_cursorIndex, chars);
+                sigTextEdited();
+            }
+        } else
+        {
+            int pos1 = std::min(_selectedIndex, _cursorIndex);
+            int n1 = abs(_selectedIndex - _cursorIndex);
+            _layout.erase(pos1, n1);
+            _selection.setSize(0, 0);
+            sigTextEdited();
+            sigSelectionChanged();
+            sigCursorMoved(_cursorIndex, pos1);
+            _cursorIndex = pos1;
+        }
+    }     // TODO implement from > 0
     updateCursorPosition();
     updateSelectionRect();
     update();
+
 }
 
 bool
@@ -128,6 +160,31 @@ LineInput::setDrawFrame(bool drawFrame)
 }
 
 void
+LineInput::append(const std::string& text)
+{
+    if (_selection.isNull())
+    {
+        _layout.insert(_cursorIndex, text);
+        int oldIndex = _cursorIndex;
+        _cursorIndex += text.length();
+        sigCursorMoved(oldIndex, _cursorIndex);
+        sigTextEdited();
+    } else
+    {
+        int pos1 = std::min(_selectedIndex, _cursorIndex);
+        int n1 = abs(_selectedIndex - _cursorIndex);
+        _layout.replace(pos1, n1, text);
+        _selection.setSize(0, 0);
+        sigCursorMoved(_cursorIndex, pos1 + 1);
+        sigTextEdited();
+        _cursorIndex = pos1 + 1;
+    }
+    updateCursorPosition();
+    updateSelectionRect();
+    update();
+}
+
+void
 LineInput::updateCursorPosition()
 {
     // FIXME should not move to 0 for left.
@@ -139,22 +196,17 @@ LineInput::updateCursorPosition()
         if (dif <= stylist()->defaultParameter(StyleHint::LineInputLeft) && _layout.text().length())
             _layout.setX(dif);
 
-        ILOG_DEBUG(
-                ILX_LINEINPUT,
-                "1 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+        ILOG_DEBUG( ILX_LINEINPUT, "1 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
     } else
     {
         int dif = x - _layout.bounds().right();
         if (dif > 0)
             _layout.setX(-dif);
 
-        ILOG_DEBUG(
-                ILX_LINEINPUT,
-                "2 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+        ILOG_DEBUG( ILX_LINEINPUT, "2 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
     }
 
-    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex).x(),
-                   _layout.cursorPositon(font(), _cursorIndex).y());
+    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex).x(), _layout.cursorPositon(font(), _cursorIndex).y());
 }
 
 void
@@ -169,13 +221,11 @@ LineInput::updateSelectionRect()
             if (_selectedIndex > _cursorIndex)
             {
                 _selection.moveTo(_cursor.topLeft());
-                _selection.setRight(
-                        _layout.cursorPositon(font(), _selectedIndex).x());
+                _selection.setRight(_layout.cursorPositon(font(), _selectedIndex).x());
                 _selection.setHeight(_cursor.height());
             } else
             {
-                _selection.setX(
-                        _layout.cursorPositon(font(), _selectedIndex).x());
+                _selection.setX(_layout.cursorPositon(font(), _selectedIndex).x());
                 _selection.setRight(_cursor.x());
                 _selection.setHeight(_cursor.height());
             }
@@ -382,9 +432,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_selection.isNull())
         {
-            ILOG_DEBUG(
-                    ILX_LINEINPUT,
-                    "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
+            ILOG_DEBUG( ILX_LINEINPUT, "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
             _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
             sigTextEdited();
@@ -460,14 +508,9 @@ LineInput::compose(const PaintEvent& event)
 void
 LineInput::updateTextBaseGeometry()
 {
-    _layout.setBounds(
-            stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left(),
-            stylist()->defaultParameter(StyleHint::LineInputTop) + _margin.top(),
-            width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum(),
-            height() - stylist()->defaultParameter(StyleHint::LineInputTB) - _margin.vSum());
+    _layout.setBounds(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left(), stylist()->defaultParameter(StyleHint::LineInputTop) + _margin.top(), width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum(), height() - stylist()->defaultParameter(StyleHint::LineInputTB) - _margin.vSum());
     _layout.doLayout(font());
-    _cursor.setSize(
-            1, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+    _cursor.setSize(1, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     updateCursorPosition();
 }
 

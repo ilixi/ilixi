@@ -65,7 +65,7 @@ public:
      * Clears text.
      */
     void
-    clear();
+    clear(int from = -1, int chars = -1);
 
     /*!
      * Returns true if line input draws frame.
@@ -121,6 +121,9 @@ public:
      */
     void
     setDrawFrame(bool drawFrame);
+
+    void
+    append(const std::string& text);
 
     /*!
      * This signal is emitted once cursor is moved.
