@@ -203,10 +203,15 @@ DEPS_CFLAGS="$DEPS_CFLAGS -I/opt/dfb/include/"
 DEPS_LIBS="$DEPS_LIBS $LIBREFLEX"
 CXXFLAGS="$CFLAGS"
 
-DFB_SURFACE_EVENTS=no
-if $PKG_CONFIG --atleast-version=1.6.0 directfb; then
-    DFB_SURFACE_EVENTS=yes
+with_surface_events=no
+if test -n "$DFB_SURFACE_EVENTS"; then
+    with_surface_events=$DFB_SURFACE_EVENTS
+else
+    if $PKG_CONFIG --atleast-version=1.6.0 directfb; then
+        with_surface_events=yes
+    fi
 fi
+
 
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
@@ -217,7 +222,7 @@ AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AM_CONDITIONAL([WITH_SAWMAN], [test x$with_sawman = xyes])
 AM_CONDITIONAL([WITH_REFLEX], [test x$with_reflex = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
-AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$DFB_SURFACE_EVENTS = xyes])
+AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -292,6 +297,7 @@ AC_MSG_RESULT([
    DEPS_LIBS                : $DEPS_LIBS
    Log level                : $LOGGER_LEVEL
    Stereoscopy support      : $enable_stereo   
+   Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
    FusionSound support      : $enable_fusionsound
    Sawman support           : $with_sawman
@@ -301,5 +307,3 @@ AC_MSG_RESULT([
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
 ]);
-
-echo $WITH_SURFACE_EVENTS
