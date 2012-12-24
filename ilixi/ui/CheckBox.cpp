@@ -35,7 +35,7 @@ CheckBox::CheckBox(const std::string& text, Widget* parent)
 {
     _layout.setSingleLine(true);
     setCheckable(true);
-    setConstraints(NoConstraint, FixedConstraint);
+    setConstraints(MinimumConstraint, FixedConstraint);
     ILOG_TRACE_W(ILX_CHECKBOX);
 }
 
