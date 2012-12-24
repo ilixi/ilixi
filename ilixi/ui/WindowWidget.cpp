@@ -324,6 +324,7 @@ WindowWidget::showWindow()
         _window->showWindow();
 
     AppBase::setActiveWindow(this);
+    _eventManager->selectNext(this);
 }
 
 void
