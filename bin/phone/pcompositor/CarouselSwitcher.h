@@ -33,7 +33,7 @@ namespace ilixi
 class CarouselSwitcher : public Switcher
 {
 public:
-    CarouselSwitcher(Widget* parent = 0);
+    CarouselSwitcher(ILXCompositor* compositor, Widget* parent = 0);
 
     virtual
     ~CarouselSwitcher();
@@ -50,11 +50,17 @@ public:
     virtual void
     scrollTo(AppThumbnail* thumb);
 
-//    virtual void
-//    show();
-//
-//    virtual void
-//    hide();
+    virtual void
+    scrollToNext();
+
+    virtual void
+    scrollToPrevious();
+
+    virtual AppThumbnail*
+    currentThumb();
+
+    virtual void
+    killCurrentApp();
 
 protected:
     Carousel* _carousel;

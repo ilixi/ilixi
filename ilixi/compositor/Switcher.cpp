@@ -22,6 +22,7 @@
  */
 
 #include <compositor/Switcher.h>
+#include <compositor/Compositor.h>
 #include <core/Logger.h>
 #include <algorithm>
 
@@ -30,8 +31,9 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_SWITCHER, "ilixi/compositor/Switcher", "Switcher");
 
-Switcher::Switcher(Widget* parent)
+Switcher::Switcher(ILXCompositor* compositor, Widget* parent)
         : Widget(parent),
+          _compositor(compositor),
           _currentIndex(0)
 {
     ILOG_TRACE_W(ILX_SWITCHER);
@@ -146,6 +148,12 @@ Switcher::setSwitcherGeometry(const Rectangle& rect)
 {
     _switcherGeometry = rect;
     setGeometry(rect);
+}
+
+void
+Switcher::killCurrentApp()
+{
+    _compositor->killApp(_thumbs[_currentIndex]->instance());
 }
 
 } /* namespace ilixi */

@@ -22,14 +22,15 @@
  */
 
 #include "CarouselSwitcher.h"
+#include <compositor/Compositor.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 
 namespace ilixi
 {
 
-CarouselSwitcher::CarouselSwitcher(Widget* parent)
-        : Switcher(parent)
+CarouselSwitcher::CarouselSwitcher(ILXCompositor* compositor, Widget* parent)
+        : Switcher(compositor, parent)
 {
     _carousel = new Carousel();
     addChild(_carousel);
@@ -53,6 +54,7 @@ void
 CarouselSwitcher::addThumb(AppThumbnail* thumb)
 {
     thumb->setVisible(true);
+    thumb->setCloseVisible(false);
     CarouselItem* item = new CarouselItem(_carousel);
     item->setSource(thumb);
     _carousel->addItem(item);
@@ -71,6 +73,32 @@ void
 CarouselSwitcher::scrollTo(AppThumbnail* thumb)
 {
     _carousel->showWidget(thumb);
+}
+
+void
+CarouselSwitcher::scrollToNext()
+{
+    if (_thumbs.size())
+        _carousel->showItem((CarouselItem*) _carousel->itemAtFront()->getNeighbour(Left));
+}
+
+void
+CarouselSwitcher::scrollToPrevious()
+{
+    if (_thumbs.size())
+        _carousel->showItem((CarouselItem*) _carousel->itemAtFront()->getNeighbour(Right));
+}
+
+AppThumbnail*
+CarouselSwitcher::currentThumb()
+{
+    return ((AppThumbnail*) _carousel->itemAtFront()->source());
+}
+
+void
+CarouselSwitcher::killCurrentApp()
+{
+    _compositor->killApp(((AppThumbnail*) _carousel->itemAtFront()->source())->instance());
 }
 
 void

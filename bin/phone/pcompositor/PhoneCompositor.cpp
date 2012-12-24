@@ -34,7 +34,7 @@ PhoneCompositor::PhoneCompositor(int argc, char* argv[])
 {
     setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
     appMan()->parseFolder(ILIXI_DATADIR"phone/apps");
-    setSwitcher(new CarouselSwitcher());
+    setSwitcher(new CarouselSwitcher(this));
 
     Size size = PlatformManager::instance().getLayerSize();
     setAppGeometry(Rectangle(150, 0, size.width() - 150, size.height()));
@@ -64,6 +64,10 @@ PhoneCompositor::windowCustomEventFilter(const DFBWindowEvent& event)
                     _currentApp->view()->setWindowFocus();
                 else
                     _home->view()->setWindowFocus();
+                return true;
+            } else if (_switcher->visible() && (event.key_symbol == DIKS_CLEAR || event.key_symbol == DIKS_ESCAPE))
+            {
+                _switcher->killCurrentApp();
                 return true;
             }
         }

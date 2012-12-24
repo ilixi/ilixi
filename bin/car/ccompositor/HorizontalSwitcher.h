@@ -41,7 +41,7 @@ public:
     /*!
      * Initialises ScrollArea, layout and animations.
      */
-    HorizontalSwitcher(Widget* parent = 0);
+    HorizontalSwitcher(ILXCompositor* compositor, Widget* parent = 0);
 
     /*!
      * Destructor.

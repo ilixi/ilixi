@@ -18,7 +18,7 @@ CarCompositor::CarCompositor(int argc, char* argv[])
 {
     setPaletteFromFile(ILIXI_DATADIR"car/statusbar/palette.xml");
     appMan()->parseFolder(ILIXI_DATADIR"car/apps");
-    setSwitcher(new HorizontalSwitcher());
+    setSwitcher(new HorizontalSwitcher(this));
 
     Size size = PlatformManager::instance().getLayerSize();
     setAppGeometry(Rectangle(0, 0, size.width(), size.height() - 50));

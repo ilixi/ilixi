@@ -122,6 +122,9 @@ protected:
     //! Current application instance.
     AppInstance* _currentApp;
 
+    //! Switcher instance.
+    Switcher* _switcher;
+
     /*!
      * Shows OSK and centers given rect at top.
      */
@@ -167,9 +170,6 @@ private:
 
     //! Previous application instance.
     AppInstance* _previousApp;
-
-    //! Switcher instance.
-    Switcher* _switcher;
 
     //! FPS calculator refreshed with each paintEvent.
     FPSCalculator* _fps;

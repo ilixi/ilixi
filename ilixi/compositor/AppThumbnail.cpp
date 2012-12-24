@@ -70,6 +70,13 @@ AppThumbnail::preferredSize() const
 }
 
 void
+AppThumbnail::setCloseVisible(bool visible)
+{
+    if (_close)
+        _close->setVisible(visible);
+}
+
+void
 AppThumbnail::compose(const PaintEvent& event)
 {
 }

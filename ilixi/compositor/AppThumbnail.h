@@ -30,13 +30,12 @@
 
 namespace ilixi
 {
-  class ILXCompositor;
+class ILXCompositor;
 
-  class AppThumbnail : public AppCompositor
-  {
-  public:
-    AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent =
-        0);
+class AppThumbnail : public AppCompositor
+{
+public:
+    AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent = 0);
 
     virtual
     ~AppThumbnail();
@@ -44,11 +43,14 @@ namespace ilixi
     Size
     preferredSize() const;
 
+    void
+    setCloseVisible(bool visible);
+
     sigc::signal<void, AppInstance*> sigSelected;
     sigc::signal<void, AppThumbnail*> sigFocused;
     ToolButton* _close;
 
-  protected:
+protected:
     virtual void
     compose(const PaintEvent& event);
 
@@ -64,7 +66,7 @@ namespace ilixi
     virtual void
     focusOutEvent();
 
-  private:
+private:
     TweenAnimation _ani;
     Tween* _opacityTween;
 
@@ -73,7 +75,7 @@ namespace ilixi
 
     void
     updateThumbGeometry();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_APPTHUMBNAIL_H_ */

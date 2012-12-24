@@ -683,7 +683,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 {
                     if (!_switcher->visible())
                         toggleSwitcher(true);
-                    _switcher->scrollTo(_switcher->nextThumb());
+                    _switcher->scrollToNext();
                 }
                 return true;
             }
@@ -720,7 +720,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
         case DIKS_CURSOR_LEFT:
             if (_switcher && _switcher->visible())
             {
-                _switcher->scrollTo(_switcher->nextThumb());
+                _switcher->scrollToNext();
                 return true;
             } else
                 return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
@@ -728,7 +728,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
         case DIKS_CURSOR_RIGHT:
             if (_switcher && _switcher->visible())
             {
-                _switcher->scrollTo(_switcher->previousThumb());
+                _switcher->scrollToPrevious();
                 return true;
             } else
                 return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));

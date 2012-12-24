@@ -30,8 +30,8 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_HSWITCHER, "ilixi/comp/HSwitcher", "HorizontalSwitcher");
 
-HorizontalSwitcher::HorizontalSwitcher(Widget* parent)
-        : Switcher(parent)
+HorizontalSwitcher::HorizontalSwitcher(ILXCompositor* compositor, Widget* parent)
+        : Switcher(compositor, parent)
 {
     ILOG_TRACE_W(ILX_HSWITCHER);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &HorizontalSwitcher::updateSwitcherGeometry));

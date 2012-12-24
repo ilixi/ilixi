@@ -29,6 +29,8 @@
 namespace ilixi
 {
 
+class ILXCompositor;
+
 /*!
  * Allows switching between applications.
  */
@@ -38,7 +40,7 @@ public:
     /*!
      * Constructor.
      */
-    Switcher(Widget* parent = 0);
+    Switcher(ILXCompositor* compositor, Widget* parent = 0);
 
     /*!
      * Destructor.
@@ -105,7 +107,7 @@ public:
     /*!
      * Currently selected thumbnail.
      */
-    AppThumbnail*
+    virtual AppThumbnail*
     currentThumb();
 
     /*!
@@ -129,6 +131,9 @@ public:
     void
     setSwitcherGeometry(const Rectangle& rect);
 
+    virtual void
+    killCurrentApp();
+
     /*!
      * This signal is used to notify compositor.
      */
@@ -141,6 +146,7 @@ public:
     sigc::signal<void, AppInstance*, bool> sigFeedbackRequest;
 
 protected:
+    ILXCompositor* _compositor;
     typedef std::vector<AppThumbnail*> Thumbnails;
     //! Thumbnails are also stored in a vector for ease of access.
     Thumbnails _thumbs;
