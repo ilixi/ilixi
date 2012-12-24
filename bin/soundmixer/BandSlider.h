@@ -34,7 +34,7 @@ namespace ilixi
 class BandSlider : public ContainerBase
 {
 public:
-    BandSlider(const std::string& title, Widget* parent = 0);
+    BandSlider(const std::string& title, Font* font, Widget* parent = 0);
 
     virtual
     ~BandSlider();

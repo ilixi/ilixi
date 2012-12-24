@@ -50,6 +50,7 @@ public:
 private:
     IComaComponent* _soundComponent;
     Music* _music;
+    Font* _bandSliderFont;
     Slider* _volSlider;
     PushButton* _mute;
 

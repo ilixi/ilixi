@@ -31,7 +31,7 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_BANDSLIDER, "ilixi/Mixer/BandSlider", "BandSlider");
 
-BandSlider::BandSlider(const std::string& title, Widget* parent)
+BandSlider::BandSlider(const std::string& title, Font* font, Widget* parent)
         : ContainerBase(parent),
           _title(new Label(title)),
           _level(new Label("0.0 dB")),
@@ -45,6 +45,8 @@ BandSlider::BandSlider(const std::string& title, Widget* parent)
     _slider->setOrientation(Vertical);
     _slider->sigValueChanged.connect(sigc::mem_fun(this, &BandSlider::setLevel));
 
+    _title->setFont(font);
+    _level->setFont(font);
     _title->setLayoutAlignment(TextLayout::Center);
     _level->setLayoutAlignment(TextLayout::Center);
 

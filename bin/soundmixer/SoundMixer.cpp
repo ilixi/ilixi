@@ -25,6 +25,7 @@
 #include "VolumeMeter.h"
 #include "BandSlider.h"
 
+#include <ui/TabPanel.h>
 #include <ui/GroupBox.h>
 #include <ui/VBoxLayout.h>
 #include <ui/HBoxLayout.h>
@@ -53,45 +54,51 @@ volumeListener(void* ctx, void* arg)
 ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
         : Application(&argc, &argv, AppOptions(OptDale | OptSound)),
           _soundComponent(NULL),
-          _music(NULL)
+          _music(NULL),
+          _bandSliderFont(NULL)
 {
     setMargin(20);
     setLayout(new VBoxLayout());
 
+    _bandSliderFont = new Font("Sans", 8);
+
     HBoxLayout* volStuff = new HBoxLayout();
     addWidget(volStuff);
+    TabPanel* panel = new TabPanel();
+    volStuff->addWidget(panel);
 
     //**********
-    GroupBox* volGroup = new GroupBox("Volume Control");
-    GridLayout* volBox = new GridLayout(6, 3);
-    volGroup->setLayout(volBox);
-    volStuff->addWidget(volGroup);
+    HBoxLayout* volHBox = new HBoxLayout();
+    panel->addPage(volHBox, "Volume Control");
 
-    volBox->addWidget(new Label("Output:"), 0, 0, 0, 3);
+    GridLayout* volGrid = new GridLayout(6, 3);
+    volHBox->addWidget(volGrid);
+    volGrid->addWidget(new Label("Output:"), 0, 0, 0, 3);
 
     _volSlider = new Slider();
     _volSlider->setRange(0, 1);
     _volSlider->setValue(1);
+    _volSlider->setStep(0.1);
     _volSlider->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeVolume));
-    volBox->addWidget(_volSlider, 1, 0, 0, 2);
+    volGrid->addWidget(_volSlider, 1, 0, 0, 2);
 
     _mute = new PushButton("Mute");
     _mute->setXConstraint(FixedConstraint);
-    volBox->addWidget(_mute, 1, 2);
+    volGrid->addWidget(_mute, 1, 2);
     _mute->sigClicked.connect(sigc::mem_fun(this, &ILXSoundMixer::mute));
 
-    volBox->addWidget(new Label("Balance:"), 2, 0, 0, 3);
-    volBox->addWidget(new Label("Front"), 3, 0);
+    volGrid->addWidget(new Label("Balance:"), 2, 0, 0, 3);
+    volGrid->addWidget(new Label("Front"), 3, 0);
     Slider* frSlider = new Slider();
     frSlider->setValue(50);
-    volBox->addWidget(frSlider, 3, 1);
-    volBox->addWidget(new Label("Rear"), 3, 2);
-    volBox->addWidget(new Label("Left"), 4, 0);
+    volGrid->addWidget(frSlider, 3, 1);
+    volGrid->addWidget(new Label("Rear"), 3, 2);
+    volGrid->addWidget(new Label("Left"), 4, 0);
     Slider* lrSlider = new Slider();
     lrSlider->setValue(50);
-    volBox->addWidget(lrSlider, 4, 1);
-    volBox->addWidget(new Label("Right"), 4, 2);
-    volBox->addWidget(new Spacer(Vertical), 5, 0);
+    volGrid->addWidget(lrSlider, 4, 1);
+    volGrid->addWidget(new Label("Right"), 4, 2);
+    volGrid->addWidget(new Spacer(Vertical), 5, 0);
 
     GroupBox* volMeter = new GroupBox("Meter");
     VBoxLayout* volMeterLayout = new VBoxLayout();
@@ -101,12 +108,11 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     volStuff->addWidget(volMeter);
     VolumeMeter* meter = new VolumeMeter();
     volMeter->addWidget(meter);
+    volHBox->addWidget(volMeter);
 
     //*********
-    GroupBox* levels = new GroupBox("Equalizer");
     VBoxLayout* eqBox = new VBoxLayout();
-    levels->setLayout(eqBox);
-    addWidget(levels);
+    panel->addPage(eqBox, "Equalizer");
 
     HBoxLayout* buttons = new HBoxLayout();
     buttons->addWidget(new CheckBox("EQ Enabled"));
@@ -116,26 +122,26 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     PushButton* testSound = new PushButton("Test");
     testSound->sigClicked.connect(sigc::mem_fun(this, &ILXSoundMixer::playTestSound));
     buttons->addWidget(testSound);
-    levels->addWidget(buttons);
+    eqBox->addWidget(buttons);
 
     HBoxLayout* rowLevels = new HBoxLayout();
     rowLevels->setYConstraint(ExpandingConstraint);
-    rowLevels->addWidget(new BandSlider("50Hz"));
-    rowLevels->addWidget(new BandSlider("100Hz"));
-    rowLevels->addWidget(new BandSlider("156Hz"));
-    rowLevels->addWidget(new BandSlider("220Hz"));
-    rowLevels->addWidget(new BandSlider("311Hz"));
-    rowLevels->addWidget(new BandSlider("440Hz"));
-    rowLevels->addWidget(new BandSlider("622Hz"));
-    rowLevels->addWidget(new BandSlider("880Hz"));
-    rowLevels->addWidget(new BandSlider("1.25KHz"));
-    rowLevels->addWidget(new BandSlider("1.75KHz"));
-    rowLevels->addWidget(new BandSlider("2.5KHz"));
-    rowLevels->addWidget(new BandSlider("3.5KHz"));
-    rowLevels->addWidget(new BandSlider("5KHz"));
-    rowLevels->addWidget(new BandSlider("10KHz"));
-    rowLevels->addWidget(new BandSlider("20KHz"));
-    levels->addWidget(rowLevels);
+    rowLevels->addWidget(new BandSlider("50Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("100Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("156Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("220Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("311Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("440Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("622Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("880Hz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("1.25KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("1.75KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("2.5KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("3.5KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("5KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("10KHz", _bandSliderFont));
+    rowLevels->addWidget(new BandSlider("20KHz", _bandSliderFont));
+    eqBox->addWidget(rowLevels);
 
     DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
     if (_soundComponent)
@@ -148,6 +154,7 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
 
 ILXSoundMixer::~ILXSoundMixer()
 {
+    delete _bandSliderFont;
     delete _music;
     if (_soundComponent)
         _soundComponent->Release(_soundComponent);
