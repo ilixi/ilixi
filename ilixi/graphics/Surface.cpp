@@ -176,6 +176,10 @@ Surface::flip()
     case FlipWaitForSync:
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_WAITFORSYNC);
         break;
+    case FlipNew:
+        ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_ONSYNC);
+        break;
+
     default:
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
         break;
@@ -233,7 +237,7 @@ Surface::flip(const Rectangle& rect)
                 _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
             }
 
-            ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_ONSYNC);
+            ret = _dfbSurface->Flip(_dfbSurface, &r, (DFBSurfaceFlipFlags)(DSFLIP_SWAP | DSFLIP_ONSYNC));
         }
         break;
 
