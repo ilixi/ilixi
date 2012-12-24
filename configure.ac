@@ -242,6 +242,7 @@ AC_CONFIG_FILES([ \
         bin/osk/images/Makefile \
         bin/osk/Makefile \
         bin/phone/appdefs/Makefile \
+        bin/phone/dialer/Makefile \
         bin/phone/home/Makefile \
         bin/phone/Makefile \
         bin/phone/pcompositor/Makefile \

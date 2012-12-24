@@ -113,6 +113,7 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->setFont(_listFont);
     item->setBg(_listBG);
     item->setIcon(ILIXI_DATADIR"phone/statusbar/dialer.png", Size(32, 32));
+    item->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PStatusBar::showApp), "Dialer"));
     _list->addItem(item);
 
     item = new ListItem("SoundMixer");

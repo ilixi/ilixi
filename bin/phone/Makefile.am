@@ -1,2 +1,2 @@
 ## Makefile.am for bin/phone
-SUBDIRS = appdefs home pcompositor statusbar
+SUBDIRS = appdefs dialer home pcompositor statusbar
