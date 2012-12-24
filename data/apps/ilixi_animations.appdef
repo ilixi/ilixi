@@ -8,7 +8,7 @@
 	<version>1.0</version>
 	<icon>@DATADIR:animations.png</icon>
 	<exec>ilixi_animations</exec>
-	<args>--affine</args>
+	<args></args>
 	<flags></flags>
 	<deps>DEP_MOUSE</deps>
 </app>
