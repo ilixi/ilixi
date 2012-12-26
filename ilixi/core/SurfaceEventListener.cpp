@@ -31,7 +31,8 @@ namespace ilixi
 SurfaceEventListener::SurfaceEventListener()
         : _surfaceID(0),
           _sourceSurface(NULL),
-          _cb(this)
+          _cb(this),
+          _lastTime(0)
 {
 }
 
@@ -72,8 +73,15 @@ SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
     {
         if (event.type == DSEVT_DESTROYED)
             onSourceDestroyed(event);
-        else if (event.type == DSEVT_UPDATE)
+        else if (event.type == DSEVT_UPDATE) {
+            //D_INFO_LINE_MSG( "SURFEVT: receive id %d flip count %d", event.surface_id, event.flip_count );
             _queue.push(event);
+
+
+            AppBase::__instance->accountSurfaceEvent( event, _lastTime );
+
+            _lastTime = event.time_stamp;
+        }
         return true;
     }
     return false;
@@ -84,6 +92,7 @@ SurfaceEventListener::funck()
 {
     if (!_queue.empty())
     {
+        // FIXME: avoid queueing up too much
         while (_queue.size() > 2)
             _queue.pop();
 

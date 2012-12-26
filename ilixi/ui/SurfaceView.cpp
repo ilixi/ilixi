@@ -22,6 +22,7 @@
  */
 
 #include <ui/SurfaceView.h>
+#include <core/AppBase.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 #include <ui/WindowWidget.h>
@@ -244,6 +245,10 @@ SurfaceView::renderSource(const PaintEvent& event)
     {
         ILOG_TRACE_W(ILX_SURFACEVIEW);
 
+        DFBSurfaceID surface_id;
+        _sourceSurface->GetID( _sourceSurface, &surface_id );
+        //D_INFO_LINE_MSG( "SURFEVT: renderSource id %d flip count %d", surface_id, _flipCount );
+
 #ifdef ILIXI_STEREO_OUTPUT
         if (_sourceStereo)
         {
@@ -336,6 +341,18 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
         update(PaintEvent(lRect));
 #endif
     } //else if (!(_svState & SV_SHOULD_BLOCK))
+
+    DFBSurfaceID surface_id;
+    _sourceSurface->GetID( _sourceSurface, &surface_id );
+    //D_INFO_LINE_MSG( "SURFEVT: acknowledge id %d flip count %d", surface_id, event.flip_count );
+    //D_INFO("id %d\n",surface_id);
+    if (surface_id == AppBase::__instance->_updateID)
+    {
+    D_INFO("update for %d\n",AppBase::__instance->_updateID);
+        AppBase::__instance->_update = true;
+        AppBase::__instance->_update_timer.stop();
+        AppBase::__instance->_update_timer.start(200, 1000000);
+    }
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
 

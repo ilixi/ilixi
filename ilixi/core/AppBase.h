@@ -24,6 +24,7 @@
 #ifndef ILIXI_APPBASE_H_
 #define ILIXI_APPBASE_H_
 
+#include <lib/Timer.h>
 #include <lib/Util.h>
 #include <types/Enums.h>
 #include <core/EventManager.h>
@@ -54,6 +55,7 @@ class AppBase
     friend class WebView;
     friend class Window;                // activeWindow
     friend class WindowWidget;
+    friend class SurfaceView;
 
     /*!
      * This enum is used to specify the state of an application.
@@ -164,6 +166,19 @@ private:
     static IDirectFBEventBuffer* __buffer;
     //! AppBase instance.
     static AppBase* __instance;
+
+    bool _update;
+    Timer _update_timer;
+    DFBSurfaceID _updateID;
+    unsigned int _updateFlipCount;
+    long long _updateDiff;
+    long long _updateTime;
+    void
+    accountSurfaceEvent( const DFBSurfaceEvent& event,
+                         long long              lastTime );
+    void
+    updateTimeout();
+
 
     void
     initEventBuffer();
@@ -278,6 +293,8 @@ private:
     void
     handleAxisMotion(const DFBInputEvent& event);
 
+protected:
+    bool _syncWithSurfaceEvents;
 };
 }
 #endif /* ILIXI_APPBASE_H_ */

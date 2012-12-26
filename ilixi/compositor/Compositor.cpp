@@ -66,7 +66,8 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
     setMargin(0);
 
-    _backgroundFlags = BGFFill;
+    _backgroundFlags       = BGFFill;
+    _syncWithSurfaceEvents = true;
 
     _fps = new FPSCalculator();
 

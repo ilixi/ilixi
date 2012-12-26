@@ -108,6 +108,8 @@ private:
     //! Functor of callback.
     bool
     funck();
+
+    long long _lastTime;
 };
 
 } /* namespace ilixi */

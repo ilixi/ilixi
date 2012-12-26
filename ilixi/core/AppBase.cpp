@@ -51,7 +51,13 @@ AppBase* AppBase::__instance = NULL;
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
         : __state(APS_HIDDEN),
-          __activeWindow(NULL)
+          __activeWindow(NULL),
+          _update(false),
+          _updateID(0),
+          _updateFlipCount(0),
+          _updateDiff(0),
+          _updateTime(0),
+          _syncWithSurfaceEvents(false)
 {
     if (__instance)
         ILOG_THROW(ILX_APPBASE, "Cannot allow more than one instance!\n");
@@ -77,6 +83,9 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
 
     PlatformManager::instance().initialize(argc, argv, options);
     initEventBuffer();
+
+    _update_timer.sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
+    _update_timer.start(200, 1000000);
 }
 
 AppBase::~AppBase()
@@ -281,6 +290,8 @@ int32_t
 AppBase::runCallbacks()
 {
     int32_t timeout = 1000;
+
+    //D_INFO_LINE_MSG( "SURFEVT: running timers/callbacks..." );
 
     // timer
     pthread_mutex_lock(&__timerMutex);
@@ -506,15 +517,29 @@ AppBase::removeWindow(WindowWidget* window)
 }
 
 void
+AppBase::updateTimeout()
+{
+    ILOG_TRACE_F(ILX_APPBASE);
+
+    _update = true;
+}
+
+void
 AppBase::updateWindows()
 {
     ILOG_TRACE_F(ILX_APPBASE);
-    pthread_mutex_lock(&__windowMutex);
 
-    for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
-        ((WindowWidget*) *it)->updateWindow();
+    if (!_syncWithSurfaceEvents || _update)
+    {
+        pthread_mutex_lock(&__windowMutex);
 
-    pthread_mutex_unlock(&__windowMutex);
+        for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
+            ((WindowWidget*) *it)->updateWindow();
+
+        _update = false;
+
+        pthread_mutex_unlock(&__windowMutex);
+    }
 }
 
 void
@@ -531,17 +556,22 @@ AppBase::handleEvents(int32_t timeout)
     if (timeout < 1)
         timeout = 1;
 
-    for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
+    if (!_syncWithSurfaceEvents || _update)
     {
-        if (((WindowWidget*) *it)->_updates._updateQueue.size())
+        for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         {
-            wait = false;
-            break;
+            if (((WindowWidget*) *it)->_updates._updateQueue.size())
+            {
+                wait = false;
+                break;
+            }
         }
     }
 
     if (wait)
     {
+        //D_INFO_LINE_MSG( "SURFEVT: waiting for events..." );
+
         ILOG_DEBUG(ILX_APPBASE, "Timeout %d.%d\n", timeout / 1000, timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
     }
@@ -622,6 +652,28 @@ AppBase::handleEvents(int32_t timeout)
     if (lastMotion.type != 0)
         if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
             activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
+}
+
+void
+AppBase::accountSurfaceEvent( const DFBSurfaceEvent& event,
+                              long long              lastTime )
+{
+    if (event.surface_id != _updateID || event.flip_count != _updateFlipCount)
+    {
+        long long diff = event.time_stamp - lastTime;
+
+        //D_INFO("account   surface id %d, updateID %d, flip_count %u, updateFlipCount %u, diff %lld, updateDiff %lld, time %lld, updateTime %lld\n",
+        //       event.surface_id, _updateID, event.flip_count, _updateFlipCount, diff, _updateDiff, event.time_stamp, _updateTime );
+
+        if (_updateDiff == 0 || (diff - _updateDiff < -7000) || event.surface_id == _updateID || 2*diff < (event.time_stamp - _updateTime))
+        {
+            _updateDiff      = diff;
+            _updateID        = event.surface_id;
+            _updateFlipCount = event.flip_count;
+            _updateTime      = event.time_stamp;
+        }
+    }
+
 }
 
 void
