@@ -852,7 +852,7 @@ GridLayout::tile()
                     if (_keyNavChildrenFirst)
                     {
                         int rC = (r + 1) * _cols;
-                        widget->setNeighbour(Right, rC < _rows * _cols ? _cells[rC]->widget : getNeighbour(Right));
+                        widget->setNeighbour(Right, ((rC < _rows * _cols) && _cells[rC]) ? _cells[rC]->widget : getNeighbour(Right));
                     } else
                         widget->setNeighbour(Right, getNeighbour(Right));
                 } else
