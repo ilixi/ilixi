@@ -21,6 +21,7 @@ protected:
 
 private:
     bool _affine;
+    bool _light;
     ilixi::FPSCalculator* _fps;
 
     int _spiralW;

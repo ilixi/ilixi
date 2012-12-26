@@ -6,6 +6,7 @@ using namespace ilixi;
 Animations::Animations(int argc, char* argv[])
         : Application(&argc, &argv),
           _affine(false),
+          _light(false),
           _fps(NULL)
 {
     for (int i = 1; i < argc; i++)
@@ -31,6 +32,10 @@ Animations::Animations(int argc, char* argv[])
             _bgSeq.setLooping(true);
             _bgSeq.start();
         }
+        if (strcmp(argv[i], "--light") == 0)
+        {
+            _light = true;
+        }
     }
 
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
@@ -43,12 +48,15 @@ Animations::Animations(int argc, char* argv[])
     // Add spirals
     _spiral1 = new Spiral();
     addWidget(_spiral1);
-    _spiral2 = new Spiral();
-    addWidget(_spiral2);
-    _spiral3 = new Spiral();
-    addWidget(_spiral3);
-    _spiral4 = new Spiral();
-    addWidget(_spiral4);
+    if (!_light)
+    {
+        _spiral2 = new Spiral();
+        addWidget(_spiral2);
+        _spiral3 = new Spiral();
+        addWidget(_spiral3);
+        _spiral4 = new Spiral();
+        addWidget(_spiral4);
+    }
     sigVisible.connect(sigc::mem_fun(this, &Animations::setSpiralAnimation));
 
     // Add buttons
@@ -59,6 +67,8 @@ Animations::Animations(int argc, char* argv[])
     _button3 = new PushButton("Button 3");
     addWidget(_button3);
     sigVisible.connect(sigc::mem_fun(this, &Animations::setButtonAnimation));
+
+    _backgroundFlags = BGFFill;
 }
 
 Animations::~Animations()
@@ -101,9 +111,12 @@ Animations::setSpiralAnimation()
     _spiralH = height() / 2.5;
 
     _spiral1->setSize(_spiralW, _spiralH);
-    _spiral2->setSize(_spiralW, _spiralH);
-    _spiral3->setSize(_spiralW, _spiralH);
-    _spiral4->setSize(_spiralW, _spiralH);
+    if (!_light)
+    {
+        _spiral2->setSize(_spiralW, _spiralH);
+        _spiral3->setSize(_spiralW, _spiralH);
+        _spiral4->setSize(_spiralW, _spiralH);
+    }
 
     TweenAnimation* anim1 = new TweenAnimation();
     anim1->setDuration(2000);
@@ -133,14 +146,17 @@ Animations::spiralAnimationSlot()
     _spiral1->moveTo(anim->tweenValue(0), anim->tweenValue(1));
     _spiral1->setTemp(anim->tweenValue(2));
 
-    _spiral2->moveTo(width() - _spiralW - anim->tweenValue(0), anim->tweenValue(1));
-    _spiral2->setTemp(anim->tweenValue(2));
+    if (!_light)
+    {
+        _spiral2->moveTo(width() - _spiralW - anim->tweenValue(0), anim->tweenValue(1));
+        _spiral2->setTemp(anim->tweenValue(2));
 
-    _spiral3->moveTo(anim->tweenValue(0), height() - _spiralH - anim->tweenValue(1));
-    _spiral3->setTemp(anim->tweenValue(2));
+        _spiral3->moveTo(anim->tweenValue(0), height() - _spiralH - anim->tweenValue(1));
+        _spiral3->setTemp(anim->tweenValue(2));
 
-    _spiral4->moveTo(width() - _spiralW - anim->tweenValue(0), height() - _spiralH - anim->tweenValue(1));
-    _spiral4->setTemp(anim->tweenValue(2));
+        _spiral4->moveTo(width() - _spiralW - anim->tweenValue(0), height() - _spiralH - anim->tweenValue(1));
+        _spiral4->setTemp(anim->tweenValue(2));
+    }
 
     update();
 }
@@ -198,9 +214,9 @@ Animations::setFrameAnimation()
     int y = (height() - h) / 2;
 
     _frame->setGeometry(x, y, w, h);
-    _frame->setLayout(new GridLayout(3, 3));
+    _frame->setLayout(new GridLayout(3, _light ? 1 : 3));
 
-    for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < (_light ? 3 : 9); ++i)
     {
         if (i == 4)
         {
