@@ -280,6 +280,8 @@ ILXCompositor::setLayerOpacity(u8 opacity)
 void
 ILXCompositor::compose(const PaintEvent& event)
 {
+    //D_INFO_LINE_MSG( "SURFEVT: compose %4d,%4d-%4dx%4d", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height() );
+
     _fps->funck();
 }
 
