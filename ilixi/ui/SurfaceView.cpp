@@ -348,7 +348,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     //D_INFO("id %d\n",surface_id);
     if (surface_id == AppBase::__instance->_updateID)
     {
-    D_INFO("update for %d\n",AppBase::__instance->_updateID);
+        //D_INFO("update for %d\n",AppBase::__instance->_updateID);
         AppBase::__instance->_update = true;
         AppBase::__instance->_update_timer.stop();
         AppBase::__instance->_update_timer.start(200, 1000000);
