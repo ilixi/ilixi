@@ -187,26 +187,38 @@ LineInput::append(const std::string& text)
 void
 LineInput::updateCursorPosition()
 {
-    // FIXME should not move to 0 for left.
-    int x = _layout.cursorPositon(font(), _cursorIndex).x() + _margin.left();
+    ILOG_TRACE_W(ILX_LINEINPUT);
 
-    if (x < stylist()->defaultParameter(StyleHint::LineInputLeft))
+    if (_cursorIndex == 0)
     {
-        int dif = x - _layout.x();
-        if (dif <= stylist()->defaultParameter(StyleHint::LineInputLeft) && _layout.text().length())
-            _layout.setX(dif);
-
-        ILOG_DEBUG( ILX_LINEINPUT, "1 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
-    } else
+        _layout.setX(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left());
+        _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
+        return;
+    } else if (_layout.extents(font()).width() < width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum())
     {
-        int dif = x - _layout.bounds().right();
-        if (dif > 0)
-            _layout.setX(-dif);
-
-        ILOG_DEBUG( ILX_LINEINPUT, "2 LX: %d  CX: %d D: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+        _layout.setX(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left());
+        _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
+        return;
     }
 
-    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex).x(), _layout.cursorPositon(font(), _cursorIndex).y());
+    int x = _layout.cursorPositon(font(), _cursorIndex).x();
+    ILOG_DEBUG(ILX_LINEINPUT, " -> x: %d\n", x);
+
+    if (x < stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left())
+    {
+        int dif = (stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left()) - x;
+        _layout.setX(dif);
+
+        ILOG_DEBUG( ILX_LINEINPUT, " -> 1 Layout x: %d  CursorX: %d Dif: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+    } else if (x > _layout.bounds().right())
+    {
+        int dif = _layout.bounds().right() - x;
+        _layout.setX(dif);
+
+        ILOG_DEBUG( ILX_LINEINPUT, " -> 2 Layout x: %d  CursorX: %d Dif: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+    }
+
+    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
 }
 
 void
@@ -324,6 +336,8 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_cursorIndex)
             sigCursorMoved(_cursorIndex, --_cursorIndex);
+        else
+            return;
         break;
 
     case DIKS_CURSOR_RIGHT:
@@ -337,6 +351,8 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_cursorIndex < text().length())
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
+        else
+            return;
         break;
 
     case DIKS_PAGE_UP:
@@ -362,7 +378,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             stopSelection();
 
         sigCursorMoved(_cursorIndex, text().length());
-        _cursorIndex = text().length() - 1;
+        _cursorIndex = text().length();
         break;
 
     case DIKS_DELETE:
@@ -412,20 +428,6 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
         break;
 
     default:
-        char c;
-        if (keyEvent.keySymbol < 0x80)
-            c = keyEvent.keySymbol;
-        else if (keyEvent.keySymbol < 0x800)
-            c = 192 + keyEvent.keySymbol / 64, c = 128 + keyEvent.keySymbol % 64;
-        else if (keyEvent.keySymbol - 0xd800u < 0x800)
-            break;
-        else if (keyEvent.keySymbol < 0x10000)
-            c = 224 + c / 4096, c = 128 + keyEvent.keySymbol / 64 % 64, c = 128 + keyEvent.keySymbol % 64;
-        else if (keyEvent.keySymbol < 0x110000)
-            c = 240 + c / 262144, c = 128 + keyEvent.keySymbol / 4096 % 64, c = 128 + keyEvent.keySymbol / 64 % 64, c = 128 + keyEvent.keySymbol % 64;
-        else
-            break;
-
         _selecting = false;
         if (maxLength() > 0 && text().length() == maxLength())
             return;
@@ -446,7 +448,6 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             sigTextEdited();
             _cursorIndex = pos1 + 1;
         }
-//        }
         break;
     }
     updateCursorPosition();

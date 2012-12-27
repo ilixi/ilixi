@@ -205,10 +205,13 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.foc);
     }
 
+    Rectangle r(defaultParameter(StyleHint::LineInputLeft), defaultParameter(StyleHint::LineInputTop), input->width() - defaultParameter(StyleHint::LineInputLR), input->height() - defaultParameter(StyleHint::LineInputTB));
+    p->setClip(input->mapFromSurface(r));
+
     // selection
     if (!input->selectionRect().isNull())
     {
-        p->setBrush(_palette->focus);
+        p->setBrush(_palette->getGroup(state).fill);
         p->fillRectangle(input->selectionRect());
     }
 
@@ -218,14 +221,15 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
         p->setFont(*input->font());
         p->setBrush(_palette->getGroup(state).baseText);
         p->drawLayout(input->layout());
-        p->resetClip();
     }
 
     if (cursor)
     {
-        p->setBrush(Color(0, 0, 255));
+        p->setBrush(_palette->focus);
         p->fillRectangle(input->cursorRect());
     }
+
+    p->resetClip();
 }
 
 void

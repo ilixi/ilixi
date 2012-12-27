@@ -126,7 +126,7 @@ TextLayout::cursorPositon(Font* font, int index)
     int x = _bounds.x();
     int y = _bounds.y();
 
-    if (!font || !_text.length())
+    if (index == 0 || !font || !_text.length())
         return Point(x, y);
 
     doLayout(font);
