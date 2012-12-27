@@ -103,6 +103,9 @@ WindowWidget::update()
 
         pthread_mutex_unlock(&_updates._listLock);
     }
+
+    if (!AppBase::__instance->_updateFromSurfaceView)
+        AppBase::__instance->_update = true;
 }
 
 void
@@ -121,6 +124,9 @@ WindowWidget::update(const PaintEvent& event)
 
         pthread_mutex_unlock(&_updates._listLock);
     }
+
+    if (!AppBase::__instance->_updateFromSurfaceView)
+        AppBase::__instance->_update = true;
 }
 
 void

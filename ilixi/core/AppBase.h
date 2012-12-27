@@ -168,6 +168,7 @@ private:
     static AppBase* __instance;
 
     bool _update;
+    bool _updateFromSurfaceView;
     Timer _update_timer;
     DFBSurfaceID _updateID;
     unsigned int _updateFlipCount;

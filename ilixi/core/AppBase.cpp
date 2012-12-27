@@ -53,6 +53,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
         : __state(APS_HIDDEN),
           __activeWindow(NULL),
           _update(false),
+          _updateFromSurfaceView(false),
           _updateID(0),
           _updateFlipCount(0),
           _updateDiff(0),
@@ -278,8 +279,6 @@ AppBase::removeTimer(Timer* timer)
                 return true;
             }
         }
-
-        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
 
         pthread_mutex_unlock(&__instance->__timerMutex);
     }

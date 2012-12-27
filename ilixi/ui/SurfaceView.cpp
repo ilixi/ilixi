@@ -330,6 +330,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     {
         Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
 
+        AppBase::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(
                 Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
@@ -340,6 +341,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
+        AppBase::__instance->_updateFromSurfaceView = false;
     } //else if (!(_svState & SV_SHOULD_BLOCK))
 
     DFBSurfaceID surface_id;
