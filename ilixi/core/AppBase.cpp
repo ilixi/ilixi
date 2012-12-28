@@ -610,7 +610,7 @@ AppBase::handleEvents(int32_t timeout)
             break;
 
         case DFEC_WINDOW:
-            if (event.window.type != DWET_UPDATE)
+            if (!(PlatformManager::instance().appOptions() & OptExclusive) && event.window.type != DWET_UPDATE)
             {
                 if (event.window.type == DWET_MOTION)
                     lastMotion = event.window;
@@ -654,8 +654,7 @@ AppBase::handleEvents(int32_t timeout)
 }
 
 void
-AppBase::accountSurfaceEvent( const DFBSurfaceEvent& event,
-                              long long              lastTime )
+AppBase::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime)
 {
     if (event.surface_id != _updateID || event.flip_count != _updateFlipCount)
     {
@@ -664,12 +663,12 @@ AppBase::accountSurfaceEvent( const DFBSurfaceEvent& event,
         //D_INFO("account   surface id %d, updateID %d, flip_count %u, updateFlipCount %u, diff %lld, updateDiff %lld, time %lld, updateTime %lld\n",
         //       event.surface_id, _updateID, event.flip_count, _updateFlipCount, diff, _updateDiff, event.time_stamp, _updateTime );
 
-        if (_updateDiff == 0 || (diff - _updateDiff < -7000) || event.surface_id == _updateID || 2*diff < (event.time_stamp - _updateTime))
+        if (_updateDiff == 0 || (diff - _updateDiff < -7000) || event.surface_id == _updateID || 2 * diff < (event.time_stamp - _updateTime))
         {
-            _updateDiff      = diff;
-            _updateID        = event.surface_id;
+            _updateDiff = diff;
+            _updateID = event.surface_id;
             _updateFlipCount = event.flip_count;
-            _updateTime      = event.time_stamp;
+            _updateTime = event.time_stamp;
         }
     }
 
@@ -734,7 +733,8 @@ AppBase::handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type
     we.window.button = event.button;
     we.window.buttons = event.buttons;
 
-    __buffer->PostEvent(__buffer, &we);
+    if (!windowPreEventFilter((const DFBWindowEvent&) we))
+        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
 }
 
 void
@@ -753,7 +753,8 @@ AppBase::handleButtonInputEvent(const DFBInputEvent& event, DFBWindowEventType t
     we.window.button = event.button;
     we.window.buttons = event.buttons;
 
-    __buffer->PostEvent(__buffer, &we);
+    if (!windowPreEventFilter((const DFBWindowEvent&) we))
+        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
 }
 
 void
@@ -816,7 +817,8 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
     we.window.button = event.button;
     we.window.buttons = event.buttons;
 
-    __buffer->PostEvent(__buffer, &we);
+    if (!windowPreEventFilter((const DFBWindowEvent&) we))
+        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
 }
 
 } /* namespace ilixi */
