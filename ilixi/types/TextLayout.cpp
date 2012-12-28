@@ -23,6 +23,7 @@
 
 #include <TextLayout.h>
 #include <core/Logger.h>
+#include <lib/utf8.h>
 
 namespace ilixi
 {
@@ -32,7 +33,7 @@ D_DEBUG_DOMAIN( ILX_TEXTLAYOUT, "ilixi/types/TextLayout", "TextLayout");
 TextLayout::TextLayout()
         : _modified(true),
           _singleLine(false),
-          _text(""),
+          _text(L""),
           _alignment(Left)
 {
 }
@@ -40,9 +41,10 @@ TextLayout::TextLayout()
 TextLayout::TextLayout(const std::string& text)
         : _modified(true),
           _singleLine(false),
-          _text(text),
+          _text(L""),
           _alignment(Left)
 {
+    setText(text);
 }
 
 TextLayout::TextLayout(const TextLayout& layout)
@@ -74,7 +76,7 @@ TextLayout::bounds() const
 Size
 TextLayout::extents(Font* font) const
 {
-    return font->extents(_text, _text.length());
+    return font->extents(text(), _text.length());
 }
 
 int
@@ -115,6 +117,16 @@ TextLayout::isEmpty() const
 
 std::string
 TextLayout::text() const
+{
+    char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+    size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+    std::string s = out;
+    free(out);
+    return s;
+}
+
+std::wstring
+TextLayout::wtext() const
 {
     return _text;
 }
@@ -190,14 +202,14 @@ TextLayout::xyToIndex(Font* font, int x, int y)
 }
 
 void
-TextLayout::insert(int pos, char c)
+TextLayout::insert(int pos, wchar_t c)
 {
     _text.insert(pos, 1, c);
     _modified = true;
 }
 
 void
-TextLayout::insert(int pos, const std::string& str)
+TextLayout::insert(int pos, const std::wstring& str)
 {
     if (_text.empty())
         _text = str;
@@ -207,14 +219,14 @@ TextLayout::insert(int pos, const std::string& str)
 }
 
 void
-TextLayout::replace(int pos, int number, const char c)
+TextLayout::replace(int pos, int number, const wchar_t c)
 {
     _text.replace(pos, number, 1, c);
     _modified = true;
 }
 
 void
-TextLayout::replace(int pos, int number, const std::string& str)
+TextLayout::replace(int pos, int number, const std::wstring& str)
 {
     _text.replace(pos, number, str);
     _modified = true;
@@ -286,6 +298,16 @@ TextLayout::setSingleLine(bool singleLine)
 void
 TextLayout::setText(const std::string& text)
 {
+    wchar_t* out = (wchar_t*) calloc(text.size() + 1, sizeof(wchar_t));
+    size_t bytes = utf8_to_wchar(text.c_str(), text.size(), out, text.size() + 1, UTF8_SKIP_BOM);
+    _text = out;
+    free(out);
+    _modified = true;
+}
+
+void
+TextLayout::setText(const std::wstring& text)
+{
     _text = text;
     _modified = true;
 }
@@ -314,7 +336,11 @@ TextLayout::doLayout(Font* font)
     {
         l.y = _bounds.y();
         int leading = font->leading();
-        const char* start = _text.c_str();
+
+        char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+        size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+
+        const char* start = out;
         const char* text = start;
         const char* next = text;
 
@@ -329,6 +355,7 @@ TextLayout::doLayout(Font* font)
             text = next;
             l.y += leading;
         }
+        free(out);
     }
     _modified = false;
 }
@@ -345,7 +372,9 @@ TextLayout::heightForWidth(int width, Font* font) const
         return leading;
     else
     {
-        const char* text = _text.c_str();
+        char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+        size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+        const char* text = out;
         const char* next = text;
         int lw = 0;
         int len = 0;
@@ -359,7 +388,7 @@ TextLayout::heightForWidth(int width, Font* font) const
             text = next;
             h += leading;
         }
-
+        free(out);
         return h;
     }
 }
@@ -368,7 +397,9 @@ void
 TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 {
     ILOG_TRACE_F(ILX_TEXTLAYOUT);
-    const char* text = _text.c_str();
+    char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+    size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+    const char* text = out;
 
     x += _bounds.x();
     if (_alignment == Center)
@@ -376,6 +407,7 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
         surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
+    free(out);
 }
 
 } /* namespace ilixi */

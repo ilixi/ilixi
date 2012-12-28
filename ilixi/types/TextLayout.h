@@ -149,6 +149,12 @@ public:
     text() const;
 
     /*!
+     * Returns text inside layout.
+     */
+    std::wstring
+    wtext() const;
+
+    /*!
      * Calculates coordinates for top-left corner of cursor.
      *
      * @param index
@@ -172,7 +178,7 @@ public:
      * @param c
      */
     void
-    insert(int pos, char c);
+    insert(int pos, wchar_t c);
 
     /*!
      * Insert a string at given position.
@@ -181,7 +187,7 @@ public:
      * @param str
      */
     void
-    insert(int pos, const std::string& str);
+    insert(int pos, const std::wstring& str);
 
     /*!
      * Replace a portion of text with a char.
@@ -190,7 +196,7 @@ public:
      * @param c
      */
     void
-    replace(int pos, int number, char c);
+    replace(int pos, int number, wchar_t c);
 
     /*!
      * Replace a portion of text with another string.
@@ -200,7 +206,7 @@ public:
      * @param str
      */
     void
-    replace(int pos, int number, const std::string& str);
+    replace(int pos, int number, const std::wstring& str);
 
     /*!
      * Erases a part of text, shortening the length of the string.
@@ -266,6 +272,12 @@ public:
     setText(const std::string& text);
 
     /*!
+     * Sets the text of layout.
+     */
+    void
+    setText(const std::wstring& text);
+
+    /*!
      * Sets the modified flag.
      */
     void
@@ -289,7 +301,7 @@ private:
     //! Flag is set to true if layout is single line.
     bool _singleLine;
     //! Text inside layout
-    std::string _text;
+    std::wstring _text;
     //! Horizontal alignment of text inside layout.
     Alignment _alignment;
     //! Bounding rectangle of layout.

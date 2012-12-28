@@ -111,6 +111,12 @@ public:
     virtual void
     setText(const std::string &text);
 
+    /*!
+     * Sets the text.
+     */
+    virtual void
+    setText(const std::wstring &text);
+
     void
     setSingleLine(bool single);
 

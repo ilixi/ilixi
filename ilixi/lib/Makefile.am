@@ -13,6 +13,7 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							Timer.cpp \
 							Tween.cpp \
 							TweenAnimation.cpp \
+							utf8.c \
 							Util.cpp
 
 ilixi_includedir		= 	$(includedir)/$(PACKAGE)-$(VERSION)/lib
@@ -25,9 +26,15 @@ ilixi_include_HEADERS	=	Animation.h \
 							Timer.h \
 							Tween.h \
 							TweenAnimation.h \
+							utf8.h \
 							Util.h
 
 if WITH_FUSIONDALE
 libilixi_lib_la_SOURCES 	+= 	Notify.cpp
 ilixi_include_HEADERS		+=	Notify.h
+endif
+
+if WITH_REFLEX
+libilixi_lib_la_SOURCES 	+= 	UIBuilder.cpp
+ilixi_include_HEADERS		+=	UIBuilder.h
 endif

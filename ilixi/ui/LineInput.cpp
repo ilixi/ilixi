@@ -24,6 +24,7 @@
 #include <ui/LineInput.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+#include <lib/utf8.h>
 #include <sstream>
 
 namespace ilixi
@@ -164,7 +165,7 @@ LineInput::append(const std::string& text)
 {
     if (_selection.isNull())
     {
-        _layout.insert(_cursorIndex, text);
+        _layout.insert(_cursorIndex, std::wstring(text.begin(), text.end()));
         int oldIndex = _cursorIndex;
         _cursorIndex += text.length();
         sigCursorMoved(oldIndex, _cursorIndex);
@@ -173,7 +174,7 @@ LineInput::append(const std::string& text)
     {
         int pos1 = std::min(_selectedIndex, _cursorIndex);
         int n1 = abs(_selectedIndex - _cursorIndex);
-        _layout.replace(pos1, n1, text);
+        _layout.replace(pos1, n1, std::wstring(text.begin(), text.end()));
         _selection.setSize(0, 0);
         sigCursorMoved(_cursorIndex, pos1 + 1);
         sigTextEdited();
@@ -434,15 +435,15 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_selection.isNull())
         {
-            ILOG_DEBUG( ILX_LINEINPUT, "Append %c at %d\n", (char) keyEvent.keySymbol, _cursorIndex);
-            _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
+            ILOG_DEBUG( ILX_LINEINPUT, "Append U+%04X at %d\n", keyEvent.keySymbol, _cursorIndex);
+            _layout.insert(_cursorIndex, (wchar_t) keyEvent.keySymbol);
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
             sigTextEdited();
         } else
         {
             int pos1 = std::min(_selectedIndex, _cursorIndex);
             int n1 = abs(_selectedIndex - _cursorIndex);
-            _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
+            _layout.replace(pos1, n1, (wchar_t) keyEvent.keySymbol);
             _selection.setSize(0, 0);
             sigCursorMoved(_cursorIndex, pos1 + 1);
             sigTextEdited();

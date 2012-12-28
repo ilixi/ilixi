@@ -144,6 +144,20 @@ TextBase::setText(const std::string &text)
 }
 
 void
+TextBase::setText(const std::wstring &text)
+{
+    if (_layout.wtext() != text)
+    {
+        ILOG_DEBUG(ILX_TEXTBASE, "setText( %s )\n", text.c_str());
+        _layout.setText(text);
+        _extents = _layout.extents(font());
+        _owner->doLayout();
+        sigTextChanged(_layout.text());
+        _owner->update();
+    }
+}
+
+void
 TextBase::setSingleLine(bool single)
 {
     _layout.setSingleLine(single);
