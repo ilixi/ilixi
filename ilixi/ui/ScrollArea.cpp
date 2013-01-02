@@ -63,6 +63,7 @@ ScrollArea::~ScrollArea()
 int
 ScrollArea::heightForWidth(int width) const
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_content)
         return _content->heightForWidth(width);
     return -1;
@@ -71,6 +72,7 @@ ScrollArea::heightForWidth(int width) const
 Size
 ScrollArea::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_content)
         return _content->preferredSize();
     return Size(100, 100);
@@ -223,7 +225,8 @@ void
 ScrollArea::doLayout()
 {
     updateScollAreaGeometry();
-    update();
+    if (parent())
+        parent()->doLayout();
 }
 
 void
