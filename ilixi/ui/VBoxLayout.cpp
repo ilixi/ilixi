@@ -77,8 +77,7 @@ VBoxLayout::heightForWidth(int width) const
     int ch = 0; // current widget's height.
     Size s;
 
-    for (WidgetList::const_iterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
     {
         widget = ((Widget*) *it);
         if (widget->visible() && widget->yConstraint() != IgnoredConstraint)
@@ -131,10 +130,11 @@ VBoxLayout::heightForWidth(int width) const
 Size
 VBoxLayout::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_VBOX);
+
     if (!_children.size())
         return Size(50, 50);
 
-    ILOG_TRACE_W(ILX_VBOX);
     int w = 0; // max. width.
     int h = 0; // total height.
     int cw = 0; // current widget's width.
@@ -144,8 +144,7 @@ VBoxLayout::preferredSize() const
     LayoutElement e;
 
     // Find max. width
-    for (WidgetList::const_iterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
     {
         e.widget = ((Widget*) *it);
         if (e.widget->visible() && e.widget->yConstraint() != IgnoredConstraint)
@@ -200,7 +199,7 @@ VBoxLayout::preferredSize() const
 
         h += ch + spacing();
     }
-    ILOG_DEBUG(ILX_VBOX, " -> Size(%d, %d)\n", w, h-spacing());
+    ILOG_DEBUG(ILX_VBOX, " -> Size(%d, %d)\n", w, h - spacing());
     return Size(w, h - spacing());
 }
 
@@ -211,8 +210,7 @@ VBoxLayout::tile()
     ElementList list;
     LayoutElement e;
     int cw = 0; // current widget's width.
-    for (Widget::WidgetListConstIterator it = _children.begin();
-            it != _children.end(); ++it)
+    for (Widget::WidgetListConstIterator it = _children.begin(); it != _children.end(); ++it)
     {
         e.widget = ((Widget*) *it);
         if (e.widget->visible() && e.widget->yConstraint() != IgnoredConstraint)
@@ -382,8 +380,7 @@ VBoxLayout::tile()
             if (((LayoutElement) *it).widget->minHeight() > 0 && average > ((LayoutElement) *it).widget->minHeight())
             {
                 expandSpace += average - ((LayoutElement) *it).widget->minHeight();
-                ((LayoutElement) *it).size.setHeight(
-                        ((LayoutElement) *it).widget->minHeight());
+                ((LayoutElement) *it).size.setHeight(((LayoutElement) *it).widget->minHeight());
             } else if (average > ((LayoutElement) *it).size.height())
                 expandSpace += average - ((LayoutElement) *it).size.height();
         }
@@ -403,8 +400,7 @@ VBoxLayout::tile()
     Widget* up = getNeighbour(Up);
     Widget* down = getNeighbour(Down);
     ElementList::iterator itNext, itLast;
-    for (ElementList::iterator it = list.begin(), end = list.end(),
-            itLast = (++list.rbegin()).base(); it != end; ++it)
+    for (ElementList::iterator it = list.begin(), end = list.end(), itLast = (++list.rbegin()).base(); it != end; ++it)
     {
         widget = ((LayoutElement) *it).widget;
 

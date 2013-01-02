@@ -49,18 +49,21 @@ ContainerBase::~ContainerBase()
 int
 ContainerBase::heightForWidth(int width) const
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     return _layout->heightForWidth(width);
 }
 
 Size
 ContainerBase::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     return _layout->preferredSize();
 }
 
 Rectangle
 ContainerBase::childrenRect() const
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     // TODO return childrenRect()
     return Rectangle();
 }
@@ -74,12 +77,14 @@ ContainerBase::spacing() const
 bool
 ContainerBase::addWidget(Widget* widget)
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     return _layout->addWidget(widget);
 }
 
 bool
 ContainerBase::removeWidget(Widget* widget)
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     return _layout->removeWidget(widget);
 }
 
@@ -92,6 +97,7 @@ ContainerBase::layout()
 void
 ContainerBase::setLayout(LayoutBase* layout)
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     if (layout)
     {
         removeChild(_layout);
@@ -110,6 +116,7 @@ ContainerBase::setSpacing(unsigned int spacing)
 void
 ContainerBase::doLayout()
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
 //  if (_layout)
 //    _layout->tile();
     if (parent())
@@ -126,6 +133,7 @@ ContainerBase::updateLayoutGeometry()
 bool
 ContainerBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
+    ILOG_TRACE_W(ILX_CONTAINER);
     if (_inputMethod & PointerInput)
     {
         if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))

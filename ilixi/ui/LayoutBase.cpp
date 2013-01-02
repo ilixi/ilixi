@@ -42,8 +42,8 @@ LayoutBase::LayoutBase(Widget* parent)
 
 LayoutBase::~LayoutBase()
 {
-    delete _group;
     ILOG_TRACE_W(ILX_LAYOUT);
+    delete _group;
 }
 
 int
@@ -108,6 +108,7 @@ LayoutBase::setSpacing(unsigned int spacing)
 bool
 LayoutBase::addWidget(Widget* widget)
 {
+    ILOG_TRACE_W(ILX_LAYOUT);
     if (addChild(widget))
     {
         RadioButton* radio = dynamic_cast<RadioButton*>(widget);
@@ -122,6 +123,7 @@ LayoutBase::addWidget(Widget* widget)
 bool
 LayoutBase::removeWidget(Widget* widget, bool destroy)
 {
+    ILOG_TRACE_W(ILX_LAYOUT);
     if (isChild(widget))
     {
         RadioButton* radio = dynamic_cast<RadioButton*>(widget);

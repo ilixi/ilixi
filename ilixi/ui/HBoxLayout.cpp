@@ -149,7 +149,7 @@ HBoxLayout::preferredSize() const
             w += cw + spacing();
         }
     }
-
+    ILOG_DEBUG(ILX_HBOX, " -> Size(%d, %d)\n", w - spacing(), h);
     return Size(w - spacing(), h);
 }
 
