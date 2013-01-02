@@ -3,7 +3,7 @@
 
 <Configuration>
 	<HardwareLayers>
-		<DFBLayer id="0" fsu="on" flipMode="none" bufferMode="backVideo" />
+		<DFBLayer id="0" fsu="off" flipMode="none" bufferMode="backVideo" />
 	</HardwareLayers>
 
 	<LogicLayers>
@@ -19,6 +19,12 @@
 		<Resolution>1280_720</Resolution>
 		<Frequency>60HZ</Frequency>
 	</Screen>
+
+    <Window>
+        <FullScreenUpdate>off</FullScreenUpdate>
+        <FlipMode>new</FlipMode>
+        <BufferMode>double</BufferMode>
+    </Window>
 
 	<Theme>
 		<Background>@THEMEDIR:dark/bg.png</Background>

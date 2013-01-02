@@ -1,4 +1,4 @@
-<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Theme, Cursor) >
+<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Window, Theme, Cursor) >
    
 <!ELEMENT HardwareLayers (DFBLayer+) >
     <!ELEMENT DFBLayer EMPTY >
@@ -18,6 +18,11 @@
     <!ELEMENT ScanMode      (#PCDATA) >
     <!ELEMENT Resolution    (#PCDATA) >
     <!ELEMENT Frequency     (#PCDATA) >
+    
+<!ELEMENT Window (FullScreenUpdate, FlipMode, BufferMode) >
+    <!ELEMENT FullScreenUpdate  (#PCDATA) >
+    <!ELEMENT FlipMode          (#PCDATA) >
+    <!ELEMENT BufferMode        (#PCDATA) >
         
 <!ELEMENT Theme (Background?, Style, Palette) >
     <!ELEMENT Background (#PCDATA) >

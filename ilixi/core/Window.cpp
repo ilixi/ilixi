@@ -109,11 +109,10 @@ Window::initDFBWindow(const Size& size)
     desc.flags = (DFBWindowDescriptionFlags) (DWDESC_POSX | DWDESC_POSY | DWDESC_WIDTH | DWDESC_HEIGHT | DWDESC_CAPS | DWDESC_SURFACE_CAPS | DWDESC_PIXELFORMAT | DWDESC_OPTIONS | DWDESC_STACKING);
 
     desc.pixelformat = DSPF_ARGB;
-    desc.surface_caps = DSCAPS_DOUBLE;
+    desc.surface_caps = PlatformManager::instance().getWindowSurfaceCaps();
     desc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL);
 #ifdef ILIXI_STEREO_OUTPUT
-    desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL
-            | DWCAPS_STEREO);
+    desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL | DWCAPS_STEREO);
 #else
     desc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
 #endif

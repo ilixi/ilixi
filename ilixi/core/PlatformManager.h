@@ -101,6 +101,12 @@ public:
     useFSU(const std::string& name) const;
 
     /*!
+     * Returns window surface capabilities.
+     */
+    DFBSurfaceCapabilities
+    getWindowSurfaceCaps() const;
+
+    /*!
      * Returns path to default palette definition file.
      */
     const std::string&
@@ -154,6 +160,14 @@ private:
     typedef std::map<std::string, LogicLayer> LogicLayerMap;
     LogicLayerMap _layerMap;
 
+    struct WindowConf
+    {
+        bool fsu;
+        LayerFlipMode flipMode;
+        DFBSurfaceCapabilities caps;
+    };
+
+    WindowConf _windowConf;
     std::string _background;
     std::string _style;
     std::string _palette;
@@ -212,6 +226,9 @@ private:
     setScreenFrequency(DFBScreenEncoderFrequency* cfg, xmlChar* freq);
 
 #endif
+
+    void
+    setWindow(xmlNodePtr node);
 
     void
     setTheme(xmlNodePtr node);

@@ -123,16 +123,23 @@ LayerFlipMode
 PlatformManager::getLayerFlipMode(const std::string& name) const
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-    LogicLayerMap::const_iterator it = _layerMap.find(name);
-    if (it != _layerMap.end())
+
+    if (_options & OptExclusive)
     {
-        HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
-        if (itHW != _hwLayerMap.end())
+        return _windowConf.flipMode;
+    } else
+    {
+        LogicLayerMap::const_iterator it = _layerMap.find(name);
+        if (it != _layerMap.end())
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p mode: %d\n", itHW->second.layer, itHW->second.flipMode);
-            return itHW->second.flipMode;
+            HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
+            if (itHW != _hwLayerMap.end())
+            {
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p mode: %d\n", itHW->second.layer, itHW->second.flipMode);
+                return itHW->second.flipMode;
+            }
+            return FlipNone;
         }
-        return FlipNone;
     }
     return FlipNone;
 }
@@ -141,18 +148,30 @@ bool
 PlatformManager::useFSU(const std::string& name) const
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-    LogicLayerMap::const_iterator it = _layerMap.find(name);
-    if (it != _layerMap.end())
+    if (_options & OptExclusive)
     {
-        HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
-        if (itHW != _hwLayerMap.end())
+        return _windowConf.fsu;
+    } else
+    {
+        LogicLayerMap::const_iterator it = _layerMap.find(name);
+        if (it != _layerMap.end())
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p fsu: %d\n", itHW->second.layer, itHW->second.fsu);
-            return itHW->second.fsu;
+            HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
+            if (itHW != _hwLayerMap.end())
+            {
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p fsu: %d\n", itHW->second.layer, itHW->second.fsu);
+                return itHW->second.fsu;
+            }
+            return false;
         }
-        return false;
     }
     return false;
+}
+
+DFBSurfaceCapabilities
+PlatformManager::getWindowSurfaceCaps() const
+{
+    return _windowConf.caps;
 }
 
 const std::string&
@@ -386,6 +405,8 @@ PlatformManager::parseConfig()
         else if (xmlStrcmp(group->name, (xmlChar*) "Screen") == 0)
             setScreen(group->children);
 #endif
+        else if (xmlStrcmp(group->name, (xmlChar*) "Window") == 0)
+            setWindow(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Theme") == 0)
             setTheme(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Cursor") == 0)
@@ -785,6 +806,41 @@ PlatformManager::setScreenFrequency(DFBScreenEncoderFrequency* cfg, xmlChar* fre
 }
 
 #endif // version > 1.6
+void
+PlatformManager::setWindow(xmlNodePtr node)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    _windowConf.fsu = false;
+    _windowConf.flipMode = FlipNew;
+    _windowConf.caps = DSCAPS_DOUBLE;
+
+    while (node != NULL)
+    {
+        xmlChar* pcDATA = xmlNodeGetContent(node);
+        if (xmlStrcmp(node->name, (xmlChar*) "FullScreenUpdate") == 0)
+        {
+            if (xmlStrcmp(pcDATA, (xmlChar*) "on") == 0)
+                _windowConf.fsu = true;
+        } else if (xmlStrcmp(node->name, (xmlChar*) "FlipMode") == 0)
+        {
+            if (xmlStrcmp(pcDATA, (xmlChar*) "none") == 0)
+                _windowConf.flipMode = FlipNone;
+            else if (xmlStrcmp(pcDATA, (xmlChar*) "onSync") == 0)
+                _windowConf.flipMode = FlipOnSync;
+            else if (xmlStrcmp(pcDATA, (xmlChar*) "waitForSync") == 0)
+                _windowConf.flipMode = FlipWaitForSync;
+        } else if (xmlStrcmp(node->name, (xmlChar*) "BufferMode") == 0)
+        {
+            if (xmlStrcmp(pcDATA, (xmlChar*) "single") == 0)
+                _windowConf.caps = DSCAPS_NONE;
+            else if (xmlStrcmp(pcDATA, (xmlChar*) "triple") == 0)
+                _windowConf.caps = DSCAPS_TRIPLE;
+        }
+        xmlFree(pcDATA);
+        node = node->next;
+    }
+}
+
 void
 PlatformManager::setTheme(xmlNodePtr node)
 {
