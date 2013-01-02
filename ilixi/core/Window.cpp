@@ -36,12 +36,13 @@ Window::Window()
         : _dfbWindow(NULL),
           _windowSurface(NULL)
 {
+    ILOG_TRACE_F(ILX_WINDOW);
 }
 
 Window::~Window()
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     releaseDFBWindow();
-    ILOG_DEBUG(ILX_WINDOW, "~Window\n");
 }
 
 DFBWindowID
@@ -61,10 +62,10 @@ Window::dfbSurface() const
 Size
 Window::windowSize() const
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     int w = 0, h = 0;
     if (_dfbWindow)
         _dfbWindow->GetSize(_dfbWindow, &w, &h);
-    ILOG_TRACE_F(ILX_WINDOW);
     ILOG_DEBUG(ILX_WINDOW, " -> Size(%d, %d)\n", w, h);
     return Size(w, h);
 }
@@ -72,28 +73,31 @@ Window::windowSize() const
 void
 Window::showWindow()
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     if (!_dfbWindow)
         return;
 
     _dfbWindow->SetOpacity(_dfbWindow, 255);
     _dfbWindow->RaiseToTop(_dfbWindow);
-    ILOG_DEBUG(ILX_WINDOW, "Window is %p visible.\n", this);
+    ILOG_DEBUG(ILX_WINDOW, " -> Window %p is visible.\n", this);
 }
 
 void
 Window::hideWindow()
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     if (!_dfbWindow)
         return;
 
     _dfbWindow->SetOpacity(_dfbWindow, 0);
     _dfbWindow->LowerToBottom(_dfbWindow);
-    ILOG_DEBUG(ILX_WINDOW, "Window is %p hidden.\n", this);
+    ILOG_DEBUG(ILX_WINDOW, " -> Window %p is hidden.\n", this);
 }
 
 bool
 Window::initDFBWindow(const Size& size)
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     if (!PlatformManager::instance().getDFB())
     {
         ILOG_FATAL(ILX_WINDOW, "DirectFB interface is not initialised!\n");
@@ -124,16 +128,17 @@ Window::initDFBWindow(const Size& size)
 
     if (!AppBase::activeWindow())
     {
-        ILOG_DEBUG(ILX_WINDOW, "Main window is initialising...\n");
+        ILOG_DEBUG(ILX_WINDOW, " -> Main window is initialising...\n");
         desc.posx = 0;
         desc.posy = 0;
         desc.width = conf.width;
         desc.height = conf.height;
         desc.stacking = DWSC_MIDDLE;
+        ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     } else // other windows
     {
         Size appSize = AppBase::appSize();
-        ILOG_DEBUG(ILX_WINDOW, "Window is initialising...\n");
+        ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising...\n");
         int w = size.width();
         int h = size.height();
         if (w > (appSize.width() - 20))
@@ -151,7 +156,7 @@ Window::initDFBWindow(const Size& size)
         desc.height = h;
         desc.stacking = DWSC_UPPER;
 
-        ILOG_DEBUG(ILX_WINDOW, " -> (%d, %d, %d, %d)\n", x, y, w, h);
+        ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     }
 
     ret = PlatformManager::instance().getLayer("ui")->CreateWindow(PlatformManager::instance().getLayer("ui"), &desc, &_dfbWindow);
@@ -172,16 +177,17 @@ Window::initDFBWindow(const Size& size)
     _dfbWindow->SetStereoDepth(_dfbWindow, 0);
 #endif
 
-    ILOG_INFO(ILX_WINDOW, "Window %p is initialised.\n", this);
+    ILOG_INFO(ILX_WINDOW, " -> Window %p is initialised.\n", this);
     return true;
 }
 
 void
 Window::releaseDFBWindow()
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     if (_dfbWindow)
     {
-        ILOG_DEBUG(ILX_WINDOW, "Releasing DirectFB window %p...\n", _dfbWindow);
+        ILOG_DEBUG(ILX_WINDOW, " -> Releasing DirectFB window %p...\n", _dfbWindow);
 
         _windowSurface->Release(_windowSurface);
         _dfbWindow->Close(_dfbWindow);
