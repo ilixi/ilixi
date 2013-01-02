@@ -490,7 +490,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                         _osk->setView(new AppView(this, data->instance, this));
                         _osk->view()->setGeometry(_oskGeometry);
                         addWidget(_osk->view());
-                        _statusBar->view()->bringToFront();
+                        if (_statusBar)
+                            _statusBar->view()->bringToFront();
                         _osk->view()->setZ(0);
                     }
                     _osk->view()->addWindow(dfbWindow, true, false);
