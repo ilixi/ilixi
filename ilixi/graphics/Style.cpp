@@ -131,12 +131,13 @@ Style::parseStyle(const char* style)
         } else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
         {
             ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
-            char* path = dirname(const_cast<char*>(style));
-            std::string imgPack = std::string(std::string(path).append("/ui-pack.png"));
+            char* path = strdup(style);
+            path = dirname(path);
+            std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
             ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
             _pack = new Image(imgPack);
             parseTheme(group->children);
-//            free(path);
+            free(path);
         }
 
         group = group->next;
