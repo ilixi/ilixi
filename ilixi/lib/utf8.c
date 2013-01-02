@@ -15,6 +15,8 @@
  */
 #include <sys/types.h>
 
+#include <arpa/inet.h>
+
 #include <wchar.h>
 
 #include "utf8.h"
