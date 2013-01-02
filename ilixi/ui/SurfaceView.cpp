@@ -352,8 +352,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     {
         //D_INFO("update for %d\n",AppBase::__instance->_updateID);
         AppBase::__instance->_update = true;
-        AppBase::__instance->_update_timer.stop();
-        AppBase::__instance->_update_timer.start(200, 1000000);
+        AppBase::__instance->_update_timer.restart();
     }
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);

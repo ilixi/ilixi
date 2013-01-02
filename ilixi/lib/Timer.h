@@ -71,6 +71,14 @@ public:
     start(unsigned int msec, unsigned int repeats = 0);
 
     /*!
+     * Restarts timer.
+     *
+     * If timer is running it is reset, otherwise it is started.
+     */
+    void
+    restart();
+
+    /*!
      * Stops timer.
      */
     void

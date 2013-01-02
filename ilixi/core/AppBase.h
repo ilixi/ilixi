@@ -205,6 +205,9 @@ private:
     static bool
     removeTimer(Timer* timer);
 
+    static bool
+    sortTimers();
+
     /*!
      * Executes each callback and returns a timeout in ms.
      */

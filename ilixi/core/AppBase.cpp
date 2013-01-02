@@ -86,7 +86,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     initEventBuffer();
 
     _update_timer.sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
-    _update_timer.start(200, 1000000);
+    _update_timer.start(200);
 }
 
 AppBase::~AppBase()
@@ -242,22 +242,21 @@ AppBase::addTimer(Timer* timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
 
-        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
+        TimerList::iterator it = std::find(__instance->_timers.begin(), __instance->_timers.end(), timer);
+        if (it == __instance->_timers.end())
         {
-            if (timer == *it)
-            {
-                pthread_mutex_unlock(&__instance->__timerMutex);
-                ILOG_DEBUG(ILX_APPBASE, "Timer %p already added!\n", timer);
-                return false;
-            }
-        }
-        __instance->_timers.push_back(timer);
+            __instance->_timers.push_back(timer);
 
-        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
+            std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
+
+            pthread_mutex_unlock(&__instance->__timerMutex);
+            ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
+            return true;
+        }
 
         pthread_mutex_unlock(&__instance->__timerMutex);
-        ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
-        return true;
+        ILOG_DEBUG(ILX_APPBASE, "Timer %p already added!\n", timer);
+        return false;
     }
     return false;
 }
@@ -269,17 +268,27 @@ AppBase::removeTimer(Timer* timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
 
-        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
+        TimerList::iterator it = std::find(__instance->_timers.begin(), __instance->_timers.end(), timer);
+        if (it != __instance->_timers.end())
         {
-            if (timer == *it)
-            {
-                __instance->_timers.erase(it);
-                pthread_mutex_unlock(&__instance->__timerMutex);
-                ILOG_DEBUG(ILX_APPBASE, "Timer %p is removed.\n", timer);
-                return true;
-            }
+            __instance->_timers.erase(it);
+            pthread_mutex_unlock(&__instance->__timerMutex);
+            ILOG_DEBUG(ILX_APPBASE, "Timer %p is removed.\n", timer);
+            return true;
         }
 
+        pthread_mutex_unlock(&__instance->__timerMutex);
+    }
+    return false;
+}
+
+bool
+AppBase::sortTimers()
+{
+    if (__instance)
+    {
+        pthread_mutex_lock(&__instance->__timerMutex);
+        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
         pthread_mutex_unlock(&__instance->__timerMutex);
     }
     return false;

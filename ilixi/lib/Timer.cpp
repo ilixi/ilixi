@@ -71,7 +71,7 @@ Timer::repeats() const
 void
 Timer::start(unsigned int msec, unsigned int repeats)
 {
-    if(_running)
+    if (_running)
         return;
     _running = true;
     _interval = msec;
@@ -79,10 +79,23 @@ Timer::start(unsigned int msec, unsigned int repeats)
     _repeats = repeats;
     _expiry = direct_clock_get_millis() + _interval;
     ILOG_TRACE_F(ILX_TIMER);
-    ILOG_DEBUG(
-            ILX_TIMER,
-            " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
+    ILOG_DEBUG( ILX_TIMER, " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
     AppBase::addTimer(this);
+}
+
+void
+Timer::restart()
+{
+    ILOG_TRACE_F(ILX_TIMER);
+    if (!_running)
+        start(_interval, _repeats);
+    else
+    {
+        _count = 0;
+        _expiry = direct_clock_get_millis() + _interval;
+        ILOG_DEBUG( ILX_TIMER, " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
+        AppBase::sortTimers();
+    }
 }
 
 void
@@ -126,9 +139,7 @@ Timer::funck()
     }
     _expiry = direct_clock_get_millis() + _interval;
 
-    ILOG_DEBUG(
-            ILX_TIMER,
-            "Timer[%p] next timeout %d.%d\n", this, (int) (_expiry/1000), (int)(_expiry%1000));
+    ILOG_DEBUG( ILX_TIMER, "Timer[%p] next timeout %d.%d\n", this, (int) (_expiry/1000), (int)(_expiry%1000));
 
     ++_count;
     notify();
