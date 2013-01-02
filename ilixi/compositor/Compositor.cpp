@@ -66,7 +66,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
     setMargin(0);
 
-    _backgroundFlags       = BGFFill;
+    _backgroundFlags = BGFFill;
     _syncWithSurfaceEvents = true;
 
     _fps = new FPSCalculator();
@@ -215,20 +215,24 @@ ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 void
 ILXCompositor::toggleOSK(bool show)
 {
-    if (_osk && _currentApp->pid() == _oskTargetPID)
+    if (_osk)
     {
         ILOG_TRACE_W(ILX_COMPOSITOR);
-        if (show)
+
+        if (_currentApp && _currentApp->pid() == _oskTargetPID)
         {
-            _currentApp->view()->slideTo(_appGeometry.x(), -_oskTargetRect.y());
-            _osk->view()->show(AppView::Position, _oskGeometry.x(), _appGeometry.bottom() - _oskGeometry.height());
-            toggleSwitcher(false);
-            _osk->view()->setWindowFocus();
-        } else
-        {
-            _currentApp->view()->slideTo(_appGeometry.x(), _appGeometry.y());
-            _osk->view()->hide(AppView::Position, _oskGeometry.x(), _oskGeometry.y());
-            _oskTargetPID = 0;
+            if (show)
+            {
+                _currentApp->view()->slideTo(_appGeometry.x(), -_oskTargetRect.y());
+                _osk->view()->show(AppView::Position, _oskGeometry.x(), _appGeometry.bottom() - _oskGeometry.height());
+                toggleSwitcher(false);
+                _osk->view()->setWindowFocus();
+            } else
+            {
+                _currentApp->view()->slideTo(_appGeometry.x(), _appGeometry.y());
+                _osk->view()->hide(AppView::Position, _oskGeometry.x(), _oskGeometry.y());
+                _oskTargetPID = 0;
+            }
         }
     }
 }
@@ -481,12 +485,15 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_OSK\n");
                     _osk = data->instance;
-                    _osk->setView(new AppView(this, data->instance, this));
-                    _osk->view()->setGeometry(_oskGeometry);
-                    addWidget(_osk->view());
-                    _statusBar->view()->bringToFront();
-                    _osk->view()->setZ(0);
-                    _osk->view()->addWindow(dfbWindow);
+                    if (!_osk->view())
+                    {
+                        _osk->setView(new AppView(this, data->instance, this));
+                        _osk->view()->setGeometry(_oskGeometry);
+                        addWidget(_osk->view());
+                        _statusBar->view()->bringToFront();
+                        _osk->view()->setZ(0);
+                    }
+                    _osk->view()->addWindow(dfbWindow, true, false);
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_HOME\n");

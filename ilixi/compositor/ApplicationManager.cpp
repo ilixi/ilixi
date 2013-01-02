@@ -569,10 +569,13 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> keeping window size.\n");
     } else if (appInfo->appFlags() & APP_OSK)
     {
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK.\n");
-        DFBRectangle r = _compositor->_oskGeometry.dfbRect();
-        info->config.bounds = r;
-        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_SIZE), &info->config);
+        if (!instance->view())
+        {
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_OSK.\n");
+            DFBRectangle r = _compositor->_oskGeometry.dfbRect();
+            info->config.bounds = r;
+            _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_SIZE), &info->config);
+        }
     } else if (appInfo->appFlags() & APP_STATUSBAR)
     {
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for APP_STATUSBAR.\n");
@@ -835,9 +838,9 @@ ApplicationManager::searchExec(const char* exec, std::string& execPath)
                 path = env;
             else
             {
-            	char* var = getenv(path);
-            	if (!var)
-            		break;
+                char* var = getenv(path);
+                if (!var)
+                    break;
                 file = var;
                 file.append("/").append(env);
                 if (access(file.c_str(), X_OK) == 0)
