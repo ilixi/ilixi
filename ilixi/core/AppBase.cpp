@@ -556,6 +556,8 @@ AppBase::handleEvents(int32_t timeout)
     DFBEvent event;
     DFBWindowEvent lastMotion; // Used for compressing motion events.
 
+    lastMotion.type = DWET_NONE;
+
     bool wait = true;
 
     if (timeout > 1000)
