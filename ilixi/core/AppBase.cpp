@@ -625,8 +625,14 @@ AppBase::handleEvents(int32_t timeout)
             {
                 if (event.window.type == DWET_MOTION)
                     lastMotion = event.window;
-                else if (!windowPreEventFilter((const DFBWindowEvent&) event.window))
-                    activeWindow()->handleWindowEvent((const DFBWindowEvent&) event.window);
+                else
+                {
+                    if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
+                        activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
+                    lastMotion.type = DWET_NONE;
+                    if (!windowPreEventFilter((const DFBWindowEvent&) event.window))
+                        activeWindow()->handleWindowEvent((const DFBWindowEvent&) event.window);
+                }
             }
             break;
 
