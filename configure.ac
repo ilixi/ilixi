@@ -66,10 +66,15 @@ if test "$enable_log_debug" = "yes"; then
 	CFLAGS="$CFLAGS -DDIRECT_ENABLE_DEBUG"
 fi
 
-AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging and trace support @<:@default=no@:>@]), [], [enable_debug=no])
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [enable debugging @<:@default=no@:>@]), [], [enable_debug=no])
 if test "$enable_debug" = "yes"; then
-    CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline -finstrument-functions"
+    CFLAGS="$CFLAGS -g3 -O0 -fno-inline -Wno-inline"
 	CPPFLAGS="$CPPFLAGS -DDIRECT_FORCE_DEBUG"
+fi
+
+AC_ARG_ENABLE([trace], AS_HELP_STRING([--enable-trace], [enable trace support @<:@default=no@:>@]), [], [enable_trace=no])
+if test "$enable_trace" = "yes"; then
+    CFLAGS="$CFLAGS -finstrument-functions"
 fi
 
 AC_ARG_ENABLE([profiling], AS_HELP_STRING([--enable-profiling], [enable profiling @<:@default=no@:>@]), [], [enable_profiling=no])
@@ -296,6 +301,8 @@ AC_MSG_RESULT([
    DEPS_CFLAGS              : $DEPS_CFLAGS
    DEPS_LIBS                : $DEPS_LIBS
    Log level                : $LOGGER_LEVEL
+   Debug enabled            : $enable_debug
+   Trace enabled            : $enable_trace
    Stereoscopy support      : $enable_stereo   
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
