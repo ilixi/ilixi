@@ -76,6 +76,12 @@ public:
     dfbFont();
 
     /*!
+     * Returns name of font.
+     */
+    const std::string&
+    name() const;
+
+    /*!
      * Returns distance from the baseline to the ascender line.
      *
      * Ascender usually specifies the height of capital letters.
@@ -240,6 +246,12 @@ private:
 
     void
     relRef();
+
+    friend std::istream&
+    operator>>(std::istream& is, Font& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const Font& obj);
 };
 }
 

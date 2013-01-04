@@ -355,6 +355,12 @@ private:
     Point _topLeft;
     //! This property stores the size.
     Size _size;
+
+    friend std::istream&
+    operator>>(std::istream& is, Rectangle& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const Rectangle& obj);
 };
 
 inline int

@@ -22,9 +22,11 @@
  */
 
 #include <graphics/Style.h>
+#include <lib/FileSystem.h>
 #include <core/Logger.h>
 #include <libxml/parser.h>
 #include <libgen.h>
+#include <fstream>
 
 namespace ilixi
 {
@@ -80,72 +82,92 @@ Style::parseStyle(const char* style)
 {
     ILOG_TRACE(ILX_STYLE);
     ILOG_DEBUG(ILX_STYLE, " -> file: %s\n", style);
-    xmlParserCtxtPtr ctxt;
-    xmlDocPtr doc;
 
-    ctxt = xmlNewParserCtxt();
-    if (ctxt == NULL)
+    std::string cacheFile = FileSystem::homeDirectory().append(PrintF("/%u.sxml", createHash(style)));
+    if (difftime(FileSystem::getModificationTime(cacheFile), FileSystem::getModificationTime(style)) > 0)
     {
-        ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
-        return false;
-    }
-
-    doc = xmlCtxtReadFile(ctxt, style, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-    if (doc == NULL)
+        ILOG_DEBUG(ILX_STYLE, " -> Parsing cached style file.\n");
+        std::ifstream ifs(cacheFile.c_str(), std::ios::binary | std::ios::in);
+        ifs >> *this;
+        ifs.close();
+        ILOG_INFO(ILX_STYLE, "Parsed cached style file: %s\n", cacheFile.c_str());
+    } else
     {
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
-        return false;
-    }
+        ILOG_DEBUG(ILX_STYLE, " -> Parsing xml...\n");
+        xmlParserCtxtPtr ctxt;
+        xmlDocPtr doc;
 
-    if (ctxt->valid == 0)
-    {
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
-        return false;
-    }
-
-    release();
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    xmlNodePtr group = root->xmlChildrenNode;
-
-    while (group != NULL)
-    {
-        if (xmlStrcmp(group->name, (xmlChar*) "fonts") == 0)
+        ctxt = xmlNewParserCtxt();
+        if (ctxt == NULL)
         {
-            ILOG_DEBUG(ILX_STYLE, " -> parsing fonts...\n");
-            parseFonts(group->children);
-        } else if (xmlStrcmp(group->name, (xmlChar*) "icons") == 0)
-        {
-            ILOG_DEBUG(ILX_STYLE, " -> parsing icons...\n");
-            xmlChar* imgFile = xmlGetProp(group, (xmlChar*) "resource");
-            xmlChar* imgDefSize = xmlGetProp(group, (xmlChar*) "defaultSize");
-            _iconPack = new Image(std::string(ILIXI_DATADIR"" + std::string((char*) imgFile)));
-            _defaultIconSize = atoi((char*) imgDefSize);
-            parseIcons(group->children);
-            xmlFree(imgDefSize);
-            xmlFree(imgFile);
-        } else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
-        {
-            ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
-            char* path = strdup(style);
-            path = dirname(path);
-            std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
-            ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
-            _pack = new Image(imgPack);
-            parseTheme(group->children);
-            free(path);
+            ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
+            return false;
         }
 
-        group = group->next;
-    } // end while(group)
+        doc = xmlCtxtReadFile(ctxt, style, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
-    xmlFreeDoc(doc);
-    xmlFreeParserCtxt(ctxt);
-    ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
+        if (doc == NULL)
+        {
+            xmlFreeParserCtxt(ctxt);
+            ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
+            return false;
+        }
+
+        if (ctxt->valid == 0)
+        {
+            xmlFreeDoc(doc);
+            xmlFreeParserCtxt(ctxt);
+            ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
+            return false;
+        }
+
+        release();
+
+        xmlNodePtr root = xmlDocGetRootElement(doc);
+        xmlNodePtr group = root->xmlChildrenNode;
+
+        while (group != NULL)
+        {
+            if (xmlStrcmp(group->name, (xmlChar*) "fonts") == 0)
+            {
+                ILOG_DEBUG(ILX_STYLE, " -> parsing fonts...\n");
+                parseFonts(group->children);
+            } else if (xmlStrcmp(group->name, (xmlChar*) "icons") == 0)
+            {
+                ILOG_DEBUG(ILX_STYLE, " -> parsing icons...\n");
+                xmlChar* imgFile = xmlGetProp(group, (xmlChar*) "resource");
+                xmlChar* imgDefSize = xmlGetProp(group, (xmlChar*) "defaultSize");
+                _iconPack = new Image(std::string(ILIXI_DATADIR"" + std::string((char*) imgFile)));
+                _defaultIconSize = atoi((char*) imgDefSize);
+                parseIcons(group->children);
+                xmlFree(imgDefSize);
+                xmlFree(imgFile);
+            } else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
+            {
+                ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
+                char* path = strdup(style);
+                path = dirname(path);
+                std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
+                ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
+                _pack = new Image(imgPack);
+                parseTheme(group->children);
+                free(path);
+            }
+
+            group = group->next;
+        } // end while(group)
+
+        xmlFreeDoc(doc);
+        xmlFreeParserCtxt(ctxt);
+        ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
+
+        // create cached file
+        std::ofstream ofs(cacheFile.c_str(), std::ios::binary | std::ios::out);
+        ofs.seekp(0, std::ios::beg);
+        ofs << *this;
+        ofs.close();
+    }
+
     return true;
 }
 
@@ -647,6 +669,169 @@ Style::get9Rectangle(xmlNodePtr node, r9& r)
     getRectangle(node->next->next->next->next->next->next, r.bl);
     getRectangle(node->next->next->next->next->next->next->next, r.bm);
     getRectangle(node->next->next->next->next->next->next->next->next, r.br);
+}
+
+std::istream&
+operator>>(std::istream& is, Style& obj)
+{
+    obj.release();
+    std::string iconName;
+    Point p;
+    obj._buttonFont = new Font();
+    obj._defaultFont = new Font();
+    obj._inputFont = new Font();
+    obj._titleFont = new Font();
+    obj._iconPack = new Image();
+    obj._pack = new Image();
+    int mapSize = 0;
+    is >> *obj._buttonFont;
+    is.ignore(1);
+    is >> *obj._defaultFont;
+    is.ignore(1);
+    is >> *obj._inputFont;
+    is.ignore(1);
+    is >> *obj._titleFont;
+    is.ignore(1);
+    is >> obj._defaultIconSize;
+    is.ignore(1);
+    is >> *obj._iconPack;
+    is >> mapSize;
+    for (int i = 0; i < mapSize; ++i)
+    {
+        is >> iconName;
+        is.ignore(1);
+        is >> p;
+        obj._iconMap.insert(std::make_pair(iconName, p));
+    }
+    is.ignore(1);
+    is >> *obj._pack;
+    is >> obj.pb >> obj.pbOK >> obj.pbCAN;
+    is >> obj.cb >> obj.cbC >> obj.cbT >> obj.rbOn >> obj.rbOff >> obj.slI;
+
+    is >> obj.tb >> obj.li;
+    is >> obj.pr >> obj.prI >> obj.hSl >> obj.vSl;
+    is >> obj.fr >> obj.box;
+    is >> obj.hScr >> obj.vScr;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style& obj)
+{
+    os << *obj._buttonFont << std::endl;
+    os << *obj._defaultFont << std::endl;
+    os << *obj._inputFont << std::endl;
+    os << *obj._titleFont << std::endl;
+    os << obj._defaultIconSize << std::endl;
+    os << *obj._iconPack << std::endl;
+    os << obj._iconMap.size() << std::endl;
+    for (Style::IconMap::const_iterator it = obj._iconMap.begin(); it != obj._iconMap.end(); ++it)
+        os << it->first << "\t" << it->second << std::endl;
+    os << *obj._pack << std::endl;
+    os << obj.pb << obj.pbOK << obj.pbCAN;
+    os << obj.cb << obj.cbC << obj.cbT << obj.rbOn << obj.rbOff << obj.slI;
+
+    os << obj.tb << obj.li;
+    os << obj.pr << obj.prI << obj.hSl << obj.vSl;
+    os << obj.fr << obj.box;
+    os << obj.hScr << obj.vScr;
+    return os;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r3& obj)
+{
+    is >> obj.l;
+    is.ignore(1);
+    is >> obj.m;
+    is.ignore(1);
+    is >> obj.r;
+    is.ignore(1);
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r3& obj)
+{
+    return os << obj.l << std::endl << obj.m << std::endl << obj.r << std::endl;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r3_Input& obj)
+{
+    is >> obj.def >> obj.pre >> obj.exp >> obj.dis >> obj.foc;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r3_Input& obj)
+{
+    return os << obj.def << obj.pre << obj.exp << obj.dis << obj.foc;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r3_View& obj)
+{
+    is >> obj.def >> obj.dis;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r3_View& obj)
+{
+    return os << obj.def << obj.dis;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r9& obj)
+{
+    is >> obj.tl >> obj.tm >> obj.tr >> obj.l >> obj.m >> obj.r >> obj.bl >> obj.bm >> obj.br;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r9& obj)
+{
+    return os << obj.tl << std::endl << obj.tm << std::endl << obj.tr << std::endl << obj.l << std::endl << obj.m << std::endl << obj.r << std::endl << obj.bl << std::endl << obj.bm << std::endl << obj.br << std::endl;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r9_Input& obj)
+{
+    is >> obj.def >> obj.pre >> obj.exp >> obj.dis >> obj.foc;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r9_Input& obj)
+{
+    return os << obj.def << obj.pre << obj.exp << obj.dis << obj.foc;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r9_View& obj)
+{
+    is >> obj.def >> obj.dis;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r9_View& obj)
+{
+    return os << obj.def << obj.dis;
+}
+
+std::istream&
+operator>>(std::istream& is, Style::r1_Input& obj)
+{
+    is >> obj.def >> obj.pre >> obj.exp >> obj.dis >> obj.foc;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Style::r1_Input& obj)
+{
+    return os << obj.def << std::endl << obj.pre << std::endl << obj.exp << std::endl << obj.dis << std::endl << obj.foc << std::endl;
 }
 
 } /* namespace ilixi */

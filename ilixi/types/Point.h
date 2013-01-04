@@ -24,6 +24,8 @@
 #ifndef ILIXI_POINT_H_
 #define ILIXI_POINT_H_
 
+#include <iostream>
+
 namespace ilixi
 {
 //! Defines a point using integer precision.
@@ -129,6 +131,12 @@ private:
     int _x;
     //! This property stores the y coordinate.
     int _y;
+
+    friend std::istream&
+    operator>>(std::istream& is, Point& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const Point& obj);
 };
 
 inline int

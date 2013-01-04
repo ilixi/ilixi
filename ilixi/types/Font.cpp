@@ -86,6 +86,12 @@ Font::dfbFont()
     return 0;
 }
 
+const std::string&
+Font::name() const
+{
+    return _name;
+}
+
 int
 Font::ascender()
 {
@@ -310,6 +316,25 @@ Font::relRef()
     ILOG_TRACE(ILX_FONT);
     if (!--_ref)
         delete this;
+}
+
+std::istream&
+operator>>(std::istream& is, Font& obj)
+{
+    std::string name;
+    int size;
+    std::getline(is, name, ',');
+    is >> size;
+    obj._name = name;
+    obj._size = size;
+    obj._modified = true;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Font& obj)
+{
+    return os << obj._name << ", " << obj._size;
 }
 
 } /* namespace ilixi */

@@ -107,4 +107,19 @@ Point::operator!=(const Point &point) const
     return !(*this == point);
 }
 
+std::istream&
+operator>>(std::istream& is, Point& obj)
+{
+    is >> obj._x;
+    is.ignore(1);
+    is >> obj._y;
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Point& obj)
+{
+    return os << obj._x << ',' << obj._y;
+}
+
 } /* namespace ilixi */

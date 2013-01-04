@@ -302,4 +302,25 @@ Image::loadSubImage(Image* source, const Rectangle& sourceRect)
     return true;
 }
 
+std::istream&
+operator>>(std::istream& is, Image& obj)
+{
+    obj.invalidateSurface();
+    std::string name;
+    int w, h;
+    std::getline(is, name, ',');
+    is >> w;
+    is.ignore(1);
+    is >> h;
+    obj._imagePath = name;
+    obj._size = Size(w, h);
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Image& obj)
+{
+    return os << obj._imagePath << ", " << obj._size.width() << ',' << obj._size.height();
+}
+
 } /* namespace ilixi */

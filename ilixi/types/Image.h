@@ -192,6 +192,12 @@ private:
 
     bool
     loadSubImage(Image* source, const Rectangle& sourceRect);
+
+    friend std::istream&
+    operator>>(std::istream& is, Image& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const Image& obj);
 };
 }
 

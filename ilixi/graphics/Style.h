@@ -29,6 +29,7 @@
 #include <types/Rectangle.h>
 #include <libxml/tree.h>
 #include <map>
+#include <iostream>
 
 namespace ilixi
 {
@@ -110,7 +111,7 @@ public:
         Rectangle br;
     };
 
-    struct threesInput
+    struct r3_Input
     {
         r3 def;
         r3 pre;
@@ -119,7 +120,7 @@ public:
         r3 foc;
     } pb, pbOK, pbCAN;
 
-    struct onesInput
+    struct r1_Input
     {
         Rectangle def;
         Rectangle pre;
@@ -128,7 +129,7 @@ public:
         Rectangle foc;
     } cb, cbC, cbT, rbOn, rbOff, slI;
 
-    struct ninesInput
+    struct r9_Input
     {
         r9 def;
         r9 pre;
@@ -137,13 +138,13 @@ public:
         r9 foc;
     } tb, li;
 
-    struct threesView
+    struct r3_View
     {
         r3 def;
         r3 dis;
     } pr, prI, hSl, vSl;
 
-    struct ninesView
+    struct r9_View
     {
         r9 def;
         r9 dis;
@@ -171,6 +172,55 @@ protected:
 private:
     void
     release();
+
+    friend std::istream&
+    operator>>(std::istream& is, Style& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const Style& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r3& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r3& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r3_Input& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r3_Input& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r3_View& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r3_View& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r9& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r9& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r9_Input& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r9_Input& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r9_View& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r9_View& obj);
+
+    friend std::istream&
+    operator>>(std::istream& is, r1_Input& obj);
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const r1_Input& obj);
+
 };
 
 }

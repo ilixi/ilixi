@@ -164,13 +164,11 @@ Rectangle::contains(const Rectangle &rect, bool edge) const
 {
     if (edge)
     {
-        if ((rect.left() >= left() && rect.right() <= right())
-                && (rect.top() >= top() && rect.bottom() <= bottom()))
+        if ((rect.left() >= left() && rect.right() <= right()) && (rect.top() >= top() && rect.bottom() <= bottom()))
             return true;
     } else
     {
-        if ((rect.left() > left() && rect.right() < right())
-                && (rect.top() > top() && rect.bottom() < bottom()))
+        if ((rect.left() > left() && rect.right() < right()) && (rect.top() > top() && rect.bottom() < bottom()))
             return true;
     }
     return false;
@@ -179,8 +177,7 @@ Rectangle::contains(const Rectangle &rect, bool edge) const
 bool
 Rectangle::intersects(const Rectangle &r) const
 {
-    return !(left() > r.right() || right() < r.left() || top() > r.bottom()
-            || bottom() < r.top());
+    return !(left() > r.right() || right() < r.left() || top() > r.bottom() || bottom() < r.top());
 }
 
 Rectangle
@@ -188,10 +185,7 @@ Rectangle::intersected(const Rectangle &r) const
 {
     if (intersects(r))
     {
-        return Rectangle(
-                Point(std::max(left(), r.left()), std::max(top(), r.top())),
-                Point(std::min(right(), r.right()),
-                      std::min(bottom(), r.bottom())));
+        return Rectangle(Point(std::max(left(), r.left()), std::max(top(), r.top())), Point(std::min(right(), r.right()), std::min(bottom(), r.bottom())));
     }
     return Rectangle(0, 0, 0, 0);
 }
@@ -199,9 +193,7 @@ Rectangle::intersected(const Rectangle &r) const
 Rectangle
 Rectangle::united(const Rectangle &r) const
 {
-    return Rectangle(
-            Point(std::min(left(), r.left()), std::min(top(), r.top())),
-            Point(std::max(right(), r.right()), std::max(bottom(), r.bottom())));
+    return Rectangle(Point(std::min(left(), r.left()), std::min(top(), r.top())), Point(std::max(right(), r.right()), std::max(bottom(), r.bottom())));
 }
 
 void
@@ -210,9 +202,7 @@ Rectangle::unite(const Rectangle &r)
     if (this != &r && !r.isNull())
     {
         setTopLeft(Point(std::min(left(), r.left()), std::min(top(), r.top())));
-        setBottomRight(
-                Point(std::max(right(), r.right()),
-                      std::max(bottom(), r.bottom())));
+        setBottomRight(Point(std::max(right(), r.right()), std::max(bottom(), r.bottom())));
     }
 }
 
@@ -337,14 +327,17 @@ Rectangle::operator!=(const Rectangle &rectangle) const
 {
     return !(*this == rectangle);
 }
+
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-DFBBox
-Rectangle::dfbBox() const
+
+DFBBox Rectangle::dfbBox() const
 {
-    DFBBox b = { x(), y(), right() - 1, bottom() - 1 };
+    DFBBox b =
+    {   x(), y(), right() - 1, bottom() - 1};
     return b;
 }
 #endif
+
 DFBRectangle
 Rectangle::dfbRect() const
 {
@@ -357,6 +350,29 @@ Rectangle::dfbRegion() const
 {
     DFBRegion r = { x(), y(), right() - 1, bottom() - 1 };
     return r;
+}
+
+std::istream&
+operator>>(std::istream& is, Rectangle& obj)
+{
+    int x, y, w, h;
+    is >> x;
+    is.ignore(1);
+    is >> y;
+    is.ignore(1);
+    is >> w;
+    is.ignore(1);
+    is >> h;
+    obj._topLeft.moveTo(x, y);
+    obj._size.setWidth(w);
+    obj._size.setHeight(h);
+    return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Rectangle& obj)
+{
+    return os << obj._topLeft.x() << ',' << obj._topLeft.y() << ' ' << obj._size.width() << 'x' << obj._size.height();
 }
 
 } /* namespace ilixi */
