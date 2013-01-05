@@ -96,8 +96,7 @@ getModificationTime(const std::string& path)
     struct stat filestatus;
     if (stat(path.c_str(), &filestatus) == 0)
         return filestatus.st_mtime;
-    time_t t;
-    return t;
+    return 0;
 }
 
 std::string
