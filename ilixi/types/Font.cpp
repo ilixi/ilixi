@@ -323,10 +323,14 @@ operator>>(std::istream& is, Font& obj)
 {
     std::string name;
     int size;
+    int style;
     std::getline(is, name, ',');
     is >> size;
+    is.ignore(2);
+    is >> style;
     obj._name = name;
     obj._size = size;
+    obj._attr = (DFBFontAttributes) style;
     obj._modified = true;
     return is;
 }
@@ -334,7 +338,7 @@ operator>>(std::istream& is, Font& obj)
 std::ostream&
 operator<<(std::ostream& os, const Font& obj)
 {
-    return os << obj._name << ", " << obj._size;
+    return os << obj._name << ", " << obj._size << ", " << obj.style();
 }
 
 } /* namespace ilixi */
