@@ -92,6 +92,34 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     _list->setYConstraint(ExpandingConstraint);
     addWidget(_list);
 
+    _fpsLabel = new Label("");
+    _fpsLabel->setLayoutAlignment(TextLayout::Center);
+    addWidget(_fpsLabel);
+
+    _cpuMon = new CPUMonitor();
+
+    _cpuChart = new BarChart(10);
+    _cpuChart->addBar("CPU Total", Color(28, 127, 192, 100));
+    _cpuChart->setMaximumSize(150, 50);
+    _cpuChart->setDrawBG(false);
+    addWidget(_cpuChart);
+
+    sigVisible.connect(sigc::mem_fun(this, &PStatusBar::onShow));
+}
+
+PStatusBar::~PStatusBar()
+{
+    delete _timer;
+    delete _bg;
+    delete _listFont;
+    delete _listBG;
+    _compComponent->Release(_compComponent);
+    _soundComponent->Release(_soundComponent);
+}
+
+void
+PStatusBar::onShow()
+{
     _listFont = new Font("Gafata", 12);
     _listBG = new Image(ILIXI_DATADIR"phone/statusbar/item-box.png");
 
@@ -130,39 +158,10 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     item->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PStatusBar::showApp), "Settings"));
     _list->addItem(item);
 
-    _fpsLabel = new Label("");
-    _fpsLabel->setLayoutAlignment(TextLayout::Center);
-    addWidget(_fpsLabel);
-
-    _cpuMon = new CPUMonitor();
-    _cpuMon->refresh();
-
-    _cpuChart = new BarChart(10);
-    _cpuChart->addBar("CPU Total", Color(28, 127, 192, 100));
-    _cpuChart->setMaximumSize(150, 50);
-    _cpuChart->setDrawBG(false);
-    addWidget(_cpuChart);
-
-    sigVisible.connect(sigc::mem_fun(this, &PStatusBar::onShow));
-
     _timer = new Timer();
     _timer->sigExec.connect(sigc::mem_fun(this, &PStatusBar::timerSlot));
     _timer->start(1000);
-}
 
-PStatusBar::~PStatusBar()
-{
-    delete _timer;
-    delete _bg;
-    delete _listFont;
-    delete _listBG;
-    _compComponent->Release(_compComponent);
-    _soundComponent->Release(_soundComponent);
-}
-
-void
-PStatusBar::onShow()
-{
     DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
     DaleDFB::comaGetComponent("Compositor", &_compComponent);
 

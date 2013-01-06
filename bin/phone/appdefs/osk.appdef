@@ -9,6 +9,6 @@
 	<icon></icon>
 	<exec>ilixi_osk</exec>
 	<args>numpad</args>
-	<flags>APP_OSK, APP_SYSTEM</flags>
+	<flags>APP_OSK, APP_SYSTEM, APP_AUTO_START</flags>
 	<deps>DEP_MOUSE</deps>
 </app>

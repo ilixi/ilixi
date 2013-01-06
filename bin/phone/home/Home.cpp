@@ -152,6 +152,7 @@ PHome::initButtons(const PHome::AppDataVector& dataVector)
         _view->addItem(button);
         _buttons.push_back(button);
     }
+    eventManager()->selectNext();
 }
 
 void
