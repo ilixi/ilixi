@@ -72,6 +72,8 @@ AppCompositor::addWindow(IDirectFBWindow* window, bool eventHandling, bool block
     view->sigSourceReady.connect(sigc::mem_fun(this, &AppCompositor::madeAvailable));
     addChild(view);
     sigGeometryUpdated();
+    setWindowFocus();
+    update();
 }
 
 void
@@ -88,6 +90,8 @@ AppCompositor::removeWindow(DFBWindowID windowID)
             {
                 ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> removeChild( %p )\n", (*it));
                 sigGeometryUpdated();
+                setWindowFocus();
+                update();
                 break;
             } else
                 ILOG_ERROR(ILX_APPCOMPOSITOR, " -> Cannot remove child window!\n");
@@ -111,7 +115,7 @@ AppCompositor::setZoomFactor(float zoomFactor)
 void
 AppCompositor::setWindowFocus()
 {
-    for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
+    for (WidgetList::reverse_iterator it = _children.rbegin(); it != _children.rend(); ++it)
     {
         SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view)
@@ -146,6 +150,8 @@ AppCompositor::updateAppCompositorGeometry()
         {
             int i = 0;
             ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> APP_NO_MAINWINDOW - ZoomFactor: %f\n", _zoomFactor);
+            // calc bounding box.
+            Rectangle bounds;
             for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
             {
                 SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
@@ -154,7 +160,23 @@ AppCompositor::updateAppCompositorGeometry()
                     int x, y;
                     view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                     Size s = view->preferredSize();
-                    view->setGeometry(_zoomFactor * x, _zoomFactor * y, _zoomFactor * s.width(), _zoomFactor * s.height());
+                    bounds.unite(Rectangle(x, y, s.width(), s.height()));
+                }
+            }
+
+            // resize
+            float hScale = width() < bounds.width() ? w / bounds.width() : 1;
+            float vScale = height() < bounds.height() ? h / bounds.height() : 1;
+            for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
+            {
+                SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
+                if (view)
+                {
+                    int x, y;
+                    view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
+                    Size s = view->preferredSize();
+//                    view->setGeometry(_zoomFactor * x, _zoomFactor * y, _zoomFactor * s.width(), _zoomFactor * s.height());
+                    view->setGeometry(x * hScale, y * vScale, s.width() * hScale, s.height() * vScale);
                     ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
                     ++i;
                 }
