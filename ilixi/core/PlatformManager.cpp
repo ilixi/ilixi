@@ -192,6 +192,17 @@ PlatformManager::getBackground() const
     return _background;
 }
 
+bool
+PlatformManager::cursorVisible() const
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+
+    if ((_options & OptExclusive) && _cursorImage)
+        return true;
+
+    return false;
+}
+
 void
 PlatformManager::renderCursor(const DFBPoint& point)
 {

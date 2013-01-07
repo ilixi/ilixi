@@ -831,12 +831,12 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
     else if (__cursorNew.y > __layerSize.h - 1)
         __cursorNew.y = __layerSize.h - 1;
 
-    if (we.window.type == DWET_MOTION)
+    if (we.window.type == DWET_MOTION && PlatformManager::instance().cursorVisible())
     {
         Rectangle cold(__instance->__cursorOld.x, __instance->__cursorOld.y, 32, 32);
         Rectangle cnew(__instance->__cursorNew.x, __instance->__cursorNew.y, 32, 32);
-        if (!getenv("ILIXI_NO_CURSOR"))
-            activeWindow()->update(PaintEvent(cnew.united(cold), 10));
+
+        activeWindow()->update(PaintEvent(cnew.united(cold), 10));
     }
 
     we.window.x = 0;

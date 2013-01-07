@@ -125,6 +125,12 @@ public:
     getBackground() const;
 
     /*!
+     * Returns if cursor is visible.
+     */
+    bool
+    cursorVisible() const;
+
+    /*!
      * Render cursor using given position.
      */
     void
