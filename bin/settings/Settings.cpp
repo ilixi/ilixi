@@ -62,10 +62,10 @@ Settings::Settings(int argc, char* argv[])
 //    _showZoomTransition = new ComboBox("Zoom Transition");
 //    _showOpacityTransition = new ComboBox("Opacity Transition");
 
-    HBoxLayout* brightness = new HBoxLayout();
-    brightness->addWidget(new Label("Brightness"));
-    _brightness = new Slider();
-    brightness->addWidget(_brightness);
+//    HBoxLayout* brightness = new HBoxLayout();
+//    brightness->addWidget(new Label("Brightness"));
+//    _brightness = new Slider();
+//    brightness->addWidget(_brightness);
 
     HBoxLayout* buttons = new HBoxLayout();
     buttons->addWidget(new Spacer(Horizontal));
@@ -96,7 +96,7 @@ Settings::Settings(int argc, char* argv[])
 
 //    box->addWidget(_showZoomTransition);
 //    box->addWidget(_showOpacityTransition);
-    box->addWidget(brightness);
+//    box->addWidget(brightness);
     box->addWidget(new Spacer(Vertical));
     box->addWidget(buttons);
 
@@ -118,7 +118,7 @@ Settings::setDefaults()
     _showOpacity->setChecked(true);
     _hideZoom->setChecked(true);
     _hideOpacity->setChecked(true);
-    _brightness->setValue(100);
+//    _brightness->setValue(100);
 }
 
 void
@@ -159,7 +159,7 @@ Settings::sendSettings()
         xmlNewProp(node2, BAD_CAST "opacity", BAD_CAST value);
 
         node = xmlNewChild(root_node, NULL, BAD_CAST "Brightness", NULL);
-        snprintf(value, 100, "%d", int(_brightness->value()));
+        snprintf(value, 100, "%d", 100); //int(_brightness->value()));
         xmlNewProp(node, BAD_CAST "value", BAD_CAST value);
 
         xmlDocDumpFormatMemory(doc, &xmlbuff, &buffersize, 1);
