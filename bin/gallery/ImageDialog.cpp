@@ -34,13 +34,11 @@ ImageDialog::ImageDialog(const std::string& title, Widget* parent)
     setLayout(new VBoxLayout());
 
     ScrollArea* scroller = new ScrollArea();
-    addWidget(scroller);
     scroller->setMinimumSize(400, 300);
+    addWidget(scroller);
 
     _icon = new Icon();
     _icon->setSize(1000, 800);
-    addWidget(_icon);
-
     scroller->setContent(_icon);
 }
 
