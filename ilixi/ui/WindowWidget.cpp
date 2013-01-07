@@ -403,7 +403,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     case DWET_KEYUP:
         switch (event.key_symbol)
         {
-        case DIKS_SHIFT:
+//        case DIKS_SHIFT:
         case DIKS_CONTROL:
         case DIKS_ALT:
         case DIKS_ALTGR:
@@ -424,7 +424,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     case DWET_KEYDOWN:
         switch (event.key_symbol)
         {
-        case DIKS_SHIFT:
+//        case DIKS_SHIFT:
         case DIKS_CONTROL:
         case DIKS_ALT:
         case DIKS_ALTGR:
