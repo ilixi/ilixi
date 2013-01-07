@@ -117,7 +117,6 @@ ILXStatusBar::ILXStatusBar(int argc, char* argv[])
 {
     setBackgroundFilled(true);
     setBackgroundImage(ILIXI_DATADIR"car/statusbar/statusbar_bg.png");
-    setPaletteFromFile(ILIXI_DATADIR"car/statusbar/palette.xml");
 
     setMargins(0, 0, 0, 0);
     HBoxLayout* mainLayout = new HBoxLayout();
