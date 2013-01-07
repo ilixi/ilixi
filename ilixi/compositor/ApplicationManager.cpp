@@ -65,20 +65,26 @@ void
 sigchild_handler(int sig, siginfo_t *siginfo, void *context)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
-    if (siginfo->si_code == CLD_DUMPED && __appMan)
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> code: %d\n", siginfo->si_code);
+    if (__appMan != NULL && (siginfo->si_code == CLD_DUMPED || siginfo->si_code == CLD_KILLED))
     {
         AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
 
-        std::stringstream ss;
-        ss << instance->appInfo()->name() << " terminated abnormally.";
-        Notify notify("Application crashed!", ss.str());
-        notify.setIcon(ILIXI_DATADIR"images/default.png");
-        notify.show();
+        if (!instance)
+            return;
+
+        if (siginfo->si_code == CLD_DUMPED)
+        {
+            std::stringstream ss;
+            ss << instance->appInfo()->name() << " terminated abnormally.";
+            Notify notify("Application crashed!", ss.str());
+            notify.setIcon(ILIXI_DATADIR"images/default.png");
+            notify.show();
+        }
 
         if (instance->view())
             return;
-        AppInfo* info = __appMan->infoByPID(siginfo->si_pid);
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> PID: %ld (%s) terminated abnormally!\n", (long) siginfo->si_pid, info->name().c_str());
+
         __appMan->processTerminated((long) siginfo->si_pid);
     }
 }
@@ -152,7 +158,7 @@ window_restack(void *context, SaWManWindowHandle handle, SaWManWindowHandle rela
 ApplicationManager::ApplicationManager(ILXCompositor* compositor)
         : _compositor(compositor)
 {
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Initialising Application Manager.\n");
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     pthread_mutex_init(&_mutex, NULL);
     if (SaWManInit(NULL, NULL) != DR_OK)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to initialise SaWMan!\n");
@@ -192,6 +198,7 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 
 ApplicationManager::~ApplicationManager()
 {
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     __appMan = NULL;
     stopAll();
 
@@ -518,6 +525,8 @@ ApplicationManager::processRemoved(SaWManProcess *process)
 DirectResult
 ApplicationManager::processTerminated(pid_t pid)
 {
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d\n", pid);
     pthread_mutex_lock(&_mutex);
     bool found = false;
     AppInstance* instance;
@@ -587,7 +596,7 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
         ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> setting window config for Default.\n");
         DFBRectangle r = _compositor->_appGeometry.dfbRect();
         info->config.bounds = r;
-        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_SIZE), &info->config);
+        _manager->SetWindowConfig(_manager, info->handle, (SaWManWindowConfigFlags) (SWMCF_POSITION | SWMCF_SIZE), &info->config);
     }
 
     _manager->Lock(_manager);

@@ -619,6 +619,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG( ILX_COMPOSITOR, "CET_Quit (%s)\n", data->instance->appInfo()->name().c_str());
 
+                _compComp->signalAppQuit(data->instance);
+
                 if (data->instance == _currentApp)
                     _currentApp = NULL;
 
@@ -639,6 +641,8 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG( ILX_COMPOSITOR, "CET_Term (%s)\n", data->instance->appInfo()->name().c_str());
 
+                _compComp->signalAppQuit(data->instance);
+
                 if (data->instance->view())
                     removeWidget(data->instance->view());
 
@@ -653,7 +657,9 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
             {
                 ILOG_DEBUG( ILX_COMPOSITOR, "CET_Crash (%s)\n", data->instance->appInfo()->name().c_str());
 
-                _compComp->signalInstanceChanged(data->instance, NULL);
+                _compComp->signalAppQuit(data->instance);
+
+//                _compComp->signalInstanceChanged(data->instance, NULL);
 
                 std::stringstream ss;
                 ss << data->instance->appInfo()->name() << " terminated abnormally.";

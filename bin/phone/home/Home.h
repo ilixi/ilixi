@@ -32,12 +32,12 @@
 namespace ilixi
 {
 
-class AppButton;
+class PAppButton;
 
 class PHome : public Application
 {
     typedef std::vector<Compositor::AppData> AppDataVector;
-    typedef std::vector<AppButton*> AppButtonVector;
+    typedef std::vector<PAppButton*> AppButtonVector;
 
 public:
     PHome(int argc, char* argv[]);
@@ -66,10 +66,7 @@ private:
     updateHomeGeometry();
 
     friend void
-    appVisibility(void* ctx, void* arg);
-
-    friend void
-    appStarting(void* ctx, void* arg);
+    appStatusChanged(void* ctx, void* arg);
 
     friend void
     receiveAppList(void* ctx, void* arg);

@@ -57,23 +57,22 @@ appVisibilty(void* ctx, void* arg)
     ILXStatusBar* bar = (ILXStatusBar*) ctx;
     Compositor::VisibilityData data = *((Compositor::VisibilityData*) arg);
 
-    ILOG_INFO(ILX_STATUSBAR, "App: %s - %d\n", data.name, data.visible);
     if (strcmp(data.name, "Home") == 0)
     {
-        if (data.visible)
+        if (data.status & Compositor::AppVisible)
             bar->_home->setActive(1);
         else
             bar->_home->setActive(0);
     } else if (strcmp(data.name, "SoundMixer") == 0)
     {
-        if (data.visible)
+        if (data.status & Compositor::AppVisible)
             bar->_sound->setActive(1);
         else
             bar->_sound->setActive(0);
 
     } else if (strcmp(data.name, "Dashboard") == 0)
     {
-        if (data.visible)
+        if (data.status & Compositor::AppVisible)
             bar->_dash->setActive(1);
         else
             bar->_dash->setActive(0);
@@ -193,7 +192,7 @@ ILXStatusBar::onShow()
 
     _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged, volumeListener, this);
 
-    _compComponent->Listen(_compComponent, Compositor::AppVisibilty, appVisibilty, this);
+    _compComponent->Listen(_compComponent, Compositor::AppStatus, appVisibilty, this);
 
     _compComponent->Listen(_compComponent, Compositor::SwitcherVisible, switcherShowing, this);
     _compComponent->Listen(_compComponent, Compositor::SwitcherHidden, switcherHidden, this);

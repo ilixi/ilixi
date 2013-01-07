@@ -9,25 +9,21 @@
 #define APPBUTTON_H_
 
 #include <ui/ToolButton.h>
-#include <lib/TweenAnimation.h>
-#include <lib/Tween.h>
+#include <lib/Timer.h>
 
 namespace ilixi
 {
 
-class AppButton : public ilixi::ToolButton
+class PAppButton : public ilixi::ToolButton
 {
 public:
-    AppButton(const std::string& text, Widget* parent = 0);
+    PAppButton(const std::string& text, Widget* parent = 0);
 
     virtual
-    ~AppButton();
+    ~PAppButton();
 
     Size
     preferredSize() const;
-
-    bool
-    appVisible() const;
 
     void
     setAppVisible(bool visible);
@@ -35,23 +31,25 @@ public:
     void
     appStarting();
 
+    void
+    appQuit();
+
 protected:
     void
     compose(const PaintEvent& event);
 
 private:
-    bool _appVisible;
+    bool _colorize;
     Point _iconPos;
     Color _textColor;
 
-    TweenAnimation* _anim;
-    Tween* _tween;
+    Timer _timer;
 
     void
     updateIconGeometry();
 
     void
-    tweenSlot();
+    timerSlot();
 
 };
 

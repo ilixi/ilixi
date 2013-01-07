@@ -62,7 +62,7 @@ private:
     updateHomeGeometry();
 
     friend void
-    appVisibility(void* ctx, void* arg);
+    appStatusChanged(void* ctx, void* arg);
 
     friend void
     appStarting(void* ctx, void* arg);

@@ -39,8 +39,7 @@ CompositorComponent::CompositorComponent(ILXCompositor* compositor)
 {
     init();
 
-    createNotification(Compositor::AppStarting, NULL);
-    createNotification(Compositor::AppVisibilty, NULL);
+    createNotification(Compositor::AppStatus, NULL);
 
     createNotification(Compositor::BackKeyVisible, NULL, CNF_NONE);
     createNotification(Compositor::BackKeyHidden, NULL, CNF_NONE);
@@ -111,13 +110,28 @@ CompositorComponent::signalAppStart(AppInstance* instance)
     Compositor::VisibilityData vNo;
     snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
     vNo.pid = instance->pid();
-    vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
+    vNo.status = (Compositor::AppStatusFlags) (Compositor::AppStarting | (instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE));
 
     Compositor::VisibilityData* tPid;
     allocate(sizeof(Compositor::VisibilityData), (void**) &tPid);
     *tPid = vNo;
 
-    notify(Compositor::AppStarting, tPid);
+    notify(Compositor::AppStatus, tPid);
+}
+
+void
+CompositorComponent::signalAppQuit(AppInstance* instance)
+{
+    Compositor::VisibilityData vNo;
+    snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
+    vNo.pid = instance->pid();
+    vNo.status = (Compositor::AppStatusFlags) (Compositor::AppQuit | (instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE));
+
+    Compositor::VisibilityData* tPid;
+    allocate(sizeof(Compositor::VisibilityData), (void**) &tPid);
+    *tPid = vNo;
+
+    notify(Compositor::AppStatus, tPid);
 }
 
 void
@@ -203,7 +217,6 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
     case Compositor::SetOptions:
         {
             const char* opts = ((const char*) arg);
-            printf("Received Options:\n%s\n", opts);
 
             xmlDocPtr doc = xmlReadDoc((xmlChar*) opts, "noname.xml", NULL, 0);
             if (doc == NULL)
@@ -233,14 +246,13 @@ CompositorComponent::notifyVisibility(AppInstance* instance, bool visible)
     Compositor::VisibilityData vNo;
     snprintf(vNo.name, 64, "%s", instance->appInfo()->name().c_str());
     vNo.pid = instance->pid();
-    vNo.multi = instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE;
-    vNo.visible = visible;
+    vNo.status = (Compositor::AppStatusFlags) ((visible ? Compositor::AppVisible : Compositor::AppHidden) | (instance->appInfo()->appFlags() & APP_ALLOW_MULTIPLE));
 
     Compositor::VisibilityData* tPid;
     allocate(sizeof(Compositor::VisibilityData), (void**) &tPid);
     *tPid = vNo;
 
-    notify(Compositor::AppVisibilty, tPid);
+    notify(Compositor::AppStatus, tPid);
     ILOG_DEBUG(ILX_COMPCOMP, "%s is now %s!\n", instance->appInfo()->name().c_str(), visible ? "visible": "hidden");
 }
 

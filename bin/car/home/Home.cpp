@@ -33,21 +33,12 @@ Image* Home::_circle = NULL;
 Image* Home::_circle_sm = NULL;
 
 void
-appVisibility(void* ctx, void* arg)
+appStatusChanged(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     Home* home = (Home*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
     home->_pages->setAppStatus(notification);
-}
-
-void
-appStarting(void* ctx, void* arg)
-{
-    ILOG_TRACE_F(ILX_HOMEAPP);
-    Home* home = (Home*) ctx;
-    Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-    home->_pages->setAppStarting(notification);
 }
 
 void
@@ -132,8 +123,7 @@ Home::requestAppList()
 {
     if (_compositor)
     {
-        _compositor->Listen(_compositor, Compositor::AppVisibilty, appVisibility, this);
-        _compositor->Listen(_compositor, Compositor::AppStarting, appStarting, this);
+        _compositor->Listen(_compositor, Compositor::AppStatus, appStatusChanged, this);
         _compositor->Listen(_compositor, Compositor::SendingAppList, receiveAppList, this);
         DaleDFB::comaCallComponent(_compositor, Compositor::GetAppList, NULL);
     }

@@ -59,15 +59,16 @@ void
 NumPages::setAppStatus(Compositor::VisibilityData notification)
 {
     ILOG_TRACE_W(ILX_NUMPAGES);
-    ILOG_DEBUG( ILX_NUMPAGES, "%s - %d - %d\n", notification.name, notification.pid, notification.multi);
     for (int i = 0; i < _items.size(); ++i)
     {
         if (_items[i]->text() == notification.name)
         {
-            if (notification.visible)
-                _items[i]->setAppVisible(1);
-            else
-                _items[i]->setAppVisible(0);
+            if (notification.status & Compositor::AppVisible)
+                _items[i]->setAppVisible(true);
+            else if (notification.status & Compositor::AppHidden)
+                _items[i]->setAppVisible(false);
+            else if (notification.status & Compositor::AppStarting)
+                _items[i]->appStarting();
         }
     }
 }

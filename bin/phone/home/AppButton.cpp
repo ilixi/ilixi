@@ -14,65 +14,57 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_HOMEAPPBUTTON, "ilixi/phone/Home/AppButton", "AppButton");
 
-AppButton::AppButton(const std::string& text, Widget* parent)
+PAppButton::PAppButton(const std::string& text, Widget* parent)
         : ToolButton(text, parent),
-          _appVisible(0)
+          _colorize(true)
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
-    _anim = new TweenAnimation();
-    _anim->setDuration(500);
-    _anim->setLoops(0);
-    _tween = new Tween(Tween::LINEAR, Tween::EASE_IN, 0.5, 1);
-    _anim->addTween(_tween);
-    _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &AppButton::updateIconGeometry));
+    _timer.sigExec.connect(sigc::mem_fun(this, &PAppButton::timerSlot));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &PAppButton::updateIconGeometry));
     setConstraints(MinimumConstraint, FixedConstraint);
     setDrawFrame(false);
     _textColor = stylist()->palette()->getGroup(FocusedState).text;
 }
 
-AppButton::~AppButton()
+PAppButton::~PAppButton()
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
-    delete _anim;
 }
 
 Size
-AppButton::preferredSize() const
+PAppButton::preferredSize() const
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
     return Size(150, 150);
 }
 
-bool
-AppButton::appVisible() const
-{
-    return _appVisible;
-}
-
 void
-AppButton::setAppVisible(bool visible)
+PAppButton::setAppVisible(bool visible)
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
-    _appVisible = visible;
-    _anim->stop();
-    if (_appVisible)
-        _textColor = stylist()->palette()->getGroup(DefaultState).text;
-    else
-        _textColor = stylist()->palette()->getGroup(DisabledState).text;
-
+    _timer.stop();
+    if (visible)
+        _textColor = Color(0, 255, 0);
     update();
 }
 
 void
-AppButton::appStarting()
+PAppButton::appStarting()
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
-    _anim->start();
+    _timer.start(400);
 }
 
 void
-AppButton::compose(const PaintEvent& event)
+PAppButton::appQuit()
+{
+    _timer.stop();
+    _textColor = stylist()->palette()->getGroup(DefaultState).text;
+    update();
+}
+
+void
+PAppButton::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
@@ -88,16 +80,19 @@ AppButton::compose(const PaintEvent& event)
 }
 
 void
-AppButton::updateIconGeometry()
+PAppButton::updateIconGeometry()
 {
     _iconPos = _icon->surfaceGeometry().topLeft();
 }
 
 void
-AppButton::tweenSlot()
+PAppButton::timerSlot()
 {
-    _textColor = stylist()->palette()->getGroup(DefaultState).text;
-    _textColor.setBrightness(_tween->value());
+    if (_colorize)
+        _textColor = Color(0, 0, 255);
+    else
+        _textColor = stylist()->palette()->getGroup(DefaultState).text;
+    _colorize = !_colorize;
     update();
 }
 

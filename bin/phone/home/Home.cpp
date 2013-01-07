@@ -33,43 +33,30 @@ namespace ilixi
 D_DEBUG_DOMAIN(ILX_HOMEAPP, "ilixi/phone/PHome", "PHome");
 
 void
-appVisibility(void* ctx, void* arg)
+appStatusChanged(void* ctx, void* arg)
 {
     ILOG_TRACE_F(ILX_HOMEAPP);
     PHome* home = (PHome*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
 
-    AppButton* button = NULL;
+    PAppButton* button = NULL;
     for (PHome::AppButtonVector::iterator it = home->_buttons.begin(); it != home->_buttons.end(); ++it)
     {
-        if (((AppButton*) *it)->text() == notification.name)
-            button = ((AppButton*) *it);
+        if (((PAppButton*) *it)->text() == notification.name)
+            button = ((PAppButton*) *it);
     }
 
     if (button)
     {
-        if (notification.visible)
+        if (notification.status & Compositor::AppVisible)
             button->setAppVisible(true);
-        else
+        else if (notification.status & Compositor::AppHidden)
             button->setAppVisible(false);
+        else if (notification.status & Compositor::AppStarting)
+            button->appStarting();
+        else if (notification.status & Compositor::AppQuit)
+            button->appQuit();
     }
-}
-
-void
-appStarting(void* ctx, void* arg)
-{
-    ILOG_TRACE_F(ILX_HOMEAPP);
-    PHome* home = (PHome*) ctx;
-    Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-    AppButton* button = NULL;
-    for (PHome::AppButtonVector::iterator it = home->_buttons.begin(); it != home->_buttons.end(); ++it)
-    {
-        if (((AppButton*) *it)->text() == notification.name)
-            button = ((AppButton*) *it);
-    }
-
-    if (button)
-        button->appStarting();
 }
 
 void
@@ -142,10 +129,11 @@ PHome::initButtons(const PHome::AppDataVector& dataVector)
     ILOG_TRACE_W(ILX_HOMEAPP);
     for (PHome::AppDataVector::const_iterator it = dataVector.begin(); it != dataVector.end(); ++it)
     {
-        AppButton* button = new AppButton(((Compositor::AppData) *it).name);
+        PAppButton* button = new PAppButton(((Compositor::AppData) *it).name);
         button->setToolButtonStyle(ToolButton::IconAboveText);
         button->setIcon(((Compositor::AppData) *it).icon, Size(96, 96));
         button->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PHome::runApp), button->text()));
+//        button->sigClicked.connect(sigc::mem_fun(button, &PAppButton::appStarting));
 
         _view->addItem(button);
         _buttons.push_back(button);
@@ -159,8 +147,7 @@ PHome::requestAppList()
     ILOG_TRACE_W(ILX_HOMEAPP);
     if (_compositor)
     {
-        _compositor->Listen(_compositor, Compositor::AppVisibilty, appVisibility, this);
-        _compositor->Listen(_compositor, Compositor::AppStarting, appStarting, this);
+        _compositor->Listen(_compositor, Compositor::AppStatus, appStatusChanged, this);
         _compositor->Listen(_compositor, Compositor::SendingAppList, receiveAppList, this);
         DaleDFB::comaCallComponent(_compositor, Compositor::GetAppList, NULL);
     }

@@ -56,6 +56,9 @@ public:
     signalAppStart(AppInstance* instance);
 
     void
+    signalAppQuit(AppInstance* instance);
+
+    void
     signalBack(bool showing);
 
     void

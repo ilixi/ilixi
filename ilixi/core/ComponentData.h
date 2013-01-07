@@ -88,16 +88,22 @@ typedef struct
     char icon[256]; //!< Path for icon.
 } AppData;
 
+enum AppStatusFlags {
+    AppHidden = 0x001,
+    AppVisible = 0x002,
+    AppStarting = 0x004,
+    AppQuit = 0x008,
+    AppMulti = 0x010
+};
+
 /*!
- * This structure contains data for Visibilty notifications.
- * e.g. client is notified when it is hidden.
+ * This structure contains data for application status notification.
  */
 typedef struct
 {
-    bool multi;     //!< True if application can have multiple instances.
-    bool visible;   //!< True if visible, false otherwise.
-    char name[64];  //!< Registered name of application.
-    pid_t pid;      //!< Target client PID.
+    AppStatusFlags status;  //!< True if visible, false otherwise.
+    char name[64];          //!< Registered name of application.
+    pid_t pid;              //!< Target, client PID.
 } VisibilityData;
 
 /*!
@@ -161,8 +167,7 @@ typedef enum
  */
 typedef enum
 {
-    AppStarting = 0,    //!< Sent when an application starts.
-    AppVisibilty,       //!< Sent when an application becomes hidden or visible.
+    AppStatus = 0,      //!< Sent if client application status is changed.
     BackKeyHidden,      //!< Sent if BACK key should become hidden.
     BackKeyVisible,     //!< Sent if BACK key should become visible.
     NotificationAck,    //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
