@@ -93,6 +93,11 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
 
     LineInput *li4 = new LineInput("Line input has some text...");
     vBox2->addWidget(li4);
+    li4->setDisabled();
+    vBox2->addWidget(new Spacer(Vertical));
+
+    LineInput *li5 = new LineInput("Line input has some text...");
+    vBox2->addWidget(li5);
 
     VBoxLayout* vBox3 = new VBoxLayout();
     tab->addPage(vBox3, "Bars and Sliders");
