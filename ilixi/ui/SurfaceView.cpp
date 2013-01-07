@@ -246,7 +246,7 @@ SurfaceView::renderSource(const PaintEvent& event)
         ILOG_TRACE_W(ILX_SURFACEVIEW);
 
         DFBSurfaceID surface_id;
-        _sourceSurface->GetID( _sourceSurface, &surface_id );
+        _sourceSurface->GetID(_sourceSurface, &surface_id);
         //D_INFO_LINE_MSG( "SURFEVT: renderSource id %d flip count %d", surface_id, _flipCount );
 
 #ifdef ILIXI_STEREO_OUTPUT
@@ -329,7 +329,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     if (visible())
     {
-        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
+        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 5, (event.update.y2 - event.update.y1) / vScale() + 5));
 
         AppBase::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
@@ -346,7 +346,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     } //else if (!(_svState & SV_SHOULD_BLOCK))
 
     DFBSurfaceID surface_id;
-    _sourceSurface->GetID( _sourceSurface, &surface_id );
+    _sourceSurface->GetID(_sourceSurface, &surface_id);
     //D_INFO_LINE_MSG( "SURFEVT: acknowledge id %d flip count %d", surface_id, event.flip_count );
     //D_INFO("id %d\n",surface_id);
     if (surface_id == AppBase::__instance->_updateID)
@@ -444,8 +444,11 @@ SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -469,8 +472,11 @@ SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -493,8 +499,11 @@ SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -517,8 +526,11 @@ SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
         event.step = pointerEvent.wheelStep;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
@@ -572,8 +584,11 @@ SurfaceView::enterEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -596,8 +611,11 @@ SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x * hScale();
-        event.cy = pointerEvent.y * vScale();
+        int x, y;
+        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+
+        event.cx = (pointerEvent.x - absX()) * hScale() + x;
+        event.cy = (pointerEvent.y - absY()) * vScale() + y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
