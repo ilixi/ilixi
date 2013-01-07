@@ -577,11 +577,13 @@ AppBase::handleEvents(int32_t timeout)
 
     bool wait = true;
 
-    if (timeout > 1000)
-        timeout = 1000;
+    if (timeout > 10000)
+        timeout = 10000;
 
-    if (timeout < 1)
+    if (timeout < 1) {
+        D_WARN( "timeout %d", timeout );
         timeout = 1;
+    }
 
     if (!_syncWithSurfaceEvents || _update)
     {
