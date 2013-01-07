@@ -684,6 +684,22 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 toggleLauncher(true); // show launcher
             return true;
 
+        case DIKS_PAUSE:
+            if (_osk && _osk->view()->visible())
+                toggleOSK(false); // show current application
+            else if(_currentApp) {
+                if (1||!_osk)
+                {
+                    DFBRectangle rect = {
+                        0, 0, 800, 30
+                    };
+                    showOSK( rect, _currentApp->pid() );
+                }
+                else
+                    toggleOSK(true); // show osk
+            }
+            return true;
+
         case DIKS_TAB:
             if (event.modifiers == DIMM_ALT)
             {
