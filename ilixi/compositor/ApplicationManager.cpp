@@ -443,7 +443,7 @@ ApplicationManager::initStartup()
     parseFolder(ILIXI_DATADIR"apps");
     usleep(10000);
     startApp("StatusBar");
-    usleep(10000);
+    usleep(100000);
     startApp("Home");
     for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
     {
