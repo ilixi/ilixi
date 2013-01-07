@@ -28,20 +28,24 @@
 #include <ui/VBoxLayout.h>
 #include <ilixiConfig.h>
 
+D_DEBUG_DOMAIN( ILX_OSK, "ilixi/osk/ILXOSK", "ILXOSK");
+
 ILXOSK::ILXOSK(int argc, char* argv[])
         : Application(&argc, &argv, OptDale),
           _bg(NULL),
           _keyboard(NULL)
 {
+    ILOG_TRACE_W(ILX_OSK);
     setBackgroundFilled(true);
     _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
     setMargin(10);
 
     setLayout(new VBoxLayout());
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &ILXOSK::updateOSKGeometry));
+    _helper = new OSKHelper();
+    addWidget(_helper);
 
-    _keyboard = new Keyboard(this);
+    _keyboard = new Keyboard(_helper, this);
 
     bool numpad = false;
     for (int i = 1; i < argc; i++)
@@ -59,15 +63,26 @@ ILXOSK::ILXOSK(int argc, char* argv[])
 
 ILXOSK::~ILXOSK()
 {
+    ILOG_TRACE_W(ILX_OSK);
+    delete _helper;
     delete _bg;
 }
 
 bool
 ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 {
+    ILOG_TRACE_W(ILX_OSK);
+    ILOG_DEBUG(ILX_OSK, " -> class: %x type: %x\n", event.clazz, event.type);
     switch (event.type)
     {
     case DWET_KEYDOWN:
+        ILOG_DEBUG(ILX_OSK, " -> key: %x modifier: %x\n", event.key_symbol, event.modifiers);
+        if ((event.modifiers & DIMM_CONTROL) && (event.key_symbol == DIKS_SPACE))
+        {
+            _keyboard->toggleHelper();
+            return true;
+        }
+
         return _keyboard->handleKeyPress(event.key_symbol);
 
     case DWET_KEYUP:
@@ -87,12 +102,6 @@ ILXOSK::compose(const PaintEvent& event)
     painter.begin(event);
     painter.stretchImage(_bg, 0, 0, width(), height());
     painter.end();
-}
-
-void
-ILXOSK::updateOSKGeometry()
-{
-    _keyboard->setGeometry(0, 0, width(), height());
 }
 
 int

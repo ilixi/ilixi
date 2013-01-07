@@ -29,6 +29,7 @@
 #include <lib/Timer.h>
 #include <libxml/tree.h>
 #include <core/DaleDFB.h>
+#include "Helper.h"
 
 namespace ilixi
 {
@@ -36,10 +37,13 @@ namespace ilixi
 class Keyboard : public Widget
 {
 public:
-    Keyboard(Widget* parent = 0);
+    Keyboard(OSKHelper* helper, Widget* parent = 0);
 
     virtual
     ~Keyboard();
+
+    void
+    toggleHelper();
 
     void
     setSymbolState(unsigned char state);
@@ -48,7 +52,10 @@ public:
     parseLayoutFile(const char* file);
 
     void
-    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers=0);
+    forwardKeyData(const uint32_t& ucs32, unsigned int modifiers = 0);
+
+    void
+    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers = 0);
 
     void
     setModifier(Key* modifier);
@@ -64,6 +71,8 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    bool _inputHelper;
+    OSKHelper* _helper;
     //! This font is shared by all keys.
     Font* _buttonFont;
     //! Compositor's osk component.
@@ -77,7 +86,7 @@ private:
     uint32_t _cycleCharacter;
     Timer _cycleTimer;
 
-    std::map<uint32_t,Key*> _cycleMap;
+    std::map<uint32_t, Key*> _cycleMap;
 
     Key*
     getKey(xmlNodePtr node);

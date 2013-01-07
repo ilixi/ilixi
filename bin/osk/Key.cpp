@@ -47,16 +47,10 @@ Key::Key(const std::string& id, Keyboard* keyboard, Widget* parent)
           _keyState(1),
           _keyboard(keyboard)
 {
-//    setInputMethod(PointerInput);
     setConstraints(MinimumConstraint, MinimumConstraint);
     setToolButtonStyle(TextOnly);
 
     sigClicked.connect(sigc::mem_fun(this, &Key::pressSlot));
-
-//    HBoxLayout *_box = new HBoxLayout();
-//    addChild(_box);
-//
-//    _box->addWidget(new Label("X"));
 }
 
 Key::~Key()

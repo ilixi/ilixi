@@ -45,7 +45,7 @@ public:
     enum KeyMode
     {
         Default = 0x001,    //!< Default key behavior.
-        Modifier = 0x002,   //!< Checkable modifier key will return back to previous state after key press, e.g. SHIFT on/off. A modifier can only have two states.
+        Modifier = 0x002, //!< Checkable modifier key will return back to previous state after key press, e.g. SHIFT on/off. A modifier can only have two states.
         Sticky = 0x004,     //!< Toggles key states.
         Special = 0x008,    //!< Key can symbol is set to a DIKS_XX.
         Cycle = 0x010       //!< Cycle through characters, e.g. for phone input.
@@ -126,6 +126,7 @@ private:
     Keyboard* _keyboard;
     //! extra label for cycle key
     std::string _cycleLabel;
+    //! This is added to cycle map in keyboard.
     uint32_t _cycleUCS;
 
     typedef std::vector<unsigned char> RollStateList;

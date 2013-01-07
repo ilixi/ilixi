@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,35 +21,46 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OSK_H_
-#define OSK_H_
+#ifndef ILIXI_OSKHELPER_H_
+#define ILIXI_OSKHELPER_H_
 
-#include <ui/Application.h>
-#include "Keyboard.h"
+#include <ui/ContainerBase.h>
+#include <lib/InputHelper.h>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-class ILXOSK : public Application
+class HBoxLayout;
+class Label;
+
+/*!
+ *
+ */
+class OSKHelper : public ContainerBase
 {
 public:
-    ILXOSK(int argc, char* argv[]);
+    OSKHelper(Widget* parent = 0);
 
     virtual
-    ~ILXOSK();
-
-    /*!
-     * This method gets window events first.
-     */
-    virtual bool
-    windowPreEventFilter(const DFBWindowEvent &event);
-
-private:
-    Image* _bg;
-    OSKHelper* _helper;
-    Keyboard* _keyboard;
+    ~OSKHelper();
 
     void
+    convert(uint32_t symbol);
+
+protected:
+    void
     compose(const PaintEvent& event);
+
+private:
+    Font* _font;
+    InputHelper* _helper;
+    Label* _text;
+    Label* _candidate;
+    std::string _buffer;
+
+    void
+    updateText();
 };
 
-#endif /* OSK_H_ */
+} /* namespace ilixi */
+#endif /* ILIXI_OSKHELPER_H_ */

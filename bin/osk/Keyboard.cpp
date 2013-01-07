@@ -22,6 +22,7 @@
  */
 
 #include "Keyboard.h"
+#include <ui/Label.h>
 #include <core/ComponentData.h>
 #include <core/Logger.h>
 #include <libxml/parser.h>
@@ -31,14 +32,17 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_KEYBOARD, "ilixi/osk/Keyboard", "Keyboard");
 
-Keyboard::Keyboard(Widget* parent)
+Keyboard::Keyboard(OSKHelper* helper, Widget* parent)
         : Widget(parent),
+          _inputHelper(false),
+          _helper(helper),
           _buttonFont(NULL),
           _oskComponent(NULL),
           _modifier(NULL),
           _cycleKey(NULL)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
+    setConstraints(ExpandingConstraint, ExpandingConstraint);
     setInputMethod(PointerInput);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
@@ -54,6 +58,14 @@ Keyboard::~Keyboard()
         _oskComponent->Release(_oskComponent);
 
     ILOG_TRACE_W(ILX_KEYBOARD);
+}
+
+void
+Keyboard::toggleHelper()
+{
+    ILOG_TRACE_W(ILX_KEYBOARD);
+    _inputHelper = !_inputHelper;
+    _helper->setVisible(_inputHelper);
 }
 
 void
@@ -119,6 +131,28 @@ Keyboard::parseLayoutFile(const char* file)
     ILOG_INFO(ILX_KEYBOARD, "Parsed layout file: %s\n", file);
     setSymbolState(1);
     return true;
+}
+
+void
+Keyboard::forwardKeyData(const uint32_t& ucs32, unsigned int modifiers)
+{
+    ILOG_TRACE_W(ILX_KEYBOARD);
+    ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32);
+
+    void *ptr;
+    DaleDFB::comaGetLocal(sizeof(uint32_t) * 2, &ptr);
+    uint32_t* key = (uint32_t*) ptr;
+    key[0] = ucs32;
+    key[1] = modifiers;
+
+    DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
+
+    if (_modifier && _modifier->symbolState() == 2 && !_cycleKey)
+    {
+        ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
+        setSymbolState(_modifier->getNextState());
+        _modifier = NULL;
+    }
 }
 
 void
@@ -223,39 +257,24 @@ Keyboard::handleCycleKey(Key* key)
         _cycleKey = NULL;
 }
 
-void
-Keyboard::handleCycleTimer()
-{
-    if (_cycleKey)
-    {
-        /* send cursor right to remove selection and continue with next letter */
-        std::vector<uint32_t> c;
-        c.push_back(DIKS_CURSOR_RIGHT);
-        forwardKeyData(c, DIMM_SHIFT);
-
-        if (_modifier)
-        {
-            ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
-            setSymbolState(_modifier->getNextState());
-            _modifier = NULL;
-        }
-
-        _cycleKey = NULL;
-    }
-}
-
 bool
 Keyboard::handleKeyPress(uint32_t symbol)
 {
+    if (_inputHelper)
+    {
+        _helper->convert(symbol);
+        return true;
+    }
+
     std::map<uint32_t, Key*>::iterator it = _cycleMap.find(symbol);
 
     if (it != _cycleMap.end())
     {
         Key *key = (*it).second;
-
         key->click();
         return true;
     }
+
     return false;
 }
 
@@ -304,6 +323,7 @@ Keyboard::getKey(xmlNodePtr node)
     xmlFree(modifier);
     xmlFree(constraint);
     xmlFree(repeatable);
+    xmlFree(cycle);
 
     xmlNodePtr element = node->children;
     while (element != NULL)
@@ -340,7 +360,6 @@ Keyboard::getKey(xmlNodePtr node)
             key->setRollStates((char*) rollStates);
             xmlFree(rollStates);
         }
-        // TODO icon etc..
         element = element->next;
     }
 
@@ -387,6 +406,10 @@ Keyboard::getRow(xmlNodePtr node)
 void
 Keyboard::release()
 {
+    for (unsigned int i = 0; i < _rows.size(); ++i)
+        removeChild(_rows[i]);
+    _rows.clear();
+    _cycleMap.clear();
 }
 
 void
@@ -415,6 +438,27 @@ Keyboard::updateKeyboardGeometry()
             _rows[i]->setNeighbours(_rows[i - 1]->_box, _rows[i + 1]->_box, _rows[i - 1], _rows[i + 1]);
         else
             _rows[i]->setNeighbours(_rows[i - 1]->_box, _rows[0]->_box, _rows[i - 1], _rows[0]);
+    }
+}
+
+void
+Keyboard::handleCycleTimer()
+{
+    if (_cycleKey)
+    {
+        /* send cursor right to remove selection and continue with next letter */
+        std::vector<uint32_t> c;
+        c.push_back(DIKS_CURSOR_RIGHT);
+        forwardKeyData(c, DIMM_SHIFT);
+
+        if (_modifier)
+        {
+            ILOG_DEBUG(ILX_KEYBOARD, " -> unset modifier\n");
+            setSymbolState(_modifier->getNextState());
+            _modifier = NULL;
+        }
+
+        _cycleKey = NULL;
     }
 }
 

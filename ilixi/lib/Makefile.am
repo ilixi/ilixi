@@ -9,6 +9,8 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							Easing.cpp \
 							FileSystem.cpp \
 							FPSCalculator.cpp \
+							InputHelper.cpp \
+							InputHelperJP.cpp \
 							Thread.cpp \
 							Timer.cpp \
 							Tween.cpp \
@@ -22,6 +24,8 @@ ilixi_include_HEADERS	=	Animation.h \
 							Easing.h \
 							FileSystem.h \
 							FPSCalculator.h \
+							InputHelper.h \
+							InputHelperJP.h \
 							Thread.h \
 							Timer.h \
 							Tween.h \

@@ -1,5 +1,5 @@
 /*
- Copyright 2010, 2011 Tarik Sekmen.
+ Copyright 2010-2012 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -21,35 +21,35 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OSK_H_
-#define OSK_H_
+#ifndef ILIXI_INPUTHELPERJP_H_
+#define ILIXI_INPUTHELPERJP_H_
 
-#include <ui/Application.h>
-#include "Keyboard.h"
+#include <lib/InputHelper.h>
+#include <map>
 
-using namespace ilixi;
+namespace ilixi
+{
 
-class ILXOSK : public Application
+/*!
+ *
+ */
+class InputHelperJP : public ilixi::InputHelper
 {
 public:
-    ILXOSK(int argc, char* argv[]);
+    InputHelperJP();
 
     virtual
-    ~ILXOSK();
-
-    /*!
-     * This method gets window events first.
-     */
-    virtual bool
-    windowPreEventFilter(const DFBWindowEvent &event);
+    ~InputHelperJP();
 
 private:
-    Image* _bg;
-    OSKHelper* _helper;
-    Keyboard* _keyboard;
+    std::map<std::string, std::string> _hiraganaMap;
+
+    virtual bool
+    convert(uint32_t symbol);
 
     void
-    compose(const PaintEvent& event);
+    initHiraganaMap();
 };
 
-#endif /* OSK_H_ */
+} /* namespace ilixi */
+#endif /* ILIXI_INPUTHELPERJP_H_ */

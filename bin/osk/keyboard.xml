@@ -21,7 +21,7 @@
         <key id="N3">
             <symbol states="1, 2, 3">3</symbol>
             <symbol states="4">=</symbol>
-            <symbol states="5">❤</symbol>
+            <symbol states="5">♥</symbol>
         </key>
         
         <key id="N4">
@@ -221,7 +221,7 @@
         <key id="l">
             <symbol states="1">l</symbol>
             <symbol states="2">L</symbol>
-            <symbol states="3">∑</symbol>
+            <symbol states="3">Σ</symbol>
             <symbol states="4">©</symbol>
             <symbol states="5">X-(</symbol>
         </key>
