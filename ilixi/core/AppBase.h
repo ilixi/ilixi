@@ -174,11 +174,16 @@ private:
     unsigned int _updateFlipCount;
     long long _updateDiff;
     long long _updateTime;
+    long long _updateDisable;
+
     void
     accountSurfaceEvent( const DFBSurfaceEvent& event,
                          long long              lastTime );
     void
     updateTimeout();
+
+    void
+    updateFromWindow();
 
 
     void
@@ -299,6 +304,8 @@ private:
 
 protected:
     bool _syncWithSurfaceEvents;
+
+    void disableSurfaceEventSync( long long micros );
 };
 }
 #endif /* ILIXI_APPBASE_H_ */

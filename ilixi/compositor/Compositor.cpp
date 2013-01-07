@@ -142,6 +142,8 @@ ILXCompositor::showInstance(AppInstance* instance)
         _compComp->signalBack(true);
     else
         _compComp->signalBack(false);
+
+    disableSurfaceEventSync( 500000 );
 }
 
 void
@@ -175,6 +177,8 @@ ILXCompositor::toggleSwitcher(bool show)
         if (_currentApp)
             _currentApp->view()->setWindowFocus();
     }
+
+    disableSurfaceEventSync( 500000 );
 }
 
 void
@@ -235,6 +239,8 @@ ILXCompositor::toggleOSK(bool show)
             }
         }
     }
+
+    disableSurfaceEventSync( 500000 );
 }
 
 void
@@ -258,6 +264,8 @@ ILXCompositor::showSound(bool show)
             showInstance(_mixer);
     } else
         showInstance(_previousApp);
+
+    disableSurfaceEventSync( 500000 );
 }
 
 void
@@ -271,6 +279,8 @@ ILXCompositor::showDash(bool show)
             showInstance(_dash);
     } else
         showInstance(_previousApp);
+
+    disableSurfaceEventSync( 500000 );
 }
 
 void

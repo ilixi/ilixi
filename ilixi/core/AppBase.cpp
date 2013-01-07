@@ -58,6 +58,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
           _updateFlipCount(0),
           _updateDiff(0),
           _updateTime(0),
+          _updateDisable(0),
           _syncWithSurfaceEvents(false)
 {
     if (__instance)
@@ -86,7 +87,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     initEventBuffer();
 
     _update_timer.sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
-    _update_timer.start(200);
+    _update_timer.start(100);
 }
 
 AppBase::~AppBase()
@@ -529,7 +530,23 @@ AppBase::updateTimeout()
 {
     ILOG_TRACE_F(ILX_APPBASE);
 
-    _update = true;
+    _update     = true;
+    _updateDiff = 0;
+}
+
+void
+AppBase::updateFromWindow()
+{
+    ILOG_TRACE_F(ILX_APPBASE);
+
+    long long current_time = direct_clock_get_time( DIRECT_CLOCK_MONOTONIC );
+
+    //D_INFO("time %16lld   disable %16lld\n", current_time, _updateDisable );
+
+    if (!_updateFromSurfaceView || current_time < _updateDisable) {
+        _update     = true;
+        _updateDiff = 0;
+    }
 }
 
 void
@@ -836,6 +853,14 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
 
     if (!windowPreEventFilter((const DFBWindowEvent&) we))
         activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
+}
+
+void
+AppBase::disableSurfaceEventSync( long long micros )
+{
+    //D_INFO("micros %16lld\n", micros );
+    _updateDisable = direct_clock_get_time( DIRECT_CLOCK_MONOTONIC ) + micros;
+    //D_INFO("    ->   disable %16lld\n", _updateDisable );
 }
 
 } /* namespace ilixi */
