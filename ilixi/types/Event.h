@@ -53,6 +53,15 @@ struct KeyEvent
     {
     }
 
+    KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask mask)
+            : eventType(type),
+              keySymbol(symbol),
+              keyID(DIKI_UNKNOWN),
+              modifierMask(mask),
+              lockState(DFBInputDeviceLockState(0))
+    {
+    }
+
     KeyEvent(KeyEventType type, DFBWindowEvent event)
             : eventType(type),
               keySymbol(event.key_symbol),

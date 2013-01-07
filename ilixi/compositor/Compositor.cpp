@@ -150,7 +150,7 @@ void
 ILXCompositor::toggleLauncher(bool show)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
-    if (show)
+    if (show && _home)
         showInstance(_home);
     else if (_previousApp)
         showInstance(_previousApp);
@@ -246,9 +246,21 @@ ILXCompositor::toggleOSK(bool show)
 void
 ILXCompositor::sendOSKInput(uint32_t key, unsigned int mask)
 {
-    KeyEvent k = KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key);
-    k.modifierMask = (DFBInputDeviceModifierMask) mask;
-    _currentApp->view()->consumeKeyEvent(k);
+    if (mask == DIMM_SHIFT)
+    {
+        _currentApp->view()->consumeKeyEvent(KeyEvent(KeyDownEvent, DIKS_SHIFT, DIMM_SHIFT));
+        _currentApp->view()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key));
+        _currentApp->view()->consumeKeyEvent(KeyEvent(KeyUpEvent, (DFBInputDeviceKeySymbol) key));
+        _currentApp->view()->consumeKeyEvent(KeyEvent(KeyUpEvent, DIKS_SHIFT, DIMM_SHIFT));
+    } else
+    {
+        KeyEvent k = KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) key);
+        k.modifierMask = (DFBInputDeviceModifierMask) mask;
+        _currentApp->view()->consumeKeyEvent(k);
+        k.eventType = KeyUpEvent;
+        _currentApp->view()->consumeKeyEvent(k);
+    }
+
     if (key == DIKS_ENTER)
         toggleOSK(false);
 }

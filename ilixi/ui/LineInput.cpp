@@ -323,18 +323,10 @@ LineInput::pointerMotionEvent(const PointerEvent& mouseEvent)
 void
 LineInput::keyDownEvent(const KeyEvent& keyEvent)
 {
-//    _cursorTimer.stop();
     switch (keyEvent.keySymbol)
     {
     case DIKS_CURSOR_LEFT:
     case DIKS_CURSOR_UP:
-        if (keyEvent.modifierMask & DIMM_SHIFT)
-        {
-            if (!_selecting)
-                startSelection();
-        } else
-            stopSelection();
-
         if (_cursorIndex)
             sigCursorMoved(_cursorIndex, --_cursorIndex);
         else
@@ -343,13 +335,6 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
     case DIKS_CURSOR_RIGHT:
     case DIKS_CURSOR_DOWN:
-        if (keyEvent.modifierMask & DIMM_SHIFT)
-        {
-            if (!_selecting)
-                startSelection();
-        } else
-            stopSelection();
-
         if (_cursorIndex < text().length())
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
         else
@@ -358,26 +343,12 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
     case DIKS_PAGE_UP:
     case DIKS_HOME:
-        if (keyEvent.modifierMask & DIMM_SHIFT)
-        {
-            if (!_selecting)
-                startSelection();
-        } else
-            stopSelection();
-
         sigCursorMoved(_cursorIndex, 0);
         _cursorIndex = 0;
         break;
 
     case DIKS_PAGE_DOWN:
     case DIKS_END:
-        if (keyEvent.modifierMask & DIMM_SHIFT)
-        {
-            if (!_selecting)
-                startSelection();
-        } else
-            stopSelection();
-
         sigCursorMoved(_cursorIndex, text().length());
         _cursorIndex = text().length();
         break;
@@ -428,6 +399,11 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
         sigTextEntered(text());
         break;
 
+    case DIKS_SHIFT:
+        if (!_selecting)
+            startSelection();
+        break;
+
     default:
         _selecting = false;
         if (maxLength() > 0 && text().length() == maxLength())
@@ -435,10 +411,10 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_selection.isNull())
         {
-            ILOG_DEBUG( ILX_LINEINPUT, "Append U+%04X at %d\n", keyEvent.keySymbol, _cursorIndex);
             _layout.insert(_cursorIndex, (wchar_t) keyEvent.keySymbol);
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
             sigTextEdited();
+            ILOG_DEBUG( ILX_LINEINPUT, "Append U+%04X at %d\n", keyEvent.keySymbol, _cursorIndex);
         } else
         {
             int pos1 = std::min(_selectedIndex, _cursorIndex);
@@ -448,6 +424,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
             sigCursorMoved(_cursorIndex, pos1 + 1);
             sigTextEdited();
             _cursorIndex = pos1 + 1;
+            ILOG_DEBUG( ILX_LINEINPUT, "Replaced U+%04X at %d\n", keyEvent.keySymbol, pos1);
         }
         break;
     }
@@ -460,7 +437,6 @@ void
 LineInput::keyUpEvent(const KeyEvent& keyEvent)
 {
     _cursorOn = true;
-//    _cursorTimer.start(500);
     update();
 }
 
