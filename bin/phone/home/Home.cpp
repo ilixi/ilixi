@@ -101,7 +101,6 @@ PHome::PHome(int argc, char* argv[])
 {
     ILOG_TRACE_W(ILX_HOMEAPP);
     setBackgroundFilled(true);
-//    setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
 
     setMargin(10);
     setLayout(new HBoxLayout());
@@ -145,7 +144,6 @@ PHome::initButtons(const PHome::AppDataVector& dataVector)
     {
         AppButton* button = new AppButton(((Compositor::AppData) *it).name);
         button->setToolButtonStyle(ToolButton::IconAboveText);
-//        button->setDrawFrame(false);
         button->setIcon(((Compositor::AppData) *it).icon, Size(96, 96));
         button->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(this, &PHome::runApp), button->text()));
 

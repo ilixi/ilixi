@@ -42,6 +42,7 @@ protected:
 private:
     bool _appVisible;
     Point _iconPos;
+    Color _textColor;
 
     TweenAnimation* _anim;
     Tween* _tween;

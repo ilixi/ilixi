@@ -22,12 +22,13 @@ AppButton::AppButton(const std::string& text, Widget* parent)
     _anim = new TweenAnimation();
     _anim->setDuration(500);
     _anim->setLoops(0);
-    _tween = new Tween(Tween::LINEAR, Tween::EASE_IN, 0, 20);
+    _tween = new Tween(Tween::LINEAR, Tween::EASE_IN, 0.5, 1);
     _anim->addTween(_tween);
     _anim->sigExec.connect(sigc::mem_fun(this, &AppButton::tweenSlot));
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppButton::updateIconGeometry));
     setConstraints(MinimumConstraint, FixedConstraint);
     setDrawFrame(false);
+    _textColor = stylist()->palette()->getGroup(FocusedState).text;
 }
 
 AppButton::~AppButton()
@@ -54,13 +55,13 @@ AppButton::setAppVisible(bool visible)
 {
     ILOG_TRACE_W(ILX_HOMEAPPBUTTON);
     _appVisible = visible;
+    _anim->stop();
     if (_appVisible)
-    {
-        _anim->stop();
-        _icon->moveTo((width() - 96) / 2, stylist()->defaultParameter(StyleHint::ToolButtonTop) + 1);
-        _icon->setSize(96, 96);
-        update();
-    }
+        _textColor = stylist()->palette()->getGroup(DefaultState).text;
+    else
+        _textColor = stylist()->palette()->getGroup(DisabledState).text;
+
+    update();
 }
 
 void
@@ -73,14 +74,17 @@ AppButton::appStarting()
 void
 AppButton::compose(const PaintEvent& event)
 {
+    Painter p(this);
+    p.begin(event);
     if (state() & FocusedState)
     {
-        Painter p(this);
-        p.begin(event);
         p.setBrush(stylist()->palette()->focus);
         p.fillRectangle(0, 0, width(), height());
     }
-    ToolButton::compose(event);
+
+    p.setFont(*font());
+    p.setBrush(_textColor);
+    p.drawLayout(layout(), 0, 0);
 }
 
 void
@@ -92,21 +96,8 @@ AppButton::updateIconGeometry()
 void
 AppButton::tweenSlot()
 {
-    int temp;
-    int delta;
-    if (_tween->value() <= 10)
-    {
-        delta = -_tween->value() / 2;
-        temp = 96 + _tween->value();
-    } else if (_tween->value() <= 20)
-    {
-        delta = _tween->value() / 2 - 10;
-        temp = 116 - _tween->value();
-    }
-
-    _icon->moveTo(_iconPos.x() + delta, _iconPos.y() + delta);
-    _icon->setSize(temp, temp);
-
+    _textColor = stylist()->palette()->getGroup(DefaultState).text;
+    _textColor.setBrightness(_tween->value());
     update();
 }
 
