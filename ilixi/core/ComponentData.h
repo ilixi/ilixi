@@ -88,13 +88,13 @@ typedef struct
     char icon[256]; //!< Path for icon.
 } AppData;
 
-enum AppStatusFlags {
+typedef enum {
     AppHidden = 0x001,
     AppVisible = 0x002,
     AppStarting = 0x004,
     AppQuit = 0x008,
     AppMulti = 0x010
-};
+} AppStatusFlags;
 
 /*!
  * This structure contains data for application status notification.
