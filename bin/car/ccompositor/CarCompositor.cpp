@@ -16,7 +16,6 @@ namespace ilixi
 CarCompositor::CarCompositor(int argc, char* argv[])
         : ILXCompositor(argc, argv)
 {
-    setPaletteFromFile(ILIXI_DATADIR"car/statusbar/palette.xml");
     appMan()->parseFolder(ILIXI_DATADIR"car/apps");
     setSwitcher(new HorizontalSwitcher(this));
 

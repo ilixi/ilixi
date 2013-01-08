@@ -32,7 +32,6 @@ namespace ilixi
 PhoneCompositor::PhoneCompositor(int argc, char* argv[])
         : ILXCompositor(argc, argv)
 {
-    setPaletteFromFile(ILIXI_DATADIR"phone/statusbar/palette.xml");
     appMan()->parseFolder(ILIXI_DATADIR"phone/apps");
     setSwitcher(new CarouselSwitcher(this));
 
