@@ -49,6 +49,7 @@ bin/home/ilixi_home
 bin/monitor/ilixi_monitor
 bin/navigation/ilixi_nav
 bin/osk/ilixi_osk
+bin/phone/dialer/ilixi_dialer
 bin/phone/home/ilixi_phome
 bin/phone/pcompositor/ilixi_pcomp
 bin/phone/statusbar/ilixi_pstatus

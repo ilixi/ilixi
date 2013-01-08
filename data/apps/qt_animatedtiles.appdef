@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
-	<name>Affine</name>
+	<name>AnimatedTiles</name>
 	<author>2012 Digia Plc and/or its subsidiary(-ies)</author>
 	<licence>GPLv2.1</licence>
 	<category>Qt</category>

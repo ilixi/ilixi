@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>TextEdit</name>
+	<author>2012 Digia Plc and/or its subsidiary(-ies)</author>
+	<licence>GPLv2.1</licence>
+	<category>Qt</category>
+	<version>1.0</version>
+	<icon>@DATADIR:qt.png</icon>
+	<exec>$QT_PATH$/demos/textedit/textedit</exec>
+	<args>-qws -display directfb --dfb:force-windowed</args>
+	<flags></flags>
+	<deps>DEP_MOUSE</deps>
+</app>

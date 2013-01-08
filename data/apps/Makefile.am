@@ -31,6 +31,7 @@ miscdata_DATA 	=	\
 					twitter.appdef \
 					windows.appdef \
 					youtube.appdef \
-					qt_affine.appdef
+					qt_animatedtiles.appdef \
+					qt_textedit.appdef
 					
 EXTRA_DIST 		= 	$(miscdata_DATA)
