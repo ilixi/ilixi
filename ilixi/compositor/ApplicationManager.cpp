@@ -194,11 +194,15 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 
     if (sigaction(SIGCHLD, &_act, NULL) == -1)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+
+    _monitor = new MemoryMonitor(this, _compositor->settings.memCritical, _compositor->settings.memLow, _compositor->settings.pgCritical, _compositor->settings.pgLow);
+    _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
 }
 
 ApplicationManager::~ApplicationManager()
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
+    delete _monitor;
     __appMan = NULL;
     stopAll();
 
@@ -888,6 +892,58 @@ ApplicationManager::searchExec(const char* exec, std::string& execPath)
         free(pathCp);
     }
     return false;
+}
+
+void
+ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
+{
+    switch (state)
+    {
+    case MemoryMonitor::Critical:
+        {
+            // kill a non-system app.
+            ILOG_WARNING(ILX_APPLICATIONMANAGER, "MemoryMonitor reports Critical.\n");
+            AppInstance* instance;
+            AppInfo* info;
+            for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
+            {
+                instance = (AppInstance*) *it;
+                info = instance->appInfo();
+                if (!(info->appFlags() & APP_SYSTEM))
+                {
+                    ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
+                    stopApplication(instance->pid());
+                }
+            }
+        }
+        break;
+
+    case MemoryMonitor::Low:
+        {
+            ILOG_WARNING(ILX_APPLICATIONMANAGER, "MemoryMonitor reports Low.\n");
+            // kill an invisible and non-system app.
+            AppInstance* instance;
+            AppInfo* info;
+            for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
+            {
+                instance = (AppInstance*) *it;
+                info = instance->appInfo();
+                if (!instance->view()->visible() && !(info->appFlags() & APP_SYSTEM))
+                {
+                    ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
+                    stopApplication(instance->pid());
+                }
+            }
+        }
+        break;
+
+    case MemoryMonitor::Normal:
+        ILOG_INFO(ILX_APPLICATIONMANAGER, "MemoryMonitor reports Normal.\n");
+        break;
+
+    default:
+        break;
+    }
 }
 
 } /* namespace ilixi */

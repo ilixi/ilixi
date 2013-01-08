@@ -12,6 +12,7 @@ libilixi_compositor_la_SOURCES 	= 	AppCompositor.cpp \
 									AppView.cpp \
 									Compositor.cpp \
 									CompositorComponent.cpp \
+									MemoryMonitor.cpp \
 									Notification.cpp \
 									NotificationManager.cpp \
 									OSKComponent.cpp \
@@ -27,8 +28,10 @@ nobase_ilixi_include_HEADERS 	= 	AppCompositor.h \
 									AppView.h \
 									Compositor.h \
 									CompositorComponent.h \
+									MemoryMonitor.h \
 									Notification.h \
 									NotificationManager.h \
 									OSKComponent.h \
 									SoundComponent.h \
 									Switcher.h
+		

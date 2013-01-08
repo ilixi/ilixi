@@ -26,6 +26,7 @@
 
 #include <compositor/AppInfo.h>
 #include <compositor/AppInstance.h>
+#include <compositor/MemoryMonitor.h>
 #include <sys/types.h>
 
 namespace ilixi
@@ -146,6 +147,8 @@ private:
     ISaWManManager *_manager;
     SaWManCallbacks _callbacks;
 
+    MemoryMonitor* _monitor;
+
     pthread_mutex_t _mutex;
     struct sigaction _act;
 
@@ -161,6 +164,9 @@ private:
 
     bool
     searchExec(const char* exec, std::string& path);
+
+    void
+    handleMemoryState(MemoryMonitor::MemoryState state);
 
     friend void
     sigchild_handler(int sig, siginfo_t *siginfo, void *context);
@@ -193,6 +199,8 @@ private:
     friend DirectResult
     window_restack(void *context, SaWManWindowHandle handle,
                    SaWManWindowHandle relative, SaWManWindowRelation relation);
+
+    friend class MemoryMonitor;
 };
 
 } /* namespace ilixi */
