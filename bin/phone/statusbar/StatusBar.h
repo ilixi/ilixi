@@ -84,6 +84,9 @@ private:
 
     friend void
     volumeListener(void* ctx, void* arg);
+
+    friend void
+    appStatusChanged(void* ctx, void* arg);
 };
 
 }

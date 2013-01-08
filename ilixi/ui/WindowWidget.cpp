@@ -366,15 +366,12 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     case DWET_GOTFOCUS:
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_GOTFOCUS\n");
-        _eventManager->selectNext(this);
+        if (!_eventManager->focusedWidget())
+            _eventManager->selectNext(this);
         return true;
 
     case DWET_LOSTFOCUS:
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_LOSTFOCUS\n");
-        if (_eventManager->focusedWidget() && (_eventManager->focusedWidget()->inputMethod() & OSKInput))
-            return true;
-        else
-            _eventManager->clear();
         return true;
 
     case DWET_CLOSE: // handle Close, can be signalled by viewport manager.

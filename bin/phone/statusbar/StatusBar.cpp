@@ -49,6 +49,14 @@ volumeListener(void* ctx, void* arg)
         bar->_vol->setState(2);
 }
 
+void
+appStatusChanged(void* ctx, void* arg)
+{
+    PStatusBar* home = (PStatusBar*) ctx;
+    Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
+    home->eventManager()->setFocusedWidget(NULL);
+}
+
 //*****************************************************************
 
 PStatusBar::PStatusBar(int argc, char* argv[])
@@ -164,6 +172,8 @@ PStatusBar::onShow()
 
     DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
     DaleDFB::comaGetComponent("Compositor", &_compComponent);
+    if (_compComponent)
+        _compComponent->Listen(_compComponent, Compositor::AppStatus, appStatusChanged, this);
 
     if (_soundComponent)
         _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged, volumeListener, this);
