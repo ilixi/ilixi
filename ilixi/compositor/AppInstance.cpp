@@ -48,8 +48,7 @@ AppInstance::~AppInstance()
 bool
 AppInstance::hasWindow(const SaWManWindowHandle handle)
 {
-    for (AppWindowList::iterator it = _windows.begin(); it != _windows.end();
-            ++it)
+    for (AppWindowList::iterator it = _windows.begin(); it != _windows.end(); ++it)
     {
         if (*it == handle)
             return true;
@@ -69,8 +68,7 @@ void
 AppInstance::removeWindow(SaWManWindowHandle handle)
 {
     pthread_mutex_lock(&_mutex);
-    for (AppWindowList::iterator it = _windows.begin(); it != _windows.end();
-            ++it)
+    for (AppWindowList::iterator it = _windows.begin(); it != _windows.end(); ++it)
     {
         if (*it == handle)
         {

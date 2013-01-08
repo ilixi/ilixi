@@ -238,12 +238,17 @@ private:
         CompositorSettings()
                 : clickFocus(true),
                   animations(true),
-                  hideAnimProps(AppView::AnimatedProperty(AppView::Opacity | AppView::Zoom)),
-                  showAnimProps(AppView::Opacity),
+                  hideAnimProps(AppView::None),
+                  showAnimProps(AppView::None),
+                  durationSlide(300),
                   durationShow(300),
                   durationHide(500),
                   filter(),
-                  notificationTimeout(5000)
+                  notificationTimeout(5000),
+                  memCritical(0.2),
+                  memLow(0.5),
+                  pgCritical(30),
+                  pgLow(10)
         {
         }
 
@@ -251,10 +256,15 @@ private:
         bool animations;
         AppView::AnimatedProperty hideAnimProps;    //!< Animated properties for hiding application.
         AppView::AnimatedProperty showAnimProps;    //!< Animated properties for visible application.
+        unsigned int durationSlide;
         unsigned int durationShow;                  //!< Animation duration for show.
         unsigned int durationHide;                  //!< Animation duration for hide.
         DFBConvolutionFilter filter;                //!< Convolution filter.
         unsigned int notificationTimeout;           //!< Notification will hide itself after timeout(ms).
+        float memCritical;
+        float memLow;
+        long unsigned int pgCritical;
+        long unsigned int pgLow;
     };
 
     //! This property is used by compositor components.
@@ -305,6 +315,9 @@ private:
 
     virtual bool
     windowCustomEventFilter(const DFBWindowEvent& event);
+
+    bool
+    parseSettings();
 };
 
 } /* namespace ilixi */

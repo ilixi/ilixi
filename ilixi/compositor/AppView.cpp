@@ -281,7 +281,7 @@ AppView::slideTo(int tx, int ty)
     if (anim)
     {
         ILOG_DEBUG(ILX_APPVIEW, " -> props: %x\n", _animProps);
-        _propAnim.setDuration(300);
+        _propAnim.setDuration(_compositor->settings.durationSlide);
         _propAnim.start();
     }
 }

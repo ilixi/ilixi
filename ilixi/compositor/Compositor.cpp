@@ -28,6 +28,10 @@
 #include <lib/Notify.h>
 #include <ui/Label.h>
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/catalog.h>
+
 #include <sigc++/bind.h>
 #include <sstream>
 
@@ -58,6 +62,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
     setenv("LITE_WINDOW_DOUBLEBUFFER", "1", 0);
     setenv("LITE_NO_THEME", "1", 0);
 
+    parseSettings();
     _soundComp = new SoundComponent();
     _compComp = new CompositorComponent(this);
     _oskComp = new OSKComponent(this);
@@ -143,7 +148,7 @@ ILXCompositor::showInstance(AppInstance* instance)
     else
         _compComp->signalBack(false);
 
-    disableSurfaceEventSync( 500000 );
+    disableSurfaceEventSync(500000);
 }
 
 void
@@ -178,7 +183,7 @@ ILXCompositor::toggleSwitcher(bool show)
             _currentApp->view()->setWindowFocus();
     }
 
-    disableSurfaceEventSync( 500000 );
+    disableSurfaceEventSync(500000);
 }
 
 void
@@ -240,7 +245,7 @@ ILXCompositor::toggleOSK(bool show)
         }
     }
 
-    disableSurfaceEventSync( 500000 );
+    disableSurfaceEventSync(500000);
 }
 
 void
@@ -277,7 +282,7 @@ ILXCompositor::showSound(bool show)
     } else
         showInstance(_previousApp);
 
-    disableSurfaceEventSync( 500000 );
+    disableSurfaceEventSync(500000);
 }
 
 void
@@ -292,7 +297,7 @@ ILXCompositor::showDash(bool show)
     } else
         showInstance(_previousApp);
 
-    disableSurfaceEventSync( 500000 );
+    disableSurfaceEventSync(500000);
 }
 
 void
@@ -715,15 +720,13 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
         case DIKS_PAUSE:
             if (_osk && _osk->view()->visible())
                 toggleOSK(false); // show current application
-            else if(_currentApp) {
-                if (1||!_osk)
+            else if (_currentApp)
+            {
+                if (1 || !_osk)
                 {
-                    DFBRectangle rect = {
-                        0, 0, 800, 30
-                    };
-                    showOSK( rect, _currentApp->pid() );
-                }
-                else
+                    DFBRectangle rect = { 0, 0, 800, 30 };
+                    showOSK(rect, _currentApp->pid());
+                } else
                     toggleOSK(true); // show osk
             }
             return true;
@@ -825,6 +828,150 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
         break;
     }
     return false;
+}
+
+bool
+ILXCompositor::parseSettings()
+{
+    xmlDocPtr doc;
+    xmlParserCtxtPtr ctxt;
+
+    ctxt = xmlNewParserCtxt();
+    if (ctxt == NULL)
+    {
+        ILOG_ERROR(ILX_COMPOSITOR, "Failed to allocate parser context\n");
+        return false;
+    }
+
+    doc = xmlCtxtReadFile(ctxt, ILIXI_DATADIR"compositor.xml", NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+
+    if (doc == NULL)
+    {
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_COMPOSITOR, "Failed to parse compositor settings!\n");
+        return false;
+    }
+
+    if (ctxt->valid == 0)
+    {
+        xmlFreeDoc(doc);
+        xmlFreeParserCtxt(ctxt);
+        ILOG_ERROR(ILX_COMPOSITOR, "Failed to validate compositor settings!\n");
+        return false;
+    }
+
+    xmlNodePtr root = xmlDocGetRootElement(doc);
+    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr element;
+    while (group != NULL)
+    {
+        ILOG_DEBUG(ILX_COMPOSITOR, " -> group: %s\n", (char*)group->name);
+        if (xmlStrcmp(group->name, (xmlChar*) "mem_monitor") == 0)
+        {
+            element = group->children;
+            while (element != NULL)
+            {
+                ILOG_DEBUG(ILX_COMPOSITOR, "   -> element: %s\n", (char*)element->name);
+                if (xmlStrcmp(element->name, (xmlChar*) "memStates") == 0)
+                {
+                    xmlChar* low = xmlNodeGetContent(element->children);
+                    xmlChar* crit = xmlNodeGetContent(element->children->next);
+                    settings.memLow = atoi((char*) low);
+                    settings.memCritical = atoi((char*) crit);
+                    xmlFree(low);
+                    xmlFree(crit);
+                } else if (xmlStrcmp(element->name, (xmlChar*) "page_faults") == 0)
+                {
+                    xmlChar* low = xmlNodeGetContent(element->children);
+                    xmlChar* crit = xmlNodeGetContent(element->children->next);
+                    settings.pgLow = atoi((char*) low);
+                    settings.pgCritical = atoi((char*) crit);
+                    xmlFree(low);
+                    xmlFree(crit);
+                }
+                element = element->next;
+            }
+        } else if (xmlStrcmp(group->name, (xmlChar*) "animations") == 0)
+        {
+            element = group->children;
+            xmlChar* enabled = xmlGetProp(group, (xmlChar*) "enabled");
+            if (enabled)
+            {
+                settings.animations = true;
+                while (element != NULL)
+                {
+                    ILOG_DEBUG(ILX_COMPOSITOR, "   -> element: %s\n", (char*)element->name);
+                    if (xmlStrcmp(element->name, (xmlChar*) "slide") == 0)
+                    {
+                        xmlChar* duration = xmlNodeGetContent(element->children);
+                        settings.durationSlide = atoi((char*) duration);
+
+                        ILOG_DEBUG(ILX_COMPOSITOR, "    -> duration: %s\n", (char*) duration);
+
+                        xmlFree(duration);
+                    } else if (xmlStrcmp(element->name, (xmlChar*) "show") == 0)
+                    {
+                        xmlChar* zoom = xmlNodeGetContent(element->children);
+                        xmlChar* opacity = xmlNodeGetContent(element->children->next);
+                        xmlChar* duration = xmlNodeGetContent(element->children->next->next);
+
+                        if (atoi((char*) zoom))
+                            settings.showAnimProps = AppView::AnimatedProperty(settings.showAnimProps | AppView::Zoom);
+                        if (atoi((char*) opacity))
+                            settings.showAnimProps = AppView::AnimatedProperty(settings.showAnimProps | AppView::Opacity);
+                        settings.durationShow = atoi((char*) duration);
+
+                        ILOG_DEBUG(ILX_COMPOSITOR, "    -> zoom: %s opacity: %s duration: %s\n", (char*) zoom, (char*) opacity, (char*) duration);
+                        ILOG_DEBUG(ILX_COMPOSITOR, "    -> AnimProps: %x\n", settings.showAnimProps);
+
+                        xmlFree(zoom);
+                        xmlFree(opacity);
+                        xmlFree(duration);
+                    } else if (xmlStrcmp(element->name, (xmlChar*) "hide") == 0)
+                    {
+                        xmlChar* zoom = xmlNodeGetContent(element->children);
+                        xmlChar* opacity = xmlNodeGetContent(element->children->next);
+                        xmlChar* duration = xmlNodeGetContent(element->children->next->next);
+
+                        if (atoi((char*) zoom))
+                            settings.hideAnimProps = AppView::AnimatedProperty(settings.hideAnimProps | AppView::Zoom);
+                        if (atoi((char*) opacity))
+                            settings.hideAnimProps = AppView::AnimatedProperty(settings.hideAnimProps | AppView::Opacity);
+                        settings.durationHide = atoi((char*) duration);
+
+                        ILOG_DEBUG(ILX_COMPOSITOR, "    -> zoom: %s opacity: %s duration: %s\n", (char*) zoom, (char*) opacity, (char*) duration);
+                        ILOG_DEBUG(ILX_COMPOSITOR, "    -> AnimProps: %x\n", settings.hideAnimProps);
+
+                        xmlFree(zoom);
+                        xmlFree(opacity);
+                        xmlFree(duration);
+                    }
+                    element = element->next;
+                }
+            } else
+            {
+                settings.animations = false;
+                settings.durationSlide = 0;
+                settings.showAnimProps = AppView::None;
+                settings.durationShow = 0;
+                settings.hideAnimProps = AppView::None;
+                settings.durationHide = 0;
+            }
+            xmlFree(enabled);
+        } else if (xmlStrcmp(group->name, (xmlChar*) "notifications") == 0)
+        {
+            element = group->children;
+            xmlChar* duration = xmlNodeGetContent(element);
+            settings.notificationTimeout = atoi((char*) duration);
+            xmlFree(duration);
+        }
+        group = group->next;
+    }
+
+    xmlFreeDoc(doc);
+    xmlFreeParserCtxt(ctxt);
+    ILOG_INFO(ILX_COMPOSITOR, "Parsed compositor settings.\n");
+    return true;
 }
 
 } /* namespace ilixi */

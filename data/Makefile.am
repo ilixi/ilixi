@@ -2,6 +2,8 @@
 SUBDIRS			= 	apps fonts images themes
 miscdatadir 	=	$(ILIXI_DATADIR)
 miscdata_DATA 	=	application.dtd \
+					compositor.dtd \
+					compositor.xml \
 					configuration.dtd \
 					palette.dtd \
 					style.dtd \

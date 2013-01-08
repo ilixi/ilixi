@@ -1,0 +1,15 @@
+<!ELEMENT settings (mem_monitor, animations, notifications) >
+    <!ELEMENT mem_monitor (mem_states, page_faults) >
+        <!ELEMENT mem_states (low, critical)>
+        <!ELEMENT page_faults (low, critical)>
+            <!ELEMENT low (#PCDATA) >
+            <!ELEMENT critical (#PCDATA) >
+    <!ELEMENT animations (slide, show, hide) >
+    <!ATTLIST animations enabled (yes|no) "yes" >
+        <!ELEMENT slide (duration) >
+        <!ELEMENT show (zoom, opacity, duration) >
+        <!ELEMENT hide (zoom, opacity, duration) >
+            <!ELEMENT zoom (#PCDATA) >
+            <!ELEMENT opacity (#PCDATA) >
+            <!ELEMENT duration (#PCDATA) >
+    <!ELEMENT notifications (duration) >

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//ilixi//DTD Compositor v1//EN" "http://www.ilixi.org/dtd/compositor.dtd">
+<settings>
+	<mem_monitor>
+		<mem_states>
+			<low>0.5</low>
+			<critical>0.3</critical>
+		</mem_states>
+		<page_faults>
+			<low>10</low>
+			<critical>50</critical>
+		</page_faults>
+	</mem_monitor>
+
+	<animations enabled="no">
+		<slide>
+			<duration>300</duration>
+		</slide>
+		<show>
+			<zoom>0</zoom>
+			<opacity>1</opacity>
+			<duration>300</duration>
+		</show>
+		<hide>
+			<zoom>0</zoom>
+			<opacity>1</opacity>
+			<duration>300</duration>
+		</hide>
+	</animations>
+
+	<notifications>
+		<duration>3000</duration>
+	</notifications>
+</settings>
