@@ -62,6 +62,7 @@ MemoryMonitor::refresh()
             _timer.setInterval(4000);
         _timer.restart();
         sigStateChanged(_state);
+        _preState = Normal;
     }
 }
 
@@ -133,12 +134,15 @@ MemoryMonitor::calcPageFaults()
         infile.close();
     }
     avg /= _manager->_instances.size();
-    if (avg > _pgCritical)
+    static long unsigned int previousAvg = avg;
+    long unsigned int dif = previousAvg - avg;
+    if (dif > _pgCritical)
         _state = Critical;
-    else if (avg > _pgLow)
+    else if (dif > _pgLow)
         _state = Low;
     else
         _state = Normal;
+    previousAvg = avg;
 }
 
 } /* namespace ilixi */
