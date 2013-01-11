@@ -950,8 +950,6 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
             {
                 instance = (AppInstance*) *it;
                 info = instance->appInfo();
-                ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> consider %s\n", info->name().c_str());
-                ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> flags %x\n", info->appFlags());
                 if (!(info->appFlags() & APP_SYSTEM) && !instance->view()->visible())
                 {
                     match = instance;

@@ -108,12 +108,10 @@ MemoryMonitor::calcMemoryUsed()
     infile.close();
 
     unsigned int sum = _free + _buffers + _cached;
-    printf(" sum: %u total: %u crit: %f low: %f\n", sum, _total, _total * _memCritical, _total * _memLow);
     if (sum > _total * _memCritical)
         _state = Critical;
     else if (sum > _total * _memLow)
         _state = Low;
-    printf(" state: %d\n", _state);
 }
 
 void
@@ -134,13 +132,11 @@ MemoryMonitor::calcPageFaults()
     avg /= _manager->_instances.size();
     static long unsigned int previousAvg = avg;
     long unsigned int dif = previousAvg - avg;
-    printf(" pagefault dif: %lu\n", dif);
     if (dif > _pgCritical)
         _state = Critical;
     else if (dif > _pgLow)
         _state = Low;
     previousAvg = avg;
-    printf(" state: %d\n", _state);
 }
 
 } /* namespace ilixi */
