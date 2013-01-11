@@ -913,6 +913,7 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
                 {
                     ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
                     stopApplication(instance->pid());
+                    break;
                 }
             }
         }
@@ -932,6 +933,7 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
                 {
                     ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
                     stopApplication(instance->pid());
+                    break;
                 }
             }
         }
