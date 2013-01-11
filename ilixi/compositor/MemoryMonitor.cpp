@@ -24,10 +24,13 @@
 #include <compositor/MemoryMonitor.h>
 #include <compositor/ApplicationManager.h>
 #include <lib/Util.h>
+#include <core/Logger.h>
 #include <fstream>
 
 namespace ilixi
 {
+
+D_DEBUG_DOMAIN( ILX_MEMORYMONITOR, "ilixi/compositor/MemMon", "MemoryMonitor");
 
 MemoryMonitor::MemoryMonitor(ApplicationManager* manager, float memCritical, float memLow, long unsigned int pgCritical, long unsigned int pgLow)
         : _manager(manager),
@@ -37,17 +40,20 @@ MemoryMonitor::MemoryMonitor(ApplicationManager* manager, float memCritical, flo
           _pgLow(pgLow),
           _state(Normal)
 {
+    ILOG_TRACE_F(ILX_MEMORYMONITOR);
     _timer.start(4000);
     _timer.sigExec.connect(sigc::mem_fun(this, &MemoryMonitor::refresh));
 }
 
 MemoryMonitor::~MemoryMonitor()
 {
+    ILOG_TRACE_F(ILX_MEMORYMONITOR);
 }
 
 void
 MemoryMonitor::refresh()
 {
+    ILOG_TRACE_F(ILX_MEMORYMONITOR);
     calcMemoryUsed();
     calcPageFaults();
     if (_state != Normal)
@@ -61,12 +67,12 @@ MemoryMonitor::refresh()
         _state = Normal;
     } else
         _timer.setInterval(4000);
-
 }
 
 void
 MemoryMonitor::calcMemoryUsed()
 {
+    ILOG_TRACE_F(ILX_MEMORYMONITOR);
     std::string line;
     std::ifstream infile;
     infile.open("/proc/meminfo", std::ifstream::in);
@@ -107,16 +113,18 @@ MemoryMonitor::calcMemoryUsed()
     }
     infile.close();
 
-    unsigned int sum = _free + _buffers + _cached;
-    if (sum > _total * _memCritical)
+    double used = (_buffers + _cached + .0) / _total;
+    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> Used: %f\n", used);
+    if (used > _memCritical)
         _state = Critical;
-    else if (sum > _total * _memLow)
+    else if (used > _memLow)
         _state = Low;
 }
 
 void
 MemoryMonitor::calcPageFaults()
 {
+    ILOG_TRACE_F(ILX_MEMORYMONITOR);
     std::string line;
     std::ifstream infile;
     long unsigned int faults;
@@ -137,6 +145,7 @@ MemoryMonitor::calcPageFaults()
     else if (dif > _pgLow)
         _state = Low;
     previousAvg = avg;
+    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> page_faults: %lu\n", dif);
 }
 
 } /* namespace ilixi */

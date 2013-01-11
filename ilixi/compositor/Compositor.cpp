@@ -876,8 +876,8 @@ ILXCompositor::parseSettings()
                 {
                     xmlChar* low = xmlNodeGetContent(element->children);
                     xmlChar* crit = xmlNodeGetContent(element->children->next);
-                    settings.memLow = 1 - atof((char*) low);
-                    settings.memCritical = 1 - atof((char*) crit);
+                    settings.memLow = atof((char*) low);
+                    settings.memCritical = atof((char*) crit);
                     ILOG_DEBUG(ILX_COMPOSITOR, "    -> memLow: %f\n", settings.memLow);
                     ILOG_DEBUG(ILX_COMPOSITOR, "    -> memCritical: %f\n", settings.memCritical);
                     xmlFree(low);

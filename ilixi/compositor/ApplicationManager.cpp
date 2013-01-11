@@ -935,7 +935,7 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
             Notify notify("Memory is critically low!", ss.str());
             notify.setIcon(ILIXI_DATADIR"images/default.png");
             notify.show();
-            stopApplication(match->pid());
+            _compositor->killApp(match);
         }
         break;
 
@@ -950,7 +950,7 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
             {
                 instance = (AppInstance*) *it;
                 info = instance->appInfo();
-                if (!(info->appFlags() & APP_SYSTEM) && !instance->view()->visible())
+                if (!(info->appFlags() & APP_SYSTEM) && instance->view() && !instance->view()->visible())
                 {
                     match = instance;
                     info = match->appInfo();
@@ -965,7 +965,7 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
             Notify notify("Memory is low!", ss.str());
             notify.setIcon(ILIXI_DATADIR"images/default.png");
             notify.show();
-            stopApplication(match->pid());
+            _compositor->killApp(match);
         }
         break;
 
