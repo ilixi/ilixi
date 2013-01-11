@@ -27,7 +27,7 @@
     </Window>
 
 	<Theme>
-		<Background>@THEMEDIR:dark/bg.png</Background>
+		<Background>@THEMEDIR:dark/bg.dfiff</Background>
 		<Style>@THEMEDIR:dark/style.xml</Style>
 		<Palette>@THEMEDIR:dark/palette.xml</Palette>
 	</Theme>
