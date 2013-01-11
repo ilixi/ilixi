@@ -3,8 +3,8 @@
 <settings>
 	<mem_monitor>
 		<mem_states>
-			<low>0.5</low>
-			<critical>0.3</critical>
+			<low>0.7</low>
+			<critical>0.9</critical>
 		</mem_states>
 		<page_faults>
 			<low>10</low>

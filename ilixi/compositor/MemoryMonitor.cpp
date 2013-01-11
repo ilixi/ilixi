@@ -35,7 +35,6 @@ MemoryMonitor::MemoryMonitor(ApplicationManager* manager, float memCritical, flo
           _memLow(memLow),
           _pgCritical(pgCritical),
           _pgLow(pgLow),
-          _preState(Normal),
           _state(Normal)
 {
     _timer.start(4000);
@@ -49,21 +48,20 @@ MemoryMonitor::~MemoryMonitor()
 void
 MemoryMonitor::refresh()
 {
-    _preState = _state;
     calcMemoryUsed();
     calcPageFaults();
-    if (_state != _preState)
+    if (_state != Normal)
     {
         if (_state == Critical)
             _timer.setInterval(500);
         else if (_state == Low)
             _timer.setInterval(1000);
-        else
-            _timer.setInterval(4000);
-        _timer.restart();
         sigStateChanged(_state);
-        _preState = Normal;
-    }
+        _timer.restart();
+        _state = Normal;
+    } else
+        _timer.setInterval(4000);
+
 }
 
 void
@@ -109,13 +107,13 @@ MemoryMonitor::calcMemoryUsed()
     }
     infile.close();
 
-    int sum = _free + _buffers + _cached;
-    if (sum < _total * _memCritical)
+    unsigned int sum = _free + _buffers + _cached;
+    printf(" sum: %u total: %u crit: %f low: %f\n", sum, _total, _total * _memCritical, _total * _memLow);
+    if (sum > _total * _memCritical)
         _state = Critical;
-    else if (sum < _total * _memLow)
+    else if (sum > _total * _memLow)
         _state = Low;
-    else
-        _state = Normal;
+    printf(" state: %d\n", _state);
 }
 
 void
@@ -136,13 +134,13 @@ MemoryMonitor::calcPageFaults()
     avg /= _manager->_instances.size();
     static long unsigned int previousAvg = avg;
     long unsigned int dif = previousAvg - avg;
+    printf(" pagefault dif: %lu\n", dif);
     if (dif > _pgCritical)
         _state = Critical;
     else if (dif > _pgLow)
         _state = Low;
-    else
-        _state = Normal;
     previousAvg = avg;
+    printf(" state: %d\n", _state);
 }
 
 } /* namespace ilixi */

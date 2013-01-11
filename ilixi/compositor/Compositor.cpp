@@ -872,12 +872,14 @@ ILXCompositor::parseSettings()
             while (element != NULL)
             {
                 ILOG_DEBUG(ILX_COMPOSITOR, "   -> element: %s\n", (char*)element->name);
-                if (xmlStrcmp(element->name, (xmlChar*) "memStates") == 0)
+                if (xmlStrcmp(element->name, (xmlChar*) "mem_states") == 0)
                 {
                     xmlChar* low = xmlNodeGetContent(element->children);
                     xmlChar* crit = xmlNodeGetContent(element->children->next);
-                    settings.memLow = atoi((char*) low);
-                    settings.memCritical = atoi((char*) crit);
+                    settings.memLow = 1 - atof((char*) low);
+                    settings.memCritical = 1 - atof((char*) crit);
+                    ILOG_DEBUG(ILX_COMPOSITOR, "    -> memLow: %f\n", settings.memLow);
+                    ILOG_DEBUG(ILX_COMPOSITOR, "    -> memCritical: %f\n", settings.memCritical);
                     xmlFree(low);
                     xmlFree(crit);
                 } else if (xmlStrcmp(element->name, (xmlChar*) "page_faults") == 0)
@@ -886,6 +888,8 @@ ILXCompositor::parseSettings()
                     xmlChar* crit = xmlNodeGetContent(element->children->next);
                     settings.pgLow = atoi((char*) low);
                     settings.pgCritical = atoi((char*) crit);
+                    ILOG_DEBUG(ILX_COMPOSITOR, "    -> pgLow: %d\n", settings.pgLow);
+                    ILOG_DEBUG(ILX_COMPOSITOR, "    -> pgCritical: %d\n", settings.pgCritical);
                     xmlFree(low);
                     xmlFree(crit);
                 }

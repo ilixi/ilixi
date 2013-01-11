@@ -163,11 +163,11 @@ AppInfo::setAppFlags(const std::string& appFlags)
         else if (strcmp(pch, "APP_VIS_NOTIFY") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_VIS_NOTIFY);
         else if (strcmp(pch, "APP_STATUSBAR") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR);
+            _appFlags = (AppFlags) (_appFlags | APP_STATUSBAR | APP_SYSTEM);
         else if (strcmp(pch, "APP_OSK") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_OSK);
         else if (strcmp(pch, "APP_HOME") == 0)
-            _appFlags = (AppFlags) (_appFlags | APP_HOME);
+            _appFlags = (AppFlags) (_appFlags | APP_HOME | APP_SYSTEM);
         else if (strcmp(pch, "APP_SYSTEM") == 0)
             _appFlags = (AppFlags) (_appFlags | APP_SYSTEM);
         pch = strtok(NULL, " ,");

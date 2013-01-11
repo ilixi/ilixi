@@ -59,13 +59,12 @@ private:
     long unsigned int _pgCritical;
     long unsigned int _pgLow;
 
-    MemoryState _preState;
     MemoryState _state;
     Timer _timer;
-    int _total;
-    int _free;
-    int _cached;
-    int _buffers;
+    unsigned int _total;
+    unsigned int _free;
+    unsigned int _cached;
+    unsigned int _buffers;
 
     void
     refresh();

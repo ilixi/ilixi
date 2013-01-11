@@ -261,10 +261,10 @@ private:
         unsigned int durationHide;                  //!< Animation duration for hide.
         DFBConvolutionFilter filter;                //!< Convolution filter.
         unsigned int notificationTimeout;           //!< Notification will hide itself after timeout(ms).
-        float memCritical;
-        float memLow;
-        long unsigned int pgCritical;
-        long unsigned int pgLow;
+        double memCritical;
+        double memLow;
+        int pgCritical;
+        int pgLow;
     };
 
     //! This property is used by compositor components.

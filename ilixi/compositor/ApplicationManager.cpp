@@ -194,6 +194,16 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 
     if (sigaction(SIGCHLD, &_act, NULL) == -1)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGSEGV, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGBUS, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGILL, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGFPE, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGABRT, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
 
     _monitor = new MemoryMonitor(this, _compositor->settings.memCritical, _compositor->settings.memLow, _compositor->settings.pgCritical, _compositor->settings.pgLow);
     _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
@@ -903,7 +913,8 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
         {
             // kill a non-system app.
             ILOG_WARNING(ILX_APPLICATIONMANAGER, "MemoryMonitor reports Critical.\n");
-            AppInstance* instance;
+            AppInstance* instance = NULL;
+            AppInstance* match = NULL;
             AppInfo* info;
             for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
             {
@@ -911,11 +922,20 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
                 info = instance->appInfo();
                 if (!(info->appFlags() & APP_SYSTEM))
                 {
-                    ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
-                    stopApplication(instance->pid());
+                    match = instance;
+                    info = match->appInfo();
                     break;
                 }
             }
+            if (!match)
+                break;
+            ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
+            std::stringstream ss;
+            ss << info->name() << " is terminated automatically.";
+            Notify notify("Memory is critically low!", ss.str());
+            notify.setIcon(ILIXI_DATADIR"images/default.png");
+            notify.show();
+            stopApplication(match->pid());
         }
         break;
 
@@ -923,19 +943,31 @@ ApplicationManager::handleMemoryState(MemoryMonitor::MemoryState state)
         {
             ILOG_WARNING(ILX_APPLICATIONMANAGER, "MemoryMonitor reports Low.\n");
             // kill an invisible and non-system app.
-            AppInstance* instance;
+            AppInstance* instance = NULL;
+            AppInstance* match = NULL;
             AppInfo* info;
             for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
             {
                 instance = (AppInstance*) *it;
                 info = instance->appInfo();
-                if (!instance->view()->visible() && !(info->appFlags() & APP_SYSTEM))
+                ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> consider %s\n", info->name().c_str());
+                ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> flags %x\n", info->appFlags());
+                if (!(info->appFlags() & APP_SYSTEM) && !instance->view()->visible())
                 {
-                    ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
-                    stopApplication(instance->pid());
+                    match = instance;
+                    info = match->appInfo();
                     break;
                 }
             }
+            if (!match)
+                break;
+            ILOG_WARNING(ILX_APPLICATIONMANAGER, " -> Stopping %s\n", info->name().c_str());
+            std::stringstream ss;
+            ss << info->name() << " is terminated automatically.";
+            Notify notify("Memory is low!", ss.str());
+            notify.setIcon(ILIXI_DATADIR"images/default.png");
+            notify.show();
+            stopApplication(match->pid());
         }
         break;
 
