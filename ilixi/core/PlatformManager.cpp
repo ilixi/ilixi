@@ -123,11 +123,7 @@ LayerFlipMode
 PlatformManager::getLayerFlipMode(const std::string& name) const
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-
     if (_options & OptExclusive)
-    {
-        return _windowConf.flipMode;
-    } else
     {
         LogicLayerMap::const_iterator it = _layerMap.find(name);
         if (it != _layerMap.end())
@@ -140,7 +136,8 @@ PlatformManager::getLayerFlipMode(const std::string& name) const
             }
             return FlipNone;
         }
-    }
+    } else
+        return _windowConf.flipMode;
     return FlipNone;
 }
 
@@ -149,9 +146,6 @@ PlatformManager::useFSU(const std::string& name) const
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
     if (_options & OptExclusive)
-    {
-        return _windowConf.fsu;
-    } else
     {
         LogicLayerMap::const_iterator it = _layerMap.find(name);
         if (it != _layerMap.end())
@@ -164,7 +158,8 @@ PlatformManager::useFSU(const std::string& name) const
             }
             return false;
         }
-    }
+    } else
+        return _windowConf.fsu;
     return false;
 }
 
