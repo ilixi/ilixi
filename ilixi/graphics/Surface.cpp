@@ -206,7 +206,7 @@ Surface::flip(const Rectangle& rect)
     case FlipWaitForSync:
         ret = _dfbSurface->Flip(_dfbSurface, &r, DSFLIP_WAITFORSYNC);
         break;
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
     case FlipNew:
         {
             int w, h;

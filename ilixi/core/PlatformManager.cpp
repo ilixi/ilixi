@@ -508,7 +508,7 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                         ret.first->second.flipMode = FlipOnSync;
                     else if (xmlStrcmp(flipModeC, (xmlChar*) "waitForSync") == 0)
                         ret.first->second.flipMode = FlipWaitForSync;
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
                     else if (xmlStrcmp(flipModeC, (xmlChar*) "new") == 0)
                         ret.first->second.flipMode = FlipNew;
 #endif
