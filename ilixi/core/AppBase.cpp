@@ -325,15 +325,22 @@ AppBase::runCallbacks()
 
     // callbacks
     pthread_mutex_lock(&__cbMutex);
+    std::vector<Callback*> list_copy;
     CallbackList::iterator it = __callbacks.begin();
     while (it != __callbacks.end())
     {
-        if (((Callback*) *it)->_funck->funck() == 0)
+        list_copy.push_back( *it );
+        ++it;
+    }
+    std::vector<Callback*>::iterator it2 = list_copy.begin();
+    while (it2 != list_copy.end())
+    {
+        if (((Callback*) *it2)->_funck->funck() == 0)
         {
-            ILOG_DEBUG( ILX_APPBASE, "Callback %p is removed.\n", ((Callback*) *it));
-            it = __callbacks.erase(it);
-        } else
-            ++it;
+            ILOG_DEBUG( ILX_APPBASE, "Callback %p is removed.\n", ((Callback*) *it2));
+            removeCallback( *it2 );
+        }
+        ++it2;
     }
     pthread_mutex_unlock(&__cbMutex);
 
@@ -581,7 +588,7 @@ AppBase::handleEvents(int32_t timeout)
         timeout = 10000;
 
     if (timeout < 1) {
-        D_WARN( "timeout %d", timeout );
+        //D_WARN( "timeout %d", timeout );
         timeout = 1;
     }
 
