@@ -269,6 +269,8 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
                     return true;
         }
 
+        _eventManager->setExposedWidget(NULL, pointerEvent);
+
         if (pointerEvent.eventType == PointerButtonDown)
         {
             _eventManager->setFocusedWidget(NULL);
@@ -354,16 +356,13 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
 //    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     // handle all other events...
-    Widget* target = _eventManager->focusedWidget();
+    Widget* target = this;
     Widget* grabbed = _eventManager->grabbedWidget();
     if (grabbed && grabbed->acceptsPointerInput())
         target = grabbed;
-    else
-        target = this;
 
     switch (event.type)
     {
-
     case DWET_GOTFOCUS:
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_GOTFOCUS\n");
         if (!_eventManager->focusedWidget())

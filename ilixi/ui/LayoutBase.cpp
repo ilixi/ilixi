@@ -190,12 +190,10 @@ LayoutBase::compose(const PaintEvent& event)
 bool
 LayoutBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    // priority is given to most recent child.
+    // priority is given to child on top.
     for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-    {
-        if (((Widget*) *it)->acceptsPointerInput() && ((Widget*) *it)->consumePointerEvent(pointerEvent))
+        if (((Widget*) *it)->consumePointerEvent(pointerEvent))
             return true;
-    }
     return false;
 }
 

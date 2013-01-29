@@ -786,10 +786,8 @@ public:
     sigc::signal<void> sigGeometryUpdated;
 
     /*!
-     * This signal is emitted whenever widget state changes.
-     *
-     * In case widget has event handling methods (e.g. focusInEvent) triggered by
-     * a state change, they are executed first.
+     * This signal is emitted whenever widget state changes and before
+     * widget's event handling methods (e.g. focusInEvent) are executed.
      */
     sigc::signal<void, Widget*, WidgetState> sigStateChanged;
 

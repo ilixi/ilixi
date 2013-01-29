@@ -37,8 +37,7 @@ ContainerBase::ContainerBase(Widget* parent)
 {
     setLayout(new LayoutBase(this));
     setInputMethod(PointerInput);
-    sigGeometryUpdated.connect(
-            sigc::mem_fun(this, &ContainerBase::updateLayoutGeometry));
+    sigGeometryUpdated.connect(sigc::mem_fun(this, &ContainerBase::updateLayoutGeometry));
 }
 
 ContainerBase::~ContainerBase()
@@ -134,22 +133,12 @@ bool
 ContainerBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
     ILOG_TRACE_W(ILX_CONTAINER);
-    if (_inputMethod & PointerInput)
+    if ((_inputMethod & PointerInput) && _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
     {
-        if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
-        {
-            // priority is given to most recent child.
-            for (WidgetListReverseIterator it = _children.rbegin();
-                    it != _children.rend(); ++it)
-            {
-                // event is consumed by child.
-                if (((Widget*) *it)->acceptsPointerInput()
-                        && ((Widget*) *it)->consumePointerEvent(pointerEvent))
-                    return true;
-            }
-            if (eventManager())
-                eventManager()->setExposedWidget(NULL, pointerEvent);
-        }
+        // priority is given to child on top.
+        for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+            if (((Widget*) *it)->consumePointerEvent(pointerEvent))
+                return true;
     }
     return false;
 }

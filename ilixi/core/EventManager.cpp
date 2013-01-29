@@ -85,16 +85,21 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
     {
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~ExposedState);
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
-        _exposedWidget->leaveEvent(pointerEvent);
         _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
+        if (widget)
+        {
+            if (!widget->frameGeometry().intersects(_exposedWidget->frameGeometry()))
+                _exposedWidget->leaveEvent(pointerEvent);
+        } else
+            _exposedWidget->leaveEvent(pointerEvent);
     }
 
     _exposedWidget = widget;
     if (_exposedWidget)
     {
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state | ExposedState);
-        _exposedWidget->enterEvent(pointerEvent);
         _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
+        _exposedWidget->enterEvent(pointerEvent);
     }
 
     return true;
@@ -115,8 +120,8 @@ EventManager::setFocusedWidget(Widget* widget)
     if (_focusedWidget)
     {
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state & ~FocusedState);
-        _focusedWidget->focusOutEvent();
         _focusedWidget->sigStateChanged(_focusedWidget, _focusedWidget->_state);
+        _focusedWidget->focusOutEvent();
     }
 
     _focusedWidget = widget;
@@ -127,8 +132,8 @@ EventManager::setFocusedWidget(Widget* widget)
             widget->_parent->_preSelectedWidget = _focusedWidget;
 
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state | FocusedState);
-        _focusedWidget->focusInEvent();
         _focusedWidget->sigStateChanged(_focusedWidget, _focusedWidget->_state);
+        _focusedWidget->focusInEvent();
     }
 
     setOSKWidget(widget);
@@ -149,6 +154,7 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
         if (_grabbedWidget)
         {
             _grabbedWidget->_state = (WidgetState) (_grabbedWidget->_state & ~(GrabbedState | PressedState));
+            _grabbedWidget->sigStateChanged(_grabbedWidget, _grabbedWidget->_state);
             _grabbedWidget->pointerReleaseEvent(pointerEvent);
             _grabbedWidget->update();
         }
@@ -156,6 +162,7 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
         if (_grabbedWidget)
         {
             _grabbedWidget->_state = (WidgetState) (_grabbedWidget->_state | GrabbedState | PressedState);
+            _grabbedWidget->sigStateChanged(_grabbedWidget, _grabbedWidget->_state);
             _grabbedWidget->pointerGrabEvent(pointerEvent);
             _grabbedWidget->update();
         }
@@ -289,6 +296,9 @@ EventManager::selectNext(Widget* target, Widget* startFrom, int iter)
 
     if (iter)
         return true;
+
+    if (target == NULL && startFrom == _creator)
+        ++iter;
 
     if (startFrom && target == _creator)
     {

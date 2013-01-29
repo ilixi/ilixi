@@ -38,7 +38,7 @@ ScrollArea::ScrollArea(Widget* parent)
           _content(NULL)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    setInputMethod((WidgetInputMethod) (PointerTracking | PointerGrabbing));
+    setInputMethod((WidgetInputMethod) (PointerInput | PointerTracking | PointerGrabbing));
     setConstraints(NoConstraint, NoConstraint);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
 
