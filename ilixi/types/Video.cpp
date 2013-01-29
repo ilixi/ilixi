@@ -36,27 +36,38 @@ static void
 videoCB(void *cdata)
 {
     Video* v = (Video*) cdata;
-    v->frameUpdated(v->frame());
+    v->sigFrameUpdated(v->frame());
 }
 
 Video::Video(const std::string& path)
         : _provider(NULL),
           _frame(NULL)
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     load(path);
 }
 
 Video::~Video()
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         _provider->Release(_provider);
     if (_frame)
         _frame->Release(_frame);
 }
 
+bool
+Video::hasAudio() const
+{
+    if (_provider && (_providerCaps & DVCAPS_VOLUME))
+        return true;
+    return false;
+}
+
 double
 Video::position() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     double sec = 0;
     if (_provider)
         _provider->GetPos(_provider, &sec);
@@ -66,6 +77,7 @@ Video::position() const
 double
 Video::length() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     double length = 0;
     if (_provider)
         _provider->GetLength(_provider, &length);
@@ -75,6 +87,7 @@ Video::length() const
 double
 Video::speed() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     double speed = 0;
     if (_provider)
         _provider->GetSpeed(_provider, &speed);
@@ -84,6 +97,7 @@ Video::speed() const
 float
 Video::volume() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     float volume = 0;
     if (_provider)
         _provider->GetVolume(_provider, &volume);
@@ -93,6 +107,7 @@ Video::volume() const
 DFBVideoProviderStatus
 Video::status() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     DFBVideoProviderStatus stat = DVSTATE_UNKNOWN;
     if (_provider)
         _provider->GetStatus(_provider, &stat);
@@ -102,6 +117,7 @@ Video::status() const
 const char*
 Video::encodingVideo() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO) && *_streamDesc.video.encoding)
         return _streamDesc.video.encoding;
     return "Unknown";
@@ -110,6 +126,7 @@ Video::encodingVideo() const
 int
 Video::width() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
         return _surfaceDesc.width;
     return 0;
@@ -118,6 +135,7 @@ Video::width() const
 int
 Video::height() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
         return _surfaceDesc.height;
     return 0;
@@ -126,6 +144,7 @@ Video::height() const
 double
 Video::aspect() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
         return _streamDesc.video.aspect;
     return 0;
@@ -134,6 +153,7 @@ Video::aspect() const
 double
 Video::framerate() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
         return _streamDesc.video.framerate;
     return 0;
@@ -142,6 +162,7 @@ Video::framerate() const
 int
 Video::bitrateVideo() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
         return _streamDesc.video.bitrate / 1000;
     return 0;
@@ -150,6 +171,7 @@ Video::bitrateVideo() const
 const char*
 Video::encodingAudio() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_AUDIO) && *_streamDesc.audio.encoding)
         return _streamDesc.audio.encoding;
     return "Unknown";
@@ -158,6 +180,7 @@ Video::encodingAudio() const
 int
 Video::samplerate() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_AUDIO))
         return _streamDesc.audio.samplerate / 1000;
     return 0;
@@ -166,6 +189,7 @@ Video::samplerate() const
 int
 Video::channels() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_AUDIO))
         return _streamDesc.audio.channels;
     return 0;
@@ -174,6 +198,7 @@ Video::channels() const
 int
 Video::bitrateAudio() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_AUDIO))
         return _streamDesc.audio.bitrate / 1000;
     return 0;
@@ -182,6 +207,7 @@ Video::bitrateAudio() const
 const char*
 Video::title() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.title;
     return "N/A";
@@ -190,6 +216,7 @@ Video::title() const
 const char*
 Video::author() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.author;
     return "N/A";
@@ -198,6 +225,7 @@ Video::author() const
 const char*
 Video::album() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.album;
     return "N/A";
@@ -206,6 +234,7 @@ Video::album() const
 int
 Video::year() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.year;
     return 0;
@@ -214,6 +243,7 @@ Video::year() const
 const char*
 Video::genre() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.genre;
     return "N/A";
@@ -222,6 +252,7 @@ Video::genre() const
 const char*
 Video::comment() const
 {
+    ILOG_TRACE_F(ILX_VIDEO);
     if (_provider)
         return _streamDesc.comment;
     return "N/A";
@@ -248,11 +279,11 @@ Video::load(const std::string& path)
     if (_provider)
         _provider->Release(_provider);
 
-    int ret = PlatformManager::instance().getDFB()->CreateVideoProvider(PlatformManager::instance().getDFB(), path.c_str(), &_provider);
+    DFBResult ret = PlatformManager::instance().getDFB()->CreateVideoProvider(PlatformManager::instance().getDFB(), path.c_str(), &_provider);
     if (ret != DFB_OK)
     {
         _provider = NULL;
-        ILOG_ERROR(ILX_VIDEO, "Unable to create DFBVideoProvider [%d]!\n", ret);
+        ILOG_ERROR(ILX_VIDEO, "Unable to create DFBVideoProvider! %s\n", DirectFBErrorString(ret));
         return false;
     } else
     {
@@ -318,6 +349,34 @@ Video::setVolume(float level)
         _provider->SetVolume(_provider, level);
     else
         ILOG_ERROR(ILX_VIDEO, "DFBVideoProvider: setVolume is not supported!\n");
+}
+
+void
+Video::setEventsEnabled(bool eventsEnabled)
+{
+    if (eventsEnabled)
+    {
+        _provider->CreateEventBuffer(_provider, &_buffer);
+        _provider->EnableEvents(_provider, DVPET_ALL);
+        _provider->AttachEventBuffer(_provider, _buffer);
+    } else
+    {
+        _provider->DisableEvents(_provider, DVPET_ALL);
+        _provider->DetachEventBuffer(_provider, _buffer);
+        _buffer->Release(_buffer);
+    }
+}
+
+void
+Video::setLooping(bool looping)
+{
+    if (_provider)
+    {
+        if (looping)
+            _provider->SetPlaybackFlags(_provider, DVPLAY_LOOPING);
+        else
+            _provider->SetPlaybackFlags(_provider, DVPLAY_NOFX);
+    }
 }
 
 std::string

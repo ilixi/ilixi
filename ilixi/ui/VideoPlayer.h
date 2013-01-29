@@ -3,6 +3,7 @@
 
 #include <ui/Widget.h>
 #include <types/Video.h>
+#include <lib/TweenAnimation.h>
 
 namespace ilixi
 {
@@ -10,9 +11,69 @@ class HBoxLayout;
 class Label;
 class Slider;
 class ToolButton;
+class VideoPlayer;
 
+//! Provides controls for a VideoPlayer widget.
+class VideoPlayerControls : public Widget
+{
+    friend class VideoPlayer;
+public:
+    /*!
+     * Contructor.
+     */
+    VideoPlayerControls(VideoPlayer* parent = 0);
+
+    /*!
+     * Destructor.
+     */
+    virtual
+    ~VideoPlayerControls();
+
+    Size
+    preferredSize() const;
+
+    void
+    show();
+
+    void
+    hide();
+
+protected:
+    void
+    compose(const PaintEvent& event);
+
+private:
+    //! Owner.
+    VideoPlayer* _owner;
+    //! Layout for child widgets.
+    HBoxLayout* _box;
+    //! Playback position.
+    Label* _time;
+    //! Video duration.
+    Label* _dur;
+    //! Starts/stops playback.
+    ToolButton* _play;
+    //! Switches to fullscreen.
+    ToolButton* _fullscreen;
+    //! Controls video position.
+    Slider* _position;
+    //! Controls video volume.
+    Slider* _volume;
+    //! Animation for showing/hiding control box.
+    TweenAnimation _anim;
+    Tween* _tween;
+
+    void
+    tweenSlot();
+
+    void
+    updateVPCGeometry();
+};
+
+//! Provides a simple video player widget.
 class VideoPlayer : public Widget
 {
+    friend class VideoPlayerControls;
 public:
     /*!
      * Constructor.
@@ -39,9 +100,20 @@ public:
     void
     load(const std::string& path);
 
+    sigc::signal<void> sigLoaded;
+
 protected:
     virtual void
-    compose(const PaintEvent& rect);
+    keyDownEvent(const KeyEvent& keyEvent);
+
+    virtual void
+    enterEvent(const PointerEvent& event);
+
+    virtual void
+    leaveEvent(const PointerEvent& event);
+
+    virtual void
+    compose(const PaintEvent& event);
 
 private:
     //! Video object.
@@ -50,23 +122,10 @@ private:
     IDirectFBSurface* _videoLSurface;
     //! Direct sub-surface used for blitting video frames.
     IDirectFBSurface* _videoSurface;
+    //! Current video frame.
     IDirectFBSurface* _videoFrame;
-
-    //! Playback time.
-    Label* _time;
-    //! Rewinds video.
-    ToolButton* _rewind;
-    //! Starts/stops playback.
-    ToolButton* _play;
-    //! Switches to fullscreen.
-    ToolButton* _fullscreen;
-
-    HBoxLayout* _line1;
-
-    //! Controls video position.
-    Slider* _position;
-    //! Controls video volume.
-    Slider* _volume;
+    //! Video player controls.
+    VideoPlayerControls* _controls;
 
     //! Starts video playback.
     void
@@ -83,10 +142,6 @@ private:
     //! Sets video volume.
     void
     setVolume(int volume);
-
-    //! Converts seconds to HMS format.
-    void
-    toHMS(double secs, char* buffer);
 
     //! Blits frame to video surface.
     void

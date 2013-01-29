@@ -50,6 +50,12 @@ public:
     ~Video();
 
     /*!
+     * Returns true if video has audio.
+     */
+    bool
+    hasAudio() const;
+
+    /*!
      * Returns playback position in seconds.
      */
     double
@@ -225,19 +231,37 @@ public:
     setVolume(float level);
 
     /*!
+     * Enables or disables signaling of events.
+     *
+     * @param eventsEnabled if true attaches a buffer and listens for events.
+     */
+    void
+    setEventsEnabled(bool eventsEnabled);
+
+    /*!
+     * Enable/Disable automatic restart of playback when stream ends.
+     *
+     * @param looping if true, play video in gapless looping mode.
+     */
+    void
+    setLooping(bool looping);
+
+    /*!
      * Returns video and audio information.
      */
     std::string
     toString();
 
     //! This signal is emitted when a new frame is available.
-    sigc::signal<void, IDirectFBSurface*> frameUpdated;
+    sigc::signal<void, IDirectFBSurface*> sigFrameUpdated;
 
 private:
     //! DFB video provider.
     IDirectFBVideoProvider* _provider;
     //! Video surface.
     IDirectFBSurface* _frame;
+    //! Event buffer.
+    IDirectFBEventBuffer* _buffer;
 
     //! Path to video file.
     std::string _path;

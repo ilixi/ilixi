@@ -62,5 +62,8 @@ createUUID();
 std::string
 PrintF(const char *format, ...) D_FORMAT_PRINTF( 1 );
 
+std::string
+toHMS(long int secs);
+
 } /* namespace ilixi */
 #endif /* ILIXI_UTIL_H_ */

@@ -117,7 +117,7 @@ public:
      * Sets icon using stock icons.
      */
     void
-    setIcon(StyleHint::PackedIcon icon);
+    setIcon(StyleHint::PackedIcon icon, const Size& size = Size(-1, -1));
 
     /*!
      * Sets the size of button icon.

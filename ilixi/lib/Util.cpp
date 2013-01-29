@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <sstream>
 
 namespace ilixi
 {
@@ -87,6 +88,28 @@ PrintF(const char *format, ...)
         free(ptr);
 
     return str;
+}
+
+std::string
+toHMS(long int secs)
+{
+    std::stringstream ss;
+    int hour, min, sec;
+    hour = secs / 3600;
+    if (hour)
+        ss << hour << ":";
+    secs = (int) secs % 3600;
+    min = secs / 60;
+    if (min < 10)
+        ss << "0" << min;
+    else
+        ss << min;
+    sec = (int) secs % 60;
+    if (sec < 10)
+        ss << ":0" << sec;
+    else
+        ss << ":" << sec;
+    return ss.str();
 }
 
 } /* namespace ilixi */

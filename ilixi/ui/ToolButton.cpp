@@ -212,11 +212,13 @@ ToolButton::setIcon(const std::string& iconPath, const Size& size)
 }
 
 void
-ToolButton::setIcon(StyleHint::PackedIcon icon)
+ToolButton::setIcon(StyleHint::PackedIcon icon, const Size& size)
 {
     ILOG_TRACE_W(ILX_TOOLBUTTON);
     removeChild(_icon);
     _icon = new Icon(icon, this);
+    if (size.isValid())
+        _icon->setSize(size);
     addChild(_icon);
 }
 
