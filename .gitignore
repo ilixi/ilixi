@@ -53,7 +53,7 @@ bin/phone/dialer/ilixi_dialer
 bin/phone/home/ilixi_phome
 bin/phone/pcompositor/ilixi_pcomp
 bin/phone/statusbar/ilixi_pstatus
-bin/player/
+bin/player/ilixi_player
 bin/settings/ilixi_settings
 bin/soundmixer/ilixi_mixer
 bin/stacking/ilixi_stacking

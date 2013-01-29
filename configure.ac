@@ -258,6 +258,7 @@ AC_CONFIG_FILES([ \
         bin/phone/pcompositor/Makefile \
         bin/phone/statusbar/images/Makefile \
         bin/phone/statusbar/Makefile \
+        bin/player/Makefile \
         bin/settings/Makefile \
         bin/soundmixer/images/Makefile \
         bin/soundmixer/Makefile \

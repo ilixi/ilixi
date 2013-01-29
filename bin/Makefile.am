@@ -1,5 +1,5 @@
 ## Makefile.am for bin/
-SUBDIRS = gallery demo2 demo4 carousel stacking navigation monitor widgets 
+SUBDIRS = gallery demo2 demo4 carousel player stacking navigation monitor widgets 
 if WITH_FUSIONDALE
 
 if WITH_SAWMAN

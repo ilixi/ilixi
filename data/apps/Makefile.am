@@ -17,6 +17,7 @@ miscdata_DATA 	=	\
 					ilixi_animatedtiles.appdef \
 					ilixi_gallery.appdef \
 					ilixi_monitor.appdef \
+					ilixi_player.appdef \
 					ilixi_settings.appdef \
 					ilixi_WebKit.appdef \
 					ilixi_widgets.appdef \
