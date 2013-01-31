@@ -65,7 +65,7 @@ Label::preferredSize() const
 {
     ILOG_TRACE_W(ILX_LABEL);
     Size s = textExtents();
-    return Size(s.width() + _margin.hSum(), +s.height() + _margin.vSum());
+    return Size(s.width() + _margin.hSum(), s.height() + _margin.vSum());
 }
 
 Margin
@@ -94,7 +94,12 @@ void
 Label::updateTextBaseGeometry()
 {
     ILOG_TRACE_W(ILX_LABEL);
-    _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(), height() - _margin.vSum());
+    if (_layout.singleLine())
+    {
+        Size s = textExtents();
+        _layout.setBounds(_margin.right(), (height() - s.height() - _margin.vSum()) / 2, width() - _margin.hSum(), s.height());
+    } else
+        _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(), height() - _margin.vSum());
     _layout.doLayout(font());
 }
 
