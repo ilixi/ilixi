@@ -10,6 +10,7 @@
 
 #include <ui/Application.h>
 #include <ui/VideoPlayer.h>
+#include <ui/FileBrowser.h>
 
 namespace ilixi
 {
@@ -24,6 +25,7 @@ public:
 
 private:
     VideoPlayer* _player;
+    FileBrowser* _browser;
 };
 
 } /* namespace ilixi */

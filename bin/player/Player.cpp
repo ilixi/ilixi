@@ -11,6 +11,8 @@ Player::Player(int argc, char* argv[])
     setLayout(new HBoxLayout());
     _player = new VideoPlayer();
     addWidget(_player);
+    _browser = new FileBrowser(ILIXI_DATADIR);
+    addWidget(_browser);
     _player->load(ILIXI_DATADIR"player/test.avi");
 }
 
