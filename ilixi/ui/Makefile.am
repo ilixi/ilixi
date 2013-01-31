@@ -11,6 +11,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							ComboBox.cpp \
 							ContainerBase.cpp \
 							Dialog.cpp \
+							FileBrowser.cpp \
 							Frame.cpp \
 							GridLayout.cpp \
 							GridView.cpp \
@@ -44,6 +45,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							ComboBox.h \
 							ContainerBase.h \
 							Dialog.h \
+							FileBrowser.h \
 							Frame.h \
 							GridLayout.h \
 							GridView.h \
@@ -82,6 +84,7 @@ UI_REFLEX				= 	Application_rflx.cpp \
 							ComboBox_rflx.cpp \
 							ContainerBase_rflx.cpp \
 							Dialog_rflx.cpp \
+							FileBrowser_rflx.cpp \
 							Frame_rflx.cpp \
 							GridLayout_rflx.cpp \
 							GridView_rflx.cpp \
