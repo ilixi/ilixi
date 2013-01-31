@@ -63,6 +63,7 @@ Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
           _image(NULL)
 {
     ILOG_TRACE_W(ILX_ICON);
+    setConstraints(FixedConstraint, FixedConstraint);
     _image = stylist()->defaultIcon(packedIcon);
 }
 
