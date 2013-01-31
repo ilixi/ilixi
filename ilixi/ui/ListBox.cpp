@@ -48,6 +48,7 @@ ListBox::ListBox(Widget* parent)
     addChild(_scrollArea);
 
     _layout = new VBoxLayout();
+    _layout->setKeyNavChildrenFirst(true);
     _scrollArea->setContent(_layout);
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ListBox::updateListBoxGeometry));
@@ -206,7 +207,7 @@ ListBox::setOrientation(Orientation orientation)
 
         for (WidgetListIterator it = _items.begin(); it != _items.end(); ++it)
             _layout->addWidget(*it);
-
+        _layout->setKeyNavChildrenFirst(true);
         addChild(_layout);
     }
 }
@@ -247,7 +248,13 @@ ListBox::trackItem(Widget* item, WidgetState state)
         return;
 
     if (state & FocusedState)
+    {
         _scrollArea->scrollTo(item);
+        sigItemSelected(item);
+    }
+
+    if (state & PressedState)
+        sigItemClicked(item);
 }
 
 } /* namespace ilixi */
