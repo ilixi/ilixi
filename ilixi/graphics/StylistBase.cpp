@@ -244,6 +244,10 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _style->getIcon("arrow_left");
     case StyleHint::Minus:
         return _style->getIcon("minus");
+    case StyleHint::Movie:
+        return _style->getIcon("movie");
+    case StyleHint::Music:
+            return _style->getIcon("music");
     case StyleHint::Network:
         return _style->getIcon("network");
     case StyleHint::Next:

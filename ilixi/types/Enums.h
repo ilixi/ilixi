@@ -126,6 +126,8 @@ enum PackedIcon
     Info,
     Left,
     Minus,
+    Movie,
+    Music,
     Network,
     Next,
     Next2,
