@@ -41,11 +41,12 @@ EventManager::EventManager(WindowWidget* creator)
           _oskWidget(0),
           _creator(creator)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
 }
 
 EventManager::~EventManager()
 {
-    ILOG_DEBUG(ILX_EVENTMANAGER, "~EventManager %p\n", this);
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
 }
 
 Widget*
@@ -400,6 +401,8 @@ EventManager::setOSKWidgetText(const std::string& text)
 void
 EventManager::clear(Widget* widget)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
+    ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
     if (_focusedWidget == widget)
         _focusedWidget = NULL;
     if (_grabbedWidget == widget)
@@ -411,6 +414,7 @@ EventManager::clear(Widget* widget)
 void
 EventManager::clear()
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
     if (_focusedWidget)
     {
         _focusedWidget->_state = (WidgetState) (_focusedWidget->_state & ~FocusedState);
