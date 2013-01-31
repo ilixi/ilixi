@@ -65,5 +65,11 @@ PrintF(const char *format, ...) D_FORMAT_PRINTF( 1 );
 std::string
 toHMS(long int secs);
 
+/*!
+ * Converts size in bytes to string.
+ */
+std::string
+formatSize(uint64_t size);
+
 } /* namespace ilixi */
 #endif /* ILIXI_UTIL_H_ */

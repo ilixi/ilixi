@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sstream>
+#include <iomanip>
 
 namespace ilixi
 {
@@ -94,21 +95,36 @@ std::string
 toHMS(long int secs)
 {
     std::stringstream ss;
-    int hour, min, sec;
-    hour = secs / 3600;
+    ss.fill('0');
+    ss.width(2);
+
+    int hour = secs / 3600;
     if (hour)
         ss << hour << ":";
     secs = (int) secs % 3600;
-    min = secs / 60;
-    if (min < 10)
-        ss << "0" << min;
-    else
-        ss << min;
-    sec = (int) secs % 60;
-    if (sec < 10)
-        ss << ":0" << sec;
-    else
-        ss << ":" << sec;
+    ss << secs / 60 << ":" << secs % 60;
+    return ss.str();
+}
+
+#define DIM(x) (sizeof(x)/sizeof(*(x)))
+
+static const uint64_t eib_size = 1024ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL;
+static const char* size_suffix[] = { "EB", "PB", "TB", "GB", "MB", "KB", "B" };
+
+std::string
+formatSize(uint64_t size)
+{
+    std::stringstream ss;
+    ss.precision(2);
+    uint64_t multiplier = eib_size;
+
+    for (int i = 0; i < 7; i++, multiplier /= 1024)
+    {
+        if (size < multiplier)
+            continue;
+        ss << size / multiplier << size_suffix[i];
+        return ss.str();
+    }
     return ss.str();
 }
 
