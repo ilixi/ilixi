@@ -32,7 +32,6 @@ D_DEBUG_DOMAIN( ILX_GRIDLAYOUT, "ilixi/ui/GridLayout", "GridLayout");
 
 GridLayout::GridLayout(unsigned int rows, unsigned int column, Widget* parent)
         : LayoutBase(parent),
-          _keyNavChildrenFirst(false),
           _rows(rows),
           _cols(column)
 {
@@ -262,12 +261,6 @@ GridLayout::setRowHeight(unsigned int row, unsigned int rowHeight)
 {
     if (row < _rows)
         _rowHeights[row] = rowHeight;
-}
-
-void
-GridLayout::setKeyNavChildrenFirst(bool navChildrenFirst)
-{
-    _keyNavChildrenFirst = navChildrenFirst;
 }
 
 bool
@@ -852,7 +845,8 @@ GridLayout::tile()
                     if (_keyNavChildrenFirst)
                     {
                         int rC = (r + 1) * _cols;
-                        widget->setNeighbour(Right, ((rC < _rows * _cols) && _cells[rC]) ? _cells[rC]->widget : getNeighbour(Right));
+                        widget->setNeighbour(Right,
+                                ((rC < _rows * _cols) && _cells[rC]) ? _cells[rC]->widget : getNeighbour(Right));
                     } else
                         widget->setNeighbour(Right, getNeighbour(Right));
                 } else

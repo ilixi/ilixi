@@ -75,6 +75,12 @@ public:
     void
     select(RadioButton* radio);
 
+    /*!
+     * Clears selected button.
+     */
+    void
+    clear();
+
 private:
     //! This property stores currently selected button.
     RadioButton* _selected;

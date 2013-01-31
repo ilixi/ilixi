@@ -103,6 +103,14 @@ public:
     removeWidget(Widget* widget, bool destroy = true);
 
     /*!
+     * Sets whether children are navigated first using key input.
+     *
+     * This setting will take effect next time the layout is tiled.
+     */
+    void
+    setKeyNavChildrenFirst(bool navChildrenFirst);
+
+    /*!
      * Aligns widgets inside layout.
      *
      * You should reimplement this method in your layout classes.
@@ -119,6 +127,8 @@ public:
 protected:
     //! This flag specifies whether layout is modified since latest tiling operation.
     bool _modified;
+    //! This flag specifies whether children are navigated first using key input.
+    bool _keyNavChildrenFirst;
     //! This property holds spacing between widgets inside the layout.
     unsigned int _spacing;
     //! Default radio group for layout's elements.

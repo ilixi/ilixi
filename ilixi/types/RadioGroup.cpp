@@ -71,4 +71,10 @@ RadioGroup::select(RadioButton* radio)
     }
 }
 
+void
+RadioGroup::clear()
+{
+    _selected = NULL;
+}
+
 } /* namespace ilixi */

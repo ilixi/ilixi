@@ -33,6 +33,7 @@ D_DEBUG_DOMAIN( ILX_LAYOUT, "ilixi/ui/Layout", "Layout");
 LayoutBase::LayoutBase(Widget* parent)
         : Widget(parent),
           _modified(false),
+          _keyNavChildrenFirst(false),
           _spacing(5)
 {
     ILOG_TRACE_W(ILX_LAYOUT);
@@ -79,8 +80,10 @@ LayoutBase::preferredSize() const
 void
 LayoutBase::clear()
 {
-    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
-        removeWidget(*it);
+    _group->clear();
+    while (_children.size())
+        removeChild(*_children.begin());
+    doLayout();
 }
 
 unsigned int
@@ -137,6 +140,12 @@ LayoutBase::removeWidget(Widget* widget, bool destroy)
         return true;
     }
     return false;
+}
+
+void
+LayoutBase::setKeyNavChildrenFirst(bool navChildrenFirst)
+{
+    _keyNavChildrenFirst = navChildrenFirst;
 }
 
 void

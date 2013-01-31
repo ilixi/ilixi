@@ -321,7 +321,7 @@ HBoxLayout::tile()
     int artifact = availableSpace - average * l.size();
     int currentX = 0;
     Widget* widget;
-    Widget* left = getNeighbour(Left);
+    Widget* left = _keyNavChildrenFirst ? (*list.end()).widget : getNeighbour(Left);
     Widget* right = getNeighbour(Right);
     Widget* up = getNeighbour(Up);
     Widget* down = getNeighbour(Down);
@@ -400,8 +400,12 @@ HBoxLayout::tile()
 
         // Set neighbours
         if (it == itLast)
-            right = getNeighbour(Right);
-        else
+        {
+            if (_keyNavChildrenFirst)
+                right = (*list.begin()).widget;
+            else
+                right = getNeighbour(Right);
+        } else
         {
             itNext = it;
             right = ((LayoutElement) *(++itNext)).widget;
