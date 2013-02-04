@@ -1,5 +1,6 @@
 <!ELEMENT settings (mem_monitor, animations, notifications) >
     <!ELEMENT mem_monitor (mem_states, page_faults) >
+    <!ATTLIST mem_monitor enabled (yes|no) "yes" >
         <!ELEMENT mem_states (low, critical)>
         <!ELEMENT page_faults (low, critical)>
             <!ELEMENT low (#PCDATA) >

@@ -868,6 +868,12 @@ ILXCompositor::parseSettings()
         ILOG_DEBUG(ILX_COMPOSITOR, " -> group: %s\n", (char*)group->name);
         if (xmlStrcmp(group->name, (xmlChar*) "mem_monitor") == 0)
         {
+            xmlChar* enabled = xmlGetProp(group, (xmlChar*) "enabled");
+            if (xmlStrcmp(enabled, (xmlChar*) "yes") == 0)
+                settings.memMonitor = true;
+            else
+                settings.memMonitor = false;
+
             element = group->children;
             while (element != NULL)
             {
@@ -899,7 +905,7 @@ ILXCompositor::parseSettings()
         {
             element = group->children;
             xmlChar* enabled = xmlGetProp(group, (xmlChar*) "enabled");
-            if (enabled)
+            if (xmlStrcmp(enabled, (xmlChar*) "yes") == 0)
             {
                 settings.animations = true;
                 while (element != NULL)

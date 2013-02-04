@@ -245,6 +245,7 @@ private:
                   durationHide(500),
                   filter(),
                   notificationTimeout(5000),
+                  memMonitor(true),
                   memCritical(0.2),
                   memLow(0.5),
                   pgCritical(30),
@@ -261,6 +262,7 @@ private:
         unsigned int durationHide;                  //!< Animation duration for hide.
         DFBConvolutionFilter filter;                //!< Convolution filter.
         unsigned int notificationTimeout;           //!< Notification will hide itself after timeout(ms).
+        bool memMonitor;
         double memCritical;
         double memLow;
         int pgCritical;

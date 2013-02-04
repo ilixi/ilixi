@@ -205,8 +205,11 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
     if (sigaction(SIGABRT, &_act, NULL) == -1)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
 
-    _monitor = new MemoryMonitor(this, _compositor->settings.memCritical, _compositor->settings.memLow, _compositor->settings.pgCritical, _compositor->settings.pgLow);
-    _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
+    if (_compositor->settings.memMonitor)
+    {
+        _monitor = new MemoryMonitor(this, _compositor->settings.memCritical, _compositor->settings.memLow, _compositor->settings.pgCritical, _compositor->settings.pgLow);
+        _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
+    }
 }
 
 ApplicationManager::~ApplicationManager()

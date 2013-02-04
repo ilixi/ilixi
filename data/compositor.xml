@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE settings PUBLIC "-//ilixi//DTD Compositor v1//EN" "http://www.ilixi.org/dtd/compositor.dtd">
 <settings>
-	<mem_monitor>
+	<mem_monitor enabled="no">
 		<mem_states>
-			<low>0.7</low>
-			<critical>0.9</critical>
+			<low>0.9</low>
+			<critical>0.99</critical>
 		</mem_states>
 		<page_faults>
 			<low>10</low>
@@ -12,7 +12,7 @@
 		</page_faults>
 	</mem_monitor>
 
-	<animations enabled="no">
+	<animations enabled="yes">
 		<slide>
 			<duration>300</duration>
 		</slide>
