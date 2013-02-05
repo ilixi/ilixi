@@ -467,8 +467,6 @@ ApplicationManager::initStartup()
     parseFolder(ILIXI_DATADIR"apps");
     usleep(10000);
     startApp("StatusBar");
-    usleep(100000);
-    startApp("Home");
     for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
     {
         if (((AppInfo*) (*it))->appFlags() & APP_AUTO_START)
@@ -477,6 +475,8 @@ ApplicationManager::initStartup()
             startApplication(((AppInfo*) (*it))->name(), true);
         }
     }
+    usleep(500000);
+    startApp("Home");
 }
 
 void
