@@ -32,68 +32,146 @@ namespace ilixi
 class GridLayout;
 class ScrollArea;
 
-/*!
- *
- */
+//! A container widget with a ScrollArea and a GridLayout.
 class GridView : public Widget
 {
 public:
+    /*!
+     * Constructor.
+     */
     GridView(Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~GridView();
 
-    virtual Size
+    Size
     preferredSize() const;
 
+    /*!
+     * Adds widget to internal layout.
+     */
     void
     addItem(Widget* item);
 
+    /*!
+     * Removes all widgets from layout.
+     */
     void
     clear();
 
+    /*!
+     * Returns number of widgets in layout.
+     */
     unsigned int
     count() const;
 
+    /*!
+     * Returns last focused item.
+     */
     Widget*
     currentItem() const;
 
+    /*!
+     * Returns the index of last focused item.
+     */
     unsigned int
     currentIndex() const;
 
+    /*!
+     * Returns whether listbox draws a frame.
+     */
     bool
     drawFrame() const;
 
+    /*!
+     * Returns the index for given item.
+     */
     int
     itemIndex(Widget* item);
 
+    /*!
+     * Returns the widget at given index.
+     *
+     * Returns NULL if there is no item at index.
+     */
     Widget*
     itemAtIndex(unsigned int index);
 
+    /*!
+     * Inserts a widget to layout at given index.
+     */
     void
     insertItem(unsigned int index, Widget* item);
 
+    /*!
+     * Removes a given widget from layout.
+     */
     bool
     removeItem(Widget* item);
 
+    /*!
+     * Removes widget from layout at given index.
+     */
     bool
     removeItem(unsigned int index);
 
+    /*!
+     * Returns current orientation, i.e. horizontal or vertical.
+     */
+    Orientation
+    orientation() const;
+
+    /*!
+     * Scrolls to given item at index.
+     *
+     * Setting current item with this method will not emit signals.
+     */
     void
     setCurrentItem(unsigned int index);
 
+    /*!
+     * Scrolls to given item.
+     *
+     * Setting current item with this method will not emit signals.
+     */
     void
     setCurrentItem(Widget* item);
 
+    /*!
+     * Sets orientation.
+     *
+     * If orientation is changed it will remove existing layout and all child items.
+     */
+    void
+    setOrientation(Orientation orientation);
+
+    /*!
+     * Sets whether frame is drawn.
+     */
     void
     setDrawFrame(bool drawFrame);
 
     void
     setGridSize(unsigned int rows, unsigned int cols);
 
-    sigc::signal<void, unsigned int, unsigned int> sigItemChanged;
-    sigc::signal<void, unsigned int> sigIndexChanged;
+    /*!
+     * This signal is emitted when current item index is changed.
+     *
+     * Signal will pass old index and new index.
+     */
+    sigc::signal<void, unsigned int, unsigned int> sigIndexChanged;
+
+    /*!
+     * This signal is emitted when current item is in PressedState.
+     */
     sigc::signal<void, Widget*> sigItemClicked;
+
+    /*!
+     * This signal is emitted when current item is in FocusedState.
+     */
     sigc::signal<void, Widget*> sigItemSelected;
 
 protected:
@@ -101,19 +179,24 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    //! This holds internal layout.
     ScrollArea* _scrollArea;
+    //! This is the internal grid layout.
     GridLayout* _layout;
-
+    //! This flag specifies whether frame is drawn.
     bool _drawFrame;
-
+    //! Index of current item.
     unsigned int _currentIndex;
+    //! Points to current/last focused item.
     Widget* _currentItem;
-
+    //! List of items in layout, stored for convenience.
     WidgetList _items;
 
+    //! Sets geometry of ScrollArea.
     void
     updateGridViewGeometry();
 
+    //! This method is called when an item's state changes.
     void
     trackItem(Widget* item, WidgetState state);
 
