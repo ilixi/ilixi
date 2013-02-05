@@ -36,7 +36,7 @@ AppView::AppView(ILXCompositor* compositor, AppInstance* instance, Widget* paren
         : AppCompositor(compositor, instance, parent),
           _animProps((AnimatedProperty) (Opacity))
 {
-    setInputMethod(PointerInput);
+    setInputMethod(PointerPassthrough);
 
     _propAnim.setDuration(_compositor->settings.durationShow);
     _propAnim.sigExec.connect(sigc::mem_fun(this, &AppView::tweenSlot));
