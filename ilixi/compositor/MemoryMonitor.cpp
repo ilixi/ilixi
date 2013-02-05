@@ -156,17 +156,17 @@ MemoryMonitor::calcMemoryUsed()
         }
 
         if (tagbuffer.find("MemTotal", 0) != std::string::npos)
-            sscanf(item.c_str(), "%ld %*s", &total);
+            sscanf(item.c_str(), "%u %*s", &total);
 
         else if (tagbuffer.find("MemFree", 0) != std::string::npos)
-            sscanf(item.c_str(), "%ld %*s", &free);
+            sscanf(item.c_str(), "%u %*s", &free);
 
         else if (tagbuffer.find("Buffers", 0) != std::string::npos)
-            sscanf(item.c_str(), "%ld %*s", &buffers);
+            sscanf(item.c_str(), "%u %*s", &buffers);
 
         else if (tagbuffer.find("Cached", 0) != std::string::npos)
         {
-            sscanf(item.c_str(), "%ld %*s", &cached);
+            sscanf(item.c_str(), "%u %*s", &cached);
             break;
         }
 
@@ -207,7 +207,7 @@ MemoryMonitor::calcPageFaults()
         _state = Critical;
     else if (dif > _pgLow)
         _state = Low;
-    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> page_faults: %d\n", dif);
+    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> dif. page_faults: %d\n", dif);
     _pgPre = sum;
 }
 
