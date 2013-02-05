@@ -30,11 +30,9 @@
 namespace ilixi
 {
 
-/*!
- *
- */
 class ApplicationManager;
 
+//!
 class MemoryMonitor
 {
 public:
@@ -50,21 +48,45 @@ public:
     virtual
     ~MemoryMonitor();
 
+    float
+    getMemCritical() const;
+
+    void
+    setMemCritical(float memCritical);
+
+    float
+    getMemLow() const;
+
+    void
+    setMemLow(float memLow);
+
+    int
+    getPgCritical() const;
+
+    void
+    setPgCritical(int pgCritical);
+
+    int
+    getPgLow() const;
+
+    void
+    setPgLow(int pgLow);
+
+    MemoryState
+    getState() const;
+
     sigc::signal<void, MemoryState> sigStateChanged;
 
 private:
     ApplicationManager* _manager;
     float _memCritical;
     float _memLow;
-    long unsigned int _pgCritical;
-    long unsigned int _pgLow;
+    int _pgCritical;
+    int _pgLow;
+    int _pgPre;
 
     MemoryState _state;
     Timer _timer;
-    unsigned int _total;
-    unsigned int _free;
-    unsigned int _cached;
-    unsigned int _buffers;
 
     void
     refresh();

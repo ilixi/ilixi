@@ -38,6 +38,7 @@ MemoryMonitor::MemoryMonitor(ApplicationManager* manager, float memCritical, flo
           _memLow(memLow),
           _pgCritical(pgCritical),
           _pgLow(pgLow),
+          _pgPre(0),
           _state(Normal)
 {
     ILOG_TRACE_F(ILX_MEMORYMONITOR);
@@ -50,6 +51,60 @@ MemoryMonitor::~MemoryMonitor()
     ILOG_TRACE_F(ILX_MEMORYMONITOR);
 }
 
+float
+MemoryMonitor::getMemCritical() const
+{
+    return _memCritical;
+}
+
+void
+MemoryMonitor::setMemCritical(float memCritical)
+{
+    _memCritical = memCritical;
+}
+
+float
+MemoryMonitor::getMemLow() const
+{
+    return _memLow;
+}
+
+void
+MemoryMonitor::setMemLow(float memLow)
+{
+    _memLow = memLow;
+}
+
+int
+MemoryMonitor::getPgCritical() const
+{
+    return _pgCritical;
+}
+
+void
+MemoryMonitor::setPgCritical(int pgCritical)
+{
+    _pgCritical = pgCritical;
+}
+
+int
+MemoryMonitor::getPgLow() const
+{
+    return _pgLow;
+}
+
+void
+MemoryMonitor::setPgLow(int pgLow)
+{
+    _pgLow = pgLow;
+}
+
+MemoryMonitor::MemoryState
+MemoryMonitor::getState() const
+{
+    return _state;
+}
+
 void
 MemoryMonitor::refresh()
 {
@@ -59,9 +114,9 @@ MemoryMonitor::refresh()
     if (_state != Normal)
     {
         if (_state == Critical)
-            _timer.setInterval(500);
+            _timer.setInterval(2000);
         else if (_state == Low)
-            _timer.setInterval(1000);
+            _timer.setInterval(3000);
         sigStateChanged(_state);
         _timer.restart();
         _state = Normal;
@@ -76,6 +131,11 @@ MemoryMonitor::calcMemoryUsed()
     std::string line;
     std::ifstream infile;
     infile.open("/proc/meminfo", std::ifstream::in);
+    unsigned int total;
+    unsigned int free;
+    unsigned int cached;
+    unsigned int buffers;
+
     while (infile.good())
     {
         std::string tagbuffer;
@@ -96,24 +156,24 @@ MemoryMonitor::calcMemoryUsed()
         }
 
         if (tagbuffer.find("MemTotal", 0) != std::string::npos)
-            sscanf(item.c_str(), "%d %*s", &_total);
+            sscanf(item.c_str(), "%ld %*s", &total);
 
         else if (tagbuffer.find("MemFree", 0) != std::string::npos)
-            sscanf(item.c_str(), "%d %*s", &_free);
+            sscanf(item.c_str(), "%ld %*s", &free);
 
         else if (tagbuffer.find("Buffers", 0) != std::string::npos)
-            sscanf(item.c_str(), "%d %*s", &_buffers);
+            sscanf(item.c_str(), "%ld %*s", &buffers);
 
         else if (tagbuffer.find("Cached", 0) != std::string::npos)
         {
-            sscanf(item.c_str(), "%d %*s", &_cached);
+            sscanf(item.c_str(), "%ld %*s", &cached);
             break;
         }
 
     }
     infile.close();
 
-    double used = (_buffers + _cached + .0) / _total;
+    double used = (buffers + cached + .0) / total;
     ILOG_DEBUG(ILX_MEMORYMONITOR, " -> Used: %f\n", used);
     if (used > _memCritical)
         _state = Critical;
@@ -127,25 +187,28 @@ MemoryMonitor::calcPageFaults()
     ILOG_TRACE_F(ILX_MEMORYMONITOR);
     std::string line;
     std::ifstream infile;
-    long unsigned int faults;
-    long unsigned int avg = 0;
+    int faults;
+    int sum = 0;
+
     for (AppInstanceList::iterator it = _manager->_instances.begin(); it != _manager->_instances.end(); ++it)
     {
         infile.open(PrintF("/proc/%d/stat", ((AppInstance*) *it)->pid()).c_str(), std::ifstream::in);
         getline(infile, line);
-        sscanf(line.c_str(), "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*lu %*lu %lu %*s", &faults);
-        avg += faults;
+        sscanf(line.c_str(), "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %d %*s", &faults);
+        sum += faults;
         infile.close();
+        ILOG_DEBUG(ILX_MEMORYMONITOR, "   -> %s [%d] faults: %d\n", ((AppInstance*) *it)->appInfo()->name().c_str(), ((AppInstance*) *it)->pid(), faults);
     }
-    avg /= _manager->_instances.size();
-    static long unsigned int previousAvg = avg;
-    long unsigned int dif = previousAvg - avg;
+
+    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> sum: %d\n", sum);
+
+    int dif = sum - _pgPre;
     if (dif > _pgCritical)
         _state = Critical;
     else if (dif > _pgLow)
         _state = Low;
-    previousAvg = avg;
-    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> page_faults: %lu\n", dif);
+    ILOG_DEBUG(ILX_MEMORYMONITOR, " -> page_faults: %d\n", dif);
+    _pgPre = sum;
 }
 
 } /* namespace ilixi */

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE settings PUBLIC "-//ilixi//DTD Compositor v1//EN" "http://www.ilixi.org/dtd/compositor.dtd">
 <settings>
-	<mem_monitor enabled="no">
+	<mem_monitor enabled="yes">
 		<mem_states>
 			<low>0.9</low>
 			<critical>0.99</critical>
 		</mem_states>
 		<page_faults>
-			<low>10</low>
-			<critical>50</critical>
+			<low>50</low>
+			<critical>150</critical>
 		</page_faults>
 	</mem_monitor>
 
