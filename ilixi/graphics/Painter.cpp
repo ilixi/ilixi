@@ -576,6 +576,12 @@ Painter::setAffine2D(const Affine2D& affine2D)
     }
 }
 
+Size
+Painter::textExtents(const std::string& text, int bytes)
+{
+    return _font.extents(text, bytes);
+}
+
 void
 Painter::applyBrush()
 {

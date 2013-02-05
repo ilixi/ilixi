@@ -325,6 +325,16 @@ public:
     void
     setAffine2D(const Affine2D& affine2D = Affine2D());
 
+    /*!
+     * Returns dimension of text in pixels.
+     *
+     * An invalid size is returned if font can not be loaded.
+     *
+     * @param bytes number of bytes to use, -1 for whole string.
+     */
+    Size
+    textExtents(const std::string& text, int bytes = -1);
+
 private:
     enum PainterFlags
     {
