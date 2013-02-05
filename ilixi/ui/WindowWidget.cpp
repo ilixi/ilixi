@@ -311,7 +311,7 @@ WindowWidget::showWindow()
     setVisible(true);
 
     if (!_eventManager->focusedWidget())
-        _eventManager->selectNeighbour(Right);
+        _eventManager->selectNext(this);
 
     update(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
     updateWindow();
@@ -330,7 +330,6 @@ WindowWidget::showWindow()
         _window->showWindow();
 
     AppBase::setActiveWindow(this);
-    _eventManager->selectNext(this);
 }
 
 void
@@ -342,8 +341,7 @@ WindowWidget::closeWindow()
     if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->hideWindow();
 
-    _eventManager->setGrabbedWidget(NULL);
-    _eventManager->setExposedWidget(NULL);
+    _eventManager->clear();
 
     AppBase::removeWindow(this);
 
@@ -371,6 +369,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     case DWET_LOSTFOCUS:
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_LOSTFOCUS\n");
+        _eventManager->setFocusedWidget(NULL);
         return true;
 
     case DWET_CLOSE: // handle Close, can be signalled by viewport manager.
