@@ -175,6 +175,7 @@ ListBox::setCurrentItem(unsigned int index)
     {
         _currentIndex = index;
         _currentItem = itemAtIndex(_currentIndex);
+        _scrollArea->scrollTo(_currentItem);
     }
 }
 
@@ -185,6 +186,7 @@ ListBox::setCurrentItem(Widget* item)
     if (_currentItem != item && _layout->isChild(item))
     {
         _currentItem = item;
+        _scrollArea->scrollTo(_currentItem);
     }
 }
 
@@ -249,7 +251,10 @@ ListBox::trackItem(Widget* item, WidgetState state)
 
     if (state & FocusedState)
     {
-        _scrollArea->scrollTo(item);
+        int oldIndex = _currentIndex;
+        setCurrentItem(item);
+        if (_currentIndex != oldIndex)
+            sigIndexChanged(oldIndex, _currentIndex);
         sigItemSelected(item);
     }
 
