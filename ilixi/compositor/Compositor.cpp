@@ -140,13 +140,13 @@ ILXCompositor::showInstance(AppInstance* instance)
 
     ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
     _currentApp->view()->show(settings.showAnimProps);
-    _currentApp->view()->setWindowFocus();
     _compComp->signalInstanceChanged(_currentApp, _previousApp);
 
     if (info->appFlags() & APP_USE_BACK)
         _compComp->signalBack(true);
     else
         _compComp->signalBack(false);
+    _currentApp->view()->setWindowFocus();
 
     disableSurfaceEventSync(500000);
 }
@@ -767,29 +767,37 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 return false;
 
         case DIKS_RETURN:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
+            if (eventManager()->focusedWidget())
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
+            break;
 
         case DIKS_CURSOR_UP:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
+            if (eventManager()->focusedWidget())
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
+            break;
 
         case DIKS_CURSOR_DOWN:
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
+            if (eventManager()->focusedWidget())
+                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
+            break;
 
         case DIKS_CURSOR_LEFT:
             if (_switcher && _switcher->visible())
             {
                 _switcher->scrollToNext();
                 return true;
-            } else
+            } else if (eventManager()->focusedWidget())
                 return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
+            break;
 
         case DIKS_CURSOR_RIGHT:
             if (_switcher && _switcher->visible())
             {
                 _switcher->scrollToPrevious();
                 return true;
-            } else
+            } else if (eventManager()->focusedWidget())
                 return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
+            break;
 
         case DIKS_F11:
             {
