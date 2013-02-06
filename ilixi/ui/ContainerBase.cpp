@@ -133,13 +133,11 @@ bool
 ContainerBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
     ILOG_TRACE_W(ILX_CONTAINER);
-    if ((_inputMethod & PointerInput) && _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
-    {
-        // priority is given to child on top.
+    // priority is given to child on top.
+    if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
         for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
             if (((Widget*) *it)->consumePointerEvent(pointerEvent))
                 return true;
-    }
     return false;
 }
 

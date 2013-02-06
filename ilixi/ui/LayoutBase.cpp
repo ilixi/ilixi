@@ -200,9 +200,10 @@ bool
 LayoutBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
     // priority is given to child on top.
-    for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-        if (((Widget*) *it)->consumePointerEvent(pointerEvent))
-            return true;
+    if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
+        for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+            if (((Widget*) *it)->consumePointerEvent(pointerEvent))
+                return true;
     return false;
 }
 
