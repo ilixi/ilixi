@@ -123,7 +123,7 @@ private:
 };
 
 /*!
- * Carousel arranges items around circle.
+ * Carousel arranges items around a circle.
  */
 class Carousel : public Widget
 {
@@ -145,6 +145,9 @@ public:
     Size
     itemSize() const;
 
+    /*!
+     * Returns focused item.
+     */
     CarouselItem*
     itemAtFront() const;
 

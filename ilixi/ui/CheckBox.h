@@ -29,15 +29,17 @@
 namespace ilixi
 {
 
+//! Provides a check box.
 class CheckBox : public Button
 {
 public:
 
+    //! This enum specifies CheckBox states.
     enum CheckState
     {
-        Checked, //!< Checked
-        Partial, //!< Partial
-        Unchecked //!< Unchecked
+        Checked,    //!< Checked
+        Partial,    //!< Partial, available for tristate.
+        Unchecked   //!< Unchecked
     };
 
     /*!

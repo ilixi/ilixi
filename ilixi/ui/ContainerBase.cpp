@@ -36,7 +36,7 @@ ContainerBase::ContainerBase(Widget* parent)
           _layout(NULL)
 {
     setLayout(new LayoutBase(this));
-    setInputMethod(PointerInput);
+    setInputMethod(PointerPassthrough);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ContainerBase::updateLayoutGeometry));
 }
 

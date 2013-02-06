@@ -31,19 +31,20 @@
 
 namespace ilixi
 {
+
+//! A dialog with its own window.
 class Dialog : public WindowWidget
 {
 public:
     //! This enum designates the buttons shown on the dialog.
     enum ButtonOption
     {
-        NoButtonOption, //!< No buttons.
-        OKButtonOption, //!< OK button for accept().
-        CancelButtonOption, //!< Cancel button for reject().
-        OKCancelButtonOption, //! OK and Cancel buttons for accept() and reject() respectively.
-        YesNoButtonOption, //!< Yes and No buttons for accept() and reject() respectively.
-        YesNoCancelButtonOption
-    //!< Yes (for accept), No (for reject) and Cancel (for finish(-1)) buttons.
+        NoButtonOption,         //!< No buttons.
+        OKButtonOption,         //!< OK button for accept().
+        CancelButtonOption,     //!< Cancel button for reject().
+        OKCancelButtonOption,   //! OK and Cancel buttons for accept() and reject() respectively.
+        YesNoButtonOption,      //!< Yes and No buttons for accept() and reject() respectively.
+        YesNoCancelButtonOption //!< Yes (for accept), No (for reject) and Cancel (for finish(-1)) buttons.
     };
 
     /*!
@@ -51,8 +52,7 @@ public:
      *
      * @param parent
      */
-    Dialog(const std::string& title, ButtonOption option = OKButtonOption,
-           Widget* parent = 0);
+    Dialog(const std::string& title, ButtonOption option = OKButtonOption, Widget* parent = 0);
 
     /*!
      * Destructor.
@@ -116,9 +116,15 @@ public:
     Size
     titleSize() const;
 
+    /*!
+     * Sets a button layout for dialog.
+     */
     void
     setButtonLayoutOption(ButtonOption option);
 
+    /*!
+     * Changes default button layout with given layout.
+     */
     void
     setButtonLayout(LayoutBase* buttonLayout);
 

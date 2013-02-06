@@ -29,6 +29,7 @@
 
 namespace ilixi
 {
+//! A widget for displaying static images.
 /*!
  * Icon is used for rendering images especially with different states.
  *

@@ -30,6 +30,9 @@
 namespace ilixi
 {
 
+/*!
+ * Base class for button type widgets.
+ */
 class Button : public Widget, public TextBase
 {
 public:
@@ -165,6 +168,7 @@ protected:
 
 private:
 
+    //! Returns button font from stylist.
     virtual Font*
     defaultFont() const;
 };

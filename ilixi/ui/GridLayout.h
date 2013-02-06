@@ -30,7 +30,7 @@
 
 namespace ilixi
 {
-//! A grid layout with fixed number of cells.
+//! A grid layout with fixed number of rows and columns.
 /*!
  * In this layout widgets are placed inside cells.
  *

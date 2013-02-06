@@ -30,7 +30,7 @@
 
 namespace ilixi
 {
-
+//! A container widget with a frame and a title.
 class GroupBox : public Frame
 {
 public:

@@ -28,21 +28,39 @@
 
 namespace ilixi
 {
-
+//! A button with text.
 class PushButton : public Button
 {
 public:
+    /*!
+     * Constructor.
+     * @param text for button.
+     * @param parent
+     */
     PushButton(const std::string& text = "Untitled", Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~PushButton();
 
     virtual Size
     preferredSize() const;
 
+    /*!
+     * Returns button visual style.
+     */
     PushButtonStyle
     getPushButtonStyle() const;
 
+    /*!
+     * Sets visual style.
+     *
+     * A PushButton is drawn using three different sets of images.
+     *
+     * Usually, OK is green and Cancel is red.
+     */
     void
     setPushButtonStyle(PushButtonStyle pbStyle);
 

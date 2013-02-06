@@ -29,7 +29,7 @@
 
 namespace ilixi
 {
-//! Base class of widgets with frames and possible children.
+//! Base class of container widgets with frames.
 class Frame : public ContainerBase
 {
 public:
