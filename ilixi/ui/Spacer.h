@@ -28,28 +28,49 @@
 
 namespace ilixi
 {
-
+//! An empty widget which extends in one direction, Horizontal or Vertical.
+/*!
+ * You can use spacers to align widgets inside Horizontal or Vertical box layouts.
+ */
 class Spacer : public Widget
 {
 public:
+    /*!
+     * Constructor.
+     * @param orientation
+     * @param parent
+     */
     Spacer(Orientation orientation = Horizontal, Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     ~Spacer();
 
     virtual Size
     preferredSize() const;
 
+    /*!
+     * Sets orientation of spacer.
+     */
     void
     setOrientation(Orientation orientation);
 
+    /*!
+     * Overloaded.
+     *
+     * Spacer will not allocate any surface resources or paint its children.
+     */
     virtual void
     paint(const PaintEvent& event);
 
-private:
-    Orientation _orientation;
-
+protected:
     virtual void
     compose(const PaintEvent& event);
+
+private:
+    //! This property stores orientation of spacer.
+    Orientation _orientation;
 };
 
 }

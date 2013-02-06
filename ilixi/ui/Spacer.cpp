@@ -56,7 +56,6 @@ Spacer::setOrientation(Orientation orientation)
 void
 Spacer::paint(const PaintEvent& event)
 {
-    // no surface is allocated.
 }
 
 void
