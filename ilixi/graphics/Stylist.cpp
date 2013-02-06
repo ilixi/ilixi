@@ -581,28 +581,34 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
     if (vertical)
     {
         DFBRectangle blitRects[2];
+
         blitRects[0] = rect.l.dfbRect();
         blitRects[1] = rect.r.dfbRect();
 
         DFBPoint blitPoints[2];
-        blitPoints[0] =
-        {   x,y};
-        blitPoints[1] =
-        {   x, y + h - rect.r.height()};
+
+        blitPoints[0].x = x;
+        blitPoints[0].y = y;
+
+        blitPoints[1].x = x;
+        blitPoints[1].y = y + h - rect.r.height();
 
         p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
         p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
     } else
     {
         DFBRectangle blitRects[2];
+
         blitRects[0] = rect.l.dfbRect();
         blitRects[1] = rect.r.dfbRect();
 
         DFBPoint blitPoints[2];
-        blitPoints[0] =
-        {   x,y};
-        blitPoints[1] =
-        {   x + w - rect.r.width(), y};
+
+        blitPoints[0].x = x;
+        blitPoints[0].y = y;
+
+        blitPoints[1].x = x + w - rect.r.width();
+        blitPoints[1].y = y;
 
         p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
         p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m, flags);
@@ -619,35 +625,55 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rec
     // TODO implement corners
 
     DFBRectangle blitRects[4];
+
     blitRects[0] = rect.tl.dfbRect();
     blitRects[1] = rect.tr.dfbRect();
     blitRects[2] = rect.bl.dfbRect();
     blitRects[3] = rect.br.dfbRect();
 
     DFBPoint blitPoints[4];
-    blitPoints[0] =
-    {   x,y};
-    blitPoints[1] =
-    {   x + w - rect.tr.width(), y};
-    blitPoints[2] =
-    {   x, by};
-    blitPoints[3] =
-    {   x + w - rect.br.width(), by};
+
+    blitPoints[0].x = x;
+    blitPoints[0].y = y;
+
+    blitPoints[1].x = x + w - rect.tr.width();
+    blitPoints[1].y = y;
+
+    blitPoints[2].x = x;
+    blitPoints[2].y = by;
+
+    blitPoints[3].x = x + w - rect.br.width();
+    blitPoints[3].y = by;
 
     p->batchBlitImage(_style->_pack, blitRects, blitPoints, 4);
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     DFBRectangle stretchDestRects[5];
-    stretchDestRects[0] =
-    {   x + rect.tl.width(), y, midWidth, rect.tm.height()};
-    stretchDestRects[1] =
-    {   x, y + rect.tl.height(), rect.tm.height(), midHeight};
-    stretchDestRects[2] =
-    {   x + w - rect.r.width(), y + rect.tl.height(), rect.r.width(), midHeight};
-    stretchDestRects[3] =
-    {   x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight};
-    stretchDestRects[4] =
-    {   x + rect.bl.width(), by, midWidth, rect.bm.height()};
+
+    stretchDestRects[0].x = x + rect.tl.width();
+    stretchDestRects[0].y = y;
+    stretchDestRects[0].w = midWidth;
+    stretchDestRects[0].h = rect.tm.height();
+
+    stretchDestRects[1].x = x;
+    stretchDestRects[1].y = y + rect.tl.height();
+    stretchDestRects[1].w = rect.tm.height();
+    stretchDestRects[1].h = midHeight;
+
+    stretchDestRects[2].x = x + w - rect.r.width();
+    stretchDestRects[2].y = y + rect.tl.height();
+    stretchDestRects[2].w = rect.r.width();
+    stretchDestRects[2].h = midHeight;
+
+    stretchDestRects[3].x = x + rect.l.width();
+    stretchDestRects[3].y = y + rect.tl.height();
+    stretchDestRects[3].w = midWidth;
+    stretchDestRects[3].h = midHeight;
+
+    stretchDestRects[4].x = x + rect.bl.width();
+    stretchDestRects[4].y = by;
+    stretchDestRects[4].w = midWidth;
+    stretchDestRects[4].h = rect.bm.height();
 
     DFBRectangle stretchSourceRects[5];
     stretchSourceRects[0] = rect.tm.dfbRect();
@@ -674,29 +700,45 @@ Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& r
     int by = y + h - rect.bl.height();
 
     DFBRectangle blitRects[2];
+
     blitRects[0] = rect.tl.dfbRect();
     blitRects[1] = rect.tr.dfbRect();
 
     DFBPoint blitPoints[2];
-    blitPoints[0] =
-    {   x, y};
-    blitPoints[1] =
-    {   x + w - rect.tr.width(), y};
+
+    blitPoints[0].x = x;
+    blitPoints[0].y = y;
+
+    blitPoints[1].x = x + w - rect.tr.width();
+    blitPoints[1].y = y;
 
     p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2);
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     DFBRectangle stretchDestRects[4];
-    stretchDestRects[0] =
-    {   x + rect.tl.width(), y, midWidth, rect.tm.height()};
-    stretchDestRects[1] =
-    {   x, y + rect.tl.height(), rect.tm.height(), midHeight};
-    stretchDestRects[2] =
-    {   x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(), midHeight};
-    stretchDestRects[3] =
-    {   x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight};
+
+    stretchDestRects[0].x = x + rect.tl.width();
+    stretchDestRects[0].y = y;
+    stretchDestRects[0].w = midWidth;
+    stretchDestRects[0].h = rect.tm.height();
+
+    stretchDestRects[1].x = x;
+    stretchDestRects[1].y = y + rect.tl.height();
+    stretchDestRects[1].w = rect.tm.height();
+    stretchDestRects[1].h = midHeight;
+
+    stretchDestRects[2].x = x + w - rect.tr.width();
+    stretchDestRects[2].y = y + rect.tl.height();
+    stretchDestRects[2].w = rect.tm.height();
+    stretchDestRects[2].h = midHeight;
+
+    stretchDestRects[3].x = x + rect.l.width();
+    stretchDestRects[3].y = y + rect.tl.height();
+    stretchDestRects[3].w = midWidth;
+    stretchDestRects[3].h = midHeight;
 
     DFBRectangle stretchSourceRects[4];
+
     stretchSourceRects[0] = rect.tm.dfbRect();
     stretchSourceRects[1] = rect.l.dfbRect();
     stretchSourceRects[2] = rect.r.dfbRect();
