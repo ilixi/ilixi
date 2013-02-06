@@ -1,8 +1,24 @@
 /*
- * SpinBox.h
- *
- *  Created on: Sep 9, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_SPINBOX_H_
@@ -12,27 +28,50 @@
 
 namespace ilixi
 {
-
+//! Provides a spin box widget.
+/*!
+ * SpinBox allows to choose an integer value using plus and minus buttons.
+ */
 class SpinBox : public Widget
 {
 public:
+    /*!
+     * Constructor.
+     * @param value initial value.
+     * @param parent
+     */
     SpinBox(int value, Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~SpinBox();
 
     virtual Size
     preferredSize() const;
 
+    /*!
+     * Returns maximum value.
+     */
     int
     max() const;
 
+    /*!
+     * Returns minimum value.
+     */
     int
     min() const;
 
+    /*!
+     * Returns step size.
+     */
     int
     step() const;
 
+    /*!
+     * Returns current value.
+     */
     int
     value() const;
 
@@ -48,6 +87,9 @@ public:
     const std::string&
     prefix() const;
 
+    /*!
+     * Returns whether wrapping is enabled.
+     */
     bool
     wrapping() const;
 
@@ -57,21 +99,41 @@ public:
     TextLayout
     layout() const;
 
+    /*!
+     * Sets maximum value.
+     */
     void
     setMax(int max);
 
+    /*!
+     * Sets minimum value.
+     */
     void
     setMin(int min);
 
+    /*!
+     * Sets minimum and maximum values.
+     */
     void
     setRange(int min, int max);
 
+    /*!
+     * Sets step size.
+     */
     void
     setStep(int step);
 
+    /*!
+     * Sets current value.
+     *
+     * This method will emit sigValueChanged.
+     */
     void
     setValue(int value);
 
+    /*!
+     * Sets whether wrapping is enabled or not.
+     */
     void
     setWrapping(bool wrapping);
 
@@ -87,6 +149,9 @@ public:
     void
     setPrefix(const std::string& prefix);
 
+    /*!
+     * This signal is emitted when spinbox's value is changed.
+     */
     sigc::signal<void, int> sigValueChanged;
 
 protected:

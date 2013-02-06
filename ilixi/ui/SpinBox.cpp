@@ -1,8 +1,24 @@
 /*
- * SpinBox.cpp
- *
- *  Created on: Sep 9, 2012
- *      Author: tarik
+ Copyright 2010-2012 Tarik Sekmen.
+
+ All Rights Reserved.
+
+ Written by Tarik Sekmen <tarik@ilixi.org>.
+
+ This file is part of ilixi.
+
+ ilixi is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ilixi is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ui/SpinBox.h>
@@ -34,14 +50,14 @@ SpinBox::SpinBox(int value, Widget* parent)
     _minus = new ToolButton("-");
     _minus->setRepeatable(true);
     _minus->setToolButtonStyle(ToolButton::IconOnly);
-    _minus->setIcon(StyleHint::Minus);
+    _minus->setIcon(StyleHint::Minus, Size(32, 32));
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
     addChild(_minus);
 
     _plus = new ToolButton("+");
     _plus->setRepeatable(true);
     _plus->setToolButtonStyle(ToolButton::IconOnly);
-    _plus->setIcon(StyleHint::Plus);
+    _plus->setIcon(StyleHint::Plus, Size(32, 32));
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
     if (_max == _value)
         _plus->setDisabled();
