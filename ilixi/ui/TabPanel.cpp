@@ -86,7 +86,7 @@ TabPanel::TabPanel(Widget* parent)
           _canvasOffsetY(0)
 {
     setConstraints(NoConstraint, MinimumConstraint);
-    setInputMethod(PointerInput);
+    setInputMethod(PointerPassthrough);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &TabPanel::updateChildrenFrameGeometry));
 }
 
@@ -99,8 +99,8 @@ TabPanel::heightForWidth(int width) const
 {
     int used = stylist()->defaultParameter(StyleHint::FrameOffsetLR) + _margin.hSum();
     int h4w = 0;
-    for (unsigned int i = 0; i < _pages.size(); i++)
-        h4w = std::max(h4w, _pages.at(i).widget->heightForWidth(width - used));
+    for (unsigned int i = 0; i < _tabs.size(); i++)
+        h4w = std::max(h4w, _tabs.at(i).widget->heightForWidth(width - used));
 
     if (h4w > 0)
         return h4w + _canvasOffsetY + _margin.vSum();
@@ -112,9 +112,9 @@ TabPanel::preferredSize() const
 {
     int w = 0, h = 0;
     // find max. size
-    for (unsigned int i = 0; i < _pages.size(); i++)
+    for (unsigned int i = 0; i < _tabs.size(); i++)
     {
-        Size wS = _pages[i].widget->preferredSize();
+        Size wS = _tabs[i].widget->preferredSize();
         if (wS.width() > w)
             w = wS.width();
         if (wS.height() > h)
@@ -139,13 +139,13 @@ TabPanel::canvasHeight() const
 int
 TabPanel::count() const
 {
-    return _pages.size();
+    return _tabs.size();
 }
 
 void
 TabPanel::clear()
 {
-    _pages.clear();
+    _tabs.clear();
 }
 
 int
@@ -157,52 +157,52 @@ TabPanel::currentIndex() const
 Widget*
 TabPanel::currentWidget() const
 {
-    return _pages.at(_currentIndex).widget;
+    return _tabs.at(_currentIndex).widget;
 }
 
 int
 TabPanel::indexOf(Widget* widget) const
 {
-    for (unsigned int i = 0; i < _pages.size(); i++)
+    for (unsigned int i = 0; i < _tabs.size(); i++)
     {
-        if (_pages.at(i).widget == widget)
+        if (_tabs.at(i).widget == widget)
             return i;
     }
     return -1;
 }
 
 bool
-TabPanel::pageEnabled(int index) const
+TabPanel::tabEnabled(int index) const
 {
-    return _pages.at(index).widget->enabled();
+    return _tabs.at(index).widget->enabled();
 }
 
 std::string
-TabPanel::pageLabel(int index) const
+TabPanel::tabLabel(int index) const
 {
-    return _pages.at(index).button->text();
+    return _tabs.at(index).button->text();
 }
 
 void
-TabPanel::addPage(Widget* widget, std::string label)
+TabPanel::addTab(Widget* widget, std::string label)
 {
     if (!widget)
         return;
 
     if (_currentIndex != -1)
     {
-        _pages.at(_currentIndex).widget->setVisible(false);
-        _pages.at(_currentIndex).button->setChecked(false);
+        _tabs.at(_currentIndex).widget->setVisible(false);
+        _tabs.at(_currentIndex).button->setChecked(false);
     }
 
     _currentIndex++;
-    TabPage page;
+    TabData page;
     page.widget = widget;
     page.button = new TabPanelButton(label, this);
     page.button->setChecked(true);
-    page.button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &TabPanel::setCurrentPage), _currentIndex));
+    page.button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &TabPanel::setCurrentTab), _currentIndex));
 
-    _pages.push_back(page);
+    _tabs.push_back(page);
 
     addChild(page.button);
     addChild(widget);
@@ -211,85 +211,60 @@ TabPanel::addPage(Widget* widget, std::string label)
 }
 
 void
-TabPanel::insertPage(int index, Widget* widget, std::string label, std::string iconPath)
+TabPanel::insertTab(int index, Widget* widget, std::string label)
 {
-    //  widget->setParent(this);
-    //  TabPage page;
-    //  page.widget = widget;
-    //  page.button = new TabPanelButton(label, this);
-    //  if (!iconPath.empty())
-    //    page.button->setIcon(iconPath, Size(stylist()->hint(TabPanelButtonHeight)
-    //        - 6, stylist()->hint(TabPanelButtonHeight) - 6));
-    //
-    //  if (_currentIndex != -1)
-    //    _pages.at(_currentIndex).widget->setVisible(false);
-    //
-    //  if (index < _pages.size())
-    //    {
-    //      _currentIndex = index;
-    //      PageList::iterator it = _pages.begin() + index;
-    //      _pages.insert(it, page);
-    //    }
-    //  else
-    //    {
-    //      _pages.push_back(page);
-    //      _currentIndex = _pages.size() - 1;
-    //    }
-    //
-    //  addChild(page.button);
-    //  setSurfaceGeometryChanged();
-    //  update();
+    // TODO NOT IMPLEMENTED
 }
 
 void
-TabPanel::removePage(int index)
+TabPanel::removeTab(int index)
 {
-    if (index < _pages.size())
+    if (index < _tabs.size())
     {
-        PageList::iterator it = _pages.begin() + index;
+        TabList::iterator it = _tabs.begin() + index;
         removeChild(it->button);
-        _pages.erase(it);
+        _tabs.erase(it);
         doLayout();
         update();
     }
 }
 
 void
-TabPanel::setCurrentPage(int index)
+TabPanel::setCurrentTab(int index)
 {
     if (index == _currentIndex)
         return;
 
-    if (index >= 0 && index < _pages.size())
+    if (index >= 0 && index < _tabs.size())
     {
         // hide previous page.
         if (_currentIndex != -1)
         {
-            _pages.at(_currentIndex).widget->setVisible(false);
-            _pages.at(_currentIndex).button->setChecked(false);
+            _tabs.at(_currentIndex).widget->setVisible(false);
+            _tabs.at(_currentIndex).button->setChecked(false);
         }
 
         // show current page.
         _currentIndex = index;
-        _pages.at(_currentIndex).widget->setVisible(true);
-        _pages.at(_currentIndex).button->setChecked(true);
+        _tabs.at(_currentIndex).widget->setVisible(true);
+        _tabs.at(_currentIndex).button->setChecked(true);
         update();
     }
 }
 
 void
-TabPanel::setPageLabel(int index, std::string label)
+TabPanel::setTabLabel(int index, std::string label)
 {
-    _pages.at(index).button->setText(label);
+    _tabs.at(index).button->setText(label);
 }
 
 void
-TabPanel::setPageEnabled(int index, bool enabled)
+TabPanel::setTabEnabled(int index, bool enabled)
 {
     if (enabled)
-        _pages.at(index).widget->setEnabled();
+        _tabs.at(index).widget->setEnabled();
     else
-        _pages.at(index).widget->setDisabled();
+        _tabs.at(index).widget->setDisabled();
 }
 
 void
@@ -310,8 +285,8 @@ void
 TabPanel::updateChildrenFrameGeometry()
 {
     _canvasOffsetY = 0;
-    for (unsigned int i = 0; i < _pages.size(); i++)
-        _canvasOffsetY = std::max(_canvasOffsetY, _pages[i].button->preferredSize().height());
+    for (unsigned int i = 0; i < _tabs.size(); i++)
+        _canvasOffsetY = std::max(_canvasOffsetY, _tabs[i].button->preferredSize().height());
     int buttonX = stylist()->defaultParameter(StyleHint::FrameOffsetLR);
     int buttonW = 0;
     int buttonH = _canvasOffsetY;
@@ -322,55 +297,55 @@ TabPanel::updateChildrenFrameGeometry()
     Widget* left = NULL;
     Widget* right = NULL;
 
-    for (unsigned int i = 0; i < _pages.size(); i++)
+    for (unsigned int i = 0; i < _tabs.size(); i++)
     {
         // set button
-        buttonW = _pages[i].button->preferredSize().width();
-        _pages[i].button->setGeometry(buttonX, 0, buttonW, buttonH);
+        buttonW = _tabs[i].button->preferredSize().width();
+        _tabs[i].button->setGeometry(buttonX, 0, buttonW, buttonH);
         buttonX += buttonW;
 
         // set page
-        _pages[i].widget->moveTo(canvasX(), canvasY());
+        _tabs[i].widget->moveTo(canvasX(), canvasY());
 
-        _pages[i].widgetSize = _pages[i].widget->preferredSize();
+        _tabs[i].widgetSize = _tabs[i].widget->preferredSize();
 
-        if (_pages[i].widgetSize.width() < pageWidth && ((_pages[i].widget->xConstraint() & GrowPolicy) || (_pages[i].widget->xConstraint() & ExpandPolicy)))
-            _pages[i].widget->setWidth(pageWidth);
-        else if (_pages[i].widgetSize.width() > pageWidth && (_pages[i].widget->xConstraint() & ShrinkPolicy))
-            _pages[i].widget->setWidth(pageWidth);
+        if (_tabs[i].widgetSize.width() < pageWidth && ((_tabs[i].widget->xConstraint() & GrowPolicy) || (_tabs[i].widget->xConstraint() & ExpandPolicy)))
+            _tabs[i].widget->setWidth(pageWidth);
+        else if (_tabs[i].widgetSize.width() > pageWidth && (_tabs[i].widget->xConstraint() & ShrinkPolicy))
+            _tabs[i].widget->setWidth(pageWidth);
         else
-            _pages[i].widget->setWidth(_pages[i].widgetSize.width());
+            _tabs[i].widget->setWidth(_tabs[i].widgetSize.width());
 
-        if (_pages[i].widgetSize.height() < pageHeight && ((_pages[i].widget->yConstraint() & GrowPolicy) || (_pages[i].widget->yConstraint() & ExpandPolicy)))
-            _pages[i].widget->setHeight(pageHeight);
-        else if (_pages[i].widgetSize.height() > pageHeight && (_pages[i].widget->yConstraint() & ShrinkPolicy))
-            _pages[i].widget->setHeight(pageHeight);
+        if (_tabs[i].widgetSize.height() < pageHeight && ((_tabs[i].widget->yConstraint() & GrowPolicy) || (_tabs[i].widget->yConstraint() & ExpandPolicy)))
+            _tabs[i].widget->setHeight(pageHeight);
+        else if (_tabs[i].widgetSize.height() > pageHeight && (_tabs[i].widget->yConstraint() & ShrinkPolicy))
+            _tabs[i].widget->setHeight(pageHeight);
         else
-            _pages[i].widget->setHeight(_pages[i].widgetSize.height());
+            _tabs[i].widget->setHeight(_tabs[i].widgetSize.height());
 
         if (i == 0)
-            left = _pages[_pages.size() - 1].button;
+            left = _tabs[_tabs.size() - 1].button;
         else
-            left = _pages[i - 1].button;
+            left = _tabs[i - 1].button;
 
-        if (i == _pages.size() - 1)
-            right = _pages[0].button;
+        if (i == _tabs.size() - 1)
+            right = _tabs[0].button;
         else
-            right = _pages[i + 1].button;
+            right = _tabs[i + 1].button;
 
-        _pages[i].button->setNeighbours(getNeighbour(Up), _pages[i].widget, left, right);
-        _pages[i].widget->setNeighbours(_pages[i].button, getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
+        _tabs[i].button->setNeighbours(getNeighbour(Up), _tabs[i].widget, left, right);
+        _tabs[i].widget->setNeighbours(_tabs[i].button, getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
     }
 }
 
 void
 TabPanel::paintChildren(const Rectangle& rect)
 {
-    for (unsigned int i = 0; i < _pages.size(); i++)
+    for (unsigned int i = 0; i < _tabs.size(); i++)
     {
-        _pages[i].button->paint(rect);
+        _tabs[i].button->paint(rect);
         if (i == _currentIndex)
-            _pages[i].widget->paint(rect);
+            _tabs[i].widget->paint(rect);
     }
 }
 

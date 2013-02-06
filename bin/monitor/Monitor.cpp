@@ -68,7 +68,7 @@ Monitor::Monitor(int argc, char* argv[])
 
     //**************************************
     VBoxLayout* overviewLayout = new VBoxLayout();
-    tabPanel->addPage(overviewLayout, "Overview");
+    tabPanel->addTab(overviewLayout, "Overview");
 
     _uptime = new Label("Uptime: " + _osMon->getUptime());
     overviewLayout->addWidget(_uptime);
@@ -88,7 +88,7 @@ Monitor::Monitor(int argc, char* argv[])
 
     //****************************************************************************
     GridLayout* fm = new GridLayout(3, 2);
-    tabPanel->addPage(fm, "Resources");
+    tabPanel->addTab(fm, "Resources");
 
     GroupBox* memGroup = new GroupBox("Memory");
     memGroup->setTitleIcon(StyleHint::RAM);

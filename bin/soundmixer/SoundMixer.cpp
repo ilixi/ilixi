@@ -69,7 +69,7 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
 
     //**********
     HBoxLayout* volHBox = new HBoxLayout();
-    panel->addPage(volHBox, "Volume Control");
+    panel->addTab(volHBox, "Volume Control");
 
     GridLayout* volGrid = new GridLayout(6, 3);
     volHBox->addWidget(volGrid);
@@ -112,7 +112,7 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
 
     //*********
     VBoxLayout* eqBox = new VBoxLayout();
-    panel->addPage(eqBox, "Equalizer");
+    panel->addTab(eqBox, "Equalizer");
 
     HBoxLayout* buttons = new HBoxLayout();
     buttons->addWidget(new CheckBox("EQ Enabled"));

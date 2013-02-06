@@ -30,12 +30,18 @@
 
 namespace ilixi
 {
-
+//! Used for displaying tabs in a panel.
 class TabPanelButton : public Button
 {
 public:
+    /*!
+     * Contructor.
+     */
     TabPanelButton(std::string label, Widget* parent);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~TabPanelButton();
 
@@ -57,18 +63,25 @@ private:
     defaultFont() const;
 };
 
+//! Provides a multi-page container with tabs.
 class TabPanel : public Frame
 {
 public:
-    struct TabPage
+    struct TabData
     {
         Widget* widget;
         TabPanelButton* button;
         Size widgetSize;
     };
 
+    /*!
+     * Contructor.
+     */
     TabPanel(Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~TabPanel();
 
@@ -98,63 +111,109 @@ public:
     virtual int
     canvasHeight() const;
 
+    /*!
+     * Returns number of tabs.
+     */
     int
     count() const;
 
+    /*!
+     * Removes all tabs.
+     */
     void
     clear();
 
+    /*!
+     * Returns index of currently selected tab.
+     */
     int
     currentIndex() const;
 
+    /*!
+     * Returns the widget for current tab.
+     */
     Widget*
     currentWidget() const;
 
+    /*!
+     * Returns tab index of given widget. -1 if not found.
+     */
     int
     indexOf(Widget* widget) const;
 
+    /*!
+     * Returns true if tab at given index is enabled.
+     */
     bool
-    pageEnabled(int index) const;
+    tabEnabled(int index) const;
 
+    /*!
+     * Returns tab label at given index.
+     */
     std::string
-    pageLabel(int index) const;
+    tabLabel(int index) const;
 
+    /*!
+     * Adds a new tab at the end.
+     *
+     * @param widget shown when tab is selected.
+     * @param label for tab.
+     */
     void
-    addPage(Widget* widget, std::string label);
+    addTab(Widget* widget, std::string label);
 
+    /*!
+     * Insert a new tab at given index.
+     *
+     * @param index
+     * @param widget
+     * @param label
+     */
     void
-    insertPage(int index, Widget* widget, std::string label,
-               std::string iconPath = "");
+    insertTab(int index, Widget* widget, std::string label);
 
+    /*!
+     * Removes tab and widget at given index.
+     */
     void
-    removePage(int index);
+    removeTab(int index);
 
+    /*!
+     * Switches to tab at given index.
+     */
     void
-    setCurrentPage(int index);
+    setCurrentTab(int index);
 
+    /*!
+     * Sets label for tab at given index.
+     */
     void
-    setPageLabel(int index, std::string label);
+    setTabLabel(int index, std::string label);
 
+    /*!
+     * Enables/Disables tab at given index.
+     */
     void
-    setPageEnabled(int index, bool enabled);
+    setTabEnabled(int index, bool enabled);
 
     virtual void
     doLayout();
 
 protected:
+    /*!
+     * Draws tab panel frame.
+     */
     virtual void
     compose(const PaintEvent& event);
 
 private:
-    //! This property stores current page index.
+    //! This property stores index of currently selected tab.
     int _currentIndex;
-
+    //! This property stores the offset for tab's widget.
     int _canvasOffsetY;
 
-
-
-    typedef std::vector<TabPage> PageList;
-    PageList _pages;
+    typedef std::vector<TabData> TabList;
+    TabList _tabs;
 
     virtual void
     updateChildrenFrameGeometry();

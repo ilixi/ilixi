@@ -47,7 +47,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     addWidget(tab);
 
     VBoxLayout* vBox = new VBoxLayout();
-    tab->addPage(vBox, "Buttons");
+    tab->addTab(vBox, "Buttons");
 
     CheckBox* cb1 = new CheckBox("CheckBox");
     vBox->addWidget(cb1);
@@ -77,7 +77,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     vBox->addWidget(tb2);
 
     VBoxLayout* vBox2 = new VBoxLayout();
-    tab->addPage(vBox2, "LineInputs");
+    tab->addTab(vBox2, "LineInputs");
 
     LineInput *li1 = new LineInput("Line input has some text...");
     vBox2->addWidget(li1);
@@ -100,7 +100,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     vBox2->addWidget(li5);
 
     VBoxLayout* vBox3 = new VBoxLayout();
-    tab->addPage(vBox3, "Bars and Sliders");
+    tab->addTab(vBox3, "Bars and Sliders");
 
     ProgressBar* bar1 = new ProgressBar();
     bar1->setValue(5);
