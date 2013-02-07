@@ -664,8 +664,6 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
                 _compComp->signalAppQuit(data->instance);
 
-//                _compComp->signalInstanceChanged(data->instance, NULL);
-
                 std::stringstream ss;
                 ss << data->instance->appInfo()->name() << " terminated abnormally.";
                 Notify notify("Application crashed!", ss.str());
@@ -682,6 +680,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                     _switcher->removeThumb(data->instance->thumb());
 
                 delete data->instance;
+                toggleLauncher(true);
             }
             break;
 

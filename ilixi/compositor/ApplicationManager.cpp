@@ -65,27 +65,18 @@ void
 sigchild_handler(int sig, siginfo_t *siginfo, void *context)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> code: %d\n", siginfo->si_code);
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> si_code: %d\n", siginfo->si_code);
     if (__appMan != NULL && (siginfo->si_code == CLD_DUMPED || siginfo->si_code == CLD_KILLED))
     {
         AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
-
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
         if (!instance)
             return;
-
-        if (siginfo->si_code == CLD_DUMPED)
-        {
-            std::stringstream ss;
-            ss << instance->appInfo()->name() << " terminated abnormally.";
-            Notify notify("Application crashed!", ss.str());
-            notify.setIcon(ILIXI_DATADIR"images/default.png");
-            notify.show();
-        }
 
         if (instance->view())
             return;
 
-        __appMan->processTerminated((long) siginfo->si_pid);
+        __appMan->processTerminated(instance);
     }
 }
 
@@ -160,31 +151,6 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     pthread_mutex_init(&_mutex, NULL);
-    if (SaWManInit(NULL, NULL) != DR_OK)
-        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to initialise SaWMan!\n");
-
-    if (SaWManCreate(&_saw) != DR_OK)
-        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan!\n");
-
-    memset(&_callbacks, 0, sizeof(_callbacks));
-    _callbacks.Start = start_request;
-    _callbacks.Stop = stop_request;
-    _callbacks.ProcessAdded = process_added;
-    _callbacks.ProcessRemoved = process_removed;
-    _callbacks.InputFilter = NULL;
-    _callbacks.WindowPreConfig = window_preconfig;
-    _callbacks.WindowAdded = window_added;
-    _callbacks.WindowRemoved = window_removed;
-    _callbacks.WindowReconfig = window_reconfig;
-    _callbacks.WindowRestack = window_restack;
-    _callbacks.StackResized = NULL;
-    _callbacks.SwitchFocus = NULL;
-    _callbacks.LayerReconfig = NULL;
-    _callbacks.ApplicationIDChanged = NULL;
-
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Creating SaWManager.\n");
-    if (_saw->CreateManager(_saw, &_callbacks, this, &_manager) != DR_OK)
-        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan manager!\n");
 
     __appMan = this;
 
@@ -204,6 +170,34 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
     if (sigaction(SIGABRT, &_act, NULL) == -1)
         ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+    if (sigaction(SIGTERM, &_act, NULL) == -1)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create signal handler!\n");
+
+    if (SaWManInit(NULL, NULL) != DR_OK)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to initialise SaWMan!\n");
+
+    if (SaWManCreate(&_saw) != DR_OK)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan!\n");
+
+    memset(&_callbacks, 0, sizeof(_callbacks));
+    _callbacks.Start = start_request;
+    _callbacks.Stop = stop_request;
+    _callbacks.ProcessAdded = process_added;
+    _callbacks.ProcessRemoved = NULL; // process_removed;
+    _callbacks.InputFilter = NULL;
+    _callbacks.WindowPreConfig = window_preconfig;
+    _callbacks.WindowAdded = window_added;
+    _callbacks.WindowRemoved = window_removed;
+    _callbacks.WindowReconfig = window_reconfig;
+    _callbacks.WindowRestack = window_restack;
+    _callbacks.StackResized = NULL;
+    _callbacks.SwitchFocus = NULL;
+    _callbacks.LayerReconfig = NULL;
+    _callbacks.ApplicationIDChanged = NULL;
+
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Creating SaWManager.\n");
+    if (_saw->CreateManager(_saw, &_callbacks, this, &_manager) != DR_OK)
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to create SaWMan manager!\n");
 
     if (_compositor->settings.memMonitor)
     {
@@ -507,13 +501,13 @@ ApplicationManager::processAdded(SaWManProcess *process)
         return DR_OK;
 
     ILOG_WARNING(ILX_APPLICATIONMANAGER, "Process[%d] is not recognized!\n", process->pid);
-//    kill(process->pid, SIGKILL);
     return DR_ITEMNOTFOUND;
 }
 
 DirectResult
 ApplicationManager::processRemoved(SaWManProcess *process)
 {
+    // XXX Not being used atm.
     ILOG_DEBUG( ILX_APPLICATIONMANAGER, "%s( process %p )\n", __FUNCTION__, process);
     ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
 
@@ -540,30 +534,23 @@ ApplicationManager::processRemoved(SaWManProcess *process)
 }
 
 DirectResult
-ApplicationManager::processTerminated(pid_t pid)
+ApplicationManager::processTerminated(AppInstance* instance)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d\n", pid);
+    _compositor->processTerminated(instance);
+    AppInstance* ins;
     pthread_mutex_lock(&_mutex);
-    bool found = false;
-    AppInstance* instance;
     for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
-        instance = ((AppInstance*) *it);
-        if (instance->pid() == pid)
+        ins = ((AppInstance*) *it);
+        if (instance == ins)
         {
-            found = true;
             it = _instances.erase(it);
             break;
         }
     }
     pthread_mutex_unlock(&_mutex);
-    if (found)
-    {
-        _compositor->processTerminated(instance);
-        return DR_OK;
-    }
-    return DR_ITEMNOTFOUND;
+    return DR_OK;
 }
 
 DirectResult

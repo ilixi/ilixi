@@ -105,7 +105,7 @@ protected:
     processRemoved(SaWManProcess *process);
 
     virtual DirectResult
-    processTerminated(pid_t pid);
+    processTerminated(AppInstance* instance);
 
     /*!
      * Called right before a window is created.
