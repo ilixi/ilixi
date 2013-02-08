@@ -30,9 +30,7 @@
 namespace ilixi
 {
 
-/*!
- * Base class for button type widgets.
- */
+//! Base class for button type widgets.
 class Button : public Widget, public TextBase
 {
 public:

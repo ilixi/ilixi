@@ -85,6 +85,9 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
 
     PlatformManager::instance().initialize(argc, argv, options);
     initEventBuffer();
+    Size s = PlatformManager::instance().getLayerSize("ui");
+    __layerSize.w = s.width() - 1;
+    __layerSize.h = s.height() - 1;
 
     _update_timer.sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
     _update_timer.start(100);
@@ -92,6 +95,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
 
 AppBase::~AppBase()
 {
+    ILOG_TRACE_F(ILX_APPBASE);
     releaseEventBuffer();
     PlatformManager::instance().release();
 
@@ -102,8 +106,6 @@ AppBase::~AppBase()
     pthread_mutex_destroy(&__windowMutex);
     pthread_mutex_destroy(&__timerMutex);
     __activeWindow = NULL;
-
-    ILOG_TRACE_F(ILX_APPBASE);
 }
 
 void
@@ -132,7 +134,7 @@ AppBase::clearAppState(AppState state)
 void
 AppBase::initEventBuffer()
 {
-    ILOG_DEBUG(ILX_APPBASE, "Initialising event buffer...\n");
+    ILOG_TRACE_F(ILX_APPBASE);
     if (PlatformManager::instance().appOptions() & OptExclusive)
     {
         if (PlatformManager::instance().getDFB()->CreateInputEventBuffer(PlatformManager::instance().getDFB(), DICAPS_ALL, DFB_TRUE, &__buffer) != DFB_OK)
@@ -165,23 +167,10 @@ AppBase::postUniversalEvent(Widget* target, unsigned int type, void* data)
     __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
 }
 
-IDirectFBWindow*
-AppBase::activeDFBWindow() const
-{
-    return __activeWindow->_window->_dfbWindow;
-}
-
 DFBPoint
 AppBase::cursorPosition()
 {
     return __instance->__cursorNew;
-}
-
-void
-AppBase::setLayerSize(int width, int height)
-{
-    __layerSize.w = width - 1;
-    __layerSize.h = height - 1;
 }
 
 bool

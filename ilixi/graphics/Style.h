@@ -34,6 +34,7 @@
 namespace ilixi
 {
 
+//! Contains images and other style related data.
 class Style
 {
 public:
@@ -91,6 +92,7 @@ public:
     //! This image stores the widget pack.
     Image* _pack;
 
+#ifndef ILX_DOXYGEN_SKIP
     struct r3
     {
         Rectangle l;
@@ -149,6 +151,7 @@ public:
         r9 def;
         r9 dis;
     } fr, box;
+#endif
 
 protected:
     void

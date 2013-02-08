@@ -32,26 +32,60 @@
 
 namespace ilixi
 {
-
+//! Application wide font cache.
+/*!
+ * FontCache stores a map of loaded fonts for ease of .
+ *
+ * Fontconfig is used for finding fonts with given parameters.
+ */
 class FontCache
 {
 public:
+    /*!
+     * Returns singleton instance.
+     */
     static FontCache*
     Instance();
 
+    /*!
+     * Returns a hash value for given font parameters.
+     *
+     * @param name Font name, e.g. Sans.
+     * @param size Font size, e.g. 12.
+     * @param attr DirectFB font attributes.
+     */
     unsigned int
     getKey(const std::string& name, int size, DFBFontAttributes attr);
 
+    /*!
+     * Returns a font and a hash value for given font parameters.
+     *
+     * @param name Font name, e.g. Sans.
+     * @param size Font size, e.g. 12.
+     * @param attr DirectFB font attributes.
+     * @param font This parameter is set with requested font.
+     */
     unsigned int
     getEntry(const std::string& name, int size, DFBFontAttributes attr, IDirectFBFont** font);
 
+    /*!
+     * Releases reference to font with given hash value.
+     */
     void
     releaseEntry(unsigned int key);
 
+    /*!
+     * Releases reference to font with given parameters.
+     *
+     * @param name Font name, e.g. Sans.
+     * @param size Font size, e.g. 12.
+     * @param attr DirectFB font attributes.
+     */
     void
     releaseEntry(const char* name, int size, DFBFontAttributes attr);
 
 private:
+    //! This mutex locks cache map for access.
     pthread_mutex_t _lock;
 
     struct FontData
@@ -61,6 +95,7 @@ private:
                   ref(1)
         {
         }
+
         IDirectFBFont* font;
         unsigned int ref;
     };

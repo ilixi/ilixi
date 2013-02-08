@@ -30,9 +30,7 @@
 namespace ilixi
 {
 
-/*!
- * Calculates FPS using given interval.
- */
+//! Calculates FPS using given interval.
 class FPSCalculator : public sigc::trackable
 {
 public:

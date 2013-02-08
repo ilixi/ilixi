@@ -28,7 +28,7 @@
 
 namespace ilixi
 {
-
+//! Helps with 2D transforms.
 class Affine2D
 {
 public:

@@ -30,8 +30,6 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_APPVIEW, "ilixi/compositor/AppView", "AppView");
 
-int AppView::_animDuration = 500;
-
 AppView::AppView(ILXCompositor* compositor, AppInstance* instance, Widget* parent)
         : AppCompositor(compositor, instance, parent),
           _animProps((AnimatedProperty) (Opacity))
@@ -82,8 +80,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
     if (_animProps & Opacity)
     {
         _opacityTween->setEnabled(true);
-        _opacityTween->setInitialValue(0);
-        _opacityTween->setEndValue(255);
+        _opacityTween->setRange(0, 255);
         setOpacity(0);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> Opacity\n");
@@ -96,8 +93,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
     if (_animProps & Zoom)
     {
         _zoomTween->setEnabled(true);
-        _zoomTween->setInitialValue(0.8);
-        _zoomTween->setEndValue(1);
+        _zoomTween->setRange(0.8, 1);
         setZoomFactor(0.8);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> Zoom\n");
@@ -112,8 +108,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         if (x() != tx)
         {
             _xTween->setEnabled(true);
-            _xTween->setInitialValue(x());
-            _xTween->setEndValue(tx);
+            _xTween->setRange(x(), tx);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
         } else
@@ -122,8 +117,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         if (y() != ty)
         {
             _yTween->setEnabled(true);
-            _yTween->setInitialValue(y());
-            _yTween->setEndValue(ty);
+            _yTween->setRange(y(), ty);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
         } else
@@ -169,8 +163,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     if (_animProps & Opacity)
     {
         _opacityTween->setEnabled(true);
-        _opacityTween->setInitialValue(255);
-        _opacityTween->setEndValue(0);
+        _opacityTween->setRange(255, 0);
         setOpacity(255);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> Opacity\n");
@@ -180,8 +173,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
     if (_animProps & Zoom)
     {
         _zoomTween->setEnabled(true);
-        _zoomTween->setInitialValue(1);
-        _zoomTween->setEndValue(2);
+        _zoomTween->setRange(1, 2);
         setZoomFactor(1);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> Zoom\n");
@@ -193,8 +185,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
         if (x() != tx)
         {
             _xTween->setEnabled(true);
-            _xTween->setInitialValue(x());
-            _xTween->setEndValue(tx);
+            _xTween->setRange(x(), tx);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> x\n");
         } else
@@ -203,8 +194,7 @@ AppView::hide(AnimatedProperty props, int tx, int ty)
         if (y() != ty)
         {
             _yTween->setEnabled(true);
-            _yTween->setInitialValue(y());
-            _yTween->setEndValue(ty);
+            _yTween->setRange(y(), ty);
             anim = true;
             ILOG_DEBUG(ILX_APPVIEW, " -> y\n");
         } else
@@ -258,8 +248,7 @@ AppView::slideTo(int tx, int ty)
     if (x() != tx)
     {
         _xTween->setEnabled(true);
-        _xTween->setInitialValue(x());
-        _xTween->setEndValue(tx);
+        _xTween->setRange(x(), tx);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> x=%d\n", tx);
     } else
@@ -268,8 +257,7 @@ AppView::slideTo(int tx, int ty)
     if (y() != ty)
     {
         _yTween->setEnabled(true);
-        _yTween->setInitialValue(y());
-        _yTween->setEndValue(ty);
+        _yTween->setRange(y(), ty);
         anim = true;
         ILOG_DEBUG(ILX_APPVIEW, " -> y=%d\n", ty);
     } else

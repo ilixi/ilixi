@@ -26,7 +26,7 @@
 
 namespace ilixi
 {
-
+//! Provides a simple mechanism to get a value between start and end values changing over time .
 class Tween
 {
     friend class TweenAnimation;

@@ -30,6 +30,7 @@
 
 namespace ilixi
 {
+//! Used for grouping tweens and running them.
 class TweenAnimation : public Animation
 {
 public:

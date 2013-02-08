@@ -38,10 +38,6 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
 {
     setInputMethod(KeyPointer);
     setConstraints(FixedConstraint, FixedConstraint);
-    _ani.setDuration(300);
-    _opacityTween = new Tween(Tween::SINE, Tween::EASE_OUT, 128, 255);
-    _ani.addTween(_opacityTween);
-    _ani.sigExec.connect(sigc::mem_fun(this, &AppThumbnail::tweenSlot));
 
     if (!(instance->appInfo()->appFlags() & APP_AUTO_START))
     {
@@ -104,12 +100,6 @@ AppThumbnail::focusInEvent()
 void
 AppThumbnail::focusOutEvent()
 {
-}
-
-void
-AppThumbnail::tweenSlot()
-{
-    update();
 }
 
 void

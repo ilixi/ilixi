@@ -46,7 +46,9 @@ namespace ilixi
 #define ILIXI_DFB_VERSION       VERSION_CODE(DIRECTFB_MAJOR_VERSION, DIRECTFB_MINOR_VERSION, DIRECTFB_MICRO_VERSION)
 
 /*!
- * An algorithm produced by Professor Daniel J. Bernstein.
+ * Creates a unique hash value given a string.
+ *
+ * The algorithm was produced by Professor Daniel J. Bernstein.
  */
 unsigned int
 createHash(const std::string& str);

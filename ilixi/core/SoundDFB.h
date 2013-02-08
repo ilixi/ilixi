@@ -44,25 +44,44 @@ typedef void IFusionSoundMusicProvider;
 namespace ilixi
 {
 
+//! Provides access to FusionSound interfaces.
 class SoundDFB
 {
     friend class PlatformManager;
 public:
+    /*!
+     * Returns master output volume.
+     */
     static float
     getMasterVolume();
 
+    /*!
+     * Sets master output volume.
+     */
     static void
     setMasterVolume(float volume);
 
+    /*!
+     * Returns amplitude levels.
+     */
     static void
     getMasterAmplitude(float* left, float* right);
 
+    /*!
+     * Creates a static sound buffer.
+     */
     static DFBResult
     createBuffer(const FSBufferDescription* desc, IFusionSoundBuffer** buffer);
 
+    /*!
+     * Creates a streaming sound buffer.
+     */
     static DFBResult
     createStream(const FSStreamDescription* desc, IFusionSoundStream** stream);
 
+    /*!
+     * Creates a music provider.
+     */
     static DFBResult
     createMusicProvider(const char* filename, IFusionSoundMusicProvider** provider);
 
@@ -70,14 +89,26 @@ private:
     //! Main FusionSound interface.
     static IFusionSound* __sound;
 
+    /*!
+     * Constructor.
+     */
     SoundDFB();
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~SoundDFB();
 
+    /*!
+     * Initialises FusionSound interfaces.
+     */
     static DFBResult
     initSound(int* argc, char*** argv);
 
+    /*!
+     * Releases FusionSound interfaces.
+     */
     static void
     releaseSound();
 };

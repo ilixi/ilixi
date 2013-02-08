@@ -46,7 +46,7 @@ AppInstance::~AppInstance()
 }
 
 bool
-AppInstance::hasWindow(const SaWManWindowHandle handle)
+AppInstance::ownWindow(const SaWManWindowHandle handle)
 {
     for (AppWindowList::iterator it = _windows.begin(); it != _windows.end(); ++it)
     {

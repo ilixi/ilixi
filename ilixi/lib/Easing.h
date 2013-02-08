@@ -38,9 +38,11 @@
 
 namespace ilixi
 {
-
+//! Easing equations.
 namespace Ease
 {
+
+//! Back easing.
 namespace Back
 {
 float
@@ -53,6 +55,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Bouncy easing.
 namespace Bounce
 {
 float
@@ -65,6 +68,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Circular easing.
 namespace Circle
 {
 float
@@ -77,6 +81,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Cubical easing.
 namespace Cubic
 {
 float
@@ -89,6 +94,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Elastic easing.
 namespace Elastic
 {
 float
@@ -101,6 +107,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Exponential easing.
 namespace Expo
 {
 float
@@ -113,6 +120,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Quadratic easing.
 namespace Quad
 {
 float
@@ -125,6 +133,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Quartic easing.
 namespace Quart
 {
 float
@@ -137,6 +146,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Quintic easing.
 namespace Quint
 {
 float
@@ -149,6 +159,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Sinusoidal easing
 namespace Sine
 {
 float
@@ -161,6 +172,7 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 
+//! Linear easing.
 namespace Linear
 {
 float
@@ -173,6 +185,6 @@ float
 easeInOut(float t, float b, float c, float d);
 }
 }
-}
+} // namespace ilixi
 
 #endif /* ILIXI_EASING_H_ */

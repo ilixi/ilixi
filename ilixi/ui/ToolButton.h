@@ -173,9 +173,8 @@ private:
     virtual void
     updateTextBaseGeometry();
 };
-/*!
- * This thread helps create repeated button clicks.
- */
+
+//! This thread helps create repeated button clicks.
 class ToolButtonThread : public Thread
 {
     friend class ToolButton;

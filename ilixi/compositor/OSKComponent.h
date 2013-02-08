@@ -33,19 +33,33 @@ namespace ilixi
 
 class ILXCompositor;
 
+//! On-screen-keyboard ComaComponent.
 class OSKComponent : public ilixi::ComaComponent
 {
 public:
+    /*!
+     * Constructor.
+     */
     OSKComponent(ILXCompositor* compositor);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~OSKComponent();
 
 protected:
+    /*!
+     * Handles OSK requests.
+     *
+     * @param method @see OSKMethodID
+     * @param arg custom arguments.
+     */
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
 
 private:
+    //! Owner.
     ILXCompositor* _compositor;
 };
 

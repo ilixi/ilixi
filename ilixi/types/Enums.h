@@ -24,8 +24,11 @@
 #ifndef ILIXI_ENUMS_H_
 #define ILIXI_ENUMS_H_
 
+//! namespace contains all ilixi classes, structs and enums.
 namespace ilixi
 {
+
+//! This enum specifies states a widget can have.
 /*!
  * The state of a widget is mainly used for painting and it is usually changed upon receiving input events.
  */
@@ -36,13 +39,11 @@ enum WidgetState
     FocusedState = 0x02,    //!< Widget has key input focus.
     PressedState = 0x04,    //!< Pointer is pressed over widget.
     DisabledState = 0x08,   //!< Widget is disabled.
-    InvisibleState = 0x10,   //!< Widget is invisible.
+    InvisibleState = 0x10,  //!< Widget is invisible.
     GrabbedState = 0x20
 };
 
-/*!
- * These values are used to define which input events can be consumed by a widget.
- */
+//! This enum specifies the type of input events that can be consumed by a widget.
 enum WidgetInputMethod
 {
     NoInput = 0x0000,                 //!< Widget does not consume pointer or key events.
@@ -59,9 +60,7 @@ enum WidgetInputMethod
     KeyPointerTrackingOSK = KeyInput | PointerInput | PointerInputTracking | OSKInput
 };
 
-/*!
- * This enum is used to set widget's resize constraints.
- */
+//! This enum is used to set widget's resize constraints.
 enum WidgetResizePolicy
 {
     GrowPolicy = 0x01,      //!< Widget is able to grow and function properly.
@@ -70,9 +69,8 @@ enum WidgetResizePolicy
     IgnorePolicy = 0x08,    //!< Widget is ignored by layout manager.
 };
 
+//! This enum specifies how widgets should behave inside layouts.
 /*!
- * ResizeConstraint is used to specify how widgets should behave inside layouts.
- *
  * Each widget has horizontal and vertical constraints and they alter layout's
  * default resizing behaviour for width or height respectively.
  */
@@ -87,6 +85,7 @@ enum WidgetResizeConstraint
     IgnoredConstraint = 0xFF                     //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
+//! Contains enums used for styling.
 namespace StyleHint
 {
 enum AnimatedStates
@@ -219,18 +218,14 @@ enum Parameter
 };
 } // end StyleHint
 
-/*!
- * This enum is used to specify orientation of a widget, e.g. a horizontal slider control.
- */
+//! This enum specifies orientation, e.g. a horizontal slider control.
 enum Orientation
 {
     Horizontal, //!< Horizontal orientation
     Vertical    //!< Vertical orientation
 };
 
-/*!
- * This enum specifies direction, e.g. an arrow direction inside a button.
- */
+//! This enum specifies direction, e.g. an arrow direction inside a button.
 enum Direction
 {
     Left,   //!< Left
@@ -239,6 +234,7 @@ enum Direction
     Down    //!< Down
 };
 
+//! Specify horizontal or vertical alignment.
 namespace Alignment
 {
 //! Horizontal alignment
@@ -286,6 +282,7 @@ enum Corners
     AllExceptBottomRight = 0x07,    //!< (TopLeft | TopRight | BottomLeft).
 };
 
+//! This enum specifies run-time options (ORed) of an application.
 enum AppOptions
 {
     OptNone = 0x00000000,               //!< Default application option.

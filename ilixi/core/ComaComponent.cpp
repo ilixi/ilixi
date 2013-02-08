@@ -31,8 +31,7 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_COMACOMP, "ilixi/core/ComaComponent", "ComaComponent");
 
 void
-ComaComponentMethod(void *ctx, ComaMethodID method, void *arg,
-                    unsigned int magic)
+ComaComponentMethod(void *ctx, ComaMethodID method, void *arg, unsigned int magic)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
     ComaComponent* comp = (ComaComponent*) ctx;
@@ -43,10 +42,7 @@ ComaComponentMethod(void *ctx, ComaMethodID method, void *arg,
 ComaComponent::ComaComponent(const std::string& name, int numNotifications)
         : _name(name)
 {
-    if (DaleDFB::getComa()->CreateComponent(DaleDFB::getComa(), name.c_str(),
-                                            ComaComponentMethod,
-                                            numNotifications, this, &_component)
-            != DR_OK)
+    if (DaleDFB::getComa()->CreateComponent(DaleDFB::getComa(), name.c_str(), ComaComponentMethod, numNotifications, this, &_component) != DR_OK)
         ILOG_THROW(ILX_COMACOMP, "CreateComponent failed!\n");
 }
 
@@ -96,8 +92,7 @@ ComaComponent::comaMethod(ComaMethodID method, void* arg)
 }
 
 void
-ComaComponent::createNotification(ComaNotificationID id, ComaNotifyFunc func,
-                                  ComaNotificationFlags flags)
+ComaComponent::createNotification(ComaNotificationID id, ComaNotifyFunc func, ComaNotificationFlags flags)
 {
     ILOG_TRACE_F(ILX_COMACOMP);
     _component->InitNotification(_component, id, func, this, flags);

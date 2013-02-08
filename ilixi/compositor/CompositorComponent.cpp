@@ -177,7 +177,7 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         {
             char name[64];
             snprintf(name, 64, "%s", ((char*) arg));
-            _compositor->appMan()->startApp(name);
+            _compositor->appMan()->startApplication(name);
         }
         break;
 

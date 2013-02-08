@@ -28,23 +28,39 @@
 
 namespace ilixi
 {
-
+//! Sound ComaComponent.
 class SoundComponent : public ComaComponent
 {
 public:
+    /*!
+     * Constructor.
+     */
     SoundComponent();
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~SoundComponent();
 
+    /*!
+     * Sets master output volume.
+     */
     void
     setVolume(float volume);
 
 protected:
+    /*!
+     * Handles incoming Sound requests.
+     *
+     * @param method @see SoundMixerMethodID
+     * @param arg custom arguments.
+     */
     virtual DirectResult
     comaMethod(ComaMethodID method, void *arg);
 
 private:
+    //! This property stores master output volume.
     float _volume;
 };
 

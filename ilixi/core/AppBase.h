@@ -44,16 +44,14 @@ class WindowWidget;
 class Timer;
 
 //! Base class for ilixi applications.
-/*!
- */
 class AppBase
 {
     friend class Application;
     friend class Callback;              // add/remove callback
-    friend class SurfaceEventListener;  // add/remove SurfaceEventListener
-    friend class Timer;                 // add/remove timer
+    friend class SurfaceEventListener;              // add/remove SurfaceEventListener
+    friend class Timer;              // add/remove timer
     friend class WebView;
-    friend class Window;                // activeWindow
+    friend class Window;              // activeWindow
     friend class WindowWidget;
     friend class SurfaceView;
 
@@ -63,8 +61,8 @@ class AppBase
     enum AppState
     {
         APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
-        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
-        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
+        APS_VISIBLE = 0x0000002,       //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004,       //!< Application has no window and has no access to events.
     };
 
 public:
@@ -120,14 +118,11 @@ protected:
     void
     clearAppState(AppState state);
 
-    IDirectFBWindow*
-    activeDFBWindow() const;
-
+    /*!
+     * Returns current cursor position.
+     */
     static DFBPoint
     cursorPosition();
-
-    void
-    setLayerSize(int width, int height);
 
 private:
     //! Application state.
@@ -167,8 +162,7 @@ private:
     //! AppBase instance.
     static AppBase* __instance;
 
-    bool _update;
-    bool _updateFromSurfaceView;
+    bool _update;bool _updateFromSurfaceView;
     Timer _update_timer;
     DFBSurfaceID _updateID;
     unsigned int _updateFlipCount;
@@ -177,14 +171,13 @@ private:
     long long _updateDisable;
 
     void
-    accountSurfaceEvent( const DFBSurfaceEvent& event,
-                         long long              lastTime );
+    accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime);
+
     void
     updateTimeout();
 
     void
     updateFromWindow();
-
 
     void
     initEventBuffer();
@@ -245,6 +238,9 @@ private:
     static WindowWidget*
     activeWindow();
 
+    /*!
+     * Returns size of first window in stack.
+     */
     static Size
     appSize();
 
@@ -305,7 +301,8 @@ private:
 protected:
     bool _syncWithSurfaceEvents;
 
-    void disableSurfaceEventSync( long long micros );
+    void
+    disableSurfaceEventSync(long long micros);
 };
 }
 #endif /* ILIXI_APPBASE_H_ */

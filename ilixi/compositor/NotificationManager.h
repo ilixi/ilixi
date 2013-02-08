@@ -36,14 +36,24 @@ namespace ilixi
 class ILXCompositor;
 class Notification;
 
+//! Manages and displays incoming notifications.
 class NotificationManager
 {
 public:
+    /*!
+     * Constructor.
+     */
     NotificationManager(ILXCompositor* compositor);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~NotificationManager();
 
+    /*!
+     * Adds a new notification to queue.
+     */
     void
     addNotification(const Compositor::NotificationData& data);
 

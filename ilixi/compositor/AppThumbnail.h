@@ -32,21 +32,41 @@ namespace ilixi
 {
 class ILXCompositor;
 
+//! Provides a thumbnail for an application instance.
 class AppThumbnail : public AppCompositor
 {
 public:
+    /*!
+     * Constructor.
+     */
     AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~AppThumbnail();
 
+    /*!
+     * Returns a fixed size (196, 156).
+     */
     Size
     preferredSize() const;
 
+    /*!
+     * Shows/hides close button.
+     */
     void
     setCloseVisible(bool visible);
 
+    /*!
+     * This signal is emitted when thumbnail is selected by pressing Space key or releasing pointer button.
+     */
     sigc::signal<void, AppInstance*> sigSelected;
+
+    /*!
+     * This signal is emitted when thumbnail is focused.
+     */
     sigc::signal<void, AppThumbnail*> sigFocused;
     ToolButton* _close;
 
@@ -67,12 +87,7 @@ protected:
     focusOutEvent();
 
 private:
-    TweenAnimation _ani;
-    Tween* _opacityTween;
-
-    void
-    tweenSlot();
-
+    //! Sets geometry of close button.
     void
     updateThumbGeometry();
 };

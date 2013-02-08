@@ -27,9 +27,13 @@
 namespace ilixi
 {
 
+//! Base class for classes with methods that are executed at intervals.
 class Functionoid
 {
 public:
+    /*!
+     * This method is executed at each iteration of application main loop.
+     */
     virtual bool
     funck() = 0;
 
@@ -42,23 +46,37 @@ Functionoid::~Functionoid()
 {
 }
 
+//! Inserts/removes Functionoids to/from main loop.
 class Callback
 {
     friend class AppBase;
 
 public:
+    /*!
+     * Constructor.
+     */
     Callback(Functionoid* funck);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~Callback();
 
+    /*!
+     * Adds callback to AppBase so it can run at next interval.
+     */
     void
     start();
 
+    /*!
+     * Removes callback from AppBase.
+     */
     void
     stop();
 
 private:
+    //! Managed.
     Functionoid* _funck;
 };
 }

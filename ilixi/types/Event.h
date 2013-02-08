@@ -30,6 +30,8 @@
 
 namespace ilixi
 {
+
+//! This enum specifies a key event type.
 /*!
  * Maps from DFBWindowEventType.
  */
@@ -39,9 +41,7 @@ enum KeyEventType
     KeyUpEvent = DWET_KEYUP
 };
 
-/*!
- * Defines key input events.
- */
+//! Defines key input events.
 struct KeyEvent
 {
     KeyEvent(KeyEventType type, DFBInputDeviceKeySymbol symbol)
@@ -92,6 +92,7 @@ struct KeyEvent
     DFBInputDeviceLockState lockState;
 };
 
+//! This enum specifies a pointer event type.
 /*!
  * Maps from DFBWindowEventType.
  */
@@ -103,6 +104,7 @@ enum PointerEventType
     PointerWheel = DWET_WHEEL
 };
 
+//! This enum specifies pointer buttons.
 /*!
  * Maps from DFBInputDeviceButtonIdentifier.
  */
@@ -115,6 +117,7 @@ enum PointerButton
     ButtonLast = DIBI_LAST
 };
 
+//! This enum specifies pointer button mask.
 /*!
  * Maps from DFBInputDeviceButtonMask.
  */
@@ -126,9 +129,7 @@ enum PointerButtonMask
     ButtonMaskMiddle = DIBM_MIDDLE
 };
 
-/*!
- * Defines pointer input events.
- */
+//! Defines pointer input events.
 struct PointerEvent
 {
     PointerEvent()
@@ -198,6 +199,8 @@ struct PointerEvent
 };
 
 class Widget;
+
+//! Stores a dirty region for an UI update.
 struct PaintEvent
 {
     enum PaintEventEye
@@ -209,6 +212,7 @@ struct PaintEvent
 
     PaintEvent()
     {
+        eye = BothEyes;
     }
 
     PaintEvent(Widget* widget, const PaintEvent& evt);
@@ -267,11 +271,14 @@ struct PaintEvent
         return rect.isValid();
     }
 
+    //! This rectangle stores dirty region.
     Rectangle rect;
 #endif
+    //! If streoscopy is enabled, this property specifies which surface to update.
     PaintEventEye eye;
 };
 
+//! This structure is used to pass custom events to application's event buffer.
 struct UniversalEvent
 {
     UniversalEvent(Widget* Target, unsigned int Type, void* Data)
@@ -291,9 +298,16 @@ struct UniversalEvent
     {
     }
 
+    //! DirectFB event context.
     DFBUniversalEvent universal;
+    //! Target widget, if any.
+    /*!
+     * The widget's universalEvent() method will be called once event is received.
+     */
     Widget* target;
+    //! Custom value.
     unsigned int type;
+    //! Custom data.
     void* data;
 };
 

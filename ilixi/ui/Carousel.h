@@ -30,9 +30,8 @@
 namespace ilixi
 {
 class Carousel;
-/*!
- * Contains widgets which are added to a Carousel.
- */
+
+//! A wrapper widget which contains widgets added to a Carousel.
 class CarouselItem : public Widget
 {
 public:
@@ -122,9 +121,7 @@ private:
     updateCarouselItemGeometry();
 };
 
-/*!
- * Carousel arranges items around a circle.
- */
+//! A container widget which arranges child items around an ellipse.
 class Carousel : public Widget
 {
 public:

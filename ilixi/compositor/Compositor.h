@@ -40,9 +40,7 @@ extern "C"
 namespace ilixi
 {
 class Label;
-/*!
- * Main compositor application.
- */
+//! Base class for compositor applications.
 class ILXCompositor : public Application
 {
     friend class ApplicationManager;
@@ -152,15 +150,27 @@ protected:
     void
     compose(const PaintEvent& event);
 
+    /*!
+     * Sets on-screen-keyboard geometry.
+     */
     void
     setOSKGeometry(const Rectangle& rect);
 
+    /*!
+     * Sets foreground application geometry.
+     */
     void
     setAppGeometry(const Rectangle& rect);
 
+    /*!
+     * Sets statusbar geometry.
+     */
     void
     setBarGeometry(const Rectangle& rect);
 
+    /*!
+     * Sets switcher geometry.
+     */
     void
     setSwitcherGeometry(const Rectangle& rect);
 

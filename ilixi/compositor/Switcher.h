@@ -31,9 +31,7 @@ namespace ilixi
 
 class ILXCompositor;
 
-/*!
- * Allows switching between applications.
- */
+//! Allows switching applications using thumbnails.
 class Switcher : public Widget
 {
 public:

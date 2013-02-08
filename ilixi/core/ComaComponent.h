@@ -32,45 +32,92 @@ extern "C"
 
 namespace ilixi
 {
-
+//! Helps create a FusionDale Coma component.
 class ComaComponent
 {
 public:
+    /*!
+     * Constructor.
+     *
+     * Creates coma component.
+     *
+     * @param name unique name.
+     * @param numNotifications Number of notifications.
+     */
     ComaComponent(const std::string& name, int numNotifications = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~ComaComponent();
 
+    /*!
+     * Returns name of coma component.
+     */
     std::string
     name() const;
 
 protected:
+    /*!
+     * Allocates block of shared memory.
+     *
+     * @param bytes
+     * @param arg
+     */
     DirectResult
     allocate(int bytes, void** arg);
 
+    /*!
+     * Deallocate block of shard memory.
+     *
+     * @param ptr
+     */
     DirectResult
     deallocate(void* ptr);
 
+    /*!
+     * Activates component.
+     */
     void
     init();
 
+    /*!
+     * Send a notification to all listeners.
+     *
+     * @param id
+     * @param arg
+     */
     void
     notify(ComaNotificationID id, void* arg);
 
+    /*!
+     * This is executed once a new message arrives.
+     *
+     * @param method
+     * @param arg
+     */
     virtual DirectResult
     comaMethod(ComaMethodID method, void* arg);
 
+    /*!
+     * Setup a notification.
+     *
+     * @param id
+     * @param func
+     * @param flags by default deallocate after notification is dispatched.
+     */
     void
-    createNotification(ComaNotificationID id, ComaNotifyFunc func,
-                       ComaNotificationFlags flags = CNF_DEALLOC_ARG);
+    createNotification(ComaNotificationID id, ComaNotifyFunc func, ComaNotificationFlags flags = CNF_DEALLOC_ARG);
 
 private:
+    //! This property stores name of component.
     std::string _name;
+    //! This property stores FusionDale Coma component.
     IComaComponent* _component;
 
     friend void
-    ComaComponentMethod(void *ctx, ComaMethodID method, void *arg,
-                        unsigned int magic);
+    ComaComponentMethod(void *ctx, ComaMethodID method, void *arg, unsigned int magic);
 };
 
 } /* namespace ilixi */

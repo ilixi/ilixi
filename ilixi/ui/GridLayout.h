@@ -41,6 +41,7 @@ namespace ilixi
 class GridLayout : public LayoutBase
 {
 public:
+    //! Used for storing and caching parameters for a grid cell.
     struct CellData
     {
         CellData(Widget* w, int r, int c, int re, int ce)
@@ -66,6 +67,7 @@ public:
         int h4w;bool ignored;
     };
 
+    //! Used for storing and caching parameters of a row or column.
     struct LineData
     {
         LineData()

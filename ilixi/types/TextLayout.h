@@ -41,14 +41,15 @@ class TextLayout
     friend class Notify;
 
 public:
+    //! This enum specifies text layout alignment.
     enum Alignment
     {
-        Left = DSTF_TOPLEFT, //!< left aligned
-        Center = DSTF_TOPCENTER, //!< horizontally centered
-        Right = DSTF_TOPRIGHT
-    //!< right aligned
+        Left = DSTF_TOPLEFT,        //!< left aligned
+        Center = DSTF_TOPCENTER,    //!< horizontally centered
+        Right = DSTF_TOPRIGHT       //!< right aligned
     };
 
+    //! This structure is used for caching line parameters.
     struct LayoutLine
     {
         LayoutLine()
@@ -60,11 +61,11 @@ public:
         {
         }
 
-        int offset; // offset from first character of line
-        int bytes; // number of bytes to render on line
-        int y; // top-left coordinate of line
-        int length; // number of characters on line
-        int lineWidth; // logical width of text on line
+        int offset;     //! offset from first character of line
+        int bytes;      //! number of bytes to render on line
+        int y;          //! top-left coordinate of line
+        int length;     //! number of characters on line
+        int lineWidth;  //! logical width of text on line
     };
 
     /*!

@@ -29,6 +29,7 @@
 namespace ilixi
 {
 
+//! A slider input widget.
 class Slider : public Widget
 {
     friend class Stylist;

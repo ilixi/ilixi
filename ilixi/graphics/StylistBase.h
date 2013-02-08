@@ -65,6 +65,8 @@ class StylistBase
     friend class Image;
 
 public:
+
+    //! This enum specifies drawing animation type.
     enum StyledAnimation
     {
         ExposeIn,
@@ -113,6 +115,7 @@ public:
 
     /*!
      * Animated drawing for given widget.
+     *
      * @param type
      * @param target
      */

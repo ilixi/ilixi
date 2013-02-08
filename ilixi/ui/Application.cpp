@@ -99,8 +99,6 @@ Application::exec()
 
     show();
 
-    setLayerSize(width(), height());
-
     while (true)
     {
         if (__state & APS_TERM)

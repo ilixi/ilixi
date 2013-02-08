@@ -47,7 +47,6 @@ AppInfo::AppInfo()
           _appFlags(APP_NONE),
           _depFlags(DEP_NONE)
 {
-    gettimeofday(&_installTime, NULL);
 }
 
 AppInfo::~AppInfo()
@@ -94,12 +93,6 @@ std::string
 AppInfo::icon() const
 {
     return _icon;
-}
-
-timeval
-AppInfo::installTime() const
-{
-    return _installTime;
 }
 
 std::string

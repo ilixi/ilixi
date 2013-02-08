@@ -30,6 +30,7 @@
 namespace ilixi
 {
 
+//! A radio button widget.
 class RadioButton : public Button
 {
 public:

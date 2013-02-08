@@ -216,7 +216,7 @@ ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 
     _oskTargetPID = process;
     if (!_osk)
-        _appMan->startApp("OnScreenKeyboard");
+        _appMan->startApplication("OnScreenKeyboard");
     else
         toggleOSK(true);
 }

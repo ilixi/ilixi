@@ -313,14 +313,8 @@ ApplicationManager::instanceCount() const
     return _instances.size();
 }
 
-void
-ApplicationManager::startApp(const std::string& name)
-{
-    startApplication(name);
-}
-
 DirectResult
-ApplicationManager::startApplication(const std::string& name, bool autoStart)
+ApplicationManager::startApplication(const std::string& name, bool showInstance)
 {
     ILOG_INFO( ILX_APPLICATIONMANAGER, "%s( name %s )\n", __FUNCTION__, name.c_str());
 
@@ -335,7 +329,7 @@ ApplicationManager::startApplication(const std::string& name, bool autoStart)
     if (instance && !(appInfo->appFlags() & APP_ALLOW_MULTIPLE) && !waitpid(instance->pid(), NULL, WNOHANG))
     {
         ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Already running '%s' (%d)!\n", name.c_str(), instance->pid());
-        if (!autoStart)
+        if (showInstance)
             _compositor->showInstance(instance);
         return DR_BUSY;
     }
@@ -460,17 +454,17 @@ ApplicationManager::initStartup()
 {
     parseFolder(ILIXI_DATADIR"apps");
     usleep(10000);
-    startApp("StatusBar");
+    startApplication("StatusBar");
     for (AppInfoList::iterator it = _infos.begin(); it != _infos.end(); ++it)
     {
         if (((AppInfo*) (*it))->appFlags() & APP_AUTO_START)
         {
             usleep(10000);
-            startApplication(((AppInfo*) (*it))->name(), true);
+            startApplication(((AppInfo*) (*it))->name(), false);
         }
     }
     usleep(500000);
-    startApp("Home");
+    startApplication("Home");
 }
 
 void

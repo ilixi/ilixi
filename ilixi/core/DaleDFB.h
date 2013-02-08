@@ -35,6 +35,7 @@ extern "C"
 namespace ilixi
 {
 
+//! Provides access to FusionDale interfaces.
 class DaleDFB
 {
     friend class PlatformManager;
@@ -47,19 +48,39 @@ public:
     static IComa*
     getComa();
 
+    /*!
+     * Gets a Coma component with given name.
+     *
+     * @param[in] name Coma component name.
+     * @param[out] component interface.
+     */
     static DFBResult
     comaGetComponent(const char* name, IComaComponent** component);
 
+    /*!
+     * Gets a shared memory block.
+     *
+     * @param[in] bytes
+     * @param[out] ret
+     */
     static DFBResult
     comaGetLocal(unsigned int bytes, void** ret);
 
+    /*!
+     * Performs method invocation.
+     */
     static DFBResult
-    comaCallComponent(IComaComponent* component, ComaMethodID method,
-                      void* arg);
+    comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg);
 
+    /*!
+     * Shows on-screen-keyboard.
+     */
     static DFBResult
     showOSK(const Rectangle& rect);
 
+    /*!
+     * Hides on-screen-keyboard.
+     */
     static DFBResult
     hideOSK();
 
@@ -79,14 +100,26 @@ private:
     typedef std::list<Notify*> Notifications;
     static Notifications __nots;
 
+    /*!
+     * Constructor.
+     */
     DaleDFB();
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~DaleDFB();
 
+    /*!
+     * Initialises FusionDale and component manager interfaces.
+     */
     static DFBResult
     initDale(int* argc, char*** argv);
 
+    /*!
+     * Releases FusionDale interfaces.
+     */
     static void
     releaseDale();
 

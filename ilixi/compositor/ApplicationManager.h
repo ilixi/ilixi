@@ -36,62 +36,146 @@ class ILXCompositor;
 typedef std::list<AppInfo*> AppInfoList;
 typedef std::list<AppInstance*> AppInstanceList;
 
+//! Manages registered applications.
+/*!
+ * Application manager keeps a track of installed applications and their running instances.
+ */
 class ApplicationManager
 {
 
 public:
+    /*!
+     * Constructor.
+     *
+     * Initialises SaWMan callbacks, signal handler and memory monitor.
+     */
     ApplicationManager(ILXCompositor* compositor);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~ApplicationManager();
 
+    /*!
+     * Returns an AppInfo given an application name.
+     *
+     * @param name of application.
+     * @return NULL if an AppInfo is not found with given name.
+     */
     AppInfo*
     infoByName(const std::string& name);
 
+    /*!
+     * Returns an AppInfo given an application ID.
+     *
+     * @param appID unique application ID.
+     * @return NULL if an AppInfo is not found with given ID.
+     */
     AppInfo*
     infoByAppID(AppID appID);
 
+    /*!
+     * Returns an AppInfo given an instance ID.
+     *
+     * @param instanceID unique instance ID.
+     * @return NULL if an AppInfo is not found with given instance ID.
+     */
     AppInfo*
     infoByInstanceID(InstanceID instanceID);
 
+    /*!
+     * Returns an AppInfo given a process ID.
+     *
+     * @param pid Process ID.
+     * @return NULL if an AppInfo is not found with given process ID.
+     */
     AppInfo*
     infoByPID(const pid_t pid);
 
+    /*!
+     * Returns an AppInstance given an application ID.
+     *
+     * @param appID unique application ID.
+     * @return NULL if an AppInstance is not found with given application ID.
+     */
     AppInstance*
     instanceByAppID(AppID appID);
 
+    /*!
+     * Returns an AppInstance given an instance ID.
+     *
+     * @param instanceID unique instance ID.
+     * @return NULL if an AppInstance is not found with given instance ID.
+     */
     AppInstance*
     instanceByInstanceID(InstanceID instanceID);
 
+    /*!
+     * Returns an AppInstance given a process ID.
+     *
+     * @param pid Process ID.
+     * @return NULL if an AppInstance is not found with given process ID.
+     */
     AppInstance*
     instanceByPID(const pid_t pid);
 
+    /*!
+     * Returns list of registered applications.
+     */
     AppInfoList
     applicationList();
 
+    /*!
+     * Returns number of running application instances.
+     */
     unsigned int
     instanceCount() const;
 
-    void
-    startApp(const std::string& name);
-
+    /*!
+     * Starts an application.
+     *
+     * If application is not running, this method will fork and exec.
+     * Otherwise, it will show first application instance.
+     *
+     * @param name registered application name.
+     * @param showInstance if false will not switch to application.
+     * @return DR_OK if successful.
+     */
     DirectResult
-    startApplication(const std::string& name, bool autoStart = false);
+    startApplication(const std::string& name, bool showInstance = true);
 
+    /*!
+     * Stops a running application.
+     *
+     * @param pid process ID.
+     * @return DR_OK if successful.
+     */
     DirectResult
     stopApplication(pid_t pid);
 
+    /*!
+     * Stops all running applications.
+     */
     void
     stopAll();
 
+    /*!
+     * Starts home, statusbar and all startup applications.
+     * @see APP_AUTO_START
+     */
     void
     initStartup();
 
+    /*!
+     * Parses given folder and adds all application definitions (*.appdef).
+     *
+     * It will ignore applications with same name.
+     */
     void
     parseFolder(const std::string& folder);
 
 protected:
-
     /*!
      * Called when a DirectFB process starts.
      */
@@ -104,6 +188,9 @@ protected:
     virtual DirectResult
     processRemoved(SaWManProcess *process);
 
+    /*!
+     * Called when a child process is killed.
+     */
     virtual DirectResult
     processTerminated(AppInstance* instance);
 
@@ -135,36 +222,44 @@ protected:
      * Called when window is restacked.
      */
     virtual DirectResult
-    windowRestack(SaWManWindowHandle handle, SaWManWindowHandle relative,
-                  SaWManWindowRelation relation);
+    windowRestack(SaWManWindowHandle handle, SaWManWindowHandle relative, SaWManWindowRelation relation);
 
 private:
+    //! Owner.
     ILXCompositor* _compositor;
+    //! List of registered applications.
     AppInfoList _infos;
+    //! List of running application instances.
     AppInstanceList _instances;
 
+    //! SaWMan interface.
     ISaWMan *_saw;
+    //! SaWMan manager interface.
     ISaWManManager *_manager;
+    //! Registered SaWMan callbacks.
     SaWManCallbacks _callbacks;
 
+    //! Memory Monitor.
     MemoryMonitor* _monitor;
 
+    //! This locks application instance list.
     pthread_mutex_t _mutex;
+    //! Registers signal handler.
     struct sigaction _act;
 
+    //! Parses an appdef file.
     bool
     parseAppDef(const std::string& folder, const std::string& file);
 
+    //! Add application to list.
     void
-    addApplication(const char* name, const char* author, const char* licence,
-                   const char* category, const char* version, const char* icon,
-                   const char* exec, const char* args, const char* appFlags,
-                   const char* depFlags);
+    addApplication(const char* name, const char* author, const char* licence, const char* category, const char* version, const char* icon, const char* exec, const char* args, const char* appFlags, const char* depFlags);
 
-
+    //! Searches for executable. Returns true if found.
     bool
     searchExec(const char* exec, std::string& path);
 
+    //! Slot, handles a memory state change.
     void
     handleMemoryState(MemoryMonitor::MemoryState state);
 
@@ -197,8 +292,7 @@ private:
     window_reconfig(void *context, SaWManWindowReconfig *reconfig);
 
     friend DirectResult
-    window_restack(void *context, SaWManWindowHandle handle,
-                   SaWManWindowHandle relative, SaWManWindowRelation relation);
+    window_restack(void *context, SaWManWindowHandle handle, SaWManWindowHandle relative, SaWManWindowRelation relation);
 
     friend class MemoryMonitor;
 };

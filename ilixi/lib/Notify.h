@@ -31,9 +31,8 @@
 
 namespace ilixi
 {
-/*!
- * Helps send a notification to compositor.
- */
+
+//! Helps send a notification to compositor.
 class Notify
 {
 public:

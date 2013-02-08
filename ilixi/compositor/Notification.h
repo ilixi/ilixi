@@ -34,9 +34,7 @@ namespace ilixi
 {
 class ILXCompositor;
 
-/*!
- * Provides a simple implementation for desktop notification.
- */
+//! Used for displaying a simple desktop notification.
 class Notification : public Widget
 {
     friend class NotificationManager;

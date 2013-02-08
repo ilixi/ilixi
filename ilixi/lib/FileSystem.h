@@ -30,6 +30,7 @@
 namespace ilixi
 {
 
+//! File system related functions.
 namespace FileSystem
 {
 // FileInfo and File

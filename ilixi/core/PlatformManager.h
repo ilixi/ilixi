@@ -36,6 +36,7 @@
 namespace ilixi
 {
 
+//! Configures and manages DirectFB interfaces.
 /*!
  * PlatformManager helps with configuration and management of DirectFB interfaces.
  *
