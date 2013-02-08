@@ -369,7 +369,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     case DWET_LOSTFOCUS:
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> DWET_LOSTFOCUS\n");
-        _eventManager->setFocusedWidget(NULL);
+        if (_eventManager->focusedWidget() && !(_eventManager->focusedWidget()->inputMethod() & OSKInput))
+            _eventManager->setFocusedWidget(NULL);
         return true;
 
     case DWET_CLOSE: // handle Close, can be signalled by viewport manager.
