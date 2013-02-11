@@ -204,6 +204,30 @@ ILXCompositor::killApp(AppInstance* instance)
     postUserEvent(CET_Term, data);
 }
 
+const Rectangle&
+ILXCompositor::getAppGeometry() const
+{
+    return _appGeometry;
+}
+
+const Rectangle&
+ILXCompositor::getBarGeometry() const
+{
+    return _barGeometry;
+}
+
+const Rectangle&
+ILXCompositor::getOskGeometry() const
+{
+    return _oskGeometry;
+}
+
+const Rectangle&
+ILXCompositor::getSwitcherGeometry() const
+{
+    return _switcherGeometry;
+}
+
 void
 ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 {
@@ -836,6 +860,8 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
     }
     return false;
 }
+
+
 
 bool
 ILXCompositor::parseSettings()

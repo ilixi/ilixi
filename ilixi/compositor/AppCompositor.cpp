@@ -165,8 +165,8 @@ AppCompositor::updateAppCompositorGeometry()
             }
 
             // resize
-            float hScale = width() < bounds.width() ? w / bounds.width() : 1;
-            float vScale = height() < bounds.height() ? h / bounds.height() : 1;
+            float hScale = width() < _compositor->getAppGeometry().width() ? w / _compositor->getAppGeometry().width() : 1;
+            float vScale = height() < _compositor->getAppGeometry().height() ? h / _compositor->getAppGeometry().height() : 1;
             for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
             {
                 SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
@@ -220,12 +220,13 @@ AppCompositor::updateAppCompositorGeometry()
 void
 AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *reconfig)
 {
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
     for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
     {
         SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
         if (view && view->dfbWindowID() == windowID)
         {
-            ILOG_DEBUG(ILX_APPCOMPOSITOR, "Config 0x%02x\n", view->dfbWindowID(), reconfig->flags);
+            ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> windowID[%u] Flags[0x%02x]\n", view->dfbWindowID(), reconfig->flags);
             if (reconfig->flags & SWMCF_STACKING)
             {
                 if (reconfig->request.association)

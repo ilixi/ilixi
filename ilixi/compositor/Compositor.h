@@ -112,6 +112,18 @@ public:
     void
     killApp(AppInstance* instance);
 
+    const Rectangle&
+    getAppGeometry() const;
+
+    const Rectangle&
+    getBarGeometry() const;
+
+    const Rectangle&
+    getOskGeometry() const;
+
+    const Rectangle&
+    getSwitcherGeometry() const;
+
 protected:
     //! Launcher instance.
     AppInstance* _home;
