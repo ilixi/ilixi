@@ -66,17 +66,29 @@ sigchild_handler(int sig, siginfo_t *siginfo, void *context)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> si_code: %d\n", siginfo->si_code);
-    if (__appMan != NULL && (siginfo->si_code == CLD_DUMPED || siginfo->si_code == CLD_KILLED))
+    if (__appMan != NULL)
     {
-        AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
-        if (!instance)
-            return;
+        if (siginfo->si_code == CLD_DUMPED || siginfo->si_code == CLD_KILLED)
+        {
+            AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
+            if (!instance)
+                return;
 
-        if (instance->view())
-            return;
+            if (instance->view())
+                return;
 
-        __appMan->processTerminated(instance);
+            __appMan->processTerminated(instance);
+        } else if (siginfo->si_code == CLD_EXITED)
+        {
+            AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
+
+            if (!instance)
+                return;
+
+            __appMan->processRemoved(instance);
+        }
     }
 }
 
@@ -100,13 +112,6 @@ process_added(void *context, SaWManProcess *process)
 {
     ApplicationManager* appMan = (ApplicationManager*) context;
     return appMan->processAdded(process);
-}
-
-DirectResult
-process_removed(void *context, SaWManProcess *process)
-{
-    ApplicationManager* appMan = (ApplicationManager*) context;
-    return appMan->processRemoved(process);
 }
 
 DirectResult
@@ -183,7 +188,7 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
     _callbacks.Start = start_request;
     _callbacks.Stop = stop_request;
     _callbacks.ProcessAdded = process_added;
-    _callbacks.ProcessRemoved = NULL; // process_removed;
+    _callbacks.ProcessRemoved = NULL;
     _callbacks.InputFilter = NULL;
     _callbacks.WindowPreConfig = window_preconfig;
     _callbacks.WindowAdded = window_added;
@@ -499,32 +504,23 @@ ApplicationManager::processAdded(SaWManProcess *process)
 }
 
 DirectResult
-ApplicationManager::processRemoved(SaWManProcess *process)
+ApplicationManager::processRemoved(AppInstance* instance)
 {
-    // XXX Not being used atm.
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "%s( process %p )\n", __FUNCTION__, process);
-    ILOG_DEBUG( ILX_APPLICATIONMANAGER, "  -> Process [%d] Fusionee [%lu]\n", process->pid, process->fusion_id);
-
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
+    _compositor->processRemoved(instance);
+    AppInstance* ins;
     pthread_mutex_lock(&_mutex);
-    bool found = false;
-    AppInstance* instance;
     for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
     {
-        instance = ((AppInstance*) *it);
-        if (instance->pid() == process->pid)
+        ins = ((AppInstance*) *it);
+        if (instance == ins)
         {
-            found = true;
             it = _instances.erase(it);
             break;
         }
     }
     pthread_mutex_unlock(&_mutex);
-    if (found)
-    {
-        _compositor->processRemoved(instance);
-        return DR_OK;
-    }
-    return DR_ITEMNOTFOUND;
+    return DR_OK;
 }
 
 DirectResult

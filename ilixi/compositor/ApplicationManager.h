@@ -183,10 +183,10 @@ protected:
     processAdded(SaWManProcess *process);
 
     /*!
-     * Called when a DirectFB process stops.
+     * Called when a DirectFB process exits.
      */
     virtual DirectResult
-    processRemoved(SaWManProcess *process);
+    processRemoved(AppInstance* instance);
 
     /*!
      * Called when a child process is killed.
@@ -275,9 +275,6 @@ private:
 
     friend DirectResult
     process_added(void *context, SaWManProcess *process);
-
-    friend DirectResult
-    process_removed(void *context, SaWManProcess *process);
 
     friend DirectResult
     window_preconfig(void *context, SaWManWindowConfig *config);
