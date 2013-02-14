@@ -36,6 +36,7 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         : AppCompositor(compositor, instance, parent),
           _close(NULL)
 {
+    ILOG_TRACE_W(ILX_APPTHUMB);
     setInputMethod(KeyPointer);
     setConstraints(FixedConstraint, FixedConstraint);
 
@@ -50,8 +51,8 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         addChild(_close);
     }
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppThumbnail::updateThumbGeometry));
+    sigRestacked.connect(sigc::mem_fun(this, &AppThumbnail::handleRestack));
     setVisible(false);
-    ILOG_TRACE_W(ILX_APPTHUMB);
 }
 
 AppThumbnail::~AppThumbnail()
@@ -66,8 +67,17 @@ AppThumbnail::preferredSize() const
 }
 
 void
+AppThumbnail::addWindow(IDirectFBWindow* window, bool eventHandling, bool blocking)
+{
+    ILOG_TRACE_W(ILX_APPTHUMB);
+    AppCompositor::addWindow(window, eventHandling, blocking);
+    _close->bringToFront();
+}
+
+void
 AppThumbnail::setCloseVisible(bool visible)
 {
+    ILOG_TRACE_W(ILX_APPTHUMB);
     if (_close)
         _close->setVisible(visible);
 }
@@ -105,7 +115,14 @@ AppThumbnail::focusOutEvent()
 void
 AppThumbnail::updateThumbGeometry()
 {
+    ILOG_TRACE_W(ILX_APPTHUMB);
     _close->setGeometry(width() - 32, 0, 32, 32);
+}
+
+void
+AppThumbnail::handleRestack()
+{
+    _close->bringToFront();
 }
 
 } /* namespace ilixi */

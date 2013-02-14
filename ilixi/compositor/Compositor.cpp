@@ -589,11 +589,9 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                             data->instance->view()->setNeighbour(Down, _switcher);
                         }
                     }
+
                     data->instance->view()->addWindow(dfbWindow, true, !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
                     data->instance->thumb()->addWindow(dfbWindow, false);
-
-                    if (data->instance->thumb()->_close)
-                        data->instance->thumb()->_close->bringToFront();
                 }
                 if (dfbWindow)
                     dfbWindow->Release(dfbWindow);
@@ -860,8 +858,6 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
     }
     return false;
 }
-
-
 
 bool
 ILXCompositor::parseSettings()

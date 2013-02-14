@@ -44,7 +44,7 @@ public:
     AppInstance*
     instance() const;
 
-    void
+    virtual void
     addWindow(IDirectFBWindow* window, bool eventHandling = true, bool blocking = true);
 
     void
@@ -72,6 +72,11 @@ protected:
 
     virtual void
     compose(const PaintEvent& event);
+
+    /*!
+     * This signal is emitted when child views are restacked.
+     */
+    sigc::signal<void> sigRestacked;
 
 private:
     float _zoomFactor;

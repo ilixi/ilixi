@@ -53,6 +53,9 @@ public:
     Size
     preferredSize() const;
 
+    virtual void
+    addWindow(IDirectFBWindow* window, bool eventHandling = true, bool blocking = true);
+
     /*!
      * Shows/hides close button.
      */
@@ -90,6 +93,9 @@ private:
     //! Sets geometry of close button.
     void
     updateThumbGeometry();
+
+    void
+    handleRestack();
 };
 
 } /* namespace ilixi */

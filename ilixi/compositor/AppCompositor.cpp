@@ -108,8 +108,11 @@ AppCompositor::zoomFactor() const
 void
 AppCompositor::setZoomFactor(float zoomFactor)
 {
-    _zoomFactor = zoomFactor;
-    updateAppCompositorGeometry();
+    if (_zoomFactor != zoomFactor)
+    {
+        _zoomFactor = zoomFactor;
+        updateAppCompositorGeometry();
+    }
 }
 
 void
@@ -236,13 +239,14 @@ AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *
                 {
                     if (reconfig->request.opacity == 1)
                     {
-                        lowerChildToBottom(view);
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> LowerToBottom\n");
+                        lowerChild(view);
                     } else
                     {
-                        raiseChildToFront(view);
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> RaiseToTop\n");
+                        raiseChild(view);
                     }
+                    sigRestacked();
                 }
             } else
             {
