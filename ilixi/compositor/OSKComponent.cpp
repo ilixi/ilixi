@@ -54,16 +54,16 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
             OSK::OSKRequest request;
             if (arg == NULL)
             {
-                request.inputRect =
-                {   0,0,100,100};
+                request.inputRect.x = 0;
+                request.inputRect.y = 0;
+                request.inputRect.w = 100;
+                request.inputRect.h = 100;
             } else
             {
                 request = *((OSK::OSKRequest*) arg);
                 ILOG_DEBUG(ILX_OSKCOMP, "ShowOSK\n");
                 ILOG_DEBUG(ILX_OSKCOMP, " -> Mode (%d)\n", request.mode);
-                ILOG_DEBUG(
-                        ILX_OSKCOMP,
-                        " -> Rectangle (%d, %d, %d, %d)\n", request.inputRect.x, request.inputRect.y, request.inputRect.w, request.inputRect.h);
+                ILOG_DEBUG(ILX_OSKCOMP, " -> Rectangle (%d, %d, %d, %d)\n", request.inputRect.x, request.inputRect.y, request.inputRect.w, request.inputRect.h);
                 ILOG_DEBUG(ILX_OSKCOMP, " -> PID (%d) \n", request.client);
             }
             _compositor->showOSK(request.inputRect, request.client);
@@ -77,7 +77,7 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
     case OSK::ConsumeKey:
         {
             ILOG_DEBUG(ILX_OSKCOMP, "ConsumeKey\n");
-            uint32_t key  = ((uint32_t*) arg)[0];
+            uint32_t key = ((uint32_t*) arg)[0];
             uint32_t mask = ((uint32_t*) arg)[1];
             ILOG_DEBUG(ILX_OSKCOMP, " -> U+%04X\n", key);
             _compositor->sendOSKInput(key, mask);

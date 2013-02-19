@@ -127,7 +127,7 @@ OSMonitor::readUptime()
   if (infile.good())
     {
       getline(infile, line);
-      sscanf(line.c_str(), "%d%d", &_uptime, &_uptimeIdle);
+      sscanf(line.c_str(), "%lu%lu", &_uptime, &_uptimeIdle);
     }
   infile.close();
 }

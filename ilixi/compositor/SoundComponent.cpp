@@ -61,7 +61,7 @@ SoundComponent::comaMethod(ComaMethodID method, void *arg)
         break;
 
     case SoundMixer::ToggleMute:
-        ILOG_DEBUG(ILX_SOUNDCOMP, " -> ToggleMute: %d\n", _volume);
+        ILOG_DEBUG(ILX_SOUNDCOMP, " -> ToggleMute: %f\n", _volume);
         if (SoundDFB::getMasterVolume() == 0)
             setVolume(_volume);
         else

@@ -414,8 +414,9 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         default:
             if (_eventManager->focusedWidget())
                 return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyUpEvent, event));
-            return false;
+            break;
         }
+        return false;
 
     case DWET_KEYDOWN:
         switch (event.key_symbol)
@@ -444,7 +445,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_LEFT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
-            else if (event.modifiers & DIMM_SHIFT || _eventManager->oskWidget())
+            else if ((event.modifiers & DIMM_SHIFT) || _eventManager->oskWidget())
                 _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Left);
@@ -453,7 +454,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_CURSOR_RIGHT:
             if (_eventManager->grabbedWidget())
                 _eventManager->grabbedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
-            else if (event.modifiers & DIMM_SHIFT || _eventManager->oskWidget())
+            else if ((event.modifiers & DIMM_SHIFT) || _eventManager->oskWidget())
                 _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
             else
                 _eventManager->selectNeighbour(Right);
@@ -501,6 +502,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
             else
                 return false;
         } // end switch
+        break;
 
 //    else if (_eventManager->grabbedWidget())
 //      return _eventManager->grabbedWidget()->consumeKeyEvent(
@@ -510,6 +512,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
     default:
         return false;
     }
+    return false;
 }
 
 void

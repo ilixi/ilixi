@@ -134,7 +134,6 @@ TextBase::setText(const std::string &text)
 {
     if (_layout.text() != text)
     {
-        ILOG_DEBUG(ILX_TEXTBASE, "setText( %s )\n", text.c_str());
         _layout.setText(text);
         _extents = _layout.extents(font());
         _owner->doLayout();
@@ -148,7 +147,6 @@ TextBase::setText(const std::wstring &text)
 {
     if (_layout.wtext() != text)
     {
-        ILOG_DEBUG(ILX_TEXTBASE, "setText( %s )\n", text.c_str());
         _layout.setText(text);
         _extents = _layout.extents(font());
         _owner->doLayout();

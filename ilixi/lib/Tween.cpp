@@ -147,6 +147,7 @@ Tween::runEase(float t, float d)
             _value = Back::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::BOUNCE:
         switch (_equation)
@@ -161,6 +162,7 @@ Tween::runEase(float t, float d)
             _value = Bounce::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::CIRCLE:
         switch (_equation)
@@ -175,6 +177,7 @@ Tween::runEase(float t, float d)
             _value = Circle::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::CUBIC:
         switch (_equation)
@@ -189,6 +192,7 @@ Tween::runEase(float t, float d)
             _value = Cubic::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::ELASTIC:
         switch (_equation)
@@ -203,6 +207,7 @@ Tween::runEase(float t, float d)
             _value = Elastic::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::EXPO:
         switch (_equation)
@@ -217,6 +222,7 @@ Tween::runEase(float t, float d)
             _value = Expo::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::QUAD:
         switch (_equation)
@@ -231,6 +237,7 @@ Tween::runEase(float t, float d)
             _value = Quad::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::QUART:
         switch (_equation)
@@ -245,6 +252,7 @@ Tween::runEase(float t, float d)
             _value = Quart::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::QUINT:
         switch (_equation)
@@ -259,6 +267,7 @@ Tween::runEase(float t, float d)
             _value = Quint::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::SINE:
         switch (_equation)
@@ -273,6 +282,7 @@ Tween::runEase(float t, float d)
             _value = Sine::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     case Tween::LINEAR:
         switch (_equation)
@@ -287,6 +297,7 @@ Tween::runEase(float t, float d)
             _value = Linear::easeInOut(t, _initialValue, _change, d);
             return;
         }
+        break;
 
     default:
         return;

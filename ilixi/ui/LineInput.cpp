@@ -210,13 +210,13 @@ LineInput::updateCursorPosition()
         int dif = (stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left()) - x;
         _layout.setX(dif);
 
-        ILOG_DEBUG( ILX_LINEINPUT, " -> 1 Layout x: %d  CursorX: %d Dif: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+        ILOG_DEBUG( ILX_LINEINPUT, " -> 1 Layout x: %d  CursorX: %d Dif: %d Len: %lu\n", _layout.x(), x, dif, _layout.text().length());
     } else if (x > _layout.bounds().right())
     {
         int dif = _layout.bounds().right() - x;
         _layout.setX(dif);
 
-        ILOG_DEBUG( ILX_LINEINPUT, " -> 2 Layout x: %d  CursorX: %d Dif: %d Len: %d\n", _layout.x(), x, dif, _layout.text().length());
+        ILOG_DEBUG( ILX_LINEINPUT, " -> 2 Layout x: %d  CursorX: %d Dif: %d Len: %lu\n", _layout.x(), x, dif, _layout.text().length());
     }
 
     _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
