@@ -3,7 +3,7 @@
 
  The equations are originally written by Robert Penner <info@robertpenner.com>.
  Later implemented in C++ by Jesus Gollonet <jesus@jesusgollonet.com>,
- Tarik Sekmen <tarik@ilixi.org>.
+ and minor modifications by Tarik Sekmen <tarik@ilixi.org>.
 
  Open source under the BSD License.
 
@@ -117,21 +117,22 @@ Bounce::easeInOut(float t, float b, float c, float d)
 float
 Circle::easeIn(float t, float b, float c, float d)
 {
-    return c * (1 - sqrt(1 - (t /= d) * t)) + b;
+    return c * (1 - (float) sqrt(1 - (t /= d) * t)) + b;
 }
 
 float
 Circle::easeOut(float t, float b, float c, float d)
 {
-    return c * sqrt(1 - (t = t / d - 1) * t) + b;
+    t = t / d - 1;
+    return (c * (float) sqrt(1 - pow(t, 2)) + b);
 }
 
 float
 Circle::easeInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
-        return c / 2 * (1 - sqrt(1 - t * t)) + b;
-    return c / 2 * (sqrt(1 - (t -= 2) * t) + 1) + b;
+        return c / 2 * (1 - (float) sqrt(1 - t * t)) + b;
+    return c / 2 * ((float) sqrt(1 - (t -= 2) * t) + 1) + b;
 }
 
 //**********************************************************************
@@ -191,11 +192,8 @@ Elastic::easeInOut(float t, float b, float c, float d)
         return b + c;
     float p = d * .45f;
     if (t < 1)
-        return -.5f
-                * (c * pow(2, 10 * (t -= 1)) * sin((t * d - p / 4) * Pi2 / p))
-                + b;
-    return c * pow(2, -10 * (t -= 1)) * sin((t * d - p / 4) * Pi2 / p) * .5f + c
-            + b;
+        return -.5f * (c * pow(2, 10 * (t -= 1)) * sin((t * d - p / 4) * Pi2 / p)) + b;
+    return c * pow(2, -10 * (t -= 1)) * sin((t * d - p / 4) * Pi2 / p) * .5f + c + b;
 }
 
 //**********************************************************************
