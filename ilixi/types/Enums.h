@@ -73,16 +73,20 @@ enum WidgetResizePolicy
 /*!
  * Each widget has horizontal and vertical constraints and they alter layout's
  * default resizing behaviour for width or height respectively.
+ *
+ * Layout algorithms should satisfy constraints in this order: Fixed, Shrink, Grow, Expand.
+ * However, MinimumSize or MaximumSize are of higher priority, that is if minimum or maximum
+ * width/height is valid widget's width/height will be set accordingly.
  */
 enum WidgetResizeConstraint
 {
-    FixedConstraint = 0x00,              //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
-    MinimumConstraint = GrowPolicy, //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
-    MaximumConstraint = ShrinkPolicy, //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
-    NoConstraint = (GrowPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
-    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy), //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
-    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy), //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
-    IgnoredConstraint = 0xFF                     //!< Widget is ignored by layout. Its position or size is not modified.
+    FixedConstraint = 0x00,                                             //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
+    MinimumConstraint = GrowPolicy,                                     //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
+    MaximumConstraint = ShrinkPolicy,                                   //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
+    NoConstraint = (GrowPolicy | ShrinkPolicy),                         //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
+    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy),           //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
+    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy),   //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
+    IgnoredConstraint = 0xFF                                            //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
 //! Contains enums used for styling.

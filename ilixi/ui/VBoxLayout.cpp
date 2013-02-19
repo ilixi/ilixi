@@ -33,8 +33,8 @@ VBoxLayout::VBoxLayout(Widget* parent)
         : LayoutBase(parent),
           _alignment(Alignment::Left)
 {
-    //  setConstraints(NoConstraint, MinimumConstraint);
     ILOG_TRACE_W(ILX_VBOX);
+    setConstraints(MinimumConstraint, MinimumConstraint);
 }
 
 VBoxLayout::~VBoxLayout()
@@ -87,9 +87,9 @@ VBoxLayout::heightForWidth(int width) const
             ch = s.height();
 
             // check grow-shrink
-            if (cw < width && widget->xConstraint() & GrowPolicy)
+            if (cw < width && (widget->xConstraint() & GrowPolicy))
                 cw = width;
-            else if (cw > width && widget->xConstraint() & ShrinkPolicy)
+            else if (cw > width && (widget->xConstraint() & ShrinkPolicy))
                 cw = width;
 
             // satisfy min-max width
@@ -105,9 +105,9 @@ VBoxLayout::heightForWidth(int width) const
                 if (h4w)
                 {
                     // check grow-shrink
-                    if (ch < h4w && widget->yConstraint() & GrowPolicy)
+                    if (ch < h4w && (widget->yConstraint() & GrowPolicy))
                         ch = h4w;
-                    else if (ch > h4w && widget->yConstraint() & ShrinkPolicy)
+                    else if (ch > h4w && (widget->yConstraint() & ShrinkPolicy))
                         ch = h4w;
                 }
             }
@@ -135,13 +135,12 @@ VBoxLayout::preferredSize() const
     if (!_children.size())
         return Size(50, 50);
 
-    int w = 0; // max. width.
-    int h = 0; // total height.
-    int cw = 0; // current widget's width.
-    int ch = 0; // current widget's height.
-
-    ElementList l;
-    LayoutElement e;
+    ElementList l;      // temporary widget list
+    LayoutElement e;    // Current element
+    int w = 0;          // max. width.
+    int h = 0;          // total height.
+    int cw = 0;         // current widget's width.
+    int ch = 0;         // current widget's height.
 
     // Find max. width
     for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
@@ -172,10 +171,10 @@ VBoxLayout::preferredSize() const
         cw = it->size.width();
         ch = it->size.height();
 
-        // check grow-shrink
-        if (cw < w && widget->xConstraint() & GrowPolicy)
+        // check if widget can grow/shrink on x axis
+        if (cw < w && (widget->xConstraint() & GrowPolicy))
             cw = w;
-        else if (cw >= w && widget->xConstraint() & ShrinkPolicy)
+        else if (cw >= w && (widget->xConstraint() & ShrinkPolicy))
             cw = w;
 
         if (cw != it->size.width())
@@ -183,10 +182,10 @@ VBoxLayout::preferredSize() const
             int h4w = widget->heightForWidth(cw);
             if (h4w)
             {
-                // check grow-shrink
-                if (ch < h4w && widget->yConstraint() & GrowPolicy)
+                // check if widget can grow/shrink on y axis
+                if (ch < h4w && (widget->yConstraint() & GrowPolicy))
                     ch = h4w;
-                else if (ch > h4w && widget->yConstraint() & ShrinkPolicy)
+                else if (ch > h4w && (widget->yConstraint() & ShrinkPolicy))
                     ch = h4w;
             }
         }
@@ -219,9 +218,9 @@ VBoxLayout::tile()
             cw = e.size.width();
 
             // check grow-shrink for width
-            if (cw > width() && e.widget->xConstraint() & ShrinkPolicy)
+            if (cw > width() && (e.widget->xConstraint() & ShrinkPolicy))
                 cw = width();
-            else if (cw < width() && e.widget->xConstraint() & GrowPolicy)
+            else if (cw < width() && (e.widget->xConstraint() & GrowPolicy))
                 cw = width();
 
             // satisfy min-max width
@@ -415,7 +414,7 @@ VBoxLayout::tile()
                     artifact = 0;
                 } else
                     widget->setHeight(average + expandAverage);
-            } else if (widget->yConstraint() & ShrinkPolicy && average < ((LayoutElement) *it).size.height())
+            } else if ((widget->yConstraint() & ShrinkPolicy) && average < ((LayoutElement) *it).size.height())
                 widget->setHeight(average);
             else
                 widget->setHeight(((LayoutElement) *it).size.height());

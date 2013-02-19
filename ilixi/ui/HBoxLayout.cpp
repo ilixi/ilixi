@@ -71,41 +71,236 @@ HBoxLayout::heightForWidth(int width) const
     ILOG_TRACE_W(ILX_HBOX);
     if (!_children.size())
         return -1;
-    // TODO This method is not working...
-    int h = 0; // max. height
-    int hTemp = 0; // height for current widget
+
+    ElementList list, l;    // temporary widget lists
+    LayoutElement e;        // Current element
+    int maxH = 0;           // maximum height.
+    int h = 0;              // current element's height
+    int w = 0;              // current element's width.
     int h4w = 0;
-    Widget* widget;
-    for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
+
+    // init. temp tile list
+    for (Widget::WidgetListConstIterator it = _children.begin(); it != _children.end(); ++it)
     {
-        widget = ((Widget*) *it);
-        if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
+        e.widget = ((Widget*) *it);
+        if (e.widget->visible() && e.widget->xConstraint() != IgnoredConstraint)
         {
-            hTemp = widget->preferredSize().height();
-
-            // update hTemp if widget permits resizing in vertical axis.
-            h4w = widget->heightForWidth(width);
-            if (h4w)
-            {
-                if (h4w > hTemp && widget->yConstraint() & GrowPolicy)
-                    hTemp = h4w;
-
-                else if (h4w < hTemp && widget->yConstraint() & ShrinkPolicy)
-                    hTemp = h4w;
-            }
-
-            // handle min-max height (min has priority)
-            if (hTemp < widget->minHeight())
-                hTemp = widget->minHeight();
-            else if (widget->maxHeight() > 0 && hTemp > widget->maxHeight())
-                hTemp = widget->maxHeight();
-
-            // find max. height
-            if (hTemp > h)
-                h = hTemp;
+            e.size = e.widget->preferredSize();
+            list.push_back(e);
         }
     }
-    return h + spacing();
+
+    if (l.size() == 0)
+        return -1;
+
+    // calculate a temp width for each list element.
+    // later calc. h4w of each element using temp width.
+    l = list;
+    int availableSpace = width - ((l.size() - 1) * spacing());
+    int average = availableSpace / l.size();
+
+    //***********************************************************
+    // FixedConstraint
+    //***********************************************************
+    int usedSpace = 0;
+    ElementList::iterator it = l.begin();
+    while (it != l.end())
+    {
+        if (((LayoutElement) *it).widget->xConstraint() == FixedConstraint && ((LayoutElement) *it).widget->minWidth() < 0 && ((LayoutElement) *it).widget->maxWidth() < 0)
+        {
+            usedSpace += ((LayoutElement) *it).size.width();
+            it = l.erase(it);
+        } else
+            ++it;
+    }
+
+    if (usedSpace)
+    {
+        availableSpace -= usedSpace;
+        if (l.size())
+            average = availableSpace / l.size();
+    }
+
+    //***********************************************************
+    // MinimumSize
+    //***********************************************************
+    usedSpace = 0;
+    it = l.begin();
+    while (it != l.end())
+    {
+        if (average < ((LayoutElement) *it).widget->minWidth())
+        {
+            usedSpace += ((LayoutElement) *it).widget->minWidth();
+            it = l.erase(it);
+        } else
+            ++it;
+    }
+
+    if (usedSpace)
+    {
+        availableSpace -= usedSpace;
+        if (l.size())
+            average = availableSpace / l.size();
+    }
+
+    //***********************************************************
+    // MaximumSize
+    //***********************************************************
+    usedSpace = 0;
+    it = l.begin();
+    while (it != l.end())
+    {
+        if (average > ((LayoutElement) *it).widget->maxWidth() && ((LayoutElement) *it).widget->maxWidth() > 0)
+        {
+            usedSpace += ((LayoutElement) *it).widget->maxWidth();
+            it = l.erase(it);
+        } else
+            ++it;
+    }
+
+    if (usedSpace)
+    {
+        availableSpace -= usedSpace;
+        if (l.size())
+            average = availableSpace / l.size();
+    }
+
+    //***********************************************************
+    // ShrinkPolicy
+    //***********************************************************
+    usedSpace = 0;
+    it = l.begin();
+    while (it != l.end())
+    {
+        if (average < ((LayoutElement) *it).size.width() && !(((LayoutElement) *it).widget->xConstraint() & ShrinkPolicy))
+        {
+            usedSpace += ((LayoutElement) *it).size.width();
+            it = l.erase(it);
+        } else
+            ++it;
+    }
+
+    if (usedSpace)
+    {
+        availableSpace -= usedSpace;
+        if (l.size())
+            average = availableSpace / l.size();
+    }
+
+    //***********************************************************
+    // GrowPolicy
+    //***********************************************************
+    usedSpace = 0;
+    it = l.begin();
+    while (it != l.end())
+    {
+        if (average > ((LayoutElement) *it).size.width() && !(((LayoutElement) *it).widget->xConstraint() & GrowPolicy))
+        {
+            usedSpace += ((LayoutElement) *it).widget->width();
+            it = l.erase(it);
+        } else
+            ++it;
+    }
+
+    if (usedSpace)
+    {
+        availableSpace -= usedSpace;
+        if (l.size())
+            average = availableSpace / l.size();
+    }
+
+    //***********************************************************
+    // ExpandPolicy
+    //***********************************************************
+    int expanding = 0;
+    int expandAverage = 0;
+    int expandSpace = 0;
+    it = l.begin();
+    while (it != l.end())
+    {
+        if (((LayoutElement) *it).widget->xConstraint() & ExpandPolicy)
+            ++expanding;
+        else
+        {
+            if (((LayoutElement) *it).widget->minWidth() > 0 && average > ((LayoutElement) *it).widget->minWidth())
+            {
+                expandSpace += average - ((LayoutElement) *it).widget->minWidth();
+                ((LayoutElement) *it).size.setWidth(((LayoutElement) *it).widget->minWidth());
+            } else if (average > ((LayoutElement) *it).size.width())
+                expandSpace += average - ((LayoutElement) *it).size.width();
+        }
+        ++it;
+    }
+
+    if (expandSpace && expanding)
+        expandAverage = expandSpace / expanding;
+
+    //***********************************************************
+    // calc height
+    //***********************************************************
+    int artifact = availableSpace - average * l.size();
+    Widget* widget;
+    for (ElementList::iterator it = list.begin(), end = list.end(), itLast = (++list.rbegin()).base(); it != end; ++it)
+    {
+        widget = ((LayoutElement) *it).widget;
+
+        // Set w for each element
+        if (expanding)
+        {
+            if (widget->xConstraint() & ExpandPolicy)
+            {
+                if (artifact)
+                {
+                    w = average + expandAverage + artifact;
+                    artifact = 0;
+                } else
+                    w = average + expandAverage;
+            } else if ((widget->xConstraint() & ShrinkPolicy) && average < ((LayoutElement) *it).size.width())
+                w = average;
+            else
+                w = ((LayoutElement) *it).size.width();
+        } else
+        {
+            if (widget->minWidth() > 0 && average < widget->minWidth())
+                w = widget->minWidth();
+            else if (widget->maxWidth() > 0 && average > widget->maxWidth())
+                w = widget->maxWidth();
+            else if ((widget->xConstraint() & ShrinkPolicy) && ((LayoutElement) *it).size.width() > average)
+                w = average;
+            else if ((widget->xConstraint() & GrowPolicy) && ((LayoutElement) *it).size.width() < average)
+            {
+                if (artifact)
+                {
+                    w = average + artifact;
+                    artifact = 0;
+                } else
+                    w = average;
+            } else
+                w = ((LayoutElement) *it).size.width();
+        }
+
+        // Set h using w or h4w
+        if (widget->yConstraint() == FixedConstraint)
+            h = ((LayoutElement) *it).size.height();
+        else
+        {
+            h4w = widget->heightForWidth(w);
+            if (h4w)
+            {
+                if (widget->minHeight() && h4w < widget->minHeight())
+                    h4w = widget->minHeight();
+                else if (widget->maxHeight() && h4w > widget->maxHeight())
+                    h4w = widget->maxHeight();
+                h = h4w;
+            } else
+                h = ((LayoutElement) *it).size.height();
+        }
+
+        if (h > maxH)
+            maxH = h;
+    }
+
+    return maxH;
 }
 
 Size
@@ -115,33 +310,32 @@ HBoxLayout::preferredSize() const
     if (!_children.size())
         return Size(50, 50);
 
-    Widget* widget; // current widget
-    int w = 0; // total width
-    int h = 0; // max. height
-    int cw = 0; // current widget's width.
-    int ch = 0; // current widget's height.
-    Size s;
+    LayoutElement e;    // Current element
+    int w = 0;          // total width
+    int h = 0;          // max. height
+    int cw = 0;         // current widget's width.
+    int ch = 0;         // current widget's height.
 
     for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
     {
-        widget = ((Widget*) *it);
-        if (widget->visible() && widget->xConstraint() != IgnoredConstraint)
+        e.widget = ((Widget*) *it);
+        if (e.widget->visible() && e.widget->xConstraint() != IgnoredConstraint)
         {
-            s = widget->preferredSize();
-            cw = s.width();
-            ch = s.height();
+            e.size = e.widget->preferredSize();
+            cw = e.size.width();
+            ch = e.size.height();
 
-            // satisfy min-max width
-            if (widget->minWidth() > 0 && cw < widget->minWidth())
-                cw = widget->minWidth();
-            else if (widget->maxWidth() > 0 && cw > widget->maxWidth())
-                cw = widget->maxWidth();
+            // satisfy min-max width but check for fixed cons. first
+            if (e.widget->minWidth() > 0 && cw < e.widget->minWidth())
+                cw = e.widget->minWidth();
+            else if (e.widget->maxWidth() > 0 && cw > e.widget->maxWidth())
+                cw = e.widget->maxWidth();
 
             // satisfy min-max height
-            if (widget->minHeight() > 0 && ch < widget->minHeight())
-                ch = widget->minHeight();
-            else if (widget->maxHeight() > 0 && ch > widget->maxHeight())
-                ch = widget->maxHeight();
+            if (e.widget->minHeight() > 0 && ch < e.widget->minHeight())
+                ch = e.widget->minHeight();
+            else if (e.widget->maxHeight() > 0 && ch > e.widget->maxHeight())
+                ch = e.widget->maxHeight();
 
             if (ch > h)
                 h = ch;
@@ -341,7 +535,7 @@ HBoxLayout::tile()
                     artifact = 0;
                 } else
                     widget->setWidth(average + expandAverage);
-            } else if (widget->xConstraint() & ShrinkPolicy && average < ((LayoutElement) *it).size.width())
+            } else if ((widget->xConstraint() & ShrinkPolicy) && average < ((LayoutElement) *it).size.width())
                 widget->setWidth(average);
             else
                 widget->setWidth(((LayoutElement) *it).size.width());
