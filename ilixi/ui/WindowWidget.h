@@ -182,8 +182,6 @@ private:
 
     std::string
     layerName() const;
-
-    Timer _update_timer;
 };
 
 }

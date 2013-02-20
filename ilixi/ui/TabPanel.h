@@ -219,7 +219,7 @@ private:
     updateChildrenFrameGeometry();
 
     virtual void
-    paintChildren(const Rectangle& rect);
+    paintChildren(const PaintEvent& event);
 };
 }
 

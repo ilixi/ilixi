@@ -59,8 +59,6 @@ WindowWidget::WindowWidget(Widget* parent)
 
     _eventManager = new EventManager(this);
     setRootWindow(this);
-
-//    _update_timer.sigExec.connect(sigc::mem_fun(this, &WindowWidget::updateWindow));
 }
 
 WindowWidget::~WindowWidget()
@@ -90,17 +88,16 @@ WindowWidget::windowEventManager() const
 void
 WindowWidget::update()
 {
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
         AppBase::__buffer->WakeUp(AppBase::__buffer);
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> using frameGeometry.\n");
         _updates._updateQueue.push_back(frameGeometry());
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(frameGeometry());
 #endif
-
-//            _update_timer.start(10, 1);
-
         pthread_mutex_unlock(&_updates._listLock);
     }
 
@@ -110,17 +107,17 @@ WindowWidget::update()
 void
 WindowWidget::update(const PaintEvent& event)
 {
+    ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
         AppBase::__buffer->WakeUp(AppBase::__buffer);
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> left %d, %d, %d, %d.\n", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height());
         _updates._updateQueue.push_back(event.rect);
 #ifdef ILIXI_STEREO_OUTPUT
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> right %d, %d, %d, %d.\n", event.right.x(), event.right.y(), event.right.width(), event.right.height());
         _updates._updateQueueRight.push_back(event.right);
 #endif
-
-//            _update_timer.start(10, 1);
-
         pthread_mutex_unlock(&_updates._listLock);
     }
 
@@ -149,8 +146,7 @@ WindowWidget::paint(const PaintEvent& event)
             _surface->updateSurface(event);
 
 #ifdef ILIXI_STEREO_OUTPUT
-            PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion),
-                    _frameGeometry.intersected(_updates._updateRegionRight));
+            PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion), _frameGeometry.intersected(_updates._updateRegionRight));
 #else
             PaintEvent evt(_frameGeometry.intersected(_updates._updateRegion));
 #endif
@@ -161,60 +157,34 @@ WindowWidget::paint(const PaintEvent& event)
                 // Left eye
                 ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
                 evt.eye = PaintEvent::LeftEye;
-                surface()->setStereoEye(PaintEvent::LeftEye);
+                surface()->setStereoEye(evt.eye);
                 surface()->clip(evt.rect);
-                if (_backgroundFlags & BGFFill)
-                {
+
+                if (_backgroundFlags & BGFClear)
                     surface()->clear(evt.rect);
+
+                if (_backgroundFlags & BGFFill)
                     compose(evt);
-                }
-                else if (_backgroundFlags & BGFClear)
-                surface()->clear(evt.rect);
 
                 paintChildren(evt);
-
-                if (AppBase::appOptions() & OptExclusive)
-                {
-                    surface()->clip(evt.rect);
-                    _exclusiveSurface->SetStereoEye(_exclusiveSurface, DSSE_LEFT);
-                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                            DSBLIT_BLEND_ALPHACHANNEL);
-                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                            AppBase::cursorPosition().x + 10,
-                            AppBase::cursorPosition().y);
-                }
+//                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
                 // Right eye
                 ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
                 evt.eye = PaintEvent::RightEye;
-                surface()->setStereoEye(PaintEvent::RightEye);
+                surface()->setStereoEye(evt.eye);
                 surface()->clip(evt.right);
-                if (_backgroundFlags & BGFFill)
-                {
+
+                if (_backgroundFlags & BGFClear)
                     surface()->clear(evt.right);
+
+                if (_backgroundFlags & BGFFill)
                     compose(evt);
-                }
-                else if (_backgroundFlags & BGFClear)
-                surface()->clear(evt.right);
 
                 paintChildren(evt);
+                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
-                if (AppBase::appOptions() & OptExclusive)
-                {
-                    surface()->clip(evt.rect);
-                    _exclusiveSurface->SetStereoEye(_exclusiveSurface,
-                            DSSE_RIGHT);
-                    _exclusiveSurface->SetBlittingFlags(_exclusiveSurface,
-                            DSBLIT_BLEND_ALPHACHANNEL);
-                    _exclusiveSurface->Blit(_exclusiveSurface, _cursorImage, NULL,
-                            AppBase::cursorPosition().x - 10,
-                            AppBase::cursorPosition().y);
-                }
-                if ((AppBase::appOptions() & OptExclusive)
-                        && (AppBase::appOptions() & OptTripleAccelerated))
-                surface()->flipStereo(evt.rect, evt.right, DSFLIP_ONSYNC);
-                else
-                surface()->flipStereo(evt.rect, evt.right, DSFLIP_WAITFORSYNC);
+                surface()->flipStereo(evt.rect, evt.right);
 #else
                 surface()->clip(evt.rect);
                 if (_backgroundFlags & BGFClear)
@@ -537,8 +507,8 @@ WindowWidget::updateWindow()
 #ifdef ILIXI_STEREO_OUTPUT
     Rectangle updateTempRight = _updates._updateQueueRight[0];
     if (size > 1)
-    for (int i = 1; i < size; ++i)
-    updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
+        for (int i = 1; i < size; ++i)
+            updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
 
     _updates._updateQueueRight.clear();
 #endif
@@ -548,12 +518,11 @@ WindowWidget::updateWindow()
     {
         sem_wait(&_updates._paintReady);
 #ifdef ILIXI_STEREO_OUTPUT
-        if (AppBase::appOptions() & OptFullScreenUpdate)
+        if (PlatformManager::instance().useFSU(_layerName))
         {
             _updates._updateRegion = frameGeometry();
             _updates._updateRegionRight = frameGeometry();
-        }
-        else
+        } else
         {
             _updates._updateRegion = updateTemp;
             _updates._updateRegionRight = updateTempRight;

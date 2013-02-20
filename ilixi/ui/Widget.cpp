@@ -1007,12 +1007,13 @@ Widget::updateFrameGeometry()
 
     ILOG_DEBUG( ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, x, y);
 
-    if ((_surface->flags() & Surface::SubSurface))
-#ifdef ILIXI_STEREO_OUTPUT
-        _surface->setStereoGeometry(_frameGeometry, z());
-#else
-        _surface->setGeometry(surfaceGeometry());
-#endif
+// TODO UNSURE!!!
+//    if ((_surface->flags() & Surface::SubSurface))
+//#ifdef ILIXI_STEREO_OUTPUT
+//        _surface->setStereoGeometry(_frameGeometry, z());
+//#else
+//        _surface->setGeometry(surfaceGeometry());
+//#endif
 
     Surface::SurfaceFlags flags = (Surface::SurfaceFlags) ((_surface->flags() & Surface::ModifiedPosition) | (_surface->flags() & Surface::ModifiedSize));
     _surface->unsetSurfaceFlag(Surface::ModifiedGeometry);

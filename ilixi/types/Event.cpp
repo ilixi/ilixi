@@ -28,10 +28,12 @@ namespace ilixi
 {
 
 #ifdef ILIXI_STEREO_OUTPUT
-PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt) :
-right(), rect(), eye(evt.eye)
+PaintEvent::PaintEvent(Widget* widget, const PaintEvent& evt)
+        : right(),
+          rect(),
+          eye(evt.eye)
 {
-    widget->updateSurface(evt);
+    widget->surface()->updateSurface(evt);
     Rectangle lt = widget->frameGeometry();
     lt.translate(widget->z(), 0);
     Rectangle rt = widget->frameGeometry();

@@ -339,13 +339,13 @@ TabPanel::updateChildrenFrameGeometry()
 }
 
 void
-TabPanel::paintChildren(const Rectangle& rect)
+TabPanel::paintChildren(const PaintEvent& event)
 {
     for (unsigned int i = 0; i < _tabs.size(); i++)
     {
-        _tabs[i].button->paint(rect);
+        _tabs[i].button->paint(event);
         if (i == _currentIndex)
-            _tabs[i].widget->paint(rect);
+            _tabs[i].widget->paint(event);
     }
 }
 

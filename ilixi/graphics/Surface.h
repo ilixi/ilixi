@@ -48,7 +48,7 @@ public:
         ModifiedGeometry = (ModifiedPosition | ModifiedSize),   //!< Widget's geometry is modified.
         DoZSort = 0x0008,                                       //!< Perform z-index sorting of children.
         HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
-        RootSurface = 0x0020,                                   //!< Widget is a WindowWidget.
+        RootSurface = 0x0020,                                   //!< Widget is a WindowWidget and window surface is used directly.
         SubSurface = 0x0040,                                    //!< Widget uses a subsurface.
         SharedSurface = 0x0080,                                 //!< Widget uses window surface directly.
         DefaultDescription = (InitialiseSurface | ModifiedGeometry | SharedSurface),    //!< Default flags for widgets.
@@ -210,8 +210,7 @@ public:
 
 #ifdef ILIXI_STEREO_OUTPUT
     bool
-    createDFBSubSurfaceStereo(const Rectangle& geometry,
-            IDirectFBSurface* parent, int zIndex);
+    createDFBSubSurfaceStereo(const Rectangle& geometry, IDirectFBSurface* parent, int zIndex);
 
     void
     setStereoGeometry(const Rectangle& geometry, int zIndex);

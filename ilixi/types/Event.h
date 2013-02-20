@@ -218,20 +218,26 @@ struct PaintEvent
     PaintEvent(Widget* widget, const PaintEvent& evt);
 
 #ifdef ILIXI_STEREO_OUTPUT
-    PaintEvent(Rectangle l, Rectangle r) :
-    right(r), rect(l), eye(BothEyes)
+    PaintEvent(Rectangle l, Rectangle r)
+            : right(r),
+              rect(l),
+              eye(BothEyes)
     {
     }
 
-    PaintEvent(Rectangle r, int disparity) :
-    right(r), rect(r), eye(BothEyes)
+    PaintEvent(Rectangle r, int disparity)
+            : right(r),
+              rect(r),
+              eye(BothEyes)
     {
         right.translate(-disparity, 0);
         rect.translate(disparity, 0);
     }
 
-    PaintEvent(Rectangle r, PaintEventEye e) :
-    right(r), rect(r), eye(e)
+    PaintEvent(Rectangle r, PaintEventEye e)
+            : right(r),
+              rect(r),
+              eye(e)
     {
     }
 
@@ -239,9 +245,9 @@ struct PaintEvent
     isValid()
     {
         if (eye & LeftEye)
-        return rect.isValid();
+            return rect.isValid();
         else
-        return right.isValid();
+            return right.isValid();
     }
 
     Rectangle right;
@@ -290,11 +296,11 @@ struct UniversalEvent
         data = Data;
     }
 
-    UniversalEvent(const UniversalEvent& other) :
-        universal(other.universal),
-        target(other.target),
-        type(other.type),
-        data(other.data)
+    UniversalEvent(const UniversalEvent& other)
+            : universal(other.universal),
+              target(other.target),
+              type(other.type),
+              data(other.data)
     {
     }
 
