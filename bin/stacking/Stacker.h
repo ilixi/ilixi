@@ -24,8 +24,8 @@
 #ifndef STACKER_H_
 #define STACKER_H_
 
-#include "ui/Application.h"
-#include "ui/PushButton.h"
+#include <ui/Application.h>
+#include <ui/ToolButton.h>
 
 namespace ilixi
 {
@@ -50,7 +50,7 @@ namespace ilixi
     void
     lower();
   private:
-    PushButton* pb1;
+    ToolButton* pb1;
   };
 
 } /* namespace ilixi */

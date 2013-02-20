@@ -22,7 +22,8 @@
  */
 
 #include "Stacker.h"
-#include "core/Logger.h"
+#include <ui/PushButton.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
@@ -54,25 +55,29 @@ Stacker::Stacker(int argc, char* argv[])
     cont4->sigClicked.connect(sigc::mem_fun(this, &Stacker::lower));
     cont4->moveTo(0, 150);
 
-    PushButton* pb2 = new PushButton("Button 2");
+    ToolButton* pb2 = new ToolButton("Button 2");
+    pb2->setZ(0);
     addWidget(pb2);
-    pb2->setGeometry(160, 50, 100, 100);
+    pb2->setGeometry(160, 50, 200, 50);
 
-    PushButton* pb3 = new PushButton("Button 3");
+    ToolButton* pb3 = new ToolButton("Button 3");
+    pb2->setZ(0);
     addWidget(pb3);
-    pb3->setGeometry(340, 50, 100, 100);
+    pb3->setGeometry(340, 50, 200, 50);
 
-    PushButton* pb4 = new PushButton("Button 4");
+    ToolButton* pb4 = new ToolButton("Button 4");
+    pb2->setZ(0);
     addWidget(pb4);
-    pb4->setGeometry(160, 160, 100, 100);
+    pb4->setGeometry(160, 160, 200, 50);
 
-    PushButton* pb5 = new PushButton("Button 5");
+    ToolButton* pb5 = new ToolButton("Button 5");
+    pb2->setZ(0);
     addWidget(pb5);
-    pb5->setGeometry(340, 160, 100, 100);
+    pb5->setGeometry(340, 160, 200, 50);
 
-    pb1 = new PushButton("Button 1");
+    pb1 = new ToolButton("Button 1");
     addWidget(pb1);
-    pb1->setGeometry(200, 100, 100, 100);
+    pb1->setGeometry(200, 100, 200, 50);
 }
 
 Stacker::~Stacker()
@@ -82,14 +87,16 @@ Stacker::~Stacker()
 void
 Stacker::sendBack()
 {
-    pb1->sendToBack();
+    pb1->setZ(-1);
+    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
     update();
 }
 
 void
 Stacker::bringForward()
 {
-    pb1->bringToFront();
+    pb1->setZ(1);
+    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
     update();
 }
 
@@ -98,7 +105,6 @@ Stacker::raise()
 {
     pb1->setZ(pb1->z() + 1);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
-//    ILOG_DEBUG(ILX, "raise: %d\n", raiseWidget(pb1));
     update();
 }
 
@@ -107,7 +113,6 @@ Stacker::lower()
 {
     pb1->setZ(pb1->z() - 1);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
-//    ILOG_DEBUG(ILX, "lower: %d\n", lowerWidget(pb1));
     update();
 }
 

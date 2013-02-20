@@ -42,29 +42,41 @@ Animations::Animations(int argc, char* argv[])
     _fps = new FPSCalculator();
 
     _frame = new Frame();
+    _frame->setZ(5);
     addWidget(_frame);
     sigVisible.connect(sigc::mem_fun(this, &Animations::setFrameAnimation));
 
     // Add spirals
     _spiral1 = new Spiral();
+    _spiral1->setZ(10);
     addWidget(_spiral1);
     if (!_light)
     {
         _spiral2 = new Spiral();
+        _spiral2->setZ(10);
         addWidget(_spiral2);
+
         _spiral3 = new Spiral();
+        _spiral3->setZ(10);
         addWidget(_spiral3);
+
         _spiral4 = new Spiral();
+        _spiral4->setZ(10);
         addWidget(_spiral4);
     }
     sigVisible.connect(sigc::mem_fun(this, &Animations::setSpiralAnimation));
 
     // Add buttons
     _button1 = new PushButton("Button 1");
+    _button1->setZ(15);
     addWidget(_button1);
+
     _button2 = new PushButton("Button 2");
+    _button2->setZ(15);
     addWidget(_button2);
+
     _button3 = new PushButton("Button 3");
+    _button3->setZ(15);
     addWidget(_button3);
     sigVisible.connect(sigc::mem_fun(this, &Animations::setButtonAnimation));
 
