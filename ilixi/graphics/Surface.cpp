@@ -628,8 +628,10 @@ Surface::updateSurface(const PaintEvent& event)
         if (ret)
             unsetSurfaceFlag(Surface::InitialiseSurface);
     }
+#ifdef ILIXI_STEREO_OUTPUT
     ILOG_DEBUG(ILX_SURFACE, " -> eye: %s\n", event.eye & PaintEvent::LeftEye ? "Left" : "Right");
     _eye = event.eye;
+#endif
 }
 
 void
