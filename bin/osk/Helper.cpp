@@ -147,6 +147,12 @@ OSKHelper::handleInput(uint32_t symbol)
             _helper->getNextCandidate();
         else
         {
+            // andi:
+            // there should be one more mode.
+            // when pressing space the first time only process() should be called.
+            // when pressed on some segment afterwards generateCandidates() should be called.
+            // we could make _candidateMode and enum and rename it to allow 3 states
+            _helper->process();
             _helper->generateCandidates();
             _candidateMode = true;
         }
@@ -204,7 +210,7 @@ OSKHelper::handleInput(uint32_t symbol)
 
     case DIKS_ENTER:
         ILOG_DEBUG(ILX_OSKHelper, " -> DIKS_ENTER\n");
-        _helper->process();
+//        _helper->process();
         break;
 
     default:
