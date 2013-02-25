@@ -72,14 +72,14 @@ public:
     /*!
      * Returns current segment.
      */
-    unsigned int
+    int
     getCurrentSegment() const;
 
     /*!
      * Sets current segment.
      */
     void
-    setCurrentSegment(unsigned int currentSegment);
+    setCurrentSegment(int currentSegment);
 
     /*!
      * Returns number of segments.
@@ -176,9 +176,9 @@ public:
 
 protected:
     //! This property stores the current segment.
-    unsigned int _currentSegment;
+    int _currentSegment;
     //! This property stores the current candidate.
-    unsigned int _currentCandidate;
+    int _currentCandidate;
     //! This property stores the input data (UTF8).
     std::string _data;
 

@@ -253,6 +253,8 @@ void
 InputHelperJP::resizeSegment(int direction)
 {
     ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    if ((_currentSegment >= _segments.size()-1) && (direction > 0))
+        return;
 
 #if ILIXI_HAVE_LIBWNN
     int length = jl_yomi_len(_wnn, _currentSegment, _currentSegment + 1);

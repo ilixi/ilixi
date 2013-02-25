@@ -70,14 +70,14 @@ InputHelper::getData() const
     return _data;
 }
 
-unsigned int
+int
 InputHelper::getCurrentSegment() const
 {
     return _currentSegment;
 }
 
 void
-InputHelper::setCurrentSegment(unsigned int currentSegment)
+InputHelper::setCurrentSegment(int currentSegment)
 {
     _currentSegment = currentSegment;
 }
@@ -111,8 +111,8 @@ InputHelper::getNextSegment()
 {
     _currentCandidate = 0;
     _currentSegment++;
-    if (_currentSegment > _segments.size())
-        _currentSegment = _segments.size();
+    if (_currentSegment >= _segments.size())
+        _currentSegment = _segments.size()-1;
     else
         sigUpdateUI();
 }
