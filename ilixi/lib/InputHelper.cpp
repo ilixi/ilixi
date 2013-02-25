@@ -146,7 +146,7 @@ void
 InputHelper::getNextCandidate()
 {
     _currentCandidate++;
-    if (_currentCandidate > _candidates.size())
+    if (_currentCandidate >= _candidates.size())
         _currentCandidate = 0;
 }
 

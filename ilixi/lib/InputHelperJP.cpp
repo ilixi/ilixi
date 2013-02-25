@@ -275,6 +275,7 @@ InputHelperJP::resizeSegment(int direction)
 
         ILOG_DEBUG(ILX_INPUTHELPERJP, " -> segmentCount: %d\n", segmentCount);
         generateSegments(segmentCount);
+        generateCandidates();
     }
 #endif // ILIXI_HAVE_LIBWNN
 }
