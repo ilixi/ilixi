@@ -89,9 +89,10 @@ fi
 
 AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
 AC_ARG_ENABLE([fusionsound], AS_HELP_STRING([--enable-fusionsound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_fusionsound=no])
-AC_ARG_WITH([sawman], [AS_HELP_STRING([--with-sawman], [enables compositor and application manager])], [], [with_sawman=no])
-AC_ARG_WITH([reflex], [AS_HELP_STRING([--with-reflex], [enable experimental support for reflex])], [], [with_reflex=no])
-AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples])], [], [with_examples=no])
+AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor and application manager features @<:@default=no@:>@])], [], [enable_sawman=no])
+AC_ARG_ENABLE([reflex], [AS_HELP_STRING([--enable-reflex], [enable experimental support for Reflex @<:@default=no@:>@])], [], [enable_reflex=no])
+AC_ARG_ENABLE([wnn], [AS_HELP_STRING([--enable-wnn], [enable experimental support for Wnn @<:@default=no@:>@])], [], [enable_wnn=no])
+AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
 ######################################################################
 # Dependencies
@@ -154,7 +155,7 @@ AS_IF([test "x$enable_fusionsound" = "xyes"], [
 	)], []
 )
 
-AS_IF([test "x$with_sawman" = "xyes"], 
+AS_IF([test "x$enable_sawman" = "xyes"], 
     [
         PKG_CHECK_MODULES([SaWMan], [$SAWMAN_DEP], 
         [
@@ -169,16 +170,31 @@ AS_IF([test "x$with_sawman" = "xyes"],
 )
 
 LIBREFLEX=""
-AS_IF([test "x$with_reflex" = "xyes"], 
+AS_IF([test "x$enable_reflex" = "xyes"], 
     [
-        AC_CHECK_FILE([/opt/dfb/include/Reflex/Reflex.h], 
+        AC_CHECK_HEADER([Reflex/Reflex.h], 
         [
             LIBREFLEX="-lReflex"
             AC_DEFINE([HAVE_LIBREFLEX], [1], [Enable Reflex support])
         ],
         [
-            with_reflex=no
+            enable_reflex=no
             AC_MSG_WARN([*** Reflex not found -- Building without Reflex support.])
+        ])
+    ]
+)
+
+LIBWNN=""
+AS_IF([test "x$enable_wnn" = "xyes"], 
+    [
+        AC_CHECK_HEADER([wnn/jllib.h], 
+        [
+            LIBWNN="-lwnn -lcrypt"
+            AC_DEFINE([HAVE_LIBWNN], [1], [Enable Wnn support])
+        ],
+        [
+            enable_wnn=no
+            AC_MSG_WARN([*** Wnn not found -- Building without Wnn support.])
         ])
     ]
 )
@@ -205,7 +221,7 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 # Output
 ######################################################################
 DEPS_CFLAGS="$DEPS_CFLAGS -I/opt/dfb/include/"
-DEPS_LIBS="$DEPS_LIBS $LIBREFLEX"
+DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN"
 CXXFLAGS="$CFLAGS"
 
 with_surface_events=no
@@ -224,8 +240,9 @@ AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ili
 
 AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_fusiondale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
-AM_CONDITIONAL([WITH_SAWMAN], [test x$with_sawman = xyes])
-AM_CONDITIONAL([WITH_REFLEX], [test x$with_reflex = xyes])
+AM_CONDITIONAL([WITH_SAWMAN], [test x$enable_sawman = xyes])
+AM_CONDITIONAL([WITH_REFLEX], [test x$enable_reflex = xyes])
+AM_CONDITIONAL([WITH_WNN], [test x$enable_wnn = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 
@@ -308,8 +325,9 @@ AC_MSG_RESULT([
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
    FusionSound support      : $enable_fusionsound
-   Sawman support           : $with_sawman
-   Reflex support           : $with_reflex
+   Sawman support           : $enable_sawman
+   Reflex support           : $enable_reflex
+   Wnn support              : $enable_wnn
    Examples                 : $with_examples
 
 Type \`make' to build ilixi. 

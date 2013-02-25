@@ -32,6 +32,27 @@ namespace ilixi
 
 class HBoxLayout;
 class Label;
+class ToolButton;
+
+class OSKSegmentRenderer : public Widget
+{
+public:
+    OSKSegmentRenderer(Font* font, InputHelper* helper, Widget* parent = 0);
+
+    virtual
+    ~OSKSegmentRenderer();
+
+    Size
+    preferredSize() const;
+
+protected:
+    void
+    compose(const PaintEvent& event);
+
+private:
+    Font* _font;
+    InputHelper* _helper;
+};
 
 /*!
  *
@@ -45,21 +66,31 @@ public:
     ~OSKHelper();
 
     void
-    convert(uint32_t symbol);
+    setResizeMode(bool resizeMode);
+
+    void
+    handleInput(uint32_t symbol);
 
 protected:
     void
     compose(const PaintEvent& event);
 
 private:
+    bool _candidateMode;bool _resizeMode;
     Font* _font;
     InputHelper* _helper;
+
+    OSKSegmentRenderer* _segmentRenderer;
+
     Label* _text;
     Label* _candidate;
-    std::string _buffer;
+    ToolButton* _accept;
 
     void
     updateText();
+
+    void
+    acceptInput();
 };
 
 } /* namespace ilixi */

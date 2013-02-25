@@ -81,11 +81,17 @@ ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
         {
             _keyboard->toggleHelper();
             return true;
+        } else if (_helper->visible() && event.key_symbol == DIKS_SHIFT)
+        {
+            _helper->setResizeMode(true);
+            return true;
         }
 
         return _keyboard->handleKeyPress(event.key_symbol);
 
     case DWET_KEYUP:
+        if (_helper->visible() && event.key_symbol == DIKS_SHIFT)
+            _helper->setResizeMode(false);
         return true;
 
     default:

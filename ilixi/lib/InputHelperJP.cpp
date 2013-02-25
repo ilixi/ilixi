@@ -23,136 +23,345 @@
 
 #include <lib/InputHelperJP.h>
 #include <lib/utf8.h>
+#include <core/Logger.h>
 #include <directfb.h>
+#include <iconv.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN(ILX_INPUTHELPERJP, "ilixi/lib/InputHelperJP", "InputHelperJP");
+
+#if ILIXI_HAVE_LIBWNN
+
+extern "C"
+{
+
+struct wnn_buf *
+jl_open_lang(char *, char *, char *, char *, int
+(*)(char *), int
+(*)(char *), int);
+
+#define jl_open(a,b,c,d,e,f) jl_open_lang(a,b,NULL,c,d,e,f)
+
+void
+jl_close(struct wnn_buf*);
+
+int
+jl_ren_conv(struct wnn_buf*, w_char*, int, int, int);
+
+int
+jl_zenkouho_dai(struct wnn_buf*, int, int, int, int);
+
+int
+wnn_get_area(struct wnn_buf*, int, int, w_char*, int);
+
+void
+jl_get_zenkouho_kanji(struct wnn_buf*, int, w_char *);
+
+int
+jl_nobi_conv(struct wnn_buf*, int, int, int, int, int);
+
+int
+jl_yomi_len(struct wnn_buf*, int, int);
+} // extern C
+
+int
+wnnMessage(char* str)
+{
+    ILOG_INFO(ILX_INPUTHELPERJP, "WNN: %s\n", str);
+    return 1;
+}
+
+int
+wnnError(char* str)
+{
+    ILOG_ERROR(ILX_INPUTHELPERJP, "WNN: %s\n", str);
+    return 1;
+}
+
+void
+wstrtoeucstr(w_char* wstr, unsigned char* eucstr)
+{
+    w_char tmp;
+    while (*wstr) {
+        tmp = *wstr++;
+        if (tmp & 0x8000) {
+            *eucstr++ = tmp >> 8;
+            *eucstr++ = tmp;
+        }
+        else if (tmp & 0x0080) {
+            *eucstr++ = 0x8e;
+            *eucstr++ = tmp & 0xff;
+        }
+        else
+            *eucstr++ = tmp;
+    }
+    *eucstr++ = 0;
+}
+
+void
+eucstrtowstr(unsigned char* eucstr, w_char* wstr)
+{
+    w_char tmp;
+    while(*eucstr)
+    {
+        tmp = *eucstr++;
+        if (tmp & 0x0080)
+            tmp = ((tmp << 8) & 0xff00) | *eucstr++;
+        *wstr++ = tmp;
+    }
+    *wstr = 0;
+}
+
+int
+eucwstoutf8(w_char* eucwstr, char* utfstr)
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    size_t inbytesleft;
+    size_t outbytesleft = 1023;
+    char *tmp = (char*) calloc(1024, 1); // must be zeroed for iconv
+    char *inptr = tmp;
+    char *outptr = utfstr;
+
+    wstrtoeucstr(eucwstr, (unsigned char*) tmp);
+
+    inbytesleft = strlen(tmp) + 1;
+
+    iconv_t cd = iconv_open("UTF-8", "EUC-JP");
+    if (cd == (void*) -1)
+    {
+        ILOG_ERROR(ILX_INPUTHELPERJP, "Error: iconv_open EUC-JP to UTF8\n");
+        return -1;
+    }
+
+    int res = iconv(cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
+    if (res)
+    {
+        ILOG_ERROR(ILX_INPUTHELPERJP, "iconv could not convert EUC-JP to UTF8!\n");
+        if (errno == E2BIG)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Output buffer not large enough.\n");
+        if (errno == EILSEQ)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Invalid byte sequence in input.\n");
+        if (errno == EINVAL)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Incomplete byte sequence at the end of input.\n");
+
+        free(tmp);
+        iconv_close(cd);
+        return res;
+    }
+    iconv_close(cd);
+
+    free(tmp);
+    return res;
+}
+
+int
+utf8toeucws(char* utfstr, w_char* eucwstr)
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    size_t inbytesleft = strlen(utfstr);
+    size_t outbytesleft = 1023;
+    char *tmp = (char*) calloc(1024, 1); // must be zeroed for iconv
+    char *inptr = utfstr;
+    char *outptr = tmp;
+
+    iconv_t cd = iconv_open("EUC-JP", "UTF-8");
+    if (cd == (void*) -1)
+    {
+        ILOG_ERROR(ILX_INPUTHELPERJP, "Error: iconv_open UTF8 to EUC-JP \n");
+        return -1;
+    }
+
+    int res = iconv(cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
+    if (res)
+    {
+        ILOG_ERROR(ILX_INPUTHELPERJP, "iconv could not convert UTF8 to EUC-JP!\n");
+        if (errno == E2BIG)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Output buffer not large enough.\n");
+        if (errno == EILSEQ)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Invalid byte sequence in input.\n");
+        if (errno == EINVAL)
+            ILOG_ERROR(ILX_INPUTHELPERJP, " -> Incomplete byte sequence at the end of input.\n");
+
+        free(tmp);
+        iconv_close(cd);
+        return res;
+    }
+    iconv_close(cd);
+
+    eucstrtowstr((unsigned char*) tmp, eucwstr);
+
+    free(tmp);
+    return res;
+}
+
+#endif
+
+//*************************************************************************************************************
+
 InputHelperJP::InputHelperJP()
         : InputHelper()
 {
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
     initHiraganaMap();
+
+#if ILIXI_HAVE_LIBWNN
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> Connecting to wnn for user: %s\n", getlogin());
+    _wnn = NULL;
+    _wnn = jl_open(getlogin(), "localhost", "/usr/share/wnn/ja_JP/wnnenvrc", NULL, NULL, 10);
+    if (_wnn == NULL)
+        ILOG_THROW(ILX_INPUTHELPERJP, "Could not connect to wnn server!\n");
+#endif
 }
 
 InputHelperJP::~InputHelperJP()
 {
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+
+#if ILIXI_HAVE_LIBWNN
+    jl_close(_wnn);
+    _wnn = NULL;
+#endif
 }
 
-bool
-InputHelperJP::convert(uint32_t symbol)
+void
+InputHelperJP::process()
 {
-    if (symbol == DIKS_PERIOD)
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+#if ILIXI_HAVE_LIBWNN
+    // Convert hiragana (UTF-8) to _ws (EUC-JP).
+    int res = utf8toeucws(const_cast<char*>(_hiraganaBuffer.c_str()), _ws);
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> utf8toeucws: %d\n", res);
+
+    // Get number of segments.
+    int segmentCount = jl_ren_conv(_wnn, _ws, 0, -1, WNN_USE_ZENGO);
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> segmentCount: %d\n", segmentCount);
+    if (segmentCount < 0)
     {
-//        std::vector<uint32_t> ucs32;
-//        decode((uint8_t*) "。", ucs32);
-//        forwardKeyData(ucs32);
-
-        wchar_t* out = (wchar_t*) calloc(6, sizeof(wchar_t));
-        size_t bytes = utf8_to_wchar("。", sizeof("。"), out, 6, UTF8_IGNORE_ERROR);
-        _conversion += out;
-        free(out);
-
-        return true;
-    } else if (symbol == DIKS_COMMA)
-    {
-        wchar_t* out = (wchar_t*) calloc(6, sizeof(wchar_t));
-        size_t bytes = utf8_to_wchar("、", sizeof("、"), out, 6, UTF8_IGNORE_ERROR);
-        _conversion += out;
-        free(out);
-
-        return true;
-    } else if (symbol == DIKS_MINUS_SIGN)
-    {
-        wchar_t* out = (wchar_t*) calloc(6, sizeof(wchar_t));
-        size_t bytes = utf8_to_wchar("ー", sizeof("ー"), out, 6, UTF8_IGNORE_ERROR);
-        _conversion.append(out);
-        free(out);
-
-        return true;
+        ILOG_WARNING(ILX_INPUTHELPERJP, "No bunsetsu!\n");
+        return;
     }
+    generateSegments(segmentCount);
+#endif // ILIXI_HAVE_LIBWNN
+}
 
-    if (_buffer.length() > 3) // 4-letter
+void
+InputHelperJP::resizeSegment(int direction)
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+
+#if ILIXI_HAVE_LIBWNN
+    int length = jl_yomi_len(_wnn, _currentSegment, _currentSegment + 1);
+    if (length > 1)
     {
-        std::string prefix = _buffer.substr(_buffer.length() - 4, 4);
-        if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
+        int mode = WNN_NO_USE;
+        int ret;
+
+        if (_currentSegment > 0)
+            mode |= WNN_USE_MAE;
+        if (_currentSegment < _segments.size() - 1)
+            mode |= WNN_USE_ATO;
+
+        int segmentCount = 0;
+        ret = jl_nobi_conv(_wnn, _currentSegment, length + direction, -1, mode, WNN_SHO);
+        if (ret == -1)
+            ILOG_WARNING(ILX_INPUTHELPERJP, "Error: jl_nobi_conv()!\n");
+        else
+            segmentCount = ret;
+
+        ILOG_DEBUG(ILX_INPUTHELPERJP, " -> segmentCount: %d\n", segmentCount);
+        generateSegments(segmentCount);
+    }
+#endif // ILIXI_HAVE_LIBWNN
+}
+
+void
+InputHelperJP::generateSegments(int segmentCount)
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    _segments.clear();
+
+#if ILIXI_HAVE_LIBWNN
+    for (int i = 0; i < segmentCount; i++)
+    {
+        jl_get_kanji(_wnn, i, i + 1, _ws);
+        char segmentBuffer[1024];
+        eucwstoutf8(_ws, segmentBuffer);
+        _segments.push_back(std::string(segmentBuffer));
+        ILOG_DEBUG(ILX_INPUTHELPERJP, " -> part[%d]: %s\n", i, segmentBuffer);
+    }
+#endif // ILIXI_HAVE_LIBWNN
+}
+
+void
+InputHelperJP::generateCandidates()
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    _candidates.clear();
+
+#if ILIXI_HAVE_LIBWNN
+    jl_zenkouho_dai(_wnn, getCurrentSegment(), getCurrentSegment() + 1, WNN_USE_ZENGO, WNN_UNIQ);
+    int candidateCount = jl_zenkouho_suu(_wnn);
+
+    for (int i = 0; i < candidateCount; i++)
+    {
+        jl_get_zenkouho_kanji(_wnn, i, _ws);
+        char candidateBuffer[1024];
+        eucwstoutf8(_ws, candidateBuffer);
+        _candidates.push_back(std::string(candidateBuffer));
+        ILOG_DEBUG(ILX_INPUTHELPERJP, " -> canditate[%d]: %s\n", i, candidateBuffer);
+    }
+#endif // ILIXI_HAVE_LIBWNN
+}
+
+void
+InputHelperJP::preProcessInputData()
+{
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> romaji: %s\n", _data.c_str());
+    int pos = 0;
+    int len = 0;
+    bool found;
+    _hiraganaBuffer.clear();
+
+    while (pos < _data.length())
+    {
+        len = 4; // 4-letter max
+        if (len > _data.length() - pos)
+            len = _data.length() - pos;
+
+        found = false;
+
+        while (len > 0 && !found)
         {
-//            std::vector<uint32_t> ucs32;
-//            decode((uint8_t*) _hiraganaMap.find(prefix)->second.c_str(), ucs32);
-//            forwardKeyData(ucs32);
-            wchar_t* out = (wchar_t*) calloc(_hiraganaMap.find(prefix)->second.size() + 1, sizeof(wchar_t));
-            size_t bytes = utf8_to_wchar(_hiraganaMap.find(prefix)->second.c_str(), _hiraganaMap.find(prefix)->second.size(), out, _hiraganaMap.find(prefix)->second.size() + 1, UTF8_SKIP_BOM);
-            _processed.push_back(4);
-            _steps.push_back(bytes);
-            _conversion.append(out);
-            free(out);
-
-            printf(" 4 - %s = %s\n", prefix.c_str(), _hiraganaMap.find(prefix)->second.c_str());
-            return true;
-        }
-    }
-
-    if (_buffer.length() > 2) // 3-letter
-    {
-        std::string prefix = _buffer.substr(_buffer.length() - 3, 3);
-        if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
-        {
-            wchar_t* out = (wchar_t*) calloc(_hiraganaMap.find(prefix)->second.size() + 1, sizeof(wchar_t));
-            size_t bytes = utf8_to_wchar(_hiraganaMap.find(prefix)->second.c_str(), _hiraganaMap.find(prefix)->second.size(), out, _hiraganaMap.find(prefix)->second.size() + 1, UTF8_SKIP_BOM);
-            _processed.push_back(3);
-            _steps.push_back(bytes);
-            _conversion.append(out);
-            free(out);
-
-            printf(" 3 - %s = %s\n", prefix.c_str(), _hiraganaMap.find(prefix)->second.c_str());
-            return true;
-        }
-    }
-
-    if (_buffer.length() > 1) // 2-letter
-    {
-        std::string prefix = _buffer.substr(_buffer.length() - 2, 2);
-        if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
-        {
-            wchar_t* out = (wchar_t*) calloc(_hiraganaMap.find(prefix)->second.size() + 1, sizeof(wchar_t));
-            size_t bytes = utf8_to_wchar(_hiraganaMap.find(prefix)->second.c_str(), _hiraganaMap.find(prefix)->second.size(), out, _hiraganaMap.find(prefix)->second.size() + 1, UTF8_SKIP_BOM);
-            _processed.push_back(2);
-            _steps.push_back(bytes);
-            _conversion.append(out);
-            free(out);
-
-            printf(" 2 - %s = %s\n", prefix.c_str(), _hiraganaMap.find(prefix)->second.c_str());
-            return true;
+            std::string prefix = _data.substr(pos, len);
+            if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
+            {
+                _hiraganaBuffer.append(_hiraganaMap.find(prefix)->second);
+                pos += len;
+                found = true;
+            }
+            len--;
         }
 
+        if (!found)
+            pos++;
     }
-
-    if (_buffer.length() > 0)
-    {
-        // 1-letter
-        std::string prefix = _buffer.substr(_buffer.length() - 1, 1);
-        if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
-        {
-            wchar_t* out = (wchar_t*) calloc(_hiraganaMap.find(prefix)->second.size() + 1, sizeof(wchar_t));
-            size_t bytes = utf8_to_wchar(_hiraganaMap.find(prefix)->second.c_str(), _hiraganaMap.find(prefix)->second.size(), out, _hiraganaMap.find(prefix)->second.size() + 1, UTF8_SKIP_BOM);
-            _processed.push_back(1);
-            _steps.push_back(bytes);
-            _conversion.append(out);
-            free(out);
-
-            printf(" 1 - %s = %s\n", prefix.c_str(), _hiraganaMap.find(prefix)->second.c_str());
-            return true;
-        }
-    }
-    return false;
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> hiragana: %s\n", _hiraganaBuffer.c_str());
 }
 
 void
 InputHelperJP::initHiraganaMap()
 {
-    //// 4-letter romaji
+    ILOG_TRACE_F(ILX_INPUTHELPERJP);
+    // 4-letter romaji
     _hiraganaMap["xtsu"] = "っ";
 
-    //// 3-letter romaji
+    // 3-letter romaji
     _hiraganaMap["kya"] = "きゃ";
     _hiraganaMap["kyi"] = "きぃ";
     _hiraganaMap["kyu"] = "きゅ";
@@ -262,7 +471,7 @@ InputHelperJP::initHiraganaMap()
     _hiraganaMap["tse"] = "つぇ";
     _hiraganaMap["tso"] = "つぉ";
 
-    ////2-letter romaji
+    // 2-letter romaji
     _hiraganaMap["nn"] = "ん";
 
     _hiraganaMap["ka"] = "か";
@@ -368,13 +577,18 @@ InputHelperJP::initHiraganaMap()
     _hiraganaMap["ce"] = "せ";
     _hiraganaMap["co"] = "こ";
 
-    ////1-letter romaji
+    // 1-letter romaji
     _hiraganaMap["a"] = "あ";
     _hiraganaMap["i"] = "い";
     _hiraganaMap["u"] = "う";
     _hiraganaMap["e"] = "え";
     _hiraganaMap["o"] = "お";
     _hiraganaMap["n"] = "ん";
+
+    // punctuation
+    _hiraganaMap["."] = "。";
+    _hiraganaMap[","] = "、";
+    _hiraganaMap["-"] = "ー";
 }
 
 } /* namespace ilixi */

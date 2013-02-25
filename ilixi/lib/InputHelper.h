@@ -33,51 +33,168 @@ namespace ilixi
 {
 
 /*!
- *
+ * This class provides an API to input in other languages.
  */
 class InputHelper
 {
 public:
+    /*!
+     * Constructor.
+     */
     InputHelper();
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~InputHelper();
 
+    /*!
+     * Sets input data (UTF8) for conversion engine.
+     */
+    void
+    setInputData(std::string data);
+
+    /*!
+     * Appends symbol to input data (UTF8).
+     *
+     * This method is called when a new symbol is typed.
+     */
     void
     append(uint32_t symbol);
 
-    std::wstring
-    conversion() const;
+    /*!
+     * Returns internal symbol data stored for processing.
+     */
+    std::string
+    getData() const;
 
+    /*!
+     * Returns current segment.
+     */
+    unsigned int
+    getCurrentSegment() const;
+
+    /*!
+     * Sets current segment.
+     */
+    void
+    setCurrentSegment(unsigned int currentSegment);
+
+    /*!
+     * Returns number of segments.
+     */
+    unsigned int
+    segments() const;
+
+    /*!
+     * Returns concatenated segments.
+     */
+    std::string
+    concatedSegments() const;
+
+    /*!
+     * Returns segment at given index.
+     */
+    std::string
+    getSegment(unsigned int index);
+
+    /*!
+     * Increments current segment index.
+     */
+    void
+    getNextSegment();
+
+    /*!
+     * Decrements current segment index.
+     */
+    void
+    getPreviousSegment();
+
+    /*!
+     * Returns number of candidates for a current segment.
+     */
     unsigned int
     canditates() const;
 
-    std::wstring
+    /*!
+     * Returns the candidate for current segment at index.
+     */
+    std::string
     getCanditate(unsigned int index);
 
-    //! This signal is emitted when a conversion is successful.
-    sigc::signal<void> sigConverted;
+    /*!
+     * Increments current candidate index for current segment.
+     */
+    void
+    getNextCandidate();
+
+    /*!
+     * Decrements current candidate index for current segment.
+     */
+    void
+    getPreviousCandidate();
+
+    /*!
+     * This method should run conversion logic and generate segments.
+     */
+    virtual void
+    process()=0;
+
+    /*!
+     * This method should resize current segment.
+     *
+     * You should call generateSegments() in your implementation if necessary.
+     *
+     * @param direction -1 for left, 1 for right.
+     */
+    virtual void
+    resizeSegment(int direction) =0;
+
+    /*!
+     * This method should fill segments vector.
+     *
+     * @param segmentCount number of segments.
+     */
+    virtual void
+    generateSegments(int segmentCount)=0;
+
+    /*!
+     * This method should fill candidates vector for current segment.
+     */
+    virtual void
+    generateCandidates()=0;
+
+    /*!
+     * Copies current candidate text to current segment.
+     */
+    void
+    updateCurrentSegment();
+
+    //! This signal is emitted when a UI update is needed.
+    sigc::signal<void> sigUpdateUI;
 
 protected:
-    //! This property stores input for processing.
-    std::string _buffer;
-    //! This property stores converted text.
-    std::wstring _conversion;
-    //! This vector stores conversion candidates.
-    std::vector<std::wstring> _candidates;
-    //! This property stores the number of chars processed from buffer at each conversion step.
-    std::list<unsigned int> _processed;
-    //! This property stores the number of inserted chars into conversion at each step.
-    std::list<unsigned int> _steps;
+    //! This property stores the current segment.
+    unsigned int _currentSegment;
+    //! This property stores the current candidate.
+    unsigned int _currentCandidate;
+    //! This property stores the input data (UTF8).
+    std::string _data;
 
-private:
-    //! Implement this method.
-    /*!
-     *
-     * @return false if unable to convert.
-     */
-    virtual bool
-    convert(uint32_t symbol)=0;
+    typedef std::vector<std::string> SegmentVector;
+    typedef std::vector<std::string> CandidateVector;
+
+    //! This vector stores conversion segments.
+    SegmentVector _segments;
+    //! This vector stores conversion candidates for current segment.
+    CandidateVector _candidates;
+
+    //! This method is called once input data is set.
+    virtual void
+    preProcessInputData();
+
+
 };
 
 } /* namespace ilixi */

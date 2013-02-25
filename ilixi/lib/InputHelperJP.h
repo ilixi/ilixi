@@ -25,28 +25,80 @@
 #define ILIXI_INPUTHELPERJP_H_
 
 #include <lib/InputHelper.h>
+#include <ilixiConfig.h>
 #include <map>
+#if ILIXI_HAVE_LIBWNN
+extern "C"
+{
+#include <wnn/jllib.h>
+}
+#endif
 
 namespace ilixi
 {
 
 /*!
- *
+ * Japanese input helper.
  */
 class InputHelperJP : public ilixi::InputHelper
 {
 public:
+    /*!
+     * Constructor.
+     */
     InputHelperJP();
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~InputHelperJP();
 
+    /*!
+     * Implemented for wnn.
+     *
+     * Converts utf8 hiragana to euc-jp.
+     */
+    void
+    process();
+
+    /*!
+     * Implemented for wnn.
+     */
+    void
+    resizeSegment(int direction);
+
+protected:
+    /*!
+     * Implemented for wnn.
+     */
+    virtual void
+    generateSegments(int segmentCount);
+
+    /*!
+     * Implemented for wnn.
+     */
+    virtual void
+    generateCandidates();
+
 private:
+    //! This property stores text in hiragana.
+    std::string _hiraganaBuffer;
+    //! This map is used to convert romaji to hiragana.
     std::map<std::string, std::string> _hiraganaMap;
 
-    virtual bool
-    convert(uint32_t symbol);
+#if ILIXI_HAVE_LIBWNN
+    //! WNN handle.
+    wnn_buf* _wnn;
+    //! stores text in EUC-JP.
+    w_char _ws[1024];
+#endif
 
+    //! Converts romaji to hiragana.
+    void
+    preProcessInputData();
+
+    //! Initialise romaji->hiragana map.
     void
     initHiraganaMap();
 };

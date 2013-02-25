@@ -160,16 +160,21 @@ Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifi
 {
     for (unsigned int i = 0; i < ucs32.size(); ++i)
     {
-        ILOG_TRACE_W(ILX_KEYBOARD);
-        ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32[i]);
+        if (_inputHelper)
+            _helper->handleInput(ucs32[i]);
+        else
+        {
+            ILOG_TRACE_W(ILX_KEYBOARD);
+            ILOG_DEBUG(ILX_KEYBOARD, " -> U+%04X\n", ucs32[i]);
 
-        void *ptr;
-        DaleDFB::comaGetLocal(sizeof(uint32_t) * 2, &ptr);
-        uint32_t* key = (uint32_t*) ptr;
-        key[0] = ucs32[i];
-        key[1] = modifiers;
+            void *ptr;
+            DaleDFB::comaGetLocal(sizeof(uint32_t) * 2, &ptr);
+            uint32_t* key = (uint32_t*) ptr;
+            key[0] = ucs32[i];
+            key[1] = modifiers;
 
-        DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
+            DaleDFB::comaCallComponent(_oskComponent, OSK::ConsumeKey, (void*) key);
+        }
     }
 
     if (_modifier && _modifier->symbolState() == 2 && !_cycleKey)
@@ -262,7 +267,7 @@ Keyboard::handleKeyPress(uint32_t symbol)
 {
     if (_inputHelper)
     {
-        _helper->convert(symbol);
+        _helper->handleInput(symbol);
         return true;
     }
 

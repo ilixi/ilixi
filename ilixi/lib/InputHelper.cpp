@@ -22,46 +22,110 @@
  */
 
 #include <lib/InputHelper.h>
+#include <core/Logger.h>
 #include <directfb.h>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN(ILX_INPUTHELPER, "ilixi/lib/InputHelper", "InputHelper");
+
 InputHelper::InputHelper()
+        : _currentSegment(0),
+          _currentCandidate(0)
 {
+    ILOG_TRACE_F(ILX_INPUTHELPER);
 }
 
 InputHelper::~InputHelper()
 {
+    ILOG_TRACE_F(ILX_INPUTHELPER);
+}
+
+void
+InputHelper::setInputData(std::string data)
+{
+    ILOG_TRACE_F(ILX_INPUTHELPER);
+    _data = data;
+    preProcessInputData();
 }
 
 void
 InputHelper::append(uint32_t symbol)
 {
-    if (symbol == DIKS_BACKSPACE && _conversion.size())
+    ILOG_TRACE_F(ILX_INPUTHELPER);
+    ILOG_DEBUG(ILX_INPUTHELPER, " -> symbol[%u] = %c\n", symbol, symbol);
+    if (symbol == DIKS_BACKSPACE)
     {
-//        printf("Converted len: %d\n", _conversion.length());
-//        printf("BackSpace - step %d processed %d\n", _lastStep, _processed);
-//        _conversion = _conversion.substr(0, _conversion.length() - _lastStep);
-//        _buffer = _buffer.substr(0, _buffer.length() - _processed);
-        sigConverted();
-    } else if (symbol == DIKS_ENTER)
-    {
-        _buffer.clear();
-        _conversion.clear();
-        sigConverted();
+        if (_data.length())
+            _data.erase(_data.length() - 1, 1);
     } else
-    {
-        _buffer += symbol;
-        if (convert(symbol))
-            sigConverted();
-    }
+        _data += symbol;
+    preProcessInputData();
 }
 
-std::wstring
-InputHelper::conversion() const
+std::string
+InputHelper::getData() const
 {
-    return _conversion;
+    return _data;
+}
+
+unsigned int
+InputHelper::getCurrentSegment() const
+{
+    return _currentSegment;
+}
+
+void
+InputHelper::setCurrentSegment(unsigned int currentSegment)
+{
+    _currentSegment = currentSegment;
+}
+
+unsigned int
+InputHelper::segments() const
+{
+    return _segments.size();
+}
+
+std::string
+InputHelper::concatedSegments() const
+{
+    ILOG_TRACE_F(ILX_INPUTHELPER);
+    std::string s;
+    for (int i = 0; i < _segments.size(); ++i)
+        s += _segments[i];
+    return s;
+}
+
+std::string
+InputHelper::getSegment(unsigned int index)
+{
+    if (index > _segments.size())
+        return std::string("");
+    return _segments[index];
+}
+
+void
+InputHelper::getNextSegment()
+{
+    _currentCandidate = 0;
+    _currentSegment++;
+    if (_currentSegment > _segments.size())
+        _currentSegment = _segments.size();
+    else
+        sigUpdateUI();
+}
+
+void
+InputHelper::getPreviousSegment()
+{
+    _currentCandidate = 0;
+    _currentSegment--;
+    if (_currentSegment < 0)
+        _currentSegment = 0;
+    else
+        sigUpdateUI();
 }
 
 unsigned int
@@ -70,12 +134,39 @@ InputHelper::canditates() const
     return _candidates.size();
 }
 
-std::wstring
+std::string
 InputHelper::getCanditate(unsigned int index)
 {
     if (index > _candidates.size())
-        index = _candidates.size();
+        return std::string("");
     return _candidates[index];
+}
+
+void
+InputHelper::getNextCandidate()
+{
+    _currentCandidate++;
+    if (_currentCandidate > _candidates.size())
+        _currentCandidate = 0;
+}
+
+void
+InputHelper::getPreviousCandidate()
+{
+    _currentCandidate--;
+    if (_currentCandidate < 0)
+        _currentCandidate = _candidates.size();
+}
+
+void
+InputHelper::updateCurrentSegment()
+{
+    _segments[_currentSegment] = _candidates[_currentCandidate];
+}
+
+void
+InputHelper::preProcessInputData()
+{
 }
 
 } /* namespace ilixi */
