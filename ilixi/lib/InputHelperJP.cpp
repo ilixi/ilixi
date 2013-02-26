@@ -45,8 +45,6 @@ jl_open_lang(char *, char *, char *, char *, int
 (*)(char *), int
 (*)(char *), int);
 
-#define jl_open(a,b,c,d,e,f) jl_open_lang(a,b,NULL,c,d,e,f)
-
 void
 jl_close(struct wnn_buf*);
 
@@ -68,8 +66,8 @@ jl_nobi_conv(struct wnn_buf*, int, int, int, int, int);
 int
 jl_yomi_len(struct wnn_buf*, int, int);
 
-int
-jl_zenkouho_suu(struct wnn_buf*);
+//int
+//jl_zenkouho_suu(struct wnn_buf*);
 } // extern C
 
 int
