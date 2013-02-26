@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -37,8 +37,9 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_OSKHelper, "ilixi/osk/Helper", "Helper");
 D_DEBUG_DOMAIN( ILX_OSKSegment, "ilixi/osk/SegmentRenderer", "SegmentRenderer");
 
-OSKSegmentRenderer::OSKSegmentRenderer(Font* font, InputHelper* helper, Widget* parent)
+OSKSegmentRenderer::OSKSegmentRenderer(Font* font, InputHelper* helper, OSKHelper* parent)
         : Widget(parent),
+          _owner(parent),
           _font(font),
           _helper(helper)
 {
@@ -67,22 +68,29 @@ void
 OSKSegmentRenderer::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_OSKSegment);
-    int x = 0;
     Painter p(this);
     p.begin(event);
     p.setFont(*_font);
-    for (unsigned int i = 0; i < _helper->segments(); i++)
+    if (_owner->_mode == OSKHelper::Process)
     {
-        Size s = p.textExtents(_helper->getSegment(i));
-        if (i == _helper->getCurrentSegment())
-        {
-            p.setBrush(Color(255, 20, 50));
-            p.fillRectangle(x, 0, s.width(), s.height());
-        }
         p.setBrush(Color(255, 255, 255));
-        p.drawText(_helper->getSegment(i), x, 0);
-        p.fillRectangle(x + 1, s.height() + 1, s.width() - 2, 2);
-        x += s.width();
+        p.drawText(_helper->getPdata(), 0, 0);
+    } else
+    {
+        int x = 0;
+        for (unsigned int i = 0; i < _helper->segments(); i++)
+        {
+            Size s = p.textExtents(_helper->getSegment(i));
+            if (i == _helper->getCurrentSegment())
+            {
+                p.setBrush(Color(255, 20, 50));
+                p.fillRectangle(x, 0, s.width(), s.height());
+            }
+            p.setBrush(Color(255, 255, 255));
+            p.drawText(_helper->getSegment(i), x, 0);
+            p.fillRectangle(x + 1, s.height() + 1, s.width() - 2, 2);
+            x += s.width();
+        }
     }
     p.end();
 }
@@ -91,7 +99,7 @@ OSKSegmentRenderer::compose(const PaintEvent& event)
 
 OSKHelper::OSKHelper(Widget* parent)
         : ContainerBase(parent),
-          _candidateMode(false),
+          _mode(Process),
           _resizeMode(false)
 {
     ILOG_TRACE_W(ILX_OSKHelper);
@@ -102,21 +110,12 @@ OSKHelper::OSKHelper(Widget* parent)
     _font = new Font("Sazanami Gothic", 14);
 
     _helper = new InputHelperJP();
-    _helper->sigUpdateUI.connect(sigc::mem_fun(this, &OSKHelper::updateText));
+    _helper->sigUpdateUI.connect(sigc::mem_fun(this, &OSKHelper::updateUI));
 
     _text = new Label(">");
     _text->setFont(_font);
     _text->setXConstraint(ExpandingConstraint);
     addWidget(_text);
-//
-//    _candidate = new Label("");
-//    _candidate->setFont(_font);
-//    addWidget(_candidate);
-//
-//    _accept = new ToolButton("");
-//    _accept->setIcon(StyleHint::Tick, Size(32, 32));
-//    addWidget(_accept);
-//    _accept->sigClicked.connect(sigc::mem_fun(this, &OSKHelper::acceptInput));
 
     _segmentRenderer = new OSKSegmentRenderer(_font, _helper, this);
     addWidget(_segmentRenderer);
@@ -143,38 +142,39 @@ OSKHelper::handleInput(uint32_t symbol)
     {
     case DIKS_SPACE:
         ILOG_DEBUG(ILX_OSKHelper, " -> DIKS_SPACE\n");
-        if (_candidateMode)
-            _helper->getNextCandidate();
-        else
+        if (_mode == Process)
         {
-            // andi:
-            // there should be one more mode.
-            // when pressing space the first time only process() should be called.
-            // when pressed on some segment afterwards generateCandidates() should be called.
-            // we could make _candidateMode and enum and rename it to allow 3 states
             _helper->process();
+            if (_helper->segments())
+                _mode = Segment;
+        } else if (_mode == Segment)
+        {
             _helper->generateCandidates();
-            _candidateMode = true;
+            if (_helper->canditates())
+            {
+                _helper->updateCurrentSegment();
+                _mode = Candidate;
+            }
+        } else
+        {
+            _helper->getNextCandidate();
+            _helper->updateCurrentSegment();
         }
-        _helper->updateCurrentSegment();
-        update();
         break;
 
     case DIKS_CURSOR_UP:
-        if (_candidateMode)
+        if (_mode == Candidate)
         {
             _helper->getPreviousCandidate();
             _helper->updateCurrentSegment();
-            update();
         }
         break;
 
     case DIKS_CURSOR_DOWN:
-        if (_candidateMode)
+        if (_mode == Candidate)
         {
             _helper->getNextCandidate();
             _helper->updateCurrentSegment();
-            update();
         }
         break;
 
@@ -183,10 +183,9 @@ OSKHelper::handleInput(uint32_t symbol)
         if (_resizeMode)
         {
             _helper->resizeSegment(-1);
-            update();
         } else
         {
-            _candidateMode = false;
+            _mode = Segment;
             _helper->getPreviousSegment();
         }
         break;
@@ -196,29 +195,35 @@ OSKHelper::handleInput(uint32_t symbol)
         if (_resizeMode)
         {
             _helper->resizeSegment(1);
-            update();
         } else
         {
-            _candidateMode = false;
+            _mode = Segment;
             _helper->getNextSegment();
         }
         break;
 
-//    case DIKS_BACKSPACE:
-//        ILOG_DEBUG(ILX_OSKHelper, " -> DIKS_BACKSPACE\n");
-//        break;
-
     case DIKS_ENTER:
         ILOG_DEBUG(ILX_OSKHelper, " -> DIKS_ENTER\n");
-//        _helper->process();
+        if (_mode == Process)
+        {
+            sigSubmit(_helper->getPdata());
+        } else
+        {
+            ILOG_DEBUG(ILX_OSKHelper, " -> submit: %s\n", _helper->concatedSegments().c_str());
+            sigSubmit(_helper->concatedSegments());
+            _text->setText("> ");
+            _helper->reset();
+            _mode = Process;
+        }
         break;
 
     default:
+        _mode = Process;
         _helper->append(symbol);
         _text->setText("> " + _helper->getData());
-        update();
         break;
     }
+    update();
 }
 
 void
@@ -228,7 +233,7 @@ OSKHelper::compose(const PaintEvent& event)
 }
 
 void
-OSKHelper::updateText()
+OSKHelper::updateUI()
 {
     ILOG_TRACE_W(ILX_OSKHelper);
     update();

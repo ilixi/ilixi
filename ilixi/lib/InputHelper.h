@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -35,7 +35,7 @@ namespace ilixi
 /*!
  * This class provides an API to input in other languages.
  */
-class InputHelper
+class InputHelper : virtual public sigc::trackable
 {
 public:
     /*!
@@ -64,10 +64,16 @@ public:
     append(uint32_t symbol);
 
     /*!
-     * Returns internal symbol data stored for processing.
+     * Returns raw symbol data stored for processing.
      */
-    std::string
+    const std::string&
     getData() const;
+
+    /*!
+     * Returns pre-processed symbol data.
+     */
+    const std::string&
+    getPdata() const;
 
     /*!
      * Returns current segment.
@@ -171,6 +177,12 @@ public:
     void
     updateCurrentSegment();
 
+    /*!
+     * Reset all data.
+     */
+    void
+    reset();
+
     //! This signal is emitted when a UI update is needed.
     sigc::signal<void> sigUpdateUI;
 
@@ -179,8 +191,10 @@ protected:
     int _currentSegment;
     //! This property stores the current candidate.
     int _currentCandidate;
-    //! This property stores the input data (UTF8).
+    //! This property stores the raw input data (UTF8).
     std::string _data;
+    //! This property stores the preprocessed input data (UTF8).
+    std::string _pdata;
 
     typedef std::vector<std::string> SegmentVector;
     typedef std::vector<std::string> CandidateVector;
@@ -193,7 +207,6 @@ protected:
     //! This method is called once input data is set.
     virtual void
     preProcessInputData();
-
 
 };
 

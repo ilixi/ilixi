@@ -47,7 +47,7 @@ Key::Key(const std::string& id, Keyboard* keyboard, Widget* parent)
           _keyState(1),
           _keyboard(keyboard)
 {
-    setConstraints(MinimumConstraint, MinimumConstraint);
+    setConstraints(MinimumConstraint, NoConstraint);
     setToolButtonStyle(TextOnly);
 
     sigClicked.connect(sigc::mem_fun(this, &Key::pressSlot));
@@ -191,7 +191,9 @@ Key::compose(const PaintEvent& event)
 void
 Key::pressSlot()
 {
-    if (_keyMode & Modifier)
+    if (_keyMode & Helper)
+        _keyboard->toggleHelper();
+    else if (_keyMode & Modifier)
     {
         ILOG_DEBUG(ILX_KEY, "Modifier state: %d\n", _keyState);
         if (_keyState == _rollStates[0])

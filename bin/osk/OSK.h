@@ -37,11 +37,16 @@ public:
     virtual
     ~ILXOSK();
 
+    void
+    forwardString(const std::string& str);
+
+#if ILIXI_HAVE_LIBWNN
     /*!
      * This method gets window events first.
      */
     virtual bool
     windowPreEventFilter(const DFBWindowEvent &event);
+#endif
 
 private:
     Image* _bg;

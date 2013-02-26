@@ -34,7 +34,6 @@ D_DEBUG_DOMAIN( ILX_KEYBOARD, "ilixi/osk/Keyboard", "Keyboard");
 
 Keyboard::Keyboard(OSKHelper* helper, Widget* parent)
         : Widget(parent),
-          _inputHelper(false),
           _helper(helper),
           _buttonFont(NULL),
           _oskComponent(NULL),
@@ -53,19 +52,20 @@ Keyboard::Keyboard(OSKHelper* helper, Widget* parent)
 
 Keyboard::~Keyboard()
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     delete _buttonFont;
     if (_oskComponent)
         _oskComponent->Release(_oskComponent);
-
-    ILOG_TRACE_W(ILX_KEYBOARD);
 }
 
 void
 Keyboard::toggleHelper()
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
-    _inputHelper = !_inputHelper;
-    _helper->setVisible(_inputHelper);
+    if (_helper->visible())
+        _helper->setVisible(false);
+    else
+        _helper->setVisible(true);
 }
 
 void
@@ -156,11 +156,11 @@ Keyboard::forwardKeyData(const uint32_t& ucs32, unsigned int modifiers)
 }
 
 void
-Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers)
+Keyboard::forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers, bool force)
 {
     for (unsigned int i = 0; i < ucs32.size(); ++i)
     {
-        if (_inputHelper)
+        if (!force && _helper->visible())
             _helper->handleInput(ucs32[i]);
         else
         {
@@ -265,7 +265,7 @@ Keyboard::handleCycleKey(Key* key)
 bool
 Keyboard::handleKeyPress(uint32_t symbol)
 {
-    if (_inputHelper)
+    if (_helper->visible())
     {
         _helper->handleInput(symbol);
         return true;
@@ -292,6 +292,15 @@ Key*
 Keyboard::getKey(xmlNodePtr node)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
+    xmlChar* helper = xmlGetProp(node, (xmlChar*) "helper");
+#ifndef ILIXI_HAVE_LIBWNN
+    if (xmlStrcmp(helper, (xmlChar*) "yes") == 0)
+    {
+        xmlFree(helper);
+        return NULL;
+    }
+#endif
+
     xmlChar* id = xmlGetProp(node, (xmlChar*) "id");
     xmlChar* modifier = xmlGetProp(node, (xmlChar*) "modifier");
     xmlChar* constraint = xmlGetProp(node, (xmlChar*) "constraint");
@@ -303,6 +312,9 @@ Keyboard::getKey(xmlNodePtr node)
     ILOG_DEBUG(ILX_KEYBOARD, "Key: %s\n", (char*) id);
 
     Key* key = new Key((char*) id, this);
+
+    if (xmlStrcmp(helper, (xmlChar*) "yes") == 0)
+        key->setKeyMode(Key::Helper);
 
     if (xmlStrcmp(modifier, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Modifier);
@@ -324,6 +336,7 @@ Keyboard::getKey(xmlNodePtr node)
     if (xmlStrcmp(cycle, (xmlChar*) "yes") == 0)
         key->setKeyMode(Key::Cycle);
 
+    xmlFree(helper);
     xmlFree(id);
     xmlFree(modifier);
     xmlFree(constraint);

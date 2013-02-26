@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -55,7 +55,10 @@ InputHelper::append(uint32_t symbol)
 {
     ILOG_TRACE_F(ILX_INPUTHELPER);
     ILOG_DEBUG(ILX_INPUTHELPER, " -> symbol[%u] = %c\n", symbol, symbol);
-    if (symbol == DIKS_BACKSPACE)
+    // ignore any symbols here...
+    if (symbol == DIKS_CONTROL)
+        return;
+    else if (symbol == DIKS_BACKSPACE)
     {
         if (_data.length())
             _data.erase(_data.length() - 1, 1);
@@ -64,10 +67,16 @@ InputHelper::append(uint32_t symbol)
     preProcessInputData();
 }
 
-std::string
+const std::string&
 InputHelper::getData() const
 {
     return _data;
+}
+
+const std::string&
+InputHelper::getPdata() const
+{
+    return _pdata;
 }
 
 int
@@ -112,7 +121,7 @@ InputHelper::getNextSegment()
     _currentCandidate = 0;
     _currentSegment++;
     if (_currentSegment >= _segments.size())
-        _currentSegment = _segments.size()-1;
+        _currentSegment = _segments.size() - 1;
     else
         sigUpdateUI();
 }
@@ -162,6 +171,17 @@ void
 InputHelper::updateCurrentSegment()
 {
     _segments[_currentSegment] = _candidates[_currentCandidate];
+}
+
+void
+InputHelper::reset()
+{
+    _currentSegment = 0;
+    _currentCandidate = 0;
+    _data.clear();
+    _pdata.clear();
+    _segments.clear();
+    _candidates.clear();
 }
 
 void

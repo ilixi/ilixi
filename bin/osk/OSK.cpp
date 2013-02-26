@@ -27,6 +27,7 @@
 #include <core/Logger.h>
 #include <ui/VBoxLayout.h>
 #include <ilixiConfig.h>
+#include "utf8-decoder.h"
 
 D_DEBUG_DOMAIN( ILX_OSK, "ilixi/osk/ILXOSK", "ILXOSK");
 
@@ -59,24 +60,31 @@ ILXOSK::ILXOSK(int argc, char* argv[])
     else
         _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
     addWidget(_keyboard);
+
+    _helper->sigSubmit.connect(sigc::mem_fun(this, &ILXOSK::forwardString));
 }
 
 ILXOSK::~ILXOSK()
 {
     ILOG_TRACE_W(ILX_OSK);
-    delete _helper;
     delete _bg;
 }
 
+void
+ILXOSK::forwardString(const std::string& str)
+{
+    std::vector<uint32_t> ucs32;
+    decode((uint8_t*) str.c_str(), ucs32);
+    _keyboard->forwardKeyData(ucs32, 0, true);
+}
+
+#if ILIXI_HAVE_LIBWNN
 bool
 ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 {
-    ILOG_TRACE_W(ILX_OSK);
-    ILOG_DEBUG(ILX_OSK, " -> class: %x type: %x\n", event.clazz, event.type);
     switch (event.type)
     {
     case DWET_KEYDOWN:
-        ILOG_DEBUG(ILX_OSK, " -> key: %x modifier: %x\n", event.key_symbol, event.modifiers);
         if ((event.modifiers & DIMM_CONTROL) && (event.key_symbol == DIKS_SPACE))
         {
             _keyboard->toggleHelper();
@@ -100,6 +108,7 @@ ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 
     return false;
 }
+#endif
 
 void
 ILXOSK::compose(const PaintEvent& event)

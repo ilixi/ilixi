@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -33,11 +33,12 @@ namespace ilixi
 class HBoxLayout;
 class Label;
 class ToolButton;
+class OSKHelper;
 
 class OSKSegmentRenderer : public Widget
 {
 public:
-    OSKSegmentRenderer(Font* font, InputHelper* helper, Widget* parent = 0);
+    OSKSegmentRenderer(Font* font, InputHelper* helper, OSKHelper* parent = 0);
 
     virtual
     ~OSKSegmentRenderer();
@@ -50,6 +51,7 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    OSKHelper* _owner;
     Font* _font;
     InputHelper* _helper;
 };
@@ -59,6 +61,7 @@ private:
  */
 class OSKHelper : public ContainerBase
 {
+    friend class OSKSegmentRenderer;
 public:
     OSKHelper(Widget* parent = 0);
 
@@ -71,23 +74,31 @@ public:
     void
     handleInput(uint32_t symbol);
 
+    //! This signal is emitted when conversion is accepted and needs submitting.
+    sigc::signal<void, std::string> sigSubmit;
+
 protected:
     void
     compose(const PaintEvent& event);
 
 private:
-    bool _candidateMode;bool _resizeMode;
+    enum HelperMode {
+        Process,
+        Segment,
+        Candidate,
+    };
+
+    HelperMode _mode;
+    bool _resizeMode;
     Font* _font;
     InputHelper* _helper;
 
     OSKSegmentRenderer* _segmentRenderer;
 
     Label* _text;
-    Label* _candidate;
-    ToolButton* _accept;
 
     void
-    updateText();
+    updateUI();
 
     void
     acceptInput();

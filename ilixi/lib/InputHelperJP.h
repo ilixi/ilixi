@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -82,8 +82,6 @@ protected:
     generateCandidates();
 
 private:
-    //! This property stores text in hiragana.
-    std::string _hiraganaBuffer;
     //! This map is used to convert romaji to hiragana.
     std::map<std::string, std::string> _hiraganaMap;
 

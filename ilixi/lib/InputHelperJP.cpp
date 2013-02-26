@@ -3,7 +3,7 @@
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -67,6 +67,9 @@ jl_nobi_conv(struct wnn_buf*, int, int, int, int, int);
 
 int
 jl_yomi_len(struct wnn_buf*, int, int);
+
+int
+jl_zenkouho_suu(struct wnn_buf*);
 } // extern C
 
 int
@@ -87,17 +90,18 @@ void
 wstrtoeucstr(w_char* wstr, unsigned char* eucstr)
 {
     w_char tmp;
-    while (*wstr) {
+    while (*wstr)
+    {
         tmp = *wstr++;
-        if (tmp & 0x8000) {
+        if (tmp & 0x8000)
+        {
             *eucstr++ = tmp >> 8;
             *eucstr++ = tmp;
-        }
-        else if (tmp & 0x0080) {
+        } else if (tmp & 0x0080)
+        {
             *eucstr++ = 0x8e;
             *eucstr++ = tmp & 0xff;
-        }
-        else
+        } else
             *eucstr++ = tmp;
     }
     *eucstr++ = 0;
@@ -107,7 +111,7 @@ void
 eucstrtowstr(unsigned char* eucstr, w_char* wstr)
 {
     w_char tmp;
-    while(*eucstr)
+    while (*eucstr)
     {
         tmp = *eucstr++;
         if (tmp & 0x0080)
@@ -234,7 +238,7 @@ InputHelperJP::process()
     ILOG_TRACE_F(ILX_INPUTHELPERJP);
 #if ILIXI_HAVE_LIBWNN
     // Convert hiragana (UTF-8) to _ws (EUC-JP).
-    int res = utf8toeucws(const_cast<char*>(_hiraganaBuffer.c_str()), _ws);
+    int res = utf8toeucws(const_cast<char*>(_pdata.c_str()), _ws);
     ILOG_DEBUG(ILX_INPUTHELPERJP, " -> utf8toeucws: %d\n", res);
 
     // Get number of segments.
@@ -256,7 +260,7 @@ InputHelperJP::resizeSegment(int direction)
 
 #if ILIXI_HAVE_LIBWNN
 
-    if ((_currentSegment >= _segments.size()-1) && (direction > 0))
+    if ((_currentSegment >= _segments.size() - 1) && (direction > 0))
         return;
 
     int length = jl_yomi_len(_wnn, _currentSegment, _currentSegment + 1);
@@ -335,7 +339,7 @@ InputHelperJP::preProcessInputData()
     int pos = 0;
     int len = 0;
     bool found;
-    _hiraganaBuffer.clear();
+    _pdata.clear();
 
     while (pos < _data.length())
     {
@@ -350,7 +354,7 @@ InputHelperJP::preProcessInputData()
             std::string prefix = _data.substr(pos, len);
             if (_hiraganaMap.find(prefix) != _hiraganaMap.end())
             {
-                _hiraganaBuffer.append(_hiraganaMap.find(prefix)->second);
+                _pdata.append(_hiraganaMap.find(prefix)->second);
                 pos += len;
                 found = true;
             }
@@ -360,7 +364,7 @@ InputHelperJP::preProcessInputData()
         if (!found)
             pos++;
     }
-    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> hiragana: %s\n", _hiraganaBuffer.c_str());
+    ILOG_DEBUG(ILX_INPUTHELPERJP, " -> hiragana: %s\n", _pdata.c_str());
 }
 
 void

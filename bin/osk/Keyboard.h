@@ -55,7 +55,7 @@ public:
     forwardKeyData(const uint32_t& ucs32, unsigned int modifiers = 0);
 
     void
-    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers = 0);
+    forwardKeyData(const std::vector<uint32_t>& ucs32, unsigned int modifiers = 0, bool force = false);
 
     void
     setModifier(Key* modifier);
@@ -71,7 +71,7 @@ protected:
     compose(const PaintEvent& event);
 
 private:
-    bool _inputHelper;
+    //! Visualisation for InputHelper (only JP atm).
     OSKHelper* _helper;
     //! This font is shared by all keys.
     Font* _buttonFont;
@@ -83,6 +83,7 @@ private:
     Key* _modifier;
     //! Current cycling key.
     Key* _cycleKey;
+
     uint32_t _cycleCharacter;
     Timer _cycleTimer;
 

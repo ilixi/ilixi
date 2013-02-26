@@ -299,6 +299,10 @@
     </row>
     
 	<row id="Bottom" height="%20">
+		<key id="Helper" helper="yes">
+			<symbol states="1, 2, 3, 4, 5">JP</symbol>
+		</key>
+		
 		<key id="ABC" sticky="yes">
 		    <symbol states="1">abc</symbol>
             <symbol states="2">ABC</symbol>
