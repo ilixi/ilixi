@@ -39,8 +39,10 @@ nobase_ilixi_include_HEADERS 	= 	Affine2D.h \
 		          					Video.h
 
 if WITH_FUSIONSOUND
-libilixi_types_la_SOURCES 		+= 	Music.cpp
-nobase_ilixi_include_HEADERS	+=	Music.h
+libilixi_types_la_SOURCES 		+= 	Music.cpp \
+	          						Sound.cpp
+nobase_ilixi_include_HEADERS	+=	Music.h \
+									Sound.h
 endif
 
 if WITH_REFLEX
