@@ -293,6 +293,7 @@ enum AppOptions
     OptExclusive = 0x00000001,          //!< Application will use layer exclusively.
     OptDale = 0x00000010,               //!< Enable FusionDale interfaces for Application.
     OptSound = 0x00000020,              //!< Enable FusionSound interfaces for Application.
+    OptExclSoundEffect = 0x00000040,    //!< Enable playback of sound effects via compositor.
     OptTripleAccelerated = 0x00000200
 };
 

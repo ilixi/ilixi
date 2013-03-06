@@ -24,6 +24,7 @@
 #include <compositor/SoundComponent.h>
 #include <core/SoundDFB.h>
 #include <core/ComponentData.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 
 namespace ilixi
@@ -66,6 +67,22 @@ SoundComponent::comaMethod(ComaMethodID method, void *arg)
             setVolume(_volume);
         else
             setVolume(0);
+        break;
+
+    case SoundMixer::PlaySoundEffect:
+        {
+            const char* id = ((const char*) arg);
+            ILOG_DEBUG(ILX_SOUNDCOMP, " -> PlaySoundEffect ( %s )\n", id);
+            PlatformManager::instance().playSoundEffect(id);
+        }
+        break;
+
+    case SoundMixer::SetSoundEffectVolume:
+        {
+            float level = *((float*) arg);
+            ILOG_DEBUG(ILX_SOUNDCOMP, " -> SetSoundEffectVolume ( %f )\n", level);
+            PlatformManager::instance().setSoundEffectLevel(level);
+        }
         break;
 
     default:

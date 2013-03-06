@@ -34,6 +34,7 @@ IFusionDale* DaleDFB::__dale = NULL;
 IComa* DaleDFB::__coma = NULL;
 IComaComponent* DaleDFB::__oskComp = NULL;
 IComaComponent* DaleDFB::__compComp = NULL;
+IComaComponent* DaleDFB::__soundComp = NULL;
 DaleDFB::Notifications DaleDFB::__nots;
 
 D_DEBUG_DOMAIN( ILX_DALEDFB, "ilixi/core/DaleDFB", "DaleDFB");
@@ -95,8 +96,7 @@ DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method, void*
         int ret_val;
         if (component->Call(component, method, arg, &ret_val) != DR_OK)
         {
-            ILOG_ERROR( ILX_DALEDFB,
-                       "%s( %lu ) failed!\n", __FUNCTION__, method);
+            ILOG_ERROR( ILX_DALEDFB, "%s( %lu ) failed!\n", __FUNCTION__, method);
             return DFB_FAILURE;
         }
         return DFB_OK;
@@ -176,8 +176,7 @@ DaleDFB::initDale(int* argc, char*** argv)
         DirectResult ret = __dale->EnterComa(__dale, "directfb.org", &__coma);
         if (ret)
         {
-            ILOG_THROW( ILX_DALEDFB,
-                       "IFusionDale::EnterComa('directfb.org') failed!\n");
+            ILOG_THROW( ILX_DALEDFB, "IFusionDale::EnterComa('directfb.org') failed!\n");
             return (DFBResult) ret;
         }
     }
@@ -188,6 +187,12 @@ void
 DaleDFB::releaseDale()
 {
     ILOG_TRACE_F(ILX_DALEDFB);
+    if (__soundComp)
+    {
+        __soundComp->Release(__soundComp);
+        __soundComp = NULL;
+    }
+
     if (__oskComp)
     {
         __oskComp->Release(__oskComp);
@@ -225,8 +230,7 @@ DaleDFB::getOSKComp()
         if (tryOnce)
         {
             tryOnce = false;
-            DirectResult ret = __coma->GetComponent(__coma, "OSK", 500,
-                                                    &__oskComp);
+            DirectResult ret = __coma->GetComponent(__coma, "OSK", 500, &__oskComp);
             if (ret)
             {
                 ILOG_ERROR( ILX_DALEDFB, "Cannot get OSK component!\n");
@@ -250,16 +254,39 @@ DaleDFB::getCompComp()
         if (tryOnce)
         {
             tryOnce = false;
-            DirectResult ret = __coma->GetComponent(__coma, "Compositor", 500,
-                                                    &__compComp);
+            DirectResult ret = __coma->GetComponent(__coma, "Compositor", 500, &__compComp);
             if (ret)
             {
                 ILOG_ERROR( ILX_DALEDFB, "Cannot get Compositor component!\n");
                 return DFB_FAILURE;
             }
 
-            __compComp->Listen(__compComp, Compositor::NotificationAck,
-                               notificationListener, NULL);
+            __compComp->Listen(__compComp, Compositor::NotificationAck, notificationListener, NULL);
+
+        } else
+            return DFB_FAILURE;
+    }
+    return DFB_OK;
+}
+
+DFBResult
+DaleDFB::getSoundComp()
+{
+    if (!__coma)
+        return DFB_FAILURE;
+
+    if (!__soundComp)
+    {
+        static bool tryOnce = true;
+        if (tryOnce)
+        {
+            tryOnce = false;
+            DirectResult ret = __coma->GetComponent(__coma, "SoundMixer", 500, &__soundComp);
+            if (ret)
+            {
+                ILOG_ERROR( ILX_DALEDFB, "Cannot get SoundMixer component!\n");
+                return DFB_FAILURE;
+            }
 
         } else
             return DFB_FAILURE;
@@ -321,6 +348,31 @@ DaleDFB::notificationListener(void* ctx, void* arg)
             return;
         }
     }
+}
+
+DFBResult
+DaleDFB::playSoundEffect(const std::string& id)
+{
+    if (getSoundComp() == DFB_FAILURE)
+        return DFB_FAILURE;
+
+    void *ptr;
+    comaGetLocal(128, &ptr);
+    snprintf((char*) ptr, 128, "%s", id.c_str());
+    return comaCallComponent(__soundComp, SoundMixer::PlaySoundEffect, ptr);
+}
+
+DFBResult
+DaleDFB::setSoundEffectLevel(float level)
+{
+    if (getSoundComp() == DFB_FAILURE)
+        return DFB_FAILURE;
+
+    void *ptr;
+    DaleDFB::comaGetLocal(sizeof(float), &ptr);
+    float* vol = (float*) ptr;
+    *vol = level;
+    return DaleDFB::comaCallComponent(__soundComp, SoundMixer::SetSoundEffectVolume, (void*) vol);
 }
 
 } /* namespace ilixi */

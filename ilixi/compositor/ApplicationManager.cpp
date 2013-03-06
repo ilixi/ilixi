@@ -209,6 +209,15 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
         _monitor = new MemoryMonitor(this, _compositor->settings.memCritical, _compositor->settings.memLow, _compositor->settings.pgCritical, _compositor->settings.pgLow);
         _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
     }
+
+    std::string pidFile = FileSystem::homeDirectory().append("/ilx_compositor.pid");
+    _pidFile = fopen(pidFile.c_str(), "w");
+    if(!_pidFile)
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Could not open %s for writing!\n", pidFile.c_str());
+    else {
+        fprintf(_pidFile, "%d\n", getpid());
+        fclose(_pidFile);
+    }
 }
 
 ApplicationManager::~ApplicationManager()
@@ -231,6 +240,7 @@ ApplicationManager::~ApplicationManager()
         delete *it;
 
     pthread_mutex_destroy(&_mutex);
+    FileSystem::deleteFile(FileSystem::homeDirectory().append("/ilx_compositor.pid"));
 }
 
 AppInfo*

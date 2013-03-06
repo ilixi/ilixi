@@ -24,6 +24,7 @@
 #include <core/PlatformManager.h>
 #include <core/Logger.h>
 #include <ui/Application.h>
+#include <lib/FileSystem.h>
 #include <libxml/parser.h>
 #include <libxml/catalog.h>
 
@@ -39,11 +40,12 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_PLATFORMMANAGER, "ilixi/core/PlatformManager", "PlatformManager");
+D_DEBUG_DOMAIN( ILX_PLATFORMMANAGER_TRACE, "ilixi/core/PlatformManagerTrace", "PlatformManagerTrace");
 
 PlatformManager&
 PlatformManager::instance()
 {
-    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
     static PlatformManager instance;
     return instance;
 }
@@ -122,7 +124,7 @@ PlatformManager::appOptions() const
 LayerFlipMode
 PlatformManager::getLayerFlipMode(const std::string& name) const
 {
-    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
     if (_options & OptExclusive)
     {
         LogicLayerMap::const_iterator it = _layerMap.find(name);
@@ -131,7 +133,7 @@ PlatformManager::getLayerFlipMode(const std::string& name) const
             HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
             if (itHW != _hwLayerMap.end())
             {
-                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p mode: %d\n", itHW->second.layer, itHW->second.flipMode);
+                ILOG_DEBUG(ILX_PLATFORMMANAGER_TRACE, " -> layer: %p mode: %d\n", itHW->second.layer, itHW->second.flipMode);
                 return itHW->second.flipMode;
             }
             return FlipNone;
@@ -144,7 +146,7 @@ PlatformManager::getLayerFlipMode(const std::string& name) const
 bool
 PlatformManager::useFSU(const std::string& name) const
 {
-    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
     if (_options & OptExclusive)
     {
         LogicLayerMap::const_iterator it = _layerMap.find(name);
@@ -153,7 +155,7 @@ PlatformManager::useFSU(const std::string& name) const
             HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
             if (itHW != _hwLayerMap.end())
             {
-                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer: %p fsu: %d\n", itHW->second.layer, itHW->second.fsu);
+                ILOG_DEBUG(ILX_PLATFORMMANAGER_TRACE, " -> layer: %p fsu: %d\n", itHW->second.layer, itHW->second.fsu);
                 return itHW->second.fsu;
             }
             return false;
@@ -190,7 +192,7 @@ PlatformManager::getBackground() const
 bool
 PlatformManager::cursorVisible() const
 {
-    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
 
     if ((_options & OptExclusive) && _cursorImage)
         return true;
@@ -201,7 +203,7 @@ PlatformManager::cursorVisible() const
 void
 PlatformManager::renderCursor(const DFBPoint& point)
 {
-    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
     if ((_options & OptExclusive) && _cursorImage)
     {
         if (_cursorTarget)
@@ -212,7 +214,7 @@ PlatformManager::renderCursor(const DFBPoint& point)
 #endif
             _cursorTarget->SetBlittingFlags(_cursorTarget, DSBLIT_BLEND_ALPHACHANNEL);
             _cursorTarget->Blit(_cursorTarget, _cursorImage, NULL, point.x, point.y);
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> %d, %d\n", point.x, point.y);
+            ILOG_DEBUG(ILX_PLATFORMMANAGER_TRACE, " -> %d, %d\n", point.x, point.y);
         } else
             _cursorLayer->SetScreenPosition(_cursorLayer, point.x, point.y);
     }
@@ -223,9 +225,18 @@ PlatformManager::playSoundEffect(const std::string& id)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #if HAVE_FUSIONSOUND
-    SoundMap::const_iterator it = _soundMap.find(id);
-    if (it != _soundMap.end())
-        it->second->start();
+#if HAVE_FUSIONDALE
+    if (_options & OptExclSoundEffect)
+        DaleDFB::playSoundEffect(id);
+    else
+    {
+#endif // HAVE_FUSIONDALE
+        SoundMap::const_iterator it = _soundMap.find(id);
+        if (it != _soundMap.end())
+            it->second->start();
+#if HAVE_FUSIONDALE
+    }
+#endif // HAVE_FUSIONDALE
 #endif
 }
 
@@ -234,9 +245,18 @@ PlatformManager::setSoundEffectLevel(float level)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #if HAVE_FUSIONSOUND
-    _soundLevel = level;
-    for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
-        it->second->setVolume(_soundLevel);
+#if HAVE_FUSIONDALE
+    if (_options & OptExclSoundEffect)
+        DaleDFB::setSoundEffectLevel(level);
+    else
+    {
+#endif // HAVE_FUSIONDALE
+        _soundLevel = level;
+        for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
+            it->second->setVolume(_soundLevel);
+#if HAVE_FUSIONDALE
+    }
+#endif // HAVE_FUSIONDALE
 #endif
 }
 
@@ -295,14 +315,22 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
 
         ILOG_INFO(ILX_PLATFORMMANAGER, "DirectFB interfaces are ready.\n");
 
+#if ILIXI_HAVE_FUSIONSOUND
+        if ((_options & OptSound) && SoundDFB::initSound(argc, argv) == DFB_OK)
+        {
+            ILOG_INFO(ILX_PLATFORMMANAGER, "FusionSound is ready.\n");
+
+            if (!(_options & OptExclusive) && FileSystem::fileExists(FileSystem::homeDirectory().append("/ilx_compositor.pid")))
+            {
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, "Enabling OptExclSoundEffect.\n");
+                _options = (AppOptions) (_options | OptExclSoundEffect | OptDale);
+            }
+        }
+#endif
+
 #if ILIXI_HAVE_FUSIONDALE
         if ((_options & OptDale) && DaleDFB::initDale(argc, argv) == DFB_OK)
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionDale is ready.\n");
-#endif
-
-#if ILIXI_HAVE_FUSIONSOUND
-        if ((_options & OptSound) && SoundDFB::initSound(argc, argv) == DFB_OK)
-            ILOG_INFO(ILX_PLATFORMMANAGER, "FusionSound is ready.\n");
 #endif
 
         if (!parseConfig())

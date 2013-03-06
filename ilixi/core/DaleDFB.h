@@ -89,6 +89,7 @@ private:
     static IComa* __coma;
     static IComaComponent* __oskComp;
     static IComaComponent* __compComp;
+    static IComaComponent* __soundComp;
 
     struct OSKRequest
     {
@@ -123,12 +124,27 @@ private:
     static void
     releaseDale();
 
+    /*!
+     * Get OSK COMA Component.
+     */
     static DFBResult
     getOSKComp();
 
+    /*!
+     * Get Compositor COMA Component.
+     */
     static DFBResult
     getCompComp();
 
+    /*!
+     * Get SoundMixer COMA Component.
+     */
+    static DFBResult
+    getSoundComp();
+
+    /*!
+     * Sends a notification to compositor via Compositor Component.
+     */
     static DFBResult
     addNotification(Notify*, void* data);
 
@@ -137,6 +153,18 @@ private:
 
     static void
     notificationListener(void* ctx, void* arg);
+
+    /*!
+     * Plays a sound effect via SoundMixer component.
+     */
+    static DFBResult
+    playSoundEffect(const std::string& id);
+
+    /*!
+     * Sets sound effect master volume via SoundMixer component.
+     */
+    static DFBResult
+    setSoundEffectLevel(float level);
 
 };
 

@@ -36,7 +36,7 @@
 using namespace ilixi;
 
 WidgetsDemo::WidgetsDemo(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale)
+        : Application(&argc, &argv, (AppOptions) (OptDale | OptSound))
 {
     setMargins(5, 5, 5, 5);
     setLayout(new VBoxLayout());

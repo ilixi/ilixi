@@ -51,8 +51,10 @@ namespace SoundMixer
 //! This enum specifies the COMA methods for SoundMixer component.
 typedef enum
 {
-    SetVolume,  //!< Set volume using argument.
-    ToggleMute  //!< Toggle Mute.
+    PlaySoundEffect,        //!< Play sound effect.
+    SetSoundEffectVolume,   //!< Set master output level for sound effects.
+    SetVolume,              //!< Set volume using argument.
+    ToggleMute              //!< Toggle Mute.
 } SoundMixerMethodID;
 
 //! This enum specifies the COMA notifications for SoundMixer component.
@@ -84,7 +86,8 @@ typedef struct
 } AppData;
 
 //! This enum specifies application states and flags.
-typedef enum {
+typedef enum
+{
     AppHidden = 0x001,
     AppVisible = 0x002,
     AppStarting = 0x004,
@@ -111,7 +114,6 @@ typedef struct
     char uuid[37];      //!< UUID Version 4.
     pid_t client;       //!< PID of client application.
 } NotificationData;
-
 
 //! This enum specifies the method for NotificationAck.
 typedef enum
@@ -155,7 +157,7 @@ typedef enum
     AppStatus = 0,      //!< Sent if client application status is changed.
     BackKeyHidden,      //!< Sent if BACK key should become hidden.
     BackKeyVisible,     //!< Sent if BACK key should become visible.
-    NotificationAck,    //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
+    NotificationAck, //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
     SendingAppList,     //!< Sent with application list. // TODO remove this!
     SwitcherHidden,     //!< Sent when Switcher is hidden.
     SwitcherVisible,    //!< Sent when Switcher is visible.
