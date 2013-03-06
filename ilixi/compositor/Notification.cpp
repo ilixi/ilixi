@@ -24,6 +24,7 @@
 #include <compositor/Notification.h>
 #include <compositor/Compositor.h>
 #include <graphics/Painter.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 #include <sigc++/signal.h>
 
@@ -135,6 +136,7 @@ Notification::show()
         _tweenZ->setEndValue(1);
         _seq.start();
         _timer.start(_compositor->settings.notificationTimeout, 1);
+        PlatformManager::instance().playSoundEffect("Notification");
         setVisible(true);
     }
 }

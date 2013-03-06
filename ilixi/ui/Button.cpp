@@ -22,6 +22,7 @@
  */
 
 #include <ui/Button.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 
 namespace ilixi
@@ -34,9 +35,9 @@ Button::Button(const std::string& text, Widget* parent)
           TextBase("", this),
           _buttonFlag(None)
 {
+    ILOG_TRACE_W(ILX_BUTTON);
     setText(text);
     setInputMethod(KeyPointer);
-    ILOG_TRACE_W(ILX_BUTTON);
 }
 
 Button::~Button()
@@ -68,6 +69,7 @@ Button::click(unsigned int ms)
         _state = (WidgetState) (_state & ~PressedState);
         sigStateChanged(this, _state);
     }
+    PlatformManager::instance().playSoundEffect("Click");
     sigClicked();
     toggleChecked();
 }
@@ -126,6 +128,7 @@ Button::pointerButtonUpEvent(const PointerEvent& event)
     sigReleased();
     if (_buttonFlag & PressedDown)
     {
+        PlatformManager::instance().playSoundEffect("Click");
         sigClicked();
         toggleChecked();
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
