@@ -22,6 +22,7 @@
  */
 
 #include <types/Music.h>
+#include <lib/FileSystem.h>
 #include <core/Logger.h>
 
 namespace ilixi
@@ -43,6 +44,17 @@ track_playback_callback(FSTrackID id, FSTrackDescription desc, void *ctx)
     Music* music = (Music*) ctx;
 
     return music->playback(id, desc);
+}
+
+Music::Music()
+        : _fileName(""),
+          _provider(NULL),
+          _stream(NULL),
+          _playback(_playback),
+          _volume(1.0),
+          _repeat(false)
+{
+    ILOG_TRACE_F(ILX_MUSIC);
 }
 
 Music::Music(const std::string& fileName)
@@ -181,12 +193,29 @@ Music::setRepeat(bool repeat)
 }
 
 void
+Music::setFileName(const std::string& filename)
+{
+    if (FileSystem::fileExists(filename))
+    {
+        release();
+        _fileName = filename;
+        loadMusic();
+    } else
+        ILOG_ERROR(ILX_MUSIC, "%s not found!\n", filename.c_str());
+}
+
+bool
 Music::loadMusic()
 {
     ILOG_TRACE_F(ILX_MUSIC);
-    SoundDFB::createMusicProvider(_fileName.c_str(), &_provider);
-    _provider->EnumTracks(_provider, track_display_callback, this);
-    _provider->EnumTracks(_provider, track_playback_callback, this);
+    DFBResult ret = SoundDFB::createMusicProvider(_fileName.c_str(), &_provider);
+    if (!ret)
+    {
+        _provider->EnumTracks(_provider, track_display_callback, this);
+        _provider->EnumTracks(_provider, track_playback_callback, this);
+        return true;
+    }
+    return false;
 }
 
 DirectEnumerationResult

@@ -78,6 +78,12 @@ public:
     /*!
      * Constructor.
      */
+    Music();
+
+    /*!
+     * Constructor.
+     * Loads file.
+     */
     Music(const std::string& filename);
 
     /*!
@@ -110,26 +116,53 @@ public:
     double
     length() const;
 
+    /*!
+     * Returns trackinfo if any.
+     */
     TrackInfo
     trackInfo() const;
 
+    /*!
+     * Returns status.
+     */
     MusicState
     status() const;
 
+    /*!
+     * Starts playback.
+     */
     void
     play();
 
+    /*!
+     * Stops playback.
+     */
     void
     stop();
 
+    /*!
+     * Seeks to given position.
+     */
     void
     seekTo(double position);
 
+    /*!
+     * Sets music volume.
+     */
     void
     setVolume(float volume);
 
+    /*!
+     * Set whether playback loops or not.
+     */
     void
     setRepeat(bool repeat);
+
+    /*!
+     * Sets path to music file.
+     */
+    void
+    setFileName(const std::string& filename);
 
 private:
     //! This property stores the path for audio file.
@@ -144,7 +177,7 @@ private:
 
     bool _repeat;
 
-    void
+    bool
     loadMusic();
 
     DirectEnumerationResult
