@@ -21,8 +21,8 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ILIXI_SOUND_H_
-#define ILIXI_SOUND_H_
+#ifndef ILIXI_SOUNDDFB_H_
+#define ILIXI_SOUNDDFB_H_
 
 #include <config.h>
 #include <directfb.h>
@@ -114,4 +114,4 @@ private:
 };
 
 } /* namespace ilixi */
-#endif /* ILIXI_SOUND_H_ */
+#endif /* ILIXI_SOUNDDFB_H_ */
