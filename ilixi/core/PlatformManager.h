@@ -24,6 +24,7 @@
 #ifndef ILIXI_PLATFORMMANAGER_H_
 #define ILIXI_PLATFORMMANAGER_H_
 
+#include <config.h>
 #include <directfb.h>
 #include <string>
 #include <libxml/tree.h>
@@ -31,6 +32,9 @@
 #include <types/Enums.h>
 #include <types/Point.h>
 #include <types/Size.h>
+#ifdef HAVE_FUSIONSOUND
+#include <types/Sound.h>
+#endif
 #include <lib/Util.h>
 
 namespace ilixi
@@ -137,6 +141,20 @@ public:
     void
     renderCursor(const DFBPoint& point);
 
+    /*!
+     * Plays a sound from SoundMap.
+     */
+    void
+    playSoundEffect(const std::string& id = "Click");
+
+    /*!
+     * Sets level for sound effects.
+     *
+     * @param level [0-100].
+     */
+    void
+    setSoundEffectLevel(float level);
+
 private:
     //! This property stores various options for application behaviour.
     AppOptions _options;
@@ -173,6 +191,13 @@ private:
         LayerFlipMode flipMode;
         DFBSurfaceCapabilities caps;
     };
+
+#ifdef HAVE_FUSIONSOUND
+    typedef std::map<std::string, Sound*> SoundMap;
+    SoundMap _soundMap;
+    //! Master sound effect level
+    float _soundLevel;
+#endif
 
     WindowConf _windowConf;
     std::string _background;
@@ -239,6 +264,11 @@ private:
 
     void
     setTheme(xmlNodePtr node);
+
+#ifdef HAVE_FUSIONSOUND
+    void
+    setSounds(xmlNodePtr node);
+#endif
 
     void
     setCursor(xmlNodePtr node);

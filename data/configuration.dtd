@@ -1,4 +1,4 @@
-<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Window, Theme, Cursor) >
+<!ELEMENT Configuration (HardwareLayers, LogicLayers, Screen, Window, Theme, Sounds, Cursor) >
    
 <!ELEMENT HardwareLayers (DFBLayer+) >
     <!ELEMENT DFBLayer EMPTY >
@@ -28,7 +28,12 @@
     <!ELEMENT Background (#PCDATA) >
     <!ELEMENT Style     (#PCDATA) >
     <!ELEMENT Palette   (#PCDATA) >
-
+    
+<!ELEMENT Sounds (Sound*)>
+	<!ATTLIST Sounds level CDATA "100" >
+    <!ELEMENT Sound (#PCDATA) >   
+		<!ATTLIST Sound id CDATA #REQUIRED >
+		
 <!ELEMENT Cursor (#PCDATA) >
     <!ATTLIST Cursor    visible (yes|no) "yes" 
                         useLayer (yes|no) "yes" >

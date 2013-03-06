@@ -20,11 +20,11 @@
 		<Frequency>60HZ</Frequency>
 	</Screen>
 
-    <Window>
-        <FullScreenUpdate>off</FullScreenUpdate>
-        <FlipMode>new</FlipMode>
-        <BufferMode>double</BufferMode>
-    </Window>
+	<Window>
+		<FullScreenUpdate>off</FullScreenUpdate>
+		<FlipMode>new</FlipMode>
+		<BufferMode>double</BufferMode>
+	</Window>
 
 	<Theme>
 		<Background>@THEMEDIR:dark/bg.dfiff</Background>
@@ -32,5 +32,12 @@
 		<Palette>@THEMEDIR:dark/palette.xml</Palette>
 	</Theme>
 
-	<Cursor visible="yes" useLayer="yes">@DATADIR:pointer.png</Cursor>
+	<Sounds level="100">
+		<Sound id="Click">@SOUNDDIR:click.wav</Sound>
+		<Sound id="Close">@SOUNDDIR:close.wav</Sound>
+		<Sound id="Error">@SOUNDDIR:error.wav</Sound>
+		<Sound id="Notification">@SOUNDDIR:notification.wav</Sound>
+	</Sounds>
+
+	<Cursor visible="yes" useLayer="yes">@IMGDIR:pointer.png</Cursor>
 </Configuration>

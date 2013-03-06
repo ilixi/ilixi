@@ -218,6 +218,28 @@ PlatformManager::renderCursor(const DFBPoint& point)
     }
 }
 
+void
+PlatformManager::playSoundEffect(const std::string& id)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+#if HAVE_FUSIONSOUND
+    SoundMap::const_iterator it = _soundMap.find(id);
+    if (it != _soundMap.end())
+        it->second->start();
+#endif
+}
+
+void
+PlatformManager::setSoundEffectLevel(float level)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+#if HAVE_FUSIONSOUND
+    _soundLevel = level;
+    for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
+        it->second->setVolume(_soundLevel);
+#endif
+}
+
 PlatformManager::PlatformManager()
         : _options(OptNone),
           _dfb(NULL),
@@ -312,6 +334,10 @@ PlatformManager::release()
 #if ILIXI_HAVE_FUSIONSOUND
         if (_options & OptSound)
         {
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing SoundMap...\n");
+            for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
+                delete it->second;
+
             ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionSound...\n");
             SoundDFB::releaseSound();
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionSound interfaces are released.\n");
@@ -415,6 +441,10 @@ PlatformManager::parseConfig()
             setWindow(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Theme") == 0)
             setTheme(group->children);
+#if HAVE_FUSIONSOUND
+        else if (xmlStrcmp(group->name, (xmlChar*) "Sounds") == 0)
+            setSounds(group);
+#endif
         else if (xmlStrcmp(group->name, (xmlChar*) "Cursor") == 0)
             setCursor(group);
 
@@ -844,9 +874,14 @@ PlatformManager::setWindow(xmlNodePtr node)
             else if (xmlStrcmp(pcDATA, (xmlChar*) "triple") == 0)
                 _windowConf.caps = DSCAPS_TRIPLE;
         }
+
         xmlFree(pcDATA);
         node = node->next;
     }
+
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> fsu: %d\n", _windowConf.fsu);
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> flipMode: %d\n", _windowConf.flipMode);
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> caps: %x\n", _windowConf.caps);
 }
 
 void
@@ -895,6 +930,55 @@ PlatformManager::setTheme(xmlNodePtr node)
     }
 }
 
+#if HAVE_FUSIONSOUND
+void
+PlatformManager::setSounds(xmlNodePtr node)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    if (!(_options & OptSound))
+        return;
+
+    xmlChar* level = xmlGetProp(node, (xmlChar*) "level");
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Sound level: %s\n", (char*) level);
+    _soundLevel = atoi((char*) level);
+    xmlFree(level);
+
+    xmlNodePtr element = node->children;
+    while (element != NULL)
+    {
+        xmlChar* nameC = xmlGetProp(element, (xmlChar*) "id");
+        xmlChar* pcDATA = xmlNodeGetContent(element);
+        std::string path = (char*) pcDATA;
+        std::string file;
+        size_t found = path.find("@SOUNDDIR:");
+        if (found != std::string::npos)
+        {
+            file = ILIXI_DATADIR"sounds/";
+            file.append(path.substr(found + 10, std::string::npos));
+        } else
+            file = path;
+
+        Sound* sound = new Sound(file);
+
+        std::pair<SoundMap::iterator, bool> ret = _soundMap.insert(std::pair<std::string, Sound*>((char*) nameC, sound));
+        if (ret.second == false)
+        {
+            delete sound;
+            ILOG_ERROR(ILX_PLATFORMMANAGER, "A sound with name [%s] already exists, cannot add duplicate record!\n", (char*) nameC);
+        } else
+        {
+            sound->setVolume(_soundLevel);
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Added %s - %s\n", (char*) nameC, file.c_str());
+        }
+
+        xmlFree(pcDATA);
+        xmlFree(nameC);
+
+        element = element->next;
+    }
+}
+#endif
+
 void
 PlatformManager::setCursor(xmlNodePtr node)
 {
@@ -914,11 +998,11 @@ PlatformManager::setCursor(xmlNodePtr node)
     xmlChar* pcDATA = xmlNodeGetContent(node);
     std::string path = (char*) pcDATA;
     std::string file;
-    size_t found = path.find("@DATADIR:");
+    size_t found = path.find("@IMGDIR:");
     if (found != std::string::npos)
     {
         file = ILIXI_DATADIR"images/";
-        file.append(path.substr(found + 9, std::string::npos));
+        file.append(path.substr(found + 8, std::string::npos));
     } else
         file = path;
 
@@ -973,6 +1057,7 @@ PlatformManager::setCursor(xmlNodePtr node)
         }
     }
 
+    xmlFree(pcDATA);
     xmlFree(visible);
     xmlFree(useLayer);
 }

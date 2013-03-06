@@ -1,5 +1,5 @@
 ## Makefile.am for data
-SUBDIRS			= 	apps fonts images themes
+SUBDIRS			= 	apps fonts images sounds themes
 miscdatadir 	=	$(ILIXI_DATADIR)
 miscdata_DATA 	=	application.dtd \
 					compositor.dtd \

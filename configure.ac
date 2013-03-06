@@ -82,9 +82,9 @@ if test "$enable_profiling" = "yes"; then
     CFLAGS="$CFLAGS -pg"
 fi
 
-AC_ARG_ENABLE([stereo], AS_HELP_STRING([--enable-stereo], [enable stereo @<:@default=no@:>@]), [], [enable_stereo=no])
-if test "$enable_stereo" = "yes"; then
-	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereo output])
+AC_ARG_ENABLE([stereoscopy], AS_HELP_STRING([--enable-stereoscopy], [enable stereoscopy support @<:@default=no@:>@]), [], [enable_stereoscopy=no])
+if test "$enable_stereoscopy" = "yes"; then
+	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereoscopy output])
 fi
 
 AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
@@ -286,6 +286,7 @@ AC_CONFIG_FILES([ \
         data/fonts/Makefile \
         data/ilixi_catalog.xml \
         data/images/Makefile \
+        data/sounds/Makefile \
         data/Makefile \
         data/themes/dark/Makefile \
         data/themes/default/Makefile \
@@ -321,7 +322,7 @@ AC_MSG_RESULT([
    Log level                : $LOGGER_LEVEL
    Debug enabled            : $enable_debug
    Trace enabled            : $enable_trace
-   Stereoscopy support      : $enable_stereo   
+   Stereoscopy support      : $enable_stereoscopy  
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
    FusionSound support      : $enable_fusionsound
