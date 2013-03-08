@@ -132,9 +132,14 @@ Image::size()
 }
 
 Size
-Image::preferredSize() const
+Image::preferredSize()
 {
-    // TODO Add preferredSize to Image.
+    if (loadImage())
+    {
+        int w, h;
+        _dfbSurface->GetSize(_dfbSurface, &w, &h);
+        return Size(w, h);
+    }
     return Size();
 }
 

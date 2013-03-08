@@ -101,10 +101,10 @@ public:
     size();
 
     /*!
-     * Returns actual size of image.
+     * Returns actual size of image or an invalid size if image cannot be loaded.
      */
     Size
-    preferredSize() const;
+    preferredSize();
 
     /*!
      * Returns image description's capabilities.
@@ -152,8 +152,6 @@ public:
      */
     void
     setSize(const Size& size);
-
-
 
 private:
     enum ImageFlags
