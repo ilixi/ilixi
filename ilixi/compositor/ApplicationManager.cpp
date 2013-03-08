@@ -211,7 +211,7 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
     }
 
     std::string pidFile = FileSystem::homeDirectory().append("/ilx_compositor.pid");
-    _pidFile = fopen(pidFile.c_str(), "w");
+    FILE* _pidFile = fopen(pidFile.c_str(), "w");
     if(!_pidFile)
         ILOG_ERROR(ILX_APPLICATIONMANAGER, "Could not open %s for writing!\n", pidFile.c_str());
     else {
