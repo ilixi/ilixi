@@ -499,11 +499,8 @@ SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
-
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
+        event.cx = pointerEvent.x;
+        event.cy = pointerEvent.y;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
