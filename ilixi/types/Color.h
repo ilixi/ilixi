@@ -24,7 +24,10 @@
 #ifndef ILIXI_COLOR_H_
 #define ILIXI_COLOR_H_
 
-#include <dfb_types.h>
+extern "C" {
+    #include <dfb_types.h>
+}
+
 #include <directfb.h>
 
 namespace ilixi

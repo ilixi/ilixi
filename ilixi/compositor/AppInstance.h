@@ -25,7 +25,9 @@
 #define ILIXI_APPINSTANCE_H_
 
 #include <compositor/AppInfo.h>
+//extern "C" {
 #include <sawman.h>
+
 #include <list>
 #include <pthread.h>
 
