@@ -51,11 +51,15 @@ private:
     IComaComponent* _soundComponent;
     Music* _music;
     Font* _bandSliderFont;
-    Slider* _volSlider;
+    Slider* _masterVolume;
+    Slider* _effectsVolume;
     PushButton* _mute;
 
     void
-    changeVolume(float volume);
+    changeMasterVolume(float volume);
+
+    void
+    changeEffectsVolume(float volume);
 
     friend void
     volumeListener(void* ctx, void* arg);

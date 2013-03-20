@@ -38,6 +38,8 @@
 #include <types/Music.h>
 #include <core/Logger.h>
 
+#include <core/PlatformManager.h>
+
 namespace ilixi
 {
 
@@ -48,7 +50,7 @@ volumeListener(void* ctx, void* arg)
 {
     ILXSoundMixer* bar = (ILXSoundMixer*) ctx;
     float vol = *((float*) arg);
-    bar->_volSlider->setValue(vol);
+    bar->_masterVolume->setValue(vol);
 }
 
 ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
@@ -71,34 +73,45 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     HBoxLayout* volHBox = new HBoxLayout();
     panel->addTab(volHBox, "Volume Control");
 
-    GridLayout* volGrid = new GridLayout(6, 3);
+    GridLayout* volGrid = new GridLayout(8, 3);
     volHBox->addWidget(volGrid);
-    volGrid->addWidget(new Label("Output:"), 0, 0, 0, 3);
+    volGrid->addWidget(new Label("Master Volume:"), 0, 0, 0, 3);
 
-    _volSlider = new Slider();
-    _volSlider->setRange(0, 1);
-    _volSlider->setValue(1);
-    _volSlider->setStep(0.1);
-    _volSlider->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeVolume));
-    volGrid->addWidget(_volSlider, 1, 0, 0, 2);
+    _masterVolume = new Slider();
+    _masterVolume->setRange(0, 1);
+    _masterVolume->setValue(1);
+    _masterVolume->setStep(0.1);
+    _masterVolume->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeMasterVolume));
+    volGrid->addWidget(_masterVolume, 1, 0, 0, 2);
 
     _mute = new PushButton("Mute");
     _mute->setXConstraint(FixedConstraint);
     volGrid->addWidget(_mute, 1, 2);
     _mute->sigClicked.connect(sigc::mem_fun(this, &ILXSoundMixer::mute));
 
-    volGrid->addWidget(new Label("Balance:"), 2, 0, 0, 3);
-    volGrid->addWidget(new Label("Front"), 3, 0);
+    volGrid->addWidget(new Label("Sound Effects:"), 2, 0, 0, 3);
+    _effectsVolume = new Slider();
+    _effectsVolume->setRange(0, 1);
+    _effectsVolume->setValue(1);
+    _effectsVolume->setStep(0.1);
+    _effectsVolume->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeEffectsVolume));
+    volGrid->addWidget(_effectsVolume, 3, 0, 0, 2);
+
+    volGrid->addWidget(new Label("Balance:"), 4, 0, 0, 3);
+
+    volGrid->addWidget(new Label("Front"), 5, 0);
     Slider* frSlider = new Slider();
     frSlider->setValue(50);
-    volGrid->addWidget(frSlider, 3, 1);
-    volGrid->addWidget(new Label("Rear"), 3, 2);
-    volGrid->addWidget(new Label("Left"), 4, 0);
+    volGrid->addWidget(frSlider, 5, 1);
+    volGrid->addWidget(new Label("Rear"), 5, 2);
+
+    volGrid->addWidget(new Label("Left"), 6, 0);
     Slider* lrSlider = new Slider();
     lrSlider->setValue(50);
-    volGrid->addWidget(lrSlider, 4, 1);
-    volGrid->addWidget(new Label("Right"), 4, 2);
-    volGrid->addWidget(new Spacer(Vertical), 5, 0);
+    volGrid->addWidget(lrSlider, 6, 1);
+    volGrid->addWidget(new Label("Right"), 6, 2);
+
+    volGrid->addWidget(new Spacer(Vertical), 7, 0);
 
     GroupBox* volMeter = new GroupBox("Meter");
     VBoxLayout* volMeterLayout = new VBoxLayout();
@@ -163,7 +176,7 @@ ILXSoundMixer::~ILXSoundMixer()
 void
 ILXSoundMixer::mute()
 {
-    _volSlider->setValue(0);
+    _masterVolume->setValue(0);
     if (_soundComponent)
         DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute, NULL);
 }
@@ -178,16 +191,27 @@ ILXSoundMixer::playTestSound()
 }
 
 void
-ILXSoundMixer::changeVolume(float volume)
+ILXSoundMixer::changeMasterVolume(float volume)
 {
-    if (_soundComponent && _volSlider->hasFocus())
+    if (_masterVolume->hasFocus())
     {
-        void *ptr;
-        DaleDFB::comaGetLocal(sizeof(float), &ptr);
-        float* vol = (float*) ptr;
-        *vol = volume;
-        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
+        if (_soundComponent)
+        {
+            void *ptr;
+            DaleDFB::comaGetLocal(sizeof(float), &ptr);
+            float* vol = (float*) ptr;
+            *vol = volume;
+            DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
+        } else
+            SoundDFB::setMasterVolume(volume);
     }
+}
+
+void
+ILXSoundMixer::changeEffectsVolume(float volume)
+{
+    if (_effectsVolume->hasFocus())
+        PlatformManager::instance().setSoundEffectLevel(volume);
 }
 
 } /* namespace ilixi */
