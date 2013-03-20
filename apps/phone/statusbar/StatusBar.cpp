@@ -128,7 +128,7 @@ PStatusBar::~PStatusBar()
 void
 PStatusBar::onShow()
 {
-    _listFont = new Font("Gafata", 12);
+    _listFont = new Font("Sans", 12);
     _listBG = new Image(ILIXI_DATADIR"phone/statusbar/item-box.png");
 
     ListItem* item = new ListItem("Home");
