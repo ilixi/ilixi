@@ -220,7 +220,6 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 ######################################################################
 # Output
 ######################################################################
-DEPS_CFLAGS="$DEPS_CFLAGS -I/opt/dfb/include/"
 DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN"
 CXXFLAGS="$CFLAGS"
 
@@ -251,36 +250,35 @@ AC_SUBST(ILIXI_DATADIR)
 
 AC_CONFIG_FILES([ \
         Makefile  \
-        bin/car/appdefs/Makefile \
-        bin/car/ccompositor/images/Makefile \
-        bin/car/ccompositor/Makefile \
-        bin/car/home/Makefile \
-        bin/car/Makefile \
-        bin/car/statusbar/images/Makefile \
-        bin/car/statusbar/Makefile \
-        bin/carousel/Makefile \
-        bin/demo2/Makefile \
-        bin/demo4/Makefile \
-        bin/gallery/images/Makefile \
-        bin/gallery/Makefile \
-        bin/Makefile \
-        bin/monitor/Makefile \
-        bin/navigation/Makefile \
-        bin/osk/images/Makefile \
-        bin/osk/Makefile \
-        bin/phone/appdefs/Makefile \
-        bin/phone/dialer/Makefile \
-        bin/phone/home/Makefile \
-        bin/phone/Makefile \
-        bin/phone/pcompositor/Makefile \
-        bin/phone/statusbar/images/Makefile \
-        bin/phone/statusbar/Makefile \
-        bin/player/Makefile \
-        bin/settings/Makefile \
-        bin/soundmixer/images/Makefile \
-        bin/soundmixer/Makefile \
-        bin/stacking/Makefile \
-        bin/widgets/Makefile \
+        apps/car/appdefs/Makefile \
+        apps/car/ccompositor/images/Makefile \
+        apps/car/ccompositor/Makefile \
+        apps/car/home/Makefile \
+        apps/car/Makefile \
+        apps/car/statusbar/images/Makefile \
+        apps/car/statusbar/Makefile \
+        apps/carousel/Makefile \
+        apps/demo2/Makefile \
+        apps/demo4/Makefile \
+        apps/gallery/images/Makefile \
+        apps/gallery/Makefile \
+        apps/Makefile \
+        apps/monitor/Makefile \
+        apps/osk/images/Makefile \
+        apps/osk/Makefile \
+        apps/phone/appdefs/Makefile \
+        apps/phone/dialer/Makefile \
+        apps/phone/home/Makefile \
+        apps/phone/Makefile \
+        apps/phone/pcompositor/Makefile \
+        apps/phone/statusbar/images/Makefile \
+        apps/phone/statusbar/Makefile \
+        apps/player/Makefile \
+        apps/settings/Makefile \
+        apps/soundmixer/images/Makefile \
+        apps/soundmixer/Makefile \
+        apps/stacking/Makefile \
+        apps/widgets/Makefile \
         data/apps/icons/Makefile \
         data/apps/Makefile \
         data/fonts/Makefile \
