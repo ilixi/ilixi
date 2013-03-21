@@ -35,7 +35,9 @@ AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance, W
           _compositor(compositor),
           _instance(instance),
           _cState(APPCOMP_NONE),
-          _zoomFactor(1)
+          _zoomFactor(1),
+          _hScale(1),
+          _vScale(1)
 {
     setInputMethod(NoInput);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppCompositor::updateAppCompositorGeometry));
@@ -168,8 +170,9 @@ AppCompositor::updateAppCompositorGeometry()
             }
 
             // resize
-            float hScale = width() < _compositor->getAppGeometry().width() ? w / _compositor->getAppGeometry().width() : 1;
-            float vScale = height() < _compositor->getAppGeometry().height() ? h / _compositor->getAppGeometry().height() : 1;
+            _hScale = width() < _compositor->getAppGeometry().width() ? w / _compositor->getAppGeometry().width() : 1;
+            _vScale =
+                    height() < _compositor->getAppGeometry().height() ? h / _compositor->getAppGeometry().height() : 1;
             for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
             {
                 SurfaceView* view = dynamic_cast<SurfaceView*>(*it);
@@ -178,8 +181,7 @@ AppCompositor::updateAppCompositorGeometry()
                     int x, y;
                     view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                     Size s = view->preferredSize();
-//                    view->setGeometry(_zoomFactor * x, _zoomFactor * y, _zoomFactor * s.width(), _zoomFactor * s.height());
-                    view->setGeometry(x * hScale, y * vScale, s.width() * hScale, s.height() * vScale);
+                    view->setGeometry(x * _hScale, y * _vScale, s.width() * _hScale, s.height() * _vScale);
                     ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
                     ++i;
                 }
@@ -187,8 +189,6 @@ AppCompositor::updateAppCompositorGeometry()
         } else
         {
             int i = 0;
-            float hScale = 1;
-            float vScale = 1;
             ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> APP_WITH_MAINWINDOW - ZoomFactor: %f\n", _zoomFactor);
             for (WidgetList::iterator it = _children.begin(); it != _children.end(); ++it)
             {
@@ -201,16 +201,16 @@ AppCompositor::updateAppCompositorGeometry()
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
                         // Calculate scaling factors using mainwindow as base
                         Size s = view->preferredSize();
-                        hScale = w / s.width();
-                        vScale = h / s.height();
+                        _hScale = w / s.width();
+                        _vScale = h / s.height();
                         view->sigGeometryUpdated();
-                        ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> hScale: %f vScale: %f\n", hScale, vScale);
+                        ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> hScale: %f vScale: %f\n", _hScale, _vScale);
                     } else
                     {
                         int x, y;
                         view->dfbWindow()->GetPosition(view->dfbWindow(), &x, &y);
                         Size s = view->preferredSize();
-                        view->setGeometry(x * hScale, y * vScale, s.width() * hScale, s.height() * vScale);
+                        view->setGeometry(x * _hScale, y * _vScale, s.width() * _hScale, s.height() * _vScale);
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, "  -> window[%d]: %d, %d - %d x %d\n", i, view->x(), view->y(), view->width(), view->height());
                     }
                     ++i;
@@ -241,10 +241,12 @@ AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *
                     {
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> LowerToBottom\n");
                         lowerChild(view);
+                        view->update();
                     } else
                     {
                         ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> RaiseToTop\n");
                         raiseChild(view);
+                        view->update();
                     }
                     sigRestacked();
                 }
@@ -254,23 +256,23 @@ AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *
                 {
                     ILOG_DEBUG(ILX_APPCOMPOSITOR, " -> opacity(%d)\n", reconfig->request.opacity);
                     view->setOpacity(reconfig->request.opacity);
+                    view->update();
                 }
 
                 if (reconfig->flags & SWMCF_POSITION)
                 {
                     ILOG_DEBUG( ILX_APPCOMPOSITOR, " -> moveTo(%d, %d)\n", reconfig->request.bounds.x, reconfig->request.bounds.y);
-                    view->moveTo(reconfig->request.bounds.x, reconfig->request.bounds.y);
+                    view->moveTo(reconfig->request.bounds.x * _hScale, reconfig->request.bounds.y * _vScale);
                     view->update();
                 }
 
                 if (reconfig->flags & SWMCF_SIZE)
                 {
                     ILOG_DEBUG( ILX_APPCOMPOSITOR, " -> setSize(%d, %d)\n", reconfig->request.bounds.w, reconfig->request.bounds.h);
-                    view->setSize(reconfig->request.bounds.w, reconfig->request.bounds.h);
+                    view->setSize(reconfig->request.bounds.w * _hScale, reconfig->request.bounds.h * _vScale);
+                    view->update();
                 }
             }
-
-            view->update();
             return;
         }
     }

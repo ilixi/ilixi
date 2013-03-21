@@ -80,6 +80,8 @@ protected:
 
 private:
     float _zoomFactor;
+    float _hScale;
+    float _vScale;
 
     virtual void
     updateAppCompositorGeometry();
