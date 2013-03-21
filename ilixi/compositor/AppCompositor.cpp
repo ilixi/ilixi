@@ -260,10 +260,9 @@ AppCompositor::onWindowConfig(DFBWindowID windowID, const SaWManWindowReconfig *
 
                 if (reconfig->flags & SWMCF_POSITION)
                 {
-                    Rectangle r = view->frameGeometry();
                     ILOG_DEBUG( ILX_APPCOMPOSITOR, " -> moveTo(%d, %d)\n", reconfig->request.bounds.x, reconfig->request.bounds.y);
                     view->moveTo(reconfig->request.bounds.x * _hScale, reconfig->request.bounds.y * _vScale);
-                    view->update(PaintEvent(r.united(view->frameGeometry())));
+                    view->update();
                 }
 
                 if (reconfig->flags & SWMCF_SIZE)
