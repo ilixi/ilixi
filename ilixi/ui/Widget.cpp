@@ -306,6 +306,7 @@ Widget::moveTo(int x, int y)
         ILOG_TRACE_W(ILX_WIDGET);
         ILOG_DEBUG(ILX_WIDGET, " -> P(%d, %d)\n", x, y);
         _surfaceGeometry.moveTo(x, y);
+        _dirtyFrameGeometry.moveTo(_frameGeometry.x(), _frameGeometry.y());
         _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
         _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
         _surface->setSurfaceFlag(Surface::ModifiedPosition);
@@ -324,6 +325,7 @@ Widget::translate(int deltaX, int deltaY)
     if (deltaX != 0 || deltaY != 0)
     {
         _surfaceGeometry.translate(deltaX, deltaY);
+        _dirtyFrameGeometry.moveTo(_frameGeometry.x(), _frameGeometry.y());
         _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
         _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
         _surface->setSurfaceFlag(Surface::ModifiedPosition);
@@ -336,6 +338,7 @@ Widget::setX(int x)
     if (x != _surfaceGeometry.x())
     {
         _surfaceGeometry.setX(x);
+        _dirtyFrameGeometry.setX(_frameGeometry.x());
         _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
         _surface->setSurfaceFlag(Surface::ModifiedPosition);
     }
@@ -347,6 +350,7 @@ Widget::setY(int y)
     if (y != _surfaceGeometry.y())
     {
         _surfaceGeometry.setY(y);
+        _dirtyFrameGeometry.setY(_frameGeometry.y());
         _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
         _surface->setSurfaceFlag(Surface::ModifiedPosition);
     }
@@ -645,9 +649,10 @@ void
 Widget::update()
 {
     if (_rootWindow && !(_state & InvisibleState)) // FIXME invis check
-        _rootWindow->update(PaintEvent(_frameGeometry, z()));
+        _rootWindow->update(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
     else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
-        paint(PaintEvent(_frameGeometry, z()));
+        paint(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
+    _dirtyFrameGeometry = _frameGeometry;
 }
 
 void
@@ -1001,15 +1006,17 @@ Widget::paintChildren(const PaintEvent& event)
 void
 Widget::updateFrameGeometry()
 {
+    _dirtyFrameGeometry.moveTo(_frameGeometry.x(), _frameGeometry.y());
     _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
     _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
 
     ILOG_DEBUG( ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, _frameGeometry.x(), _frameGeometry.y());
 
+    Surface::SurfaceFlags flags = (Surface::SurfaceFlags) ((_surface->flags() & Surface::ModifiedPosition) | (_surface->flags() & Surface::ModifiedSize));
     _surface->unsetSurfaceFlag(Surface::ModifiedGeometry);
 
     for (WidgetList::const_iterator it = _children.begin(); it != _children.end(); ++it)
-        ((Widget*) *it)->_surface->setSurfaceFlag((Surface::SurfaceFlags) ((_surface->flags() & Surface::ModifiedPosition) | (_surface->flags() & Surface::ModifiedSize)));
+        ((Widget*) *it)->_surface->setSurfaceFlag(flags);
 }
 
 void

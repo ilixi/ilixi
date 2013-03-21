@@ -1066,6 +1066,9 @@ private:
      */
     Size _maxSize;
 
+    //! Stores old frame geometry for updates.
+    Rectangle _dirtyFrameGeometry;
+
     //! Value of this variable is incremented whenever a widget is constructed.
     static unsigned int _idCounter;
 
