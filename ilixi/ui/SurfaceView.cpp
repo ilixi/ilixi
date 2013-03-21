@@ -444,11 +444,8 @@ SurfaceView::pointerButtonDownEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
-
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -472,11 +469,8 @@ SurfaceView::pointerButtonUpEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
-
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -499,8 +493,8 @@ SurfaceView::pointerMotionEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        event.cx = pointerEvent.x;
-        event.cy = pointerEvent.y;
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -523,11 +517,9 @@ SurfaceView::pointerWheelEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
         event.step = pointerEvent.wheelStep;
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
@@ -581,11 +573,8 @@ SurfaceView::enterEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
-
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
@@ -608,11 +597,8 @@ SurfaceView::leaveEvent(const PointerEvent& pointerEvent)
         event.x = (pointerEvent.x - absX()) * hScale();
         event.y = (pointerEvent.y - absY()) * vScale();
 
-        int x, y;
-        _sourceWindow->GetPosition(_sourceWindow, &x, &y);
-
-        event.cx = (pointerEvent.x - absX()) * hScale() + x;
-        event.cy = (pointerEvent.y - absY()) * vScale() + y;
+        event.cx = pointerEvent.x - parent()->x();
+        event.cy = pointerEvent.y - parent()->y();
 
         event.button = (DFBInputDeviceButtonIdentifier) pointerEvent.button;
         event.buttons = (DFBInputDeviceButtonMask) pointerEvent.buttonMask;
