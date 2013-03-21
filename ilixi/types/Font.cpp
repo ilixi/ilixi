@@ -288,8 +288,9 @@ Font::loadFont()
         _key = FontCache::Instance()->getEntry(_name, _size, _attr, &_font);
         ILOG_DEBUG(ILX_FONT, " -> Font: %p key: %u\n", _font, _key);
         _modified = false;
+        if (!_font)
+            return false;
     }
-
     return true;
 }
 
