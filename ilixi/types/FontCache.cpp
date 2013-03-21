@@ -149,7 +149,8 @@ FontCache::getEntryFromFile(unsigned int key, const std::string& file, int size,
         DFBResult ret = PlatformManager::instance().getDFB()->CreateFont(PlatformManager::instance().getDFB(), file.c_str(), &desc, &font);
         if (ret)
         {
-            ILOG_DEBUG(ILX_FONTCACHE, " -> Loading failed for (%s, %d)!\n", file.c_str(), size);
+            ILOG_WARNING(ILX_FONTCACHE, " -> Loading failed for (%s, %d)!\n", file.c_str(), size);
+            ILOG_WARNING(ILX_FONTCACHE, " -> Error: %s\n", DirectFBErrorString(ret));
             pthread_mutex_unlock(&_lock);
             return NULL;
         }
