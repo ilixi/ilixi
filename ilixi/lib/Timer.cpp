@@ -94,7 +94,6 @@ Timer::restart()
         _count = 0;
         _expiry = direct_clock_get_millis() + _interval;
         ILOG_DEBUG( ILX_TIMER, " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
-        AppBase::sortTimers();
     }
 }
 

@@ -48,10 +48,10 @@ class AppBase
 {
     friend class Application;
     friend class Callback;              // add/remove callback
-    friend class SurfaceEventListener;              // add/remove SurfaceEventListener
-    friend class Timer;              // add/remove timer
+    friend class SurfaceEventListener;  // add/remove SurfaceEventListener
+    friend class Timer;                 // add/remove timer
     friend class WebView;
-    friend class Window;              // activeWindow
+    friend class Window;                // activeWindow
     friend class WindowWidget;
     friend class SurfaceView;
 
@@ -61,8 +61,8 @@ class AppBase
     enum AppState
     {
         APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
-        APS_VISIBLE = 0x0000002,       //!< Application has a visible window and has access to events.
-        APS_HIDDEN = 0x0000004,       //!< Application has no window and has no access to events.
+        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
     };
 
 public:
@@ -162,7 +162,8 @@ private:
     //! AppBase instance.
     static AppBase* __instance;
 
-    bool _update;bool _updateFromSurfaceView;
+    bool _update;
+    bool _updateFromSurfaceView;
     Timer _update_timer;
     DFBSurfaceID _updateID;
     unsigned int _updateFlipCount;
@@ -197,19 +198,29 @@ private:
     static bool
     removeCallback(Callback* cb);
 
+    /*!
+     * Adds a new timer to be monitored.
+     */
     static bool
     addTimer(Timer* timer);
 
+    /*!
+     * Removes timer.
+     */
     static bool
     removeTimer(Timer* timer);
 
-    static bool
-    sortTimers();
-
     /*!
-     * Executes each callback and returns a timeout in ms.
+     * Executes each timer and returns a timeout for next interval in ms.
      */
     int32_t
+    runTimers();
+
+
+    /*!
+     * Executes callbacks.
+     */
+    void
     runCallbacks();
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)

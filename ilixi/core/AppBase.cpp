@@ -220,12 +220,6 @@ AppBase::removeCallback(Callback* cb)
 }
 
 bool
-timerSort(Timer* first, Timer* second)
-{
-    return first->expiry() < second->expiry();
-}
-
-bool
 AppBase::addTimer(Timer* timer)
 {
     if (__instance && timer)
@@ -236,8 +230,6 @@ AppBase::addTimer(Timer* timer)
         if (it == __instance->_timers.end())
         {
             __instance->_timers.push_back(timer);
-
-            std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
 
             pthread_mutex_unlock(&__instance->__timerMutex);
             ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
@@ -272,53 +264,58 @@ AppBase::removeTimer(Timer* timer)
     return false;
 }
 
-bool
-AppBase::sortTimers()
-{
-    if (__instance)
-    {
-        pthread_mutex_lock(&__instance->__timerMutex);
-        std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
-        pthread_mutex_unlock(&__instance->__timerMutex);
-    }
-    return false;
-}
-
 int32_t
-AppBase::runCallbacks()
+AppBase::runTimers()
 {
-    int32_t timeout = 1000;
+    ILOG_TRACE_F(ILX_APPBASE);
+    int32_t timeout = 1000000;
 
-    //D_INFO_LINE_MSG( "SURFEVT: running timers/callbacks..." );
-
-    // timer
     pthread_mutex_lock(&__timerMutex);
-    if (_timers.size())
+    int64_t now = direct_clock_get_millis();
+
+    int64_t nextTimeout;
+    Timer* timer;
+    for (TimerList::iterator it = _timers.begin(); it != _timers.end(); ++it)
     {
-        int64_t now = direct_clock_get_millis();
-        int64_t expiry = _timers[0]->expiry();
-
-        if (expiry <= now)
+        timer = (Timer*) *it;
+        nextTimeout = timer->expiry() - now;
+        if (nextTimeout <= 0)
         {
-            if (!_timers[0]->funck())
-                _timers.erase(_timers.begin());
+            ILOG_DEBUG( ILX_APPBASE, " -> timer %p was supposed to fire at %d.%d\n", timer, (int) (timer->expiry() / 1000), (int)(timer->expiry() % 1000));
+            if (!timer->funck())
+            {
+                it = _timers.erase(it);
+                continue;
+            } else
+                nextTimeout = timer->expiry() - now;
+        }
 
-            std::sort(__instance->_timers.begin(), __instance->_timers.end(), timerSort);
-
-            if (_timers.size())
-                timeout = _timers[0]->expiry() - now;
-        } else
-            timeout = expiry - now;
+        if (nextTimeout < timeout)
+            timeout = nextTimeout;
     }
+
     pthread_mutex_unlock(&__timerMutex);
 
-    // callbacks
+    if (timeout < 1)
+        timeout = 1;
+    else if (timeout > 10000)
+        timeout = 10000;
+
+    ILOG_DEBUG( ILX_APPBASE, " -> desired timeout %d.%d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
+    return timeout;
+}
+
+void
+AppBase::runCallbacks()
+{
+    ILOG_TRACE_F(ILX_APPBASE);
+
     pthread_mutex_lock(&__cbMutex);
     std::vector<Callback*> list_copy;
     CallbackList::iterator it = __callbacks.begin();
     while (it != __callbacks.end())
     {
-        list_copy.push_back( *it );
+        list_copy.push_back(*it);
         ++it;
     }
     std::vector<Callback*>::iterator it2 = list_copy.begin();
@@ -326,14 +323,12 @@ AppBase::runCallbacks()
     {
         if (((Callback*) *it2)->_funck->funck() == 0)
         {
-            ILOG_DEBUG( ILX_APPBASE, "Callback %p is removed.\n", ((Callback*) *it2));
-            removeCallback( *it2 );
+            ILOG_DEBUG( ILX_APPBASE, " -> Callback %p is removed.\n", ((Callback*) *it2));
+            removeCallback(*it2);
         }
         ++it2;
     }
     pthread_mutex_unlock(&__cbMutex);
-
-    return timeout;
 }
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 
@@ -431,7 +426,7 @@ AppBase::consumeSurfaceEvent(const DFBSurfaceEvent& event)
 
     pthread_mutex_unlock(&__selMutex);
 }
-#endif
+#endif // ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 WindowWidget*
 AppBase::activeWindow()
 {
@@ -524,23 +519,20 @@ AppBase::removeWindow(WindowWidget* window)
 void
 AppBase::updateTimeout()
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-
-    _update     = true;
+    _update = true;
     _updateDiff = 0;
 }
 
 void
 AppBase::updateFromWindow()
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-
-    long long current_time = direct_clock_get_time( DIRECT_CLOCK_MONOTONIC );
+    long long current_time = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
 
     //D_INFO("time %16lld   disable %16lld\n", current_time, _updateDisable );
 
-    if (!_updateFromSurfaceView || current_time < _updateDisable) {
-        _update     = true;
+    if (!_updateFromSurfaceView || current_time < _updateDisable)
+    {
+        _update = true;
         _updateDiff = 0;
     }
 }
@@ -548,8 +540,6 @@ AppBase::updateFromWindow()
 void
 AppBase::updateWindows()
 {
-    ILOG_TRACE_F(ILX_APPBASE);
-
     if (!_syncWithSurfaceEvents || _update)
     {
         pthread_mutex_lock(&__windowMutex);
@@ -566,6 +556,7 @@ AppBase::updateWindows()
 void
 AppBase::handleEvents(int32_t timeout)
 {
+    ILOG_TRACE_F(ILX_APPBASE);
     DFBEvent event;
     DFBWindowEvent lastMotion; // Used for compressing motion events.
 
@@ -573,11 +564,9 @@ AppBase::handleEvents(int32_t timeout)
 
     bool wait = true;
 
-    if (timeout > 10000)
-        timeout = 10000;
-
-    if (timeout < 1) {
-        //D_WARN( "timeout %d", timeout );
+    if (timeout < 1)
+    {
+        ILOG_ERROR(ILX_APPBASE, "Timeout error with value %d\n", timeout);
         timeout = 1;
     }
 
@@ -595,9 +584,12 @@ AppBase::handleEvents(int32_t timeout)
 
     if (wait)
     {
-        //D_INFO_LINE_MSG( "SURFEVT: waiting for events..." );
+        // discard window update event in buffer.
+        __buffer->PeekEvent(__buffer, &event);
+        if (event.window.type == DWET_UPDATE)
+            __buffer->GetEvent(__buffer, &event);
 
-        ILOG_DEBUG(ILX_APPBASE, "Timeout %d.%d\n", timeout / 1000, timeout % 1000);
+        ILOG_DEBUG(ILX_APPBASE, " -> wait for event with timeout: %d.%d seconds\n", timeout / 1000, timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
     }
 
@@ -854,10 +846,10 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
 }
 
 void
-AppBase::disableSurfaceEventSync( long long micros )
+AppBase::disableSurfaceEventSync(long long micros)
 {
     //D_INFO("micros %16lld\n", micros );
-    _updateDisable = direct_clock_get_time( DIRECT_CLOCK_MONOTONIC ) + micros;
+    _updateDisable = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC) + micros;
     //D_INFO("    ->   disable %16lld\n", _updateDisable );
 }
 
