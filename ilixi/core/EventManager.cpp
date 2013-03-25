@@ -87,12 +87,7 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~ExposedState);
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
         _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
-        if (widget)
-        {
-            if (!widget->frameGeometry().intersects(_exposedWidget->frameGeometry()))
-                _exposedWidget->leaveEvent(pointerEvent);
-        } else
-            _exposedWidget->leaveEvent(pointerEvent);
+        _exposedWidget->leaveEvent(pointerEvent);
     }
 
     _exposedWidget = widget;
