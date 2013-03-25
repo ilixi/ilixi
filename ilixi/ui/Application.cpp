@@ -105,7 +105,8 @@ Application::exec()
             break;
         else
         {
-            handleEvents(runCallbacks());
+            runCallbacks();
+            handleEvents(runTimers());
             updateWindows();
         }
     }

@@ -84,9 +84,9 @@ public:
     quit();
 
     /*!
-     * Final!
+     * You can reimplement this method to create your own custom main loop.
      */
-    void
+    virtual void
     exec();
 
     /*!
