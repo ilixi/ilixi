@@ -92,6 +92,12 @@ public:
     margin() const;
 
     /*!
+     * Set whether frame is drawn or not.
+     */
+    void
+    setDrawFrame(bool drawFrame);
+
+    /*!
      * Set layout's margins.
      *
      * @param top Margin top.
@@ -113,6 +119,8 @@ public:
 protected:
     //! This property holds the margin of container.
     Margin _margin;
+    //! This property specifies whether frame is drawn or not.
+    bool _drawFrame;
 
     /*!
      * Reimplemented from ContainerBase.

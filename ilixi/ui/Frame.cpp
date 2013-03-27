@@ -32,7 +32,8 @@ D_DEBUG_DOMAIN( ILX_FRAME, "ilixi/ui/Frame", "Frame");
 
 Frame::Frame(Widget* parent)
         : ContainerBase(parent),
-          _margin(0)
+          _margin(0),
+          _drawFrame(true)
 {
     setConstraints(MinimumConstraint, MinimumExpandingConstraint);
 }
@@ -45,56 +46,62 @@ Frame::~Frame()
 int
 Frame::heightForWidth(int width) const
 {
-    return _layout->heightForWidth(
-            width - _margin.hSum()
-                    - stylist()->defaultParameter(StyleHint::FrameOffsetLR))
-            + _margin.vSum()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetLR);
+    if (_drawFrame)
+        return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::FrameOffsetLR)) + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetLR);
+    return _layout->heightForWidth(width - _margin.hSum()) + _margin.vSum();
 }
 
 Size
 Frame::preferredSize() const
 {
     Size s = _layout->preferredSize();
-    return Size(
-            s.width() + +_margin.hSum()
-                    + stylist()->defaultParameter(StyleHint::FrameOffsetLR),
-            s.height() + _margin.vSum()
-                    + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
+    if (_drawFrame)
+        return Size(s.width() + +_margin.hSum() + stylist()->defaultParameter(StyleHint::FrameOffsetLR), s.height() + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
+    return Size(s.width() + +_margin.hSum(), s.height() + _margin.vSum());
 }
 
 int
 Frame::canvasX() const
 {
-    return _margin.left()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetLeft);
+    if (_drawFrame)
+        return _margin.left() + stylist()->defaultParameter(StyleHint::FrameOffsetLeft);
+    return _margin.left();
 }
 
 int
 Frame::canvasY() const
 {
-    return _margin.top()
-            + stylist()->defaultParameter(StyleHint::FrameOffsetTop);
+    if (_drawFrame)
+        return _margin.top() + stylist()->defaultParameter(StyleHint::FrameOffsetTop);
+    return _margin.top();
 }
 
 int
 Frame::canvasHeight() const
 {
-    return height() - _margin.vSum()
-            - stylist()->defaultParameter(StyleHint::FrameOffsetTB);
+    if (_drawFrame)
+        return height() - _margin.vSum() - stylist()->defaultParameter(StyleHint::FrameOffsetTB);
+    return height() - _margin.vSum();
 }
 
 int
 Frame::canvasWidth() const
 {
-    return width() - _margin.hSum()
-            - stylist()->defaultParameter(StyleHint::FrameOffsetLR);
+    if (_drawFrame)
+        return width() - _margin.hSum() - stylist()->defaultParameter(StyleHint::FrameOffsetLR);
+    return width() - _margin.hSum();
 }
 
 Margin
 Frame::margin() const
 {
     return _margin;
+}
+
+void
+Frame::setDrawFrame(bool drawFrame)
+{
+    _drawFrame = drawFrame;
 }
 
 void
@@ -115,9 +122,7 @@ void
 Frame::updateLayoutGeometry()
 {
     ILOG_TRACE_W(ILX_FRAME);
-    ILOG_DEBUG(
-            ILX_FRAME,
-            " -> R(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
+    ILOG_DEBUG( ILX_FRAME, " -> R(%d, %d, %d, %d)\n", canvasX(), canvasY(), canvasWidth(), canvasHeight());
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
 
@@ -125,10 +130,13 @@ void
 Frame::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_FRAME);
-    Painter painter(this);
-    painter.begin(event);
-    stylist()->drawFrame(&painter, this);
-    painter.end();
+    if (_drawFrame)
+    {
+        Painter painter(this);
+        painter.begin(event);
+        stylist()->drawFrame(&painter, this);
+        painter.end();
+    }
 }
 
 } /* namespace ilixi */
