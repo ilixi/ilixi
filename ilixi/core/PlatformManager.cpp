@@ -248,7 +248,7 @@ PlatformManager::setSoundEffectLevel(float level)
 #if HAVE_FUSIONDALE
     if (_options & OptExclSoundEffect)
         DaleDFB::setSoundEffectLevel(level);
-    else
+    else if(_soundLevel != level)
     {
 #endif // HAVE_FUSIONDALE
         _soundLevel = level;
@@ -1004,6 +1004,8 @@ PlatformManager::setSounds(xmlNodePtr node)
 
         element = element->next;
     }
+    for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
+        it->second->setVolume(_soundLevel);
 }
 #endif
 

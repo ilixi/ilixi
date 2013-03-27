@@ -150,7 +150,7 @@ public:
     /*!
      * Sets level for sound effects.
      *
-     * @param level [0-100].
+     * @param level [0-1].
      */
     void
     setSoundEffectLevel(float level);
