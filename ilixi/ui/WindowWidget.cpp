@@ -92,16 +92,14 @@ WindowWidget::update()
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        AppBase::__buffer->WakeUp(AppBase::__buffer);
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> using frameGeometry.\n");
         _updates._updateQueue.push_back(frameGeometry());
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.push_back(frameGeometry());
 #endif
         pthread_mutex_unlock(&_updates._listLock);
+        AppBase::__instance->updateFromWindow();
     }
-
-    AppBase::__instance->updateFromWindow();
 }
 
 void
@@ -111,7 +109,6 @@ WindowWidget::update(const PaintEvent& event)
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        AppBase::__buffer->WakeUp(AppBase::__buffer);
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> left %d, %d, %d, %d.\n", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height());
         _updates._updateQueue.push_back(event.rect);
 #ifdef ILIXI_STEREO_OUTPUT
@@ -119,9 +116,8 @@ WindowWidget::update(const PaintEvent& event)
         _updates._updateQueueRight.push_back(event.right);
 #endif
         pthread_mutex_unlock(&_updates._listLock);
+        AppBase::__instance->updateFromWindow();
     }
-
-    AppBase::__instance->updateFromWindow();
 }
 
 void
