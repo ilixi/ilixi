@@ -247,7 +247,12 @@ Image::loadImage()
     if (provider->GetImageDescription(provider, &iDesc) == DFB_OK)
         _caps = iDesc.caps;
 
-    desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT);
+    if (PlatformManager::instance().appOptions() & OptARGBImages)
+    {
+        desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
+        desc.pixelformat = DSPF_ARGB;
+    } else
+        desc.flags = (DFBSurfaceDescriptionFlags) (desc.flags | DSDESC_CAPS | DSDESC_WIDTH | DSDESC_HEIGHT);
     desc.caps = DSCAPS_PREMULTIPLIED;
 
     if (width() > 0)

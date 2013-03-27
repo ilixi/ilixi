@@ -248,7 +248,7 @@ PlatformManager::setSoundEffectLevel(float level)
 #if HAVE_FUSIONDALE
     if (_options & OptExclSoundEffect)
         DaleDFB::setSoundEffectLevel(level);
-    else if(_soundLevel != level)
+    else if (_soundLevel != level)
     {
 #endif // HAVE_FUSIONDALE
         _soundLevel = level;
@@ -411,6 +411,8 @@ PlatformManager::parseArgs(const char *args)
 
         if (strcmp(arg, "exclusive") == 0)
             _options = (AppOptions) (_options | OptExclusive);
+        else if (strcmp(arg, "ARGB-images") == 0)
+            _options = (AppOptions) (_options | OptARGBImages);
 
         arg = next;
     }
