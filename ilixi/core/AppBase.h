@@ -55,16 +55,6 @@ class AppBase
     friend class WindowWidget;
     friend class SurfaceView;
 
-    /*!
-     * This enum is used to specify the state of an application.
-     */
-    enum AppState
-    {
-        APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
-        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
-        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
-    };
-
 public:
     /*!
      * Constructor.
@@ -107,16 +97,33 @@ protected:
     windowPreEventFilter(const DFBWindowEvent& event);
 
     /*!
-     * Sets application state flag.
+     * This enum is used to specify the state of an application.
      */
-    void
-    setAppState(AppState state);
+    enum AppFlags
+    {
+        APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
+        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
+        APS_CUSTOM = 0x0000008      //!< Disable waking up of buffer when an update is received.
+    };
 
     /*!
-     * Clears application state flag.
+     * Returns application flags.
+     */
+    AppFlags
+    appFlags() const;
+
+    /*!
+     * Sets application flag.
      */
     void
-    clearAppState(AppState state);
+    setAppFlag(AppFlags state);
+
+    /*!
+     * Clears application flag.
+     */
+    void
+    clearAppFlags(AppFlags state);
 
     /*!
      * Returns current cursor position.
@@ -124,9 +131,36 @@ protected:
     static DFBPoint
     cursorPosition();
 
+    /*!
+     * Executes each timer and returns a timeout for next interval in ms.
+     */
+    int32_t
+    runTimers();
+
+    /*!
+     * Executes callbacks.
+     */
+    void
+    runCallbacks();
+
+    /*!
+     * All events are handled using this function.
+     *
+     * @param timeout in ms.
+     * @param forceWait causes to wait even if there is a pending UI update
+     */
+    void
+    handleEvents(int32_t timeout, bool forceWait = false);
+
+    /*!
+     * Paints windows with affected areas.
+     */
+    void
+    updateWindows();
+
 private:
     //! Application state.
-    AppState __state;
+    AppFlags __flags;
 
     DFBPoint __cursorOld, __cursorNew;
     DFBDimension __layerSize;
@@ -150,7 +184,7 @@ private:
     WindowList __windowList;
     //! Window with focus.
     WindowWidget* __activeWindow;
-    //! Serialises access to static variables.
+    //! Serialises access to window list.
     pthread_mutex_t __windowMutex;
 
     typedef std::vector<Timer*> TimerList;
@@ -162,9 +196,10 @@ private:
     //! AppBase instance.
     static AppBase* __instance;
 
+    // Surface event sync.
     bool _update;
     bool _updateFromSurfaceView;
-    Timer _update_timer;
+    Timer* _update_timer;
     DFBSurfaceID _updateID;
     unsigned int _updateFlipCount;
     long long _updateDiff;
@@ -209,19 +244,6 @@ private:
      */
     static bool
     removeTimer(Timer* timer);
-
-    /*!
-     * Executes each timer and returns a timeout for next interval in ms.
-     */
-    int32_t
-    runTimers();
-
-
-    /*!
-     * Executes callbacks.
-     */
-    void
-    runCallbacks();
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     /*!
@@ -272,18 +294,6 @@ private:
      */
     static bool
     removeWindow(WindowWidget* window);
-
-    /*!
-     * Paints windows with affected areas.
-     */
-    void
-    updateWindows();
-
-    /*!
-     * All events are handled using this function.
-     */
-    void
-    handleEvents(int32_t timeout);
 
     /*!
      * Attach window to event buffer.

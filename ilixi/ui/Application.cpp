@@ -89,7 +89,7 @@ void
 Application::quit()
 {
     setVisible(false);
-    setAppState(APS_TERM);
+    setAppFlag(APS_TERM);
 }
 
 void
@@ -101,7 +101,7 @@ Application::exec()
 
     while (true)
     {
-        if (__state & APS_TERM)
+        if (__flags & APS_TERM)
             break;
         else
         {
@@ -133,11 +133,11 @@ Application::setBackgroundImage(std::string imagePath)
 void
 Application::show()
 {
-    if (__state & APS_HIDDEN)
+    if (__flags & APS_HIDDEN)
     {
         _backgroundImage->setSize(size());
         showWindow();
-        __state = APS_VISIBLE;
+        __flags = APS_VISIBLE;
         sigVisible();
     }
 }
@@ -145,10 +145,10 @@ Application::show()
 void
 Application::hide()
 {
-    if (__state & APS_VISIBLE)
+    if (__flags & APS_VISIBLE)
     {
         closeWindow();
-        __state = APS_HIDDEN;
+        __flags = APS_HIDDEN;
         sigHidden();
     }
 }

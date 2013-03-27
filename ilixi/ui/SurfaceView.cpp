@@ -33,6 +33,7 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_SURFACEVIEW, "ilixi/ui/SurfaceView", "SurfaceView");
+D_DEBUG_DOMAIN( ILX_SURFACEVIEW_UPDATES, "ilixi/ui/SurfaceView/Updates", "SurfaceView");
 
 SurfaceView::SurfaceView(Widget* parent)
         : SurfaceEventListener(),
@@ -329,7 +330,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     if (visible())
     {
-        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 5, (event.update.y2 - event.update.y1) / vScale() + 5));
+        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale(), (event.update.y2 - event.update.y1) / vScale()));
 
         AppBase::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
@@ -347,14 +348,16 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     DFBSurfaceID surface_id;
     _sourceSurface->GetID(_sourceSurface, &surface_id);
-    //D_INFO_LINE_MSG( "SURFEVT: acknowledge id %d flip count %d", surface_id, event.flip_count );
-    //D_INFO("id %d\n",surface_id);
+    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, "onSourceUpdate()\n");
+    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> SURFEVT: acknowledge id %d flip count %d\n", surface_id, event.flip_count);
+    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> id %d\n",surface_id);
     if (surface_id == AppBase::__instance->_updateID)
     {
-        //D_INFO("update for %d\n",AppBase::__instance->_updateID);
+        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n",AppBase::__instance->_updateID);
         AppBase::__instance->_update = true;
-        AppBase::__instance->_update_timer.restart();
+        AppBase::__instance->_update_timer->restart();
     }
+
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
 

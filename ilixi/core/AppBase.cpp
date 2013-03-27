@@ -50,7 +50,7 @@ IDirectFBEventBuffer* AppBase::__buffer = NULL;
 AppBase* AppBase::__instance = NULL;
 
 AppBase::AppBase(int* argc, char*** argv, AppOptions options)
-        : __state(APS_HIDDEN),
+        : __flags(APS_HIDDEN),
           __activeWindow(NULL),
           _update(false),
           _updateFromSurfaceView(false),
@@ -89,13 +89,16 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
     __layerSize.w = s.width() - 1;
     __layerSize.h = s.height() - 1;
 
-    _update_timer.sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
-    _update_timer.start(100);
+    _update_timer = new Timer();
+    _update_timer->sigExec.connect(sigc::mem_fun(this, &AppBase::updateTimeout));
+    _update_timer->setInterval(100);
+    _update_timer->setRepeats(1);
 }
 
 AppBase::~AppBase()
 {
     ILOG_TRACE_F(ILX_APPBASE);
+    delete _update_timer;
     releaseEventBuffer();
     PlatformManager::instance().release();
 
@@ -119,16 +122,22 @@ AppBase::windowPreEventFilter(const DFBWindowEvent& event)
     return false;
 }
 
-void
-AppBase::setAppState(AppState state)
+AppBase::AppFlags
+AppBase::appFlags() const
 {
-    __state = (AppState) (__state | state);
+    return __flags;
 }
 
 void
-AppBase::clearAppState(AppState state)
+AppBase::setAppFlag(AppFlags state)
 {
-    __state = (AppState) (__state & ~state);
+    __flags = (AppFlags) (__flags | state);
+}
+
+void
+AppBase::clearAppFlags(AppFlags state)
+{
+    __flags = (AppFlags) (__flags & ~state);
 }
 
 void
@@ -284,7 +293,8 @@ AppBase::runTimers()
             ILOG_DEBUG( ILX_APPBASE, " -> timer %p was supposed to fire at %d.%d\n", timer, (int) (timer->expiry() / 1000), (int)(timer->expiry() % 1000));
             if (!timer->funck())
             {
-                it = _timers.erase(it);
+                if (timer != _update_timer)
+                    it = _timers.erase(it);
                 continue;
             } else
                 nextTimeout = timer->expiry() - now;
@@ -296,9 +306,7 @@ AppBase::runTimers()
 
     pthread_mutex_unlock(&__timerMutex);
 
-    if (timeout < 1)
-        timeout = 1;
-    else if (timeout > 10000)
+    if (timeout > 10000)
         timeout = 10000;
 
     ILOG_DEBUG( ILX_APPBASE, " -> desired timeout %d.%d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
@@ -519,6 +527,7 @@ AppBase::removeWindow(WindowWidget* window)
 void
 AppBase::updateTimeout()
 {
+    ILOG_TRACE_F(ILX_APPBASE_UPDATES);
     _update = true;
     _updateDiff = 0;
 }
@@ -526,20 +535,23 @@ AppBase::updateTimeout()
 void
 AppBase::updateFromWindow()
 {
+    ILOG_TRACE_F(ILX_APPBASE_UPDATES);
     long long current_time = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
-
-    //D_INFO("time %16lld   disable %16lld\n", current_time, _updateDisable );
+    ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> time %16lld   disable %16lld\n", current_time, _updateDisable);
 
     if (!_updateFromSurfaceView || current_time < _updateDisable)
     {
         _update = true;
         _updateDiff = 0;
+        if (!(__flags & APS_CUSTOM))
+            __buffer->WakeUp(__buffer);
     }
 }
 
 void
 AppBase::updateWindows()
 {
+    ILOG_TRACE_F(ILX_APPBASE_UPDATES);
     if (!_syncWithSurfaceEvents || _update)
     {
         pthread_mutex_lock(&__windowMutex);
@@ -551,10 +563,11 @@ AppBase::updateWindows()
 
         pthread_mutex_unlock(&__windowMutex);
     }
+    ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> finished updating windows.\n");
 }
 
 void
-AppBase::handleEvents(int32_t timeout)
+AppBase::handleEvents(int32_t timeout, bool forceWait)
 {
     ILOG_TRACE_F(ILX_APPBASE);
     DFBEvent event;
@@ -562,15 +575,11 @@ AppBase::handleEvents(int32_t timeout)
 
     lastMotion.type = DWET_NONE;
 
-    bool wait = true;
-
     if (timeout < 1)
-    {
         ILOG_ERROR(ILX_APPBASE, "Timeout error with value %d\n", timeout);
-        timeout = 1;
-    }
 
-    if (!_syncWithSurfaceEvents || _update)
+    bool wait = true;
+    if (!forceWait && (!_syncWithSurfaceEvents || _update) && timeout)
     {
         for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         {
@@ -589,8 +598,9 @@ AppBase::handleEvents(int32_t timeout)
         if (event.window.type == DWET_UPDATE)
             __buffer->GetEvent(__buffer, &event);
 
-        ILOG_DEBUG(ILX_APPBASE, " -> wait for event with timeout: %d.%d seconds\n", timeout / 1000, timeout % 1000);
+        ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> wait for event with timeout: %d.%d seconds\n", timeout / 1000, timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
+        ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> got event! \n");
     }
 
     while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
@@ -658,10 +668,7 @@ AppBase::handleEvents(int32_t timeout)
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
         case DFEC_SURFACE:
             {
-                ILOG_DEBUG(ILX_APPBASE, "DFEC_SURFACE\n");
-
-                ILOG_DEBUG( ILX_APPBASE_UPDATES, "  -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n", event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update), event.surface.flip_count);
-
+                ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n", event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update), event.surface.flip_count);
                 for (SurfaceListenerList::iterator it = __selList.begin(); it != __selList.end(); ++it)
                     ((SurfaceEventListener*) *it)->consumeSurfaceEvent((const DFBSurfaceEvent&) event);
             }
@@ -675,6 +682,7 @@ AppBase::handleEvents(int32_t timeout)
     if (lastMotion.type != 0)
         if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
             activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
+    ILOG_DEBUG(ILX_APPBASE, " -> end handle events \n");
 }
 
 void
@@ -682,10 +690,11 @@ AppBase::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime)
 {
     if (event.surface_id != _updateID || event.flip_count != _updateFlipCount)
     {
+        ILOG_TRACE_F(ILX_APPBASE_UPDATES);
         long long diff = event.time_stamp - lastTime;
 
-        //D_INFO("account   surface id %d, updateID %d, flip_count %u, updateFlipCount %u, diff %lld, updateDiff %lld, time %lld, updateTime %lld\n",
-        //       event.surface_id, _updateID, event.flip_count, _updateFlipCount, diff, _updateDiff, event.time_stamp, _updateTime );
+        ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> account surface id %d, updateID %d, flip_count %u, updateFlipCount %u\n", event.surface_id, _updateID, event.flip_count, _updateFlipCount);
+        ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> diff %lld, updateDiff %lld, time %lld, updateTime %lld\n", diff, _updateDiff, event.time_stamp, _updateTime);
 
         if (_updateDiff == 0 || (diff - _updateDiff < -7000) || event.surface_id == _updateID || 2 * diff < (event.time_stamp - _updateTime))
         {
@@ -848,9 +857,9 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
 void
 AppBase::disableSurfaceEventSync(long long micros)
 {
-    //D_INFO("micros %16lld\n", micros );
+    ILOG_TRACE_F(ILX_APPBASE_UPDATES);
     _updateDisable = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC) + micros;
-    //D_INFO("    ->   disable %16lld\n", _updateDisable );
+    ILOG_DEBUG(ILX_APPBASE_UPDATES, " ->   disable %16lld\n", _updateDisable);
 }
 
 } /* namespace ilixi */
