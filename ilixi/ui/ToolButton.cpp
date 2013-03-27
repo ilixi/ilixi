@@ -22,6 +22,7 @@
  */
 
 #include <ui/ToolButton.h>
+#include <core/PlatformManager.h>
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 
@@ -285,7 +286,7 @@ ToolButton::pointerButtonUpEvent(const PointerEvent& event)
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
         if (_icon)
             _icon->setState(DefaultState);
-
+        PlatformManager::instance().playSoundEffect("Click");
         sigClicked();
         toggleChecked();
     }
