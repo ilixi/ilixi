@@ -27,6 +27,7 @@
 
 namespace ilixi
 {
+D_DEBUG_DOMAIN( ILX_SURFACELISTENER_UPDATES, "ilixi/ui/SurfaceListener/Updates", "SurfaceEventListener");
 
 SurfaceEventListener::SurfaceEventListener()
         : _surfaceID(0),
@@ -71,12 +72,12 @@ SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
 {
     if (event.surface_id == _surfaceID)
     {
+        ILOG_TRACE_F(ILX_SURFACELISTENER_UPDATES);
         if (event.type == DSEVT_DESTROYED)
             onSourceDestroyed(event);
         else if (event.type == DSEVT_UPDATE) {
-            //D_INFO_LINE_MSG( "SURFEVT: receive id %d flip count %d", event.surface_id, event.flip_count );
+            ILOG_DEBUG(ILX_SURFACELISTENER_UPDATES, " -> SURFEVT: receive id %d flip count %d\n", event.surface_id, event.flip_count );
             _queue.push(event);
-
 
             AppBase::__instance->accountSurfaceEvent( event, _lastTime );
 
