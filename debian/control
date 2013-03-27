@@ -9,16 +9,16 @@ Standards-Version: 3.9.0
 Section: libs
 Homepage: http://www.directfb.org/
 
-Package: libilixi-0.1.0
+Package: libilixi-1.0.0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: lixi is a lightweight user interface toolkit for DirectFB
  Ilixi is fast and slim and it aims to be a rich graphical application development tool for
  embedded Linux systems with limited resources.
 
-Package: libilixi-0.1.0-dev
+Package: libilixi-1.0.0-dev
 Architecture: any
-Depends: libilixi-0.1.0
+Depends: libilixi-1.0.0
  ${shlibs:Depends}, ${misc:Depends}
 Provides: libilixi-dev
 Conflicts: libilixi-dev
@@ -26,9 +26,9 @@ Description: lixi is a lightweight user interface toolkit for DirectFB
  Ilixi is fast and slim and it aims to be a rich graphical application development tool for
  embedded Linux systems with limited resources.
 
-Package: ilixi-data-0.1.0
+Package: ilixi-data-1.0.0
 Architecture: any
-Depends: libilixi-0.1.0,
+Depends: libilixi-1.0.0,
  ${shlibs:Depends}, ${misc:Depends}
 Provides: ilixi-data
 Conflicts: ilixi-data
@@ -36,9 +36,9 @@ Description: lixi is a lightweight user interface toolkit for DirectFB
  Ilixi is fast and slim and it aims to be a rich graphical application development tool for
  embedded Linux systems with limited resources.
 
-Package: ilixi-bin-0.1.0
+Package: ilixi-bin-1.0.0
 Architecture: any
-Depends: libilixi-0.1.0, ilixi-data-0.1.0,
+Depends: libilixi-1.0.0, ilixi-data-1.0.0,
  ${shlibs:Depends}, ${misc:Depends}
 Provides: ilixi-bin
 Conflicts: ilixi-bin

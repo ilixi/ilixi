@@ -1,3 +1,9 @@
+ilixi (1.0.0-20130327) precise; urgency=low
+
+  * initial package
+
+ -- Andreas Shimokawa <andi@directfb.org>  Wed, 27 Mar 2013 13:00:16 +0100
+
 ilixi (0.1.0-20121011) precise; urgency=low
 
   * initial package

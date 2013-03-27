@@ -1,7 +1,7 @@
 ######################################################################
 # Process this file with autoconf to produce a configure script.
 ######################################################################
-AC_INIT([ilixi],[0.1],[tarik@ilixi.org],[ilixi],[http://www.ilixi.org])
+AC_INIT([ilixi],[1.0.0],[tarik@ilixi.org],[ilixi],[http://www.ilixi.org])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config/m4])
@@ -15,8 +15,8 @@ AC_PREREQ(2.65)
 # if any functions have been added, set ILIXI_INTERFACE_AGE to 0.
 # If backwards compatibility has been broken, set ILIXI_INTERFACE_AGE and ILIXI_BINARY_AGE to 0.
 ######################################################################
-ILIXI_MAJOR_VERSION=0
-ILIXI_MINOR_VERSION=1
+ILIXI_MAJOR_VERSION=1
+ILIXI_MINOR_VERSION=0
 ILIXI_MICRO_VERSION=0
 ILIXI_INTERFACE_AGE=0
 ILIXI_BINARY_AGE=0
