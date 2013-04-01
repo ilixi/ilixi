@@ -235,18 +235,30 @@ void
 ILXStatusBar::clickedDash()
 {
     if (_dash->active())
-        DaleDFB::comaCallComponent(_compComponent, Compositor::HideDashboard, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideHome, NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowDashboard, NULL);
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(128, &ptr);
+        char* n = (char*) ptr;
+        snprintf(n, 128, "Dashboard");
+        DaleDFB::comaCallComponent(_compComponent, Compositor::StartApp, (void*) n);
+    }
 }
 
 void
 ILXStatusBar::clickedSound()
 {
     if (_sound->active())
-        DaleDFB::comaCallComponent(_compComponent, Compositor::HideSoundMixer, NULL);
+        DaleDFB::comaCallComponent(_compComponent, Compositor::HideHome, NULL);
     else
-        DaleDFB::comaCallComponent(_compComponent, Compositor::ShowSoundMixer, NULL);
+    {
+        void *ptr;
+        DaleDFB::comaGetLocal(128, &ptr);
+        char* n = (char*) ptr;
+        snprintf(n, 128, "SoundMixer");
+        DaleDFB::comaCallComponent(_compComponent, Compositor::StartApp, (void*) n);
+    }
 }
 
 void
