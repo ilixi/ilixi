@@ -25,8 +25,7 @@
 #include <core/Logger.h>
 #include <ui/Application.h>
 #include <lib/FileSystem.h>
-#include <libxml/parser.h>
-#include <libxml/catalog.h>
+#include <lib/XMLReader.h>
 
 #if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
@@ -424,36 +423,15 @@ bool
 PlatformManager::parseConfig()
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-    xmlParserCtxtPtr ctxt;
-    xmlDocPtr doc;
-    std::string filePath = ILIXI_DATADIR"ilixi_config.xml";
 
-    ctxt = xmlNewParserCtxt();
-    if (ctxt == NULL)
+    XMLReader xml;
+    if (xml.loadFile((ILIXI_DATADIR"ilixi_config.xml")) == false)
     {
-        ILOG_ERROR(ILX_PLATFORMMANAGER, "Failed to allocate parser context\n");
+        ILOG_FATAL(ILX_PLATFORMMANAGER, "Could not parse platform configuration!\n");
         return false;
     }
 
-    doc = xmlCtxtReadFile(ctxt, filePath.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-    if (doc == NULL)
-    {
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_PLATFORMMANAGER, "Failed to parse platform configuration!: %s\n", filePath.c_str());
-        return false;
-    }
-
-    if (ctxt->valid == 0)
-    {
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_PLATFORMMANAGER, "Failed to validate platform configuration: %s\n", filePath.c_str());
-        return false;
-    }
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr group = xml.currentNode();
 
     while (group != NULL)
     {
@@ -481,11 +459,7 @@ PlatformManager::parseConfig()
         group = group->next;
     }
 
-    xmlFreeDoc(doc);
-    xmlFreeParserCtxt(ctxt);
-
-    ILOG_INFO(ILX_PLATFORMMANAGER, "Parsed platform configuration file: %s\n", filePath.c_str());
-
+    ILOG_INFO(ILX_PLATFORMMANAGER, "Parsed platform configuration file.\n");
     return true;
 }
 
