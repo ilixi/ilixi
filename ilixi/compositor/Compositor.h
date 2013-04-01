@@ -148,12 +148,6 @@ protected:
     sendOSKInput(uint32_t key, unsigned int mask = 0);
 
     void
-    showSound(bool show);
-
-    void
-    showDash(bool show);
-
-    void
     setLayerOpacity(u8 opacity);
 
     /*!
@@ -205,10 +199,6 @@ private:
 
     //! OSK instance.
     AppInstance* _osk;
-    //! Dashboard instance.
-    AppInstance* _dash;
-    //! SoundMixer instance.
-    AppInstance* _mixer;
 
     //! PID of application which requested OSK input.
     pid_t _oskTargetPID;

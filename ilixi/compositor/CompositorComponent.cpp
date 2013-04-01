@@ -192,22 +192,6 @@ CompositorComponent::comaMethod(ComaMethodID method, void *arg)
         sendAppList();
         break;
 
-    case Compositor::ShowSoundMixer:
-        _compositor->showSound(true);
-        break;
-
-    case Compositor::HideSoundMixer:
-        _compositor->showSound(false);
-        break;
-
-    case Compositor::ShowDashboard:
-        _compositor->showDash(true);
-        break;
-
-    case Compositor::HideDashboard:
-        _compositor->showDash(false);
-        break;
-
     case Compositor::SendBackKey:
         ILOG_TRACE_F(ILX_COMPCOMP);
         ILOG_DEBUG(ILX_COMPCOMP, "SendBackKey\n");

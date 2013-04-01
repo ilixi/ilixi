@@ -52,8 +52,6 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
           _home(NULL),
           _statusBar(NULL),
           _osk(NULL),
-          _dash(NULL),
-          _mixer(NULL),
           _oskTargetPID(0)
 {
     setenv("WEBKIT_IGNORE_SSL_ERRORS", "1", 0);
@@ -293,36 +291,6 @@ ILXCompositor::sendOSKInput(uint32_t key, unsigned int mask)
 }
 
 void
-ILXCompositor::showSound(bool show)
-{
-    if (show)
-    {
-        if (!_mixer)
-            _appMan->startApplication("SoundMixer");
-        else
-            showInstance(_mixer);
-    } else
-        showInstance(_previousApp);
-
-    disableSurfaceEventSync(500000);
-}
-
-void
-ILXCompositor::showDash(bool show)
-{
-    if (show)
-    {
-        if (!_dash)
-            _appMan->startApplication("Dashboard");
-        else
-            showInstance(_dash);
-    } else
-        showInstance(_previousApp);
-
-    disableSurfaceEventSync(500000);
-}
-
-void
 ILXCompositor::setLayerOpacity(u8 opacity)
 {
     ILOG_TRACE_W(ILX_COMPOSITOR);
@@ -533,6 +501,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 } else if (appInfo->appFlags() & APP_OSK)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_OSK\n");
+
                     _osk = data->instance;
                     if (!_osk->view())
                     {
@@ -547,6 +516,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 } else if (appInfo->appFlags() & APP_HOME)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_HOME\n");
+
                     _home = data->instance;
                     _home->setView(new AppView(this, _home, this));
                     data->instance->view()->setGeometry(_appGeometry);
@@ -557,11 +527,6 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 } else if (appInfo->appFlags() & APP_SYSTEM)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_SYSTEM\n");
-
-                    if (appInfo->name() == "Dashboard")
-                        _dash = data->instance;
-                    else if (appInfo->name() == "SoundMixer")
-                        _mixer = data->instance;
 
                     data->instance->setView(new AppView(this, data->instance, this));
                     data->instance->view()->setGeometry(_appGeometry);
