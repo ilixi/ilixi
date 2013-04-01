@@ -11,6 +11,7 @@ XMLReader::XMLReader()
           _doc(NULL),
           _ctxt(NULL)
 {
+    ILOG_TRACE_F(ILX_XMLREADER);
 }
 
 XMLReader::XMLReader(const std::string& file)
@@ -18,18 +19,22 @@ XMLReader::XMLReader(const std::string& file)
           _doc(NULL),
           _ctxt(NULL)
 {
+    ILOG_TRACE_F(ILX_XMLREADER);
     loadFile(file);
 }
 
 XMLReader::~XMLReader()
 {
+    ILOG_TRACE_F(ILX_XMLREADER);
     release();
 }
 
 bool
 XMLReader::loadFile(const std::string& file, int parserOptions)
 {
+    ILOG_TRACE_F(ILX_XMLREADER);
     release();
+    ILOG_DEBUG(ILX_XMLREADER, " -> file: %s\n", file.c_str());
     _ctxt = xmlNewParserCtxt();
     if (_ctxt == NULL)
     {
@@ -37,7 +42,7 @@ XMLReader::loadFile(const std::string& file, int parserOptions)
         return false;
     }
 
-    _doc = xmlCtxtReadFile(_ctxt, ILIXI_DATADIR"compositor.xml", NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+    _doc = xmlCtxtReadFile(_ctxt, file.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (_doc == NULL)
     {
@@ -47,7 +52,7 @@ XMLReader::loadFile(const std::string& file, int parserOptions)
         return false;
     }
 
-    if (_ctxt->valid == 0)
+    if ((parserOptions & XML_PARSE_DTDVALID) && (_ctxt->valid == 0))
     {
         xmlFreeDoc(_doc);
         xmlFreeParserCtxt(_ctxt);
@@ -58,13 +63,14 @@ XMLReader::loadFile(const std::string& file, int parserOptions)
     }
 
     _currentNode = root()->xmlChildrenNode;
-
+    ILOG_DEBUG(ILX_XMLREADER, " -> done.\n");
     return true;
 }
 
 void
 XMLReader::release()
 {
+    ILOG_TRACE_F(ILX_XMLREADER);
     if (_doc)
         xmlFreeDoc(_doc);
     if (_ctxt)
