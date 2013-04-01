@@ -65,6 +65,7 @@ FontCache::operator=(FontCache const&)
 
 FontCache::~FontCache()
 {
+    releaseAllEntries();
     pthread_mutex_destroy(&_lock);
 }
 
@@ -166,8 +167,8 @@ FontCache::getEntryFromFile(unsigned int key, const std::string& file, int size,
     } else
     {
         ILOG_DEBUG(ILX_FONTCACHE, " -> Got from cache using key (%u) (%s,%d)\n", key, file.c_str(), size);
-        pthread_mutex_unlock(&_lock);
         it->second.ref++;
+        pthread_mutex_unlock(&_lock);
         return it->second.font;
     }
 }
@@ -200,6 +201,17 @@ FontCache::getFCFileName(const char* name, const char* style, double size, int s
     FcPatternDestroy(pat);
 
     return font_match;
+}
+
+void
+FontCache::releaseAllEntries()
+{
+    ILOG_TRACE_F(ILX_FONTCACHE);
+    pthread_mutex_lock(&_lock);
+    for (CacheMap::iterator it = _cache.begin(); it != _cache.end(); ++it)
+        it->second.font->Release(it->second.font);
+    _cache.clear();
+    pthread_mutex_unlock(&_lock);
 }
 
 } /* namespace ilixi */

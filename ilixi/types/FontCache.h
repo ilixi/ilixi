@@ -40,6 +40,7 @@ namespace ilixi
  */
 class FontCache
 {
+    friend class PlatformManager;
 public:
     /*!
      * Returns singleton instance.
@@ -118,6 +119,9 @@ private:
 
     std::string
     getFCFileName(const char* name, const char* style, double size, int slant);
+
+    void
+    releaseAllEntries();
 
     static FontCache* __instance;
 

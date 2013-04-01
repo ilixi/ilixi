@@ -26,6 +26,7 @@
 #include <ui/Application.h>
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
+#include <types/FontCache.h>
 
 #if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
@@ -345,6 +346,8 @@ PlatformManager::release()
     if (_dfb)
     {
         ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+
+        FontCache::Instance()->releaseAllEntries();
 
         if ((appOptions() & OptExclusive) && _cursorImage)
             _cursorImage->Release(_cursorImage);
