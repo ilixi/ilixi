@@ -297,6 +297,9 @@ AppView::tweenEndSlot()
 {
     ILOG_TRACE_W(ILX_APPVIEW);
     ILOG_DEBUG(ILX_APPVIEW, " -> %s\n", _instance->appInfo()->name().c_str());
+    if (_animProps & AnimShowing)
+        _compositor->appVisible();
+
     if (_animProps & HideWhenDone)
         setVisible(false);
     clearAnimatedProperty(AnimShowing);

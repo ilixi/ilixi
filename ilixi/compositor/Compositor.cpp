@@ -129,10 +129,6 @@ ILXCompositor::showInstance(AppInstance* instance)
 
     // background
     AppInfo* info = _currentApp->appInfo();
-    if (info->appFlags() & APP_NEEDS_CLEAR)
-        _backgroundFlags |= BGFClear;
-    else
-        _backgroundFlags &= ~BGFClear;
 
     ILOG_INFO(ILX_COMPOSITOR, "NOW SHOWING: %s\n", info->name().c_str());
     _currentApp->view()->show(settings.showAnimProps);
@@ -173,6 +169,7 @@ ILXCompositor::toggleSwitcher(bool show)
             _switcher->currentThumb()->setFocus();
     } else
     {
+        _backgroundFlags |= BGFClear;
         _switcher->hide();
         _compComp->signalSwitcher(false);
         if (_currentApp)
@@ -951,6 +948,16 @@ ILXCompositor::parseSettings()
 
     ILOG_INFO(ILX_COMPOSITOR, "Parsed compositor settings.\n");
     return true;
+}
+
+void
+ILXCompositor::appVisible()
+{
+    AppInfo* info = _currentApp->appInfo();
+    if (info->appFlags() & APP_NEEDS_CLEAR)
+        _backgroundFlags |= BGFClear;
+    else
+        _backgroundFlags &= ~BGFClear;
 }
 
 } /* namespace ilixi */

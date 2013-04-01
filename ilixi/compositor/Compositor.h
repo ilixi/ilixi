@@ -332,6 +332,9 @@ private:
 
     bool
     parseSettings();
+
+    void
+    appVisible();
 };
 
 } /* namespace ilixi */
