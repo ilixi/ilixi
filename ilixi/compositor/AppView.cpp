@@ -141,6 +141,7 @@ AppView::show(AnimatedProperty props, int tx, int ty)
         _propAnim.start();
     } else
     {
+        _compositor->appVisible();
         update();
     }
 }
