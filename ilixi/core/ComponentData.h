@@ -138,15 +138,11 @@ typedef enum
     AddNotification,    //!< Add notification using "NotificationData" as argument.
     GetAppList,         //!< Send list of registered applications to client.
     GetFPS,             //!< Send current compositor fps.
-    HideDashboard,      //!< Hide Dashboard application.
     HideHome,           //!< Hide Home application.
-    HideSoundMixer,     //!< Hide SoundMixer application.
     HideSwitcher,       //!< Hide Switcher.
     SendBackKey,        //!< Send DIKS_BACK key to currently visible application.
     SetOptions,         //!< Set Compositor options using null terminated XML data.
-    ShowDashboard,      //!< Show Dashboard application.
     ShowHome,           //!< Show Home application.
-    ShowSoundMixer,     //!< Show SoundMixer application.
     ShowSwitcher,       //!< Show Switcher.
     StartApp            //!< Start application using "char name[64]" as argument.
 } CompositorMethodID;
@@ -157,7 +153,7 @@ typedef enum
     AppStatus = 0,      //!< Sent if client application status is changed.
     BackKeyHidden,      //!< Sent if BACK key should become hidden.
     BackKeyVisible,     //!< Sent if BACK key should become visible.
-    NotificationAck, //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
+    NotificationAck,    //!< Used by NotificationManager to notify about the state of a Notification. Clients should listen and execute further callbacks.
     SendingAppList,     //!< Sent with application list. // TODO remove this!
     SwitcherHidden,     //!< Sent when Switcher is hidden.
     SwitcherVisible,    //!< Sent when Switcher is visible.
