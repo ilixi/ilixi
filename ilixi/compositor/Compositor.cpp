@@ -28,9 +28,7 @@
 #include <lib/Notify.h>
 #include <ui/Label.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/catalog.h>
+#include <lib/XMLReader.h>
 
 #include <sigc++/bind.h>
 #include <sstream>
@@ -862,35 +860,14 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
 bool
 ILXCompositor::parseSettings()
 {
-    xmlDocPtr doc;
-    xmlParserCtxtPtr ctxt;
-
-    ctxt = xmlNewParserCtxt();
-    if (ctxt == NULL)
+    XMLReader xml;
+    if (xml.loadFile((ILIXI_DATADIR"compositor.xml")) == false)
     {
-        ILOG_ERROR(ILX_COMPOSITOR, "Failed to allocate parser context\n");
+        ILOG_FATAL(ILX_COMPOSITOR, "Could not parse compositor settings!\n");
         return false;
     }
 
-    doc = xmlCtxtReadFile(ctxt, ILIXI_DATADIR"compositor.xml", NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-    if (doc == NULL)
-    {
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_COMPOSITOR, "Failed to parse compositor settings!\n");
-        return false;
-    }
-
-    if (ctxt->valid == 0)
-    {
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_COMPOSITOR, "Failed to validate compositor settings!\n");
-        return false;
-    }
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr group = xml.currentNode();
     xmlNodePtr element;
     while (group != NULL)
     {
@@ -1007,8 +984,6 @@ ILXCompositor::parseSettings()
         group = group->next;
     }
 
-    xmlFreeDoc(doc);
-    xmlFreeParserCtxt(ctxt);
     ILOG_INFO(ILX_COMPOSITOR, "Parsed compositor settings.\n");
     return true;
 }
