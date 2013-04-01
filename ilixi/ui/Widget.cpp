@@ -1093,10 +1093,16 @@ Widget::universalEvent(const UniversalEvent* event)
 void
 Widget::setRootWindow(WindowWidget* root)
 {
-    _surface->setSurfaceFlag(Surface::InitialiseSurface);
-    _rootWindow = root;
+    if (root != NULL)
+    {
+        _surface->setSurfaceFlag(Surface::InitialiseSurface);
+        _rootWindow = root;
 
-    setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
+        setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
+    } else if (_surface->flags() & Surface::SharedSurface || _surface->flags() & Surface::SubSurface) {
+        _surface->setSurfaceFlag(Surface::InitialiseSurface);
+        _surface->release();
+    }
 
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
         (*it)->setRootWindow(root);

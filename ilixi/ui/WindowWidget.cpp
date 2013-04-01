@@ -311,6 +311,8 @@ WindowWidget::closeWindow()
 
     AppBase::removeWindow(this);
 
+    setRootWindow(NULL);
+
     if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->releaseDFBWindow();
 }
