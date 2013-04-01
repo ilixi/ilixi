@@ -17,7 +17,8 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							Tween.cpp \
 							TweenAnimation.cpp \
 							utf8.c \
-							Util.cpp
+							Util.cpp \
+							XMLReader.cpp
 
 ilixi_includedir		= 	$(includedir)/$(PACKAGE)-$(VERSION)/lib
 ilixi_include_HEADERS	=	Animation.h \
@@ -33,7 +34,8 @@ ilixi_include_HEADERS	=	Animation.h \
 							Tween.h \
 							TweenAnimation.h \
 							utf8.h \
-							Util.h
+							Util.h \
+							XMLReader.h
 
 if WITH_FUSIONDALE
 libilixi_lib_la_SOURCES 	+= 	Notify.cpp
