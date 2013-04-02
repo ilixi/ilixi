@@ -40,4 +40,6 @@
 	</Sounds>
 
 	<Cursor visible="yes" useLayer="yes">@IMGDIR:pointer.png</Cursor>
+	
+	<PixelFormat>DEFAULT</PixelFormat>
 </Configuration>

@@ -28,6 +28,11 @@
 #include <lib/XMLReader.h>
 #include <types/FontCache.h>
 
+extern "C"
+{
+#include <directfb_strings.h>
+}
+
 #if ILIXI_HAVE_FUSIONDALE
 #include <core/DaleDFB.h>
 #endif
@@ -41,6 +46,8 @@ namespace ilixi
 
 D_DEBUG_DOMAIN( ILX_PLATFORMMANAGER, "ilixi/core/PlatformManager", "PlatformManager");
 D_DEBUG_DOMAIN( ILX_PLATFORMMANAGER_TRACE, "ilixi/core/PlatformManagerTrace", "PlatformManagerTrace");
+
+static DirectFBPixelFormatNames( format_names );
 
 PlatformManager&
 PlatformManager::instance()
@@ -200,6 +207,12 @@ PlatformManager::cursorVisible() const
     return false;
 }
 
+DFBSurfacePixelFormat
+PlatformManager::forcedPixelFormat() const
+{
+    return _pixelFormat;
+}
+
 void
 PlatformManager::renderCursor(const DFBPoint& point)
 {
@@ -265,7 +278,8 @@ PlatformManager::PlatformManager()
           _dfb(NULL),
           _cursorLayer(NULL),
           _cursorTarget(NULL),
-          _cursorImage(NULL)
+          _cursorImage(NULL),
+          _pixelFormat(DSPF_UNKNOWN)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 }
@@ -404,17 +418,21 @@ void
 PlatformManager::parseArgs(const char *args)
 {
     char* arg = strdup(args);
-    char *next;
+    char* value;
+    char* next;
 
     while (arg && arg[0])
     {
         if ((next = strchr(arg, ',')) != NULL)
             *next++ = '\0';
 
+        if ((value = strchr(arg, '=')) != NULL)
+            *value++ = '\0';
+
         if (strcmp(arg, "exclusive") == 0)
             _options = (AppOptions) (_options | OptExclusive);
-        else if (strcmp(arg, "ARGB-images") == 0)
-            _options = (AppOptions) (_options | OptARGBImages);
+        else if (strcmp(arg, "pixelformat") == 0)
+            setPixelFormat(value);
 
         arg = next;
     }
@@ -458,6 +476,13 @@ PlatformManager::parseConfig()
 #endif
         else if (xmlStrcmp(group->name, (xmlChar*) "Cursor") == 0)
             setCursor(group);
+
+        else if (xmlStrcmp(group->name, (xmlChar*) "PixelFormat") == 0)
+        {
+            xmlChar* pcDATA = xmlNodeGetContent(group);
+            setPixelFormat((char*) pcDATA);
+            xmlFree(pcDATA);
+        }
 
         group = group->next;
     }
@@ -1069,6 +1094,35 @@ PlatformManager::setCursor(xmlNodePtr node)
     xmlFree(pcDATA);
     xmlFree(visible);
     xmlFree(useLayer);
+}
+
+bool
+PlatformManager::setPixelFormat(const char* format)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    if (_pixelFormat != DSPF_UNKNOWN)
+    {
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> pixelformat is already set.\n", _pixelFormat);
+        return true;
+    }
+
+    if (strcasecmp(format, "DEFAULT") == 0)
+        return true;
+
+    int i = 0;
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> %s\n", format);
+    while (format_names[i].format != DSPF_UNKNOWN)
+    {
+        if (!strcasecmp(format, format_names[i].name))
+        {
+            _pixelFormat = format_names[i].format;
+            return true;
+        }
+        ++i;
+    }
+
+    ILOG_WARNING(ILX_PLATFORMMANAGER, "Specified pixel format (%s) is invalid!\n", format);
+    return false;
 }
 
 void

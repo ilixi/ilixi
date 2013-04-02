@@ -136,6 +136,12 @@ public:
     cursorVisible() const;
 
     /*!
+     * Returns the pixel format used for all images.
+     */
+    DFBSurfacePixelFormat
+    forcedPixelFormat() const;
+
+    /*!
      * Render cursor using given position.
      */
     void
@@ -165,6 +171,9 @@ private:
     IDirectFBDisplayLayer* _cursorLayer;
     IDirectFBSurface* _cursorTarget;
     IDirectFBSurface* _cursorImage;
+
+    //! Forced pixel format for all images
+    DFBSurfacePixelFormat _pixelFormat;
 
     struct HardwareLayer
     {
@@ -272,6 +281,9 @@ private:
 
     void
     setCursor(xmlNodePtr node);
+
+    bool
+    setPixelFormat(const char* format);
 
     void
     setAppOption(AppOptions option);
