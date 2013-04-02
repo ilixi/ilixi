@@ -93,38 +93,14 @@ Style::parseStyle(const char* style)
         ILOG_INFO(ILX_STYLE, "Parsed cached style file: %s\n", cacheFile.c_str());
     } else
     {
-        ILOG_DEBUG(ILX_STYLE, " -> Parsing xml...\n");
-        xmlParserCtxtPtr ctxt;
-        xmlDocPtr doc;
-
-        ctxt = xmlNewParserCtxt();
-        if (ctxt == NULL)
+        XMLReader xml;
+        if (xml.loadFile(style) == false)
         {
-            ILOG_ERROR(ILX_STYLE, "Failed to allocate parser context\n");
+            ILOG_FATAL(ILX_STYLE, "Could not parse style!\n");
             return false;
         }
 
-        doc = xmlCtxtReadFile(ctxt, style, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-        if (doc == NULL)
-        {
-            xmlFreeParserCtxt(ctxt);
-            ILOG_ERROR(ILX_STYLE, "Failed to parse style: %s\n", style);
-            return false;
-        }
-
-        if (ctxt->valid == 0)
-        {
-            xmlFreeDoc(doc);
-            xmlFreeParserCtxt(ctxt);
-            ILOG_ERROR(ILX_STYLE, "Failed to validate style: %s\n", style);
-            return false;
-        }
-
-        release();
-
-        xmlNodePtr root = xmlDocGetRootElement(doc);
-        xmlNodePtr group = root->xmlChildrenNode;
+        xmlNodePtr group = xml.currentNode();
 
         while (group != NULL)
         {
