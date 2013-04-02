@@ -693,37 +693,20 @@ ApplicationManager::windowRestack(SaWManWindowHandle handle, SaWManWindowHandle 
 bool
 ApplicationManager::parseAppDef(const std::string& folder, const std::string& file)
 {
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Parsing appdef file: %s\n", file.c_str());
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "parseAppDef ( %s )\n", file.c_str());
     xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     std::string filePath = folder + "/" + file;
 
-    ctxt = xmlNewParserCtxt();
-    if (ctxt == NULL)
+
+    XMLReader xml;
+    if (xml.loadFile(filePath) == false)
     {
-        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to allocate parser context\n");
+        ILOG_WARNING(ILX_APPLICATIONMANAGER, "Could not parse!\n");
         return false;
     }
 
-    doc = xmlCtxtReadFile(ctxt, filePath.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-    if (doc == NULL)
-    {
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to parse appdef: %s\n", file.c_str());
-        return false;
-    }
-
-    if (ctxt->valid == 0)
-    {
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to validate appdef: %s\n", file.c_str());
-        return false;
-    }
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr group = xml.currentNode();
 
     xmlChar* name;
     xmlChar* author;
@@ -739,7 +722,7 @@ ApplicationManager::parseAppDef(const std::string& folder, const std::string& fi
     while (group != NULL)
     {
 
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " Parsing %s...\n", group->name);
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Parsing %s...\n", group->name);
 
         if (xmlStrcmp(group->name, (xmlChar*) "name") == 0)
             name = xmlNodeGetContent(group->children);
@@ -774,7 +757,7 @@ ApplicationManager::parseAppDef(const std::string& folder, const std::string& fi
         group = group->next;
     }
 
-    ILOG_DEBUG(ILX_APPLICATIONMANAGER, "Parsed appdef file: %s\n", file.c_str());
+    ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> done.\n", file.c_str());
 
     addApplication((const char*) name, (const char*) author, (const char*) licence, (const char*) category, (const char*) version, (const char*) icon, (const char*) exec, (const char*) args, (const char*) appFlags, (const char*) depFlags);
 
@@ -791,9 +774,6 @@ ApplicationManager::parseAppDef(const std::string& folder, const std::string& fi
         xmlFree(appFlags);
     if (depFlags)
         xmlFree(depFlags);
-
-    xmlFreeDoc(doc);
-    xmlFreeParserCtxt(ctxt);
 
     return true;
 }
