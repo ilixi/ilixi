@@ -23,9 +23,7 @@
 
 #include <graphics/Palette.h>
 #include <core/Logger.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/catalog.h>
+#include <lib/XMLReader.h>
 
 namespace ilixi
 {
@@ -105,39 +103,14 @@ Palette::getGroup(WidgetState state)
 bool
 Palette::parsePalette(const char* palette)
 {
-    xmlParserCtxtPtr ctxt;
-    xmlDocPtr doc;
-
-    ctxt = xmlNewParserCtxt();
-    if (ctxt == NULL)
+    XMLReader xml;
+    if (xml.loadFile(palette) == false)
     {
-        ILOG_ERROR(ILX_PALETTE, "Failed to allocate parser context\n");
+        ILOG_FATAL(ILX_PALETTE, "Could not parse palette!\n");
         return false;
     }
 
-    doc = xmlCtxtReadFile(
-            ctxt,
-            palette,
-            NULL,
-            XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
-    if (doc == NULL)
-    {
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_PALETTE, "Failed to parse palette: %s\n", palette);
-        return false;
-    }
-
-    if (ctxt->valid == 0)
-    {
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_PALETTE, "Failed to validate palette: %s\n", palette);
-        return false;
-    }
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    xmlNodePtr group = root->xmlChildrenNode;
+    xmlNodePtr group = xml.currentNode();
     xmlNodePtr element, colorNode, hexNode;
     Color c;
 
@@ -266,8 +239,6 @@ Palette::parsePalette(const char* palette)
         group = group->next;
     }
 
-    xmlFreeDoc(doc);
-    xmlFreeParserCtxt(ctxt);
     ILOG_INFO(ILX_PALETTE, "Parsed palette file: %s\n", palette);
     return true;
 }
