@@ -24,7 +24,7 @@
 #include <graphics/Style.h>
 #include <lib/FileSystem.h>
 #include <core/Logger.h>
-#include <libxml/parser.h>
+#include <lib/XMLReader.h>
 #include <libgen.h>
 #include <fstream>
 
@@ -133,8 +133,6 @@ Style::parseStyle(const char* style)
             group = group->next;
         } // end while(group)
 
-        xmlFreeDoc(doc);
-        xmlFreeParserCtxt(ctxt);
         ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
 
         // create cached file

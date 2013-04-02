@@ -26,6 +26,7 @@
 #include <core/Logger.h>
 #include <lib/FileSystem.h>
 #include <lib/Notify.h>
+#include <lib/XMLReader.h>
 
 #include <string.h>
 #include <signal.h>
