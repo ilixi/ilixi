@@ -176,6 +176,38 @@ AppBase::postUniversalEvent(Widget* target, unsigned int type, void* data)
     __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
 }
 
+void
+AppBase::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask modifierMask, DFBInputDeviceLockState lockState, bool down)
+{
+    DFBWindowEvent event;
+    event.clazz = DFEC_WINDOW;
+    event.type = down ? DWET_KEYDOWN : DWET_KEYUP;
+    event.window_id = activeWindow()->windowID();
+    event.flags = DWEF_NONE;
+    event.key_symbol = symbol;
+    event.modifiers = modifierMask;
+    event.locks = lockState;
+    __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+}
+
+void
+AppBase::postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step)
+{
+    DFBWindowEvent event;
+    event.clazz = DFEC_WINDOW;
+    event.type = (DFBWindowEventType) type;
+    event.window_id = activeWindow()->windowID();
+    event.flags = DWEF_NONE;
+    event.x = x;
+    event.y = y;
+    event.cx = cx;
+    event.cy = cy;
+    event.step = step;
+    event.button = (DFBInputDeviceButtonIdentifier) button;
+    event.buttons = (DFBInputDeviceButtonMask) buttonMask;
+    __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+}
+
 DFBPoint
 AppBase::cursorPosition()
 {
@@ -642,7 +674,7 @@ AppBase::handleEvents(int32_t timeout, bool forceWait)
             {
                 if (event.window.type == DWET_MOTION)
                     lastMotion = event.window;
-                else
+                else if (lastMotion.type == DWET_NONE)
                 {
                     if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
                         activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);

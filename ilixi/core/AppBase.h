@@ -85,6 +85,32 @@ public:
 
 protected:
     /*!
+     * This will post a key input event to active window.
+     *
+     * @param symbol unicode compatible key symbol.
+     * @param modifierMask pressed modifiers, e.g. Shift.
+     * @param lockState active locks
+     * @param down true for KeyDown, false for KeyUp.
+     */
+    void
+    postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask modifierMask, DFBInputDeviceLockState lockState, bool down = true);
+
+    /*!
+     * This will post a pointer input event to active window.
+     *
+     * @param type of pointer event, e.g. PointerMotion.
+     * @param button button being pressed or released
+     * @param buttonMask specifies currently pressed buttons
+     * @param x position of window or coordinate within window
+     * @param y position of window or coordinate within window
+     * @param cx x cursor position
+     * @param cy y cursor position
+     * @param step wheel step
+     */
+    void
+    postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step);
+
+    /*!
      * User events are handled before other event types.
      */
     virtual void

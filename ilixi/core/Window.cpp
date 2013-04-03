@@ -48,7 +48,7 @@ Window::~Window()
 DFBWindowID
 Window::windowID() const
 {
-    DFBWindowID windowID;
+    DFBWindowID windowID = 0;
     _dfbWindow->GetID(_dfbWindow, &windowID);
     return windowID;
 }
