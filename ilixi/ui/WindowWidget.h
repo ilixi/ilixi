@@ -127,6 +127,12 @@ protected:
     closeWindow();
 
     /*!
+     * Returns the unique DirectFB window ID.
+     */
+    DFBWindowID
+    windowID() const;
+
+    /*!
      * Handles incoming input events if window has focus.
      * Behaviour is dependant on incoming event type. Key events are sent to focused widget.
      * Pointer events are consumed by the widget which contains the event coordinates. If two or more

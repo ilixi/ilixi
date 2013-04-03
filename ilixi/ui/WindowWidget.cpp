@@ -317,6 +317,14 @@ WindowWidget::closeWindow()
         _window->releaseDFBWindow();
 }
 
+DFBWindowID
+WindowWidget::windowID() const
+{
+    if (_window)
+        return _window->windowID();
+    return 0;
+}
+
 bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
