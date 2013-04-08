@@ -24,10 +24,10 @@
 #ifndef ILIXI_SOUNDDFB_H_
 #define ILIXI_SOUNDDFB_H_
 
-#include <config.h>
+#include <ilixiConfig.h>
 #include <directfb.h>
 
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
 extern "C"
 {
 #include <fusionsound.h>

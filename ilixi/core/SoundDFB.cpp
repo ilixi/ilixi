@@ -21,8 +21,6 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <config.h>
-
 #include <core/SoundDFB.h>
 #include <core/Logger.h>
 
@@ -46,7 +44,7 @@ SoundDFB::getMasterVolume()
 {
     ILOG_TRACE_F(ILX_SOUND);
     float vol = 0;
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     if (__sound)
         __sound->GetMasterVolume(__sound, &vol);
 #endif
@@ -57,7 +55,7 @@ void
 SoundDFB::setMasterVolume(float volume)
 {
     ILOG_TRACE_F(ILX_SOUND);
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     if (__sound)
         __sound->SetMasterVolume(__sound, volume);
 #endif
@@ -67,7 +65,7 @@ void
 SoundDFB::getMasterAmplitude(float* left, float* right)
 {
     ILOG_TRACE_F(ILX_SOUND);
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     if (__sound)
         __sound->GetMasterFeedback(__sound, left, right);
 #endif
@@ -80,7 +78,7 @@ SoundDFB::createBuffer(const FSBufferDescription* desc, IFusionSoundBuffer** buf
     if (!__sound)
         return DFB_FAILURE;
 
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     DirectResult ret = __sound->CreateBuffer(__sound, desc, buffer);
     if (ret)
     {
@@ -99,7 +97,7 @@ SoundDFB::createStream(const FSStreamDescription* desc, IFusionSoundStream** str
     if (!__sound)
         return DFB_FAILURE;
 
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     DirectResult ret = __sound->CreateStream(__sound, desc, stream);
     if (ret)
     {
@@ -118,9 +116,8 @@ SoundDFB::createMusicProvider(const char* filename, IFusionSoundMusicProvider** 
     if (!__sound)
         return DFB_FAILURE;
 
-#ifdef HAVE_FUSIONSOUND
-    DirectResult ret = __sound->CreateMusicProvider(__sound, filename,
-                                                    provider);
+#ifdef ILIXI_HAVE_FUSIONSOUND
+    DirectResult ret = __sound->CreateMusicProvider(__sound, filename, provider);
     if (ret)
     {
         ILOG_ERROR(ILX_SOUND, "CreateMusicProvider() failed!");
@@ -135,7 +132,7 @@ DFBResult
 SoundDFB::initSound(int* argc, char*** argv)
 {
     ILOG_TRACE_F(ILX_SOUND);
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     if (FusionSoundInit(argc, argv) != DR_OK)
         ILOG_THROW(ILX_SOUND, "FusionSoundInit() failed!\n");
 
@@ -149,7 +146,7 @@ void
 SoundDFB::releaseSound()
 {
     ILOG_TRACE_F(ILX_SOUND);
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     if (__sound)
     {
         __sound->Release(__sound);
