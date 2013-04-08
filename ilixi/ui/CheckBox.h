@@ -48,7 +48,7 @@ public:
      * @param text
      * @param parent widget.
      */
-    CheckBox(const std::string& text, Widget* parent = 0);
+    CheckBox(const std::string& text = "", Widget* parent = 0);
 
     /*!
      * Destructor.
