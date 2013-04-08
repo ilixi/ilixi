@@ -24,7 +24,7 @@
 #ifndef ILIXI_PLATFORMMANAGER_H_
 #define ILIXI_PLATFORMMANAGER_H_
 
-#include <config.h>
+#include <ilixiConfig.h>
 #include <directfb.h>
 #include <string>
 #include <libxml/tree.h>
@@ -32,10 +32,18 @@
 #include <types/Enums.h>
 #include <types/Point.h>
 #include <types/Size.h>
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
 #include <types/Sound.h>
 #endif
 #include <lib/Util.h>
+
+#ifdef ILIXI_HAVE_NLS
+#include <list>
+namespace ilixi
+{
+class I18NBase;
+}
+#endif
 
 namespace ilixi
 {
@@ -161,6 +169,17 @@ public:
     void
     setSoundEffectLevel(float level);
 
+#ifdef ILIXI_HAVE_NLS
+    bool
+    addI18N(I18NBase* tb);
+
+    bool
+    removeI18N(I18NBase* tb);
+
+    void
+    setLanguage(const char* lang);
+#endif
+
 private:
     //! This property stores various options for application behaviour.
     AppOptions _options;
@@ -201,11 +220,17 @@ private:
         DFBSurfaceCapabilities caps;
     };
 
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     typedef std::map<std::string, Sound*> SoundMap;
     SoundMap _soundMap;
     //! Master sound effect level
     float _soundLevel;
+#endif
+
+#ifdef ILIXI_HAVE_NLS
+    typedef std::list<I18NBase*> I18NBaseList;
+    I18NBaseList _tbList;
+    pthread_mutex_t _tbListMutex;
 #endif
 
     WindowConf _windowConf;
@@ -214,6 +239,8 @@ private:
     std::string _palette;
 
     PlatformManager();
+
+    ~PlatformManager();
 
     PlatformManager(PlatformManager const& copy);
 
@@ -274,7 +301,7 @@ private:
     void
     setTheme(xmlNodePtr node);
 
-#ifdef HAVE_FUSIONSOUND
+#ifdef ILIXI_HAVE_FUSIONSOUND
     void
     setSounds(xmlNodePtr node);
 #endif

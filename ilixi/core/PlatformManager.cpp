@@ -27,6 +27,7 @@
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
 #include <types/FontCache.h>
+#include <algorithm>
 
 extern "C"
 {
@@ -39,6 +40,21 @@ extern "C"
 
 #if ILIXI_HAVE_FUSIONSOUND
 #include <core/SoundDFB.h>
+#endif
+
+#ifdef ILIXI_HAVE_NLS
+#include <libintl.h>
+#include <types/I18NBase.h>
+
+static void
+setI18NLanguage(const char* lang)
+{
+    setenv("LANGUAGE", lang, 1);
+    {
+        extern int _nl_msg_cat_cntr;
+        ++_nl_msg_cat_cntr;
+    }
+}
 #endif
 
 namespace ilixi
@@ -237,19 +253,19 @@ void
 PlatformManager::playSoundEffect(const std::string& id)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-#if HAVE_FUSIONSOUND
-#if HAVE_FUSIONDALE
+#if ILIXI_HAVE_FUSIONSOUND
+#if ILIXI_HAVE_FUSIONDALE
     if (_options & OptExclSoundEffect)
         DaleDFB::playSoundEffect(id);
     else
     {
-#endif // HAVE_FUSIONDALE
+#endif // ILIXI_HAVE_FUSIONDALE
         SoundMap::const_iterator it = _soundMap.find(id);
         if (it != _soundMap.end())
             it->second->start();
-#if HAVE_FUSIONDALE
+#if ILIXI_HAVE_FUSIONDALE
     }
-#endif // HAVE_FUSIONDALE
+#endif // ILIXI_HAVE_FUSIONDALE
 #endif
 }
 
@@ -257,21 +273,70 @@ void
 PlatformManager::setSoundEffectLevel(float level)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-#if HAVE_FUSIONSOUND
-#if HAVE_FUSIONDALE
+#if ILIXI_HAVE_FUSIONSOUND
+#if ILIXI_HAVE_FUSIONDALE
     if (_options & OptExclSoundEffect)
         DaleDFB::setSoundEffectLevel(level);
     else if (_soundLevel != level)
     {
-#endif // HAVE_FUSIONDALE
+#endif // ILIXI_HAVE_FUSIONDALE
         _soundLevel = level;
         for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
             it->second->setVolume(_soundLevel);
-#if HAVE_FUSIONDALE
+#if ILIXI_HAVE_FUSIONDALE
     }
-#endif // HAVE_FUSIONDALE
+#endif // ILIXI_HAVE_FUSIONDALE
 #endif
 }
+
+#ifdef ILIXI_HAVE_NLS
+bool
+PlatformManager::addI18N(I18NBase* tb)
+{
+    if (!tb)
+        return false;
+
+    pthread_mutex_lock(&_tbListMutex);
+    I18NBaseList::iterator it = std::find(_tbList.begin(), _tbList.end(), tb);
+    if (tb == *it)
+    {
+        pthread_mutex_unlock(&_tbListMutex);
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, "I18NBase %p already added!\n", tb);
+        return false;
+    }
+    _tbList.push_back(tb);
+    pthread_mutex_unlock(&_tbListMutex);
+    ILOG_DEBUG(ILX_PLATFORMMANAGER, "I18NBase %p is added.\n", tb);
+    return true;
+}
+
+bool
+PlatformManager::removeI18N(I18NBase* tb)
+{
+    if (!tb)
+        return false;
+
+    pthread_mutex_lock(&_tbListMutex);
+    I18NBaseList::iterator it = std::find(_tbList.begin(), _tbList.end(), tb);
+    if (tb == *it)
+    {
+        _tbList.erase(it);
+        pthread_mutex_unlock(&_tbListMutex);
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, "I18NBase %p is removed.\n", tb);
+        return true;
+    }
+    pthread_mutex_unlock(&_tbListMutex);
+    return false;
+}
+
+void
+PlatformManager::setLanguage(const char* lang)
+{
+    setI18NLanguage(lang);
+    for (I18NBaseList::iterator it = _tbList.begin(); it != _tbList.end(); ++it)
+        ((I18NBase*) *it)->updateI18nText();
+}
+#endif
 
 PlatformManager::PlatformManager()
         : _options(OptNone),
@@ -282,6 +347,19 @@ PlatformManager::PlatformManager()
           _pixelFormat(DSPF_UNKNOWN)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+#ifdef ILIXI_HAVE_NLS
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&_tbListMutex, &attr);
+#endif
+}
+
+PlatformManager::~PlatformManager()
+{
+#ifdef ILIXI_HAVE_NLS
+    pthread_mutex_destroy(&_tbListMutex);
+#endif
 }
 
 void
@@ -470,7 +548,7 @@ PlatformManager::parseConfig()
             setWindow(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Theme") == 0)
             setTheme(group->children);
-#if HAVE_FUSIONSOUND
+#if ILIXI_HAVE_FUSIONSOUND
         else if (xmlStrcmp(group->name, (xmlChar*) "Sounds") == 0)
             setSounds(group);
 #endif
@@ -962,7 +1040,7 @@ PlatformManager::setTheme(xmlNodePtr node)
     }
 }
 
-#if HAVE_FUSIONSOUND
+#if ILIXI_HAVE_FUSIONSOUND
 void
 PlatformManager::setSounds(xmlNodePtr node)
 {
@@ -1011,8 +1089,7 @@ PlatformManager::setSounds(xmlNodePtr node)
     for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
         it->second->setVolume(_soundLevel);
 }
-#endif
-
+#endif // ILIXI_HAVE_FUSIONSOUND
 void
 PlatformManager::setCursor(xmlNodePtr node)
 {
