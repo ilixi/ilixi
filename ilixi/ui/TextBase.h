@@ -27,11 +27,18 @@
 #include <ui/Widget.h>
 #include <types/Font.h>
 #include <types/TextLayout.h>
+#ifdef ILIXI_HAVE_NLS
+#include <types/I18NBase.h>
+#endif
 
 namespace ilixi
 {
 //! Base class for widgets with text display.
+#ifdef ILIXI_HAVE_NLS
+class TextBase : public I18NBase
+#else
 class TextBase
+#endif
 {
 public:
     /*!
@@ -117,6 +124,11 @@ public:
     virtual void
     setText(const std::wstring &text);
 
+#ifdef ILIXI_HAVE_NLS
+    void
+    setI18nText(const std::string& text);
+#endif
+
     void
     setSingleLine(bool single);
 
@@ -151,6 +163,11 @@ private:
     Widget* _owner;
     //! Stores extents for speed.
     Size _extents;
+
+#ifdef ILIXI_HAVE_NLS
+    void
+    updateI18nText();
+#endif
 
     //! Returns default font for this widget.
     virtual Font*

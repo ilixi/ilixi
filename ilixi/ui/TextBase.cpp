@@ -22,6 +22,10 @@
  */
 
 #include <ui/TextBase.h>
+#ifdef ILIXI_HAVE_NLS
+#include <libintl.h>
+#include <core/PlatformManager.h>
+#endif
 #include <core/Logger.h>
 
 namespace ilixi
@@ -30,7 +34,12 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
 
 TextBase::TextBase(Widget* owner)
+#ifdef ILIXI_HAVE_NLS
+        : I18NBase(),
+          _owner(owner),
+#else
         : _owner(owner),
+#endif
           _font(NULL),
           _extents(-1, -1)
 {
@@ -40,7 +49,12 @@ TextBase::TextBase(Widget* owner)
 }
 
 TextBase::TextBase(const std::string& text, Widget* owner)
+#ifdef ILIXI_HAVE_NLS
+        : I18NBase(),
+          _owner(owner),
+#else
         : _owner(owner),
+#endif
           _font(NULL),
           _layout(text),
           _extents(-1, -1)
@@ -51,7 +65,12 @@ TextBase::TextBase(const std::string& text, Widget* owner)
 }
 
 TextBase::TextBase(const TextBase& tb)
+#ifdef ILIXI_HAVE_NLS
+        : I18NBase(),
+          _owner(tb._owner),
+#else
         : _owner(tb._owner),
+#endif
           _font(tb._font),
           _layout(tb._layout),
           _extents(tb._extents)
@@ -134,6 +153,7 @@ TextBase::setText(const std::string &text)
 {
     if (_layout.text() != text)
     {
+        ILOG_TRACE(ILX_TEXTBASE);
         _layout.setText(text);
         _extents = _layout.extents(font());
         _owner->doLayout();
@@ -147,6 +167,7 @@ TextBase::setText(const std::wstring &text)
 {
     if (_layout.wtext() != text)
     {
+        ILOG_TRACE(ILX_TEXTBASE);
         _layout.setText(text);
         _extents = _layout.extents(font());
         _owner->doLayout();
@@ -154,6 +175,16 @@ TextBase::setText(const std::wstring &text)
         _owner->update();
     }
 }
+
+#ifdef ILIXI_HAVE_NLS
+void
+TextBase::setI18nText(const std::string& text)
+{
+    _i18nID = text;
+    setText(gettext(_i18nID.c_str()));
+    PlatformManager::instance().addI18N(this);
+}
+#endif
 
 void
 TextBase::setSingleLine(bool single)
@@ -167,6 +198,14 @@ TextBase::updateTextBaseGeometry()
     _layout.setBounds(0, 0, _owner->width(), _owner->height());
     _layout.doLayout(font()); // Fixme can not connect to signal as it is.
 }
+
+#ifdef ILIXI_HAVE_NLS
+void
+TextBase::updateI18nText()
+{
+    setText(gettext(_i18nID.c_str()));
+}
+#endif
 
 Font*
 TextBase::defaultFont() const
