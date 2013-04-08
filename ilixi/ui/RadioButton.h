@@ -34,7 +34,7 @@ namespace ilixi
 class RadioButton : public Button
 {
 public:
-    RadioButton(const std::string& text, Widget* parent = 0);
+    RadioButton(const std::string& text = "", Widget* parent = 0);
 
     virtual
     ~RadioButton();
