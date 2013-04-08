@@ -62,7 +62,7 @@ public:
      * @param text
      * @param parent
      */
-    ToolButton(std::string text, Widget* parent = 0);
+    ToolButton(const std::string& text = "", Widget* parent = 0);
 
     /*!
      * Destructor

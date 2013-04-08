@@ -78,7 +78,7 @@ ToolButtonThread::run()
 //*********************************************************************
 ToolButtonThread* ToolButton::__tbThread = NULL;
 
-ToolButton::ToolButton(std::string text, Widget* parent)
+ToolButton::ToolButton(const std::string& text, Widget* parent)
         : Button(text, parent),
           _icon(NULL),
           _toolButtonStyle(IconBeforeText),
