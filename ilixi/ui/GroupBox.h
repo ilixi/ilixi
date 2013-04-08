@@ -27,11 +27,18 @@
 #include <ui/Frame.h>
 #include <ui/Label.h>
 #include <ui/Icon.h>
+#ifdef ILIXI_HAVE_NLS
+#include <types/I18NBase.h>
+#endif
 
 namespace ilixi
 {
 //! A container widget with a frame and a title.
+#ifdef ILIXI_HAVE_NLS
+class GroupBox : public Frame, public I18NBase
+#else
 class GroupBox : public Frame
+#endif
 {
 public:
     /*!
@@ -39,7 +46,7 @@ public:
      * @param title for GroupBox.
      * @param parent widget if any.
      */
-    GroupBox(std::string title = "", Widget* parent = 0);
+    GroupBox(const std::string& title = "", Widget* parent = 0);
 
     /*!
      * Destructor.
@@ -78,13 +85,24 @@ public:
      * Sets title.
      */
     void
-    setTitle(std::string title);
+    setTitle(const std::string& title);
+
+#ifdef ILIXI_HAVE_NLS
+    void
+    setI18nText(const std::string& text);
+#endif
 
     /*!
      * Sets icon shown before title.
      */
     void
     setTitleIcon(StyleHint::PackedIcon icon);
+
+    /*!
+     * Caches title size and notifies parent..
+     */
+    virtual void
+    doLayout();
 
 protected:
     //! This image stores the title icon.
@@ -113,11 +131,13 @@ protected:
     canvasHeight() const;
 
 private:
-    virtual void
-    updateLayoutGeometry();
-
     void
-    updateTitleSize();
+    setTitleGeometry();
+
+#ifdef ILIXI_HAVE_NLS
+    void
+    updateI18nText();
+#endif
 };
 
 }
