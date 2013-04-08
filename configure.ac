@@ -92,6 +92,7 @@ AC_ARG_ENABLE([fusionsound], AS_HELP_STRING([--enable-fusionsound], [enable Fusi
 AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor and application manager features @<:@default=no@:>@])], [], [enable_sawman=no])
 AC_ARG_ENABLE([reflex], [AS_HELP_STRING([--enable-reflex], [enable experimental support for Reflex @<:@default=no@:>@])], [], [enable_reflex=no])
 AC_ARG_ENABLE([wnn], [AS_HELP_STRING([--enable-wnn], [enable experimental support for Wnn @<:@default=no@:>@])], [], [enable_wnn=no])
+AC_ARG_ENABLE([nls], [AS_HELP_STRING([--enable-nls], [enable Native Language Support via message catalogs @<:@default=no@:>@])], [], [enable_nls=no])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
 ######################################################################
@@ -199,6 +200,20 @@ AS_IF([test "x$enable_wnn" = "xyes"],
     ]
 )
 
+AS_IF([test "x$enable_nls" = "xyes"], 
+    [
+        AC_CHECK_HEADER([libintl.h], 
+        [
+        	AM_GNU_GETTEXT([external])
+            AC_DEFINE([HAVE_NLS], [1], [Enable NLS support])
+        ],
+        [
+            enable_nls=no
+            AC_MSG_WARN([*** libintl not found -- Building without NLS support.])
+        ])
+    ]
+)
+
 PKG_CHECK_MODULES(DEPS, $REQ_PACKAGES)
 AC_SUBST(REQ_PACKAGES)
 
@@ -241,6 +256,7 @@ AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_fusiondale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AM_CONDITIONAL([WITH_SAWMAN], [test x$enable_sawman = xyes])
 AM_CONDITIONAL([WITH_REFLEX], [test x$enable_reflex = xyes])
+AM_CONDITIONAL([WITH_NLS], [test x$enable_nls = xyes])
 AM_CONDITIONAL([WITH_WNN], [test x$enable_wnn = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
@@ -326,6 +342,7 @@ AC_MSG_RESULT([
    Sawman support           : $enable_sawman
    Reflex support           : $enable_reflex
    Wnn support              : $enable_wnn
+   NLS support              : $enable_nls
    Examples                 : $with_examples
 
 Type \`make' to build ilixi. 
