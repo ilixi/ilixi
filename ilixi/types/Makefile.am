@@ -45,6 +45,11 @@ nobase_ilixi_include_HEADERS	+=	Music.h \
 									Sound.h
 endif
 
+if WITH_NLS
+libilixi_types_la_SOURCES 		+= 	I18NBase.cpp
+nobase_ilixi_include_HEADERS	+=	I18NBase.h
+endif
+
 if WITH_REFLEX
 TYPES_REFLEX				=	Affine2D_rflx.cpp \
 	          					Brush_rflx.cpp \
