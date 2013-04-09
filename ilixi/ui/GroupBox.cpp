@@ -118,7 +118,7 @@ GroupBox::doLayout()
     else
         _titleSize.setWidth(textSize.width() + stylist()->defaultParameter(StyleHint::TabOffsetLR));
     _titleSize.setHeight(textSize.height() + stylist()->defaultParameter(StyleHint::TabOffsetTop));
-    _title->setSize(_title->preferredSize());
+    _title->setSize(textSize);
 
     if (parent())
         parent()->doLayout();
