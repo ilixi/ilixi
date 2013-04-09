@@ -76,7 +76,7 @@ TextLayout::bounds() const
 Size
 TextLayout::extents(Font* font) const
 {
-    return font->extents(text(), _text.length());
+    return font->extents(text(), -1);
 }
 
 int
