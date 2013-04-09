@@ -51,6 +51,9 @@ public:
     virtual void
     toggleChecked();
 
+    virtual void
+    setChecked(bool checked = true);
+
 private:
     RadioGroup* _group;
 

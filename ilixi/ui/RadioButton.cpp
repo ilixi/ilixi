@@ -77,6 +77,21 @@ RadioButton::setGroup(RadioGroup* group)
 }
 
 void
+RadioButton::setChecked(bool checked)
+{
+    if (checked)
+    {
+        _buttonFlag = (ButtonFlags) (_buttonFlag | Checked);
+        sigCheckChanged(true);
+    } else
+    {
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checked);
+        sigCheckChanged(false);
+    }
+    update();
+}
+
+void
 RadioButton::toggleChecked()
 {
     if (!checked())
@@ -108,8 +123,7 @@ void
 RadioButton::updateTextBaseGeometry()
 {
     ILOG_TRACE_W(ILX_RADIOBUTTON);
-    int x = stylist()->defaultParameter(StyleHint::ButtonOffset)
-            + stylist()->defaultParameter(StyleHint::RadioWidth);
+    int x = stylist()->defaultParameter(StyleHint::ButtonOffset) + stylist()->defaultParameter(StyleHint::RadioWidth);
 
     int th = textLayoutHeightForWidth(width() - x);
     int y = (height() - th) / 2;

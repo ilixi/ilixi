@@ -91,7 +91,7 @@ public:
     /*!
      * Sets button as checked state only if button is checkable.
      */
-    void
+    virtual void
     setChecked(bool checked = true);
 
     /*!
