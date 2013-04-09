@@ -624,50 +624,62 @@ Widget::paint(const PaintEvent& event)
 void
 Widget::repaint()
 {
-    if (_parent && !(_state & InvisibleState))
-        _rootWindow->repaint(PaintEvent(_frameGeometry, z()));
-    else
-        repaint(PaintEvent(_frameGeometry, z()));
+    if (visible())
+    {
+        if (_parent)
+            _rootWindow->repaint(PaintEvent(_frameGeometry, z()));
+        else
+            repaint(PaintEvent(_frameGeometry, z()));
+    }
 }
 
 void
 Widget::repaint(const PaintEvent& event)
 {
-    if (_parent && !(_state & InvisibleState))
+    if (visible())
     {
-        if (_surface->flags() & Surface::HasOwnSurface)
+        if (_parent)
         {
-            _surface->clear(mapToSurface(event.rect));
-            _parent->repaint(PaintEvent(this, event));
+            if (_surface->flags() & Surface::HasOwnSurface)
+            {
+                _surface->clear(mapToSurface(event.rect));
+                _parent->repaint(PaintEvent(this, event));
+            } else
+                _parent->repaint(event);
         } else
-            _parent->repaint(event);
-    } else
-        repaint(event);
+            repaint(event);
+    }
 }
 
 void
 Widget::update()
 {
-    if (_rootWindow && !(_state & InvisibleState)) // FIXME invis check
-        _rootWindow->update(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
-    else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
-        paint(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
+    if (visible())
+    {
+        if (_rootWindow) // FIXME invis check
+            _rootWindow->update(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
+        else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
+            paint(PaintEvent(_frameGeometry.united(_dirtyFrameGeometry), z()));
+    }
     _dirtyFrameGeometry = _frameGeometry;
 }
 
 void
 Widget::update(const PaintEvent& event)
 {
-    if (_parent && !(_state & InvisibleState))
+    if (visible())
     {
-        if (_surface->flags() & Surface::HasOwnSurface)
+        if (_parent)
         {
-            _surface->clear(mapToSurface(event.rect));
-            _parent->update(PaintEvent(this, event));
-        } else
-            _parent->update(event);
-    } else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
-        paint(event);
+            if (_surface->flags() & Surface::HasOwnSurface)
+            {
+                _surface->clear(mapToSurface(event.rect));
+                _parent->update(PaintEvent(this, event));
+            } else
+                _parent->update(event);
+        } else if ((_surface->flags() & Surface::HasOwnSurface) || (_surface->flags() & Surface::RootSurface))
+            paint(event);
+    }
 }
 
 void
@@ -1099,7 +1111,8 @@ Widget::setRootWindow(WindowWidget* root)
         _rootWindow = root;
 
         setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
-    } else if (_surface->flags() & Surface::SharedSurface || _surface->flags() & Surface::SubSurface) {
+    } else if (_surface->flags() & Surface::SharedSurface || _surface->flags() & Surface::SubSurface)
+    {
         _surface->setSurfaceFlag(Surface::InitialiseSurface);
         _surface->release();
     }
