@@ -43,7 +43,7 @@ CORE_REFLEX					= 	AppBase_rflx.cpp \
 	     						SurfaceEventListener_rflx.cpp \
 	     						Window_rflx.cpp
 	     						
-libilixi_core_la_SOURCES 	+= $(CORE_REFLEX)
+nodist_libilixi_core_la_SOURCES = $(CORE_REFLEX)
 
 include $(top_srcdir)/ilixi/gccxml.make
 

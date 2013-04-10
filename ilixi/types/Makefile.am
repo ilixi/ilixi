@@ -65,7 +65,7 @@ TYPES_REFLEX				=	Affine2D_rflx.cpp \
 	          					Rectangle_rflx.cpp \
 	          					Size_rflx.cpp
 
-libilixi_types_la_SOURCES 	+= $(TYPES_REFLEX)
+nodist_libilixi_types_la_SOURCES = $(TYPES_REFLEX)
 
 include $(top_srcdir)/ilixi/gccxml.make
 

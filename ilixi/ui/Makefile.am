@@ -109,7 +109,7 @@ UI_REFLEX				= 	Application_rflx.cpp \
 							Widget_rflx.cpp \
 							WindowWidget_rflx.cpp
 							
-libilixi_ui_la_SOURCES 	+= $(UI_REFLEX)
+nodist_libilixi_ui_la_SOURCES = $(UI_REFLEX)
 
 include $(top_srcdir)/ilixi/gccxml.make
 
