@@ -179,33 +179,106 @@ AppBase::postUniversalEvent(Widget* target, unsigned int type, void* data)
 void
 AppBase::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask modifierMask, DFBInputDeviceLockState lockState, bool down)
 {
-    DFBWindowEvent event;
-    event.clazz = DFEC_WINDOW;
-    event.type = down ? DWET_KEYDOWN : DWET_KEYUP;
-    event.window_id = activeWindow()->windowID();
-    event.flags = DWEF_NONE;
-    event.key_symbol = symbol;
-    event.modifiers = modifierMask;
-    event.locks = lockState;
-    __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        DFBInputEvent event;
+        event.clazz = DFEC_INPUT;
+        event.type = down ? DIET_KEYPRESS : DIET_KEYRELEASE;
+        event.flags = (DFBInputEventFlags) (DIEF_KEYSYMBOL | DIEF_MODIFIERS | DIEF_LOCKS);
+        event.key_symbol = symbol;
+        event.modifiers = modifierMask;
+        event.locks = lockState;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    } else
+    {
+        DFBWindowEvent event;
+        event.clazz = DFEC_WINDOW;
+        event.window_id = activeWindow()->windowID();
+        event.type = down ? DWET_KEYDOWN : DWET_KEYUP;
+        event.flags = DWEF_NONE;
+        event.key_symbol = symbol;
+        event.modifiers = modifierMask;
+        event.locks = lockState;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    }
 }
 
 void
 AppBase::postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step)
 {
-    DFBWindowEvent event;
-    event.clazz = DFEC_WINDOW;
-    event.type = (DFBWindowEventType) type;
-    event.window_id = activeWindow()->windowID();
-    event.flags = DWEF_NONE;
-    event.x = x;
-    event.y = y;
-    event.cx = cx;
-    event.cy = cy;
-    event.step = step;
-    event.button = (DFBInputDeviceButtonIdentifier) button;
-    event.buttons = (DFBInputDeviceButtonMask) buttonMask;
-    __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        DFBInputEvent event_1;
+        event_1.clazz = DFEC_INPUT;
+        event_1.type = DIET_AXISMOTION;
+        event_1.flags = (DFBInputEventFlags) (DIEF_AXISABS | DIEF_FOLLOW);
+        event_1.axis = DIAI_X;
+        event_1.axisabs = x;
+        event_1.max = __layerSize.w;
+        event_1.min = 0;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_1) );
+
+        DFBInputEvent event_2;
+        event_2.clazz = DFEC_INPUT;
+        event_2.type = DIET_AXISMOTION;
+        event_2.flags = DIEF_AXISABS;
+        event_2.axis = DIAI_Y;
+        event_2.axisabs = y;
+        event_2.max = __layerSize.h;
+        event_2.min = 0;
+        event_2.button = (DFBInputDeviceButtonIdentifier) button;
+        event_2.buttons = (DFBInputDeviceButtonMask) buttonMask;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_2) );
+
+        if (type == PointerButtonDown)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_BUTTONPRESS;
+            event_3.flags = DIEF_NONE;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+
+        } else if (type == PointerButtonUp)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_BUTTONRELEASE;
+            event_3.flags = DIEF_NONE;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+        } else if (type == PointerWheel)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_AXISMOTION;
+            event_3.flags = DIEF_AXISABS;
+            event_3.axis = DIAI_Z;
+            event_3.axisabs = step;
+            event_3.max = __layerSize.h;
+            event_3.min = 0;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+        }
+    } else
+    {
+        DFBWindowEvent event;
+        event.clazz = DFEC_WINDOW;
+        event.type = (DFBWindowEventType) type;
+        event.window_id = activeWindow()->windowID();
+        event.flags = DWEF_NONE;
+        event.x = x;
+        event.y = y;
+        event.cx = cx;
+        event.cy = cy;
+        event.step = step;
+        event.button = (DFBInputDeviceButtonIdentifier) button;
+        event.buttons = (DFBInputDeviceButtonMask) buttonMask;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    }
 }
 
 DFBPoint
@@ -467,7 +540,7 @@ AppBase::consumeSurfaceEvent(const DFBSurfaceEvent& event)
     pthread_mutex_unlock(&__selMutex);
 }
 #endif // ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-WindowWidget*
+WindowWidget *
 AppBase::activeWindow()
 {
     if (__instance)
@@ -850,6 +923,11 @@ AppBase::handleAxisMotion(const DFBInputEvent& event)
             __cursorNew.x = (event.axisabs - event.min) * __layerSize.w / (event.max - event.min);
         else if (event.axis == DIAI_Y)
             __cursorNew.y = (event.axisabs - event.min) * __layerSize.h / (event.max - event.min);
+        else
+        {
+            we.window.type = DWET_WHEEL;
+            we.window.step = -event.axisrel;
+        }
     }
 
     if (__cursorNew.x < 0)
