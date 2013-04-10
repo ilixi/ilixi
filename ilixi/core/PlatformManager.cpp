@@ -430,6 +430,10 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
 
     } else
         ILOG_WARNING(ILX_PLATFORMMANAGER, "DirectFB interfaces are already initialised.\n");
+
+#ifdef ILIXI_HAVE_NLS
+    ILOG_INFO(ILX_PLATFORMMANAGER, "Locale is: %s\n", setlocale(LC_ALL,""));
+#endif
 }
 
 void
