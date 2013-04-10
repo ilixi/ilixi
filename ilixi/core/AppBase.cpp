@@ -699,9 +699,12 @@ AppBase::handleEvents(int32_t timeout, bool forceWait)
     if (wait)
     {
         // discard window update event in buffer.
-        __buffer->PeekEvent(__buffer, &event);
-        if (event.window.type == DWET_UPDATE)
-            __buffer->GetEvent(__buffer, &event);
+        DFBResult ret = __buffer->PeekEvent(__buffer, &event);
+        if (ret == DFB_OK)
+        {
+            if ((event.clazz == DFEC_WINDOW) && (event.window.type == DWET_UPDATE))
+                __buffer->GetEvent(__buffer, &event);
+        }
 
         ILOG_DEBUG(ILX_APPBASE_UPDATES, " -> wait for event with timeout: %d.%d seconds\n", timeout / 1000, timeout % 1000);
         __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
