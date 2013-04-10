@@ -358,7 +358,7 @@ private:
     //! This is painter's current font.
     Font _font;
     //! Set using painter flags
-    unsigned char _state;
+    PainterFlags _state;
 
     Affine2D* _affine;
 

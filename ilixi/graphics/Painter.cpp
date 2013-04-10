@@ -83,7 +83,6 @@ Painter::end()
     if (_state & Active)
     {
         ILOG_TRACE(ILX_PAINTER);
-        _state = None;
         if (_state & Clipped)
             _myWidget->surface()->resetClip();
         if (_state & Transformed)
@@ -94,6 +93,7 @@ Painter::end()
             delete tmp;
             delete _affine;
         }
+        _state = None;
         dfbSurface->ReleaseSource(dfbSurface);
         _myWidget->surface()->unlock();
     }
@@ -639,7 +639,7 @@ Painter::setClip(const Rectangle& rect)
     if (_state & Active)
     {
         _myWidget->surface()->clip(rect);
-        _state |= Clipped;
+        _state = (PainterFlags) (_state | Clipped);
     }
 }
 
@@ -649,7 +649,7 @@ Painter::resetClip()
     if (_state & Clipped)
     {
         _myWidget->surface()->resetClip();
-        _state &= ~Clipped;
+        _state = (PainterFlags) (_state & ~Clipped);
     }
 }
 
@@ -673,7 +673,7 @@ void
 Painter::setFont(const Font& font)
 {
     _font = font;
-    _state |= FontModified;
+    _state = (PainterFlags) (_state | FontModified);
     ILOG_DEBUG(ILX_PAINTER, "setFont() %p\n", this);
 }
 
@@ -705,7 +705,7 @@ Painter::setAffine2D(const Affine2D& affine2D)
         int32_t* tmp = affine2D.m();
         dfbSurface->SetMatrix(dfbSurface, tmp);
         delete tmp;
-        _state |= Transformed;
+        _state = (PainterFlags) (_state | Transformed);
         ILOG_DEBUG(ILX_PAINTER, "setAffine2D() %p\n", this);
     }
 }
@@ -722,7 +722,7 @@ Painter::applyBrush()
     if (!(_state & BrushActive))
     {
         _brush.applyBrush(dfbSurface);
-        _state |= BrushActive;
+        _state = (PainterFlags) (_state | BrushActive);
     }
 }
 
@@ -743,7 +743,7 @@ Painter::applyPen()
     if (_state & BrushActive)
     {
         _pen.applyPen(dfbSurface);
-        _state &= ~BrushActive;
+        _state = (PainterFlags) (_state & ~BrushActive);
     }
 }
 
