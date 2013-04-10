@@ -263,7 +263,7 @@ Image::loadImage()
 
     ret = PlatformManager::instance().getDFB()->CreateSurface(PlatformManager::instance().getDFB(), &desc, &_dfbSurface);
 
-    if (ret)
+    if (ret != DFB_OK)
     {
         invalidateSurface();
         ILOG_ERROR( ILX_IMAGE, "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
@@ -272,7 +272,7 @@ Image::loadImage()
     } else
     {
         ret = provider->RenderTo(provider, _dfbSurface, NULL);
-        if (ret)
+        if (ret != DFB_OK)
         {
             invalidateSurface();
             ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface! %s\n", DirectFBErrorString(ret));
