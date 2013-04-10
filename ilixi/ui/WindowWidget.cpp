@@ -361,6 +361,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return true;
 
     case DWET_BUTTONUP:
+        _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
         return target->consumePointerEvent(PointerEvent(PointerButtonUp, event));
 
     case DWET_BUTTONDOWN:
