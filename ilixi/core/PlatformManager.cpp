@@ -195,6 +195,18 @@ PlatformManager::getWindowSurfaceCaps() const
 }
 
 const std::string&
+PlatformManager::getFontPack() const
+{
+    return _fontPack;
+}
+
+const std::string&
+PlatformManager::getIconPack() const
+{
+    return _iconPack;
+}
+
+const std::string&
 PlatformManager::getPalette() const
 {
     return _palette;
@@ -332,9 +344,25 @@ PlatformManager::removeI18N(I18NBase* tb)
 void
 PlatformManager::setLanguage(const char* lang)
 {
+    _options = (AppOptions) (_options | OptNoUpdates);
+    std::string langFont = _fontPack;
+
+    unsigned uscr = langFont.find("_");
+    if (uscr != std::string::npos)
+        langFont.replace(uscr + 1, 5, PrintF("%s", lang));
+
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " LANGFONT: %s\n", langFont.c_str());
+
+    if (langFont != _fontPack && FileSystem::fileExists(langFont) && Application::setFontPack(langFont.c_str()))
+    {
+        _fontPack = langFont;
+        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", langFont.c_str());
+    }
+
     setI18NLanguage(lang);
     for (I18NBaseList::iterator it = _tbList.begin(); it != _tbList.end(); ++it)
         ((I18NBase*) *it)->updateI18nText();
+    _options = (AppOptions) (_options & ~OptNoUpdates);
 }
 #endif
 
@@ -1037,6 +1065,26 @@ PlatformManager::setTheme(xmlNodePtr node)
             } else
                 _palette = file;
             ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Palette: %s\n", _palette.c_str());
+        } else if (xmlStrcmp(node->name, (xmlChar*) "FontPack") == 0)
+        {
+            size_t found = file.find("@THEMEDIR:");
+            if (found != std::string::npos)
+            {
+                _fontPack = ILIXI_DATADIR"themes/";
+                _fontPack.append(file.substr(found + 10, std::string::npos));
+            } else
+                _fontPack = file;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> FontPack: %s\n", _fontPack.c_str());
+        } else if (xmlStrcmp(node->name, (xmlChar*) "IconPack") == 0)
+        {
+            size_t found = file.find("@THEMEDIR:");
+            if (found != std::string::npos)
+            {
+                _iconPack = ILIXI_DATADIR"themes/";
+                _iconPack.append(file.substr(found + 10, std::string::npos));
+            } else
+                _iconPack = file;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> IconPack: %s\n", _iconPack.c_str());
         }
 
         xmlFree(pcDATA);

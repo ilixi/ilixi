@@ -120,6 +120,18 @@ public:
     getWindowSurfaceCaps() const;
 
     /*!
+     * Returns path to default font pack definition file.
+     */
+    const std::string&
+    getFontPack() const;
+
+    /*!
+     * Returns path to default icon pack definition file.
+     */
+    const std::string&
+    getIconPack() const;
+
+    /*!
      * Returns path to default palette definition file.
      */
     const std::string&
@@ -235,6 +247,8 @@ private:
 
     WindowConf _windowConf;
     std::string _background;
+    std::string _fontPack;
+    std::string _iconPack;
     std::string _style;
     std::string _palette;
 

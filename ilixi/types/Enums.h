@@ -294,6 +294,7 @@ enum AppOptions
     OptDale = 0x00000010,               //!< Enable FusionDale interfaces for Application.
     OptSound = 0x00000020,              //!< Enable FusionSound interfaces for Application.
     OptExclSoundEffect = 0x00000040,    //!< Enable playback of sound effects via compositor.
+    OptNoUpdates = 0x00000080,          //!< Disables window updates for Application.
     OptTripleAccelerated = 0x00000200
 };
 

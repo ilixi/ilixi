@@ -657,7 +657,7 @@ void
 AppBase::updateWindows()
 {
     ILOG_TRACE_F(ILX_APPBASE_UPDATES);
-    if (!_syncWithSurfaceEvents || _update)
+    if ((!_syncWithSurfaceEvents || _update) && !(PlatformManager::instance().appOptions() & OptNoUpdates))
     {
         pthread_mutex_lock(&__windowMutex);
 
