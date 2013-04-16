@@ -1,21 +1,4 @@
-<!ELEMENT style (fonts, icons, pack)>
-
-<!ELEMENT fonts (buttonFont, defaultFont, inputFont, titleFont) >
-	<!ELEMENT buttonFont (name, size, fontStyle*)>
-	<!ELEMENT defaultFont (name, size, fontStyle*)>
-	<!ELEMENT inputFont (name, size, fontStyle*)>
-	<!ELEMENT titleFont (name, size, fontStyle*)>
-		<!ELEMENT name (#PCDATA)>
-		<!ELEMENT size (#PCDATA)>
-		<!ELEMENT fontStyle (#PCDATA)>
-
-<!ELEMENT icons (icon*)>
-<!ATTLIST icons resource CDATA #REQUIRED>
-<!ATTLIST icons defaultSize CDATA "48">
-	<!ELEMENT icon EMPTY>
-	<!ATTLIST icon name CDATA #REQUIRED row CDATA #REQUIRED col CDATA #REQUIRED>
-
-<!ELEMENT pack (PushButton, PushButtonOK, PushButtonCANCEL, ToolButton, CheckBox, CheckBoxChecked, 
+<!ELEMENT style (PushButton, PushButtonOK, PushButtonCANCEL, ToolButton, CheckBox, CheckBoxChecked, 
 				CheckBoxTriChecked, RadioButtonOn, RadioButtonOff, ProgressBar, HSlider, VSlider, 
 				SliderIndicator, Frame, Box, LineInput, HScrollBar, VScrollBar)>
 
