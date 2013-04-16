@@ -243,6 +243,7 @@ private:
     typedef std::list<I18NBase*> I18NBaseList;
     I18NBaseList _tbList;
     pthread_mutex_t _tbListMutex;
+    std::string _fontPackDefault;
 #endif
 
     WindowConf _windowConf;

@@ -353,10 +353,17 @@ PlatformManager::setLanguage(const char* lang)
 
     ILOG_ERROR(ILX_PLATFORMMANAGER, " LANGFONT: %s\n", langFont.c_str());
 
-    if (langFont != _fontPack && FileSystem::fileExists(langFont) && Application::setFontPack(langFont.c_str()))
+    if (langFont != _fontPack && FileSystem::fileExists(langFont))
     {
-        _fontPack = langFont;
-        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", langFont.c_str());
+        if (Application::setFontPack(langFont.c_str()))
+            _fontPack = langFont;
+        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
+    } else
+    {
+        ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", langFont.c_str());
+        if (Application::setFontPack(_fontPackDefault.c_str()))
+            _fontPack = _fontPackDefault;
+        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
     }
 
     setI18NLanguage(lang);
@@ -1074,6 +1081,7 @@ PlatformManager::setTheme(xmlNodePtr node)
                 _fontPack.append(file.substr(found + 10, std::string::npos));
             } else
                 _fontPack = file;
+            _fontPackDefault = _fontPack;
             ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> FontPack: %s\n", _fontPack.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "IconPack") == 0)
         {
