@@ -1,0 +1,5 @@
+<!ELEMENT IconPack (Icon*)>
+<!ATTLIST IconPack resource CDATA #REQUIRED>
+<!ATTLIST IconPack defaultSize CDATA "48">
+	<!ELEMENT Icon EMPTY>
+	<!ATTLIST Icon name CDATA #REQUIRED row CDATA #REQUIRED col CDATA #REQUIRED>
