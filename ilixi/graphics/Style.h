@@ -25,7 +25,6 @@
 #define ILIXI_STYLE_H_
 
 #include <types/Image.h>
-#include <types/Font.h>
 #include <types/Rectangle.h>
 #include <libxml/tree.h>
 #include <map>
@@ -49,12 +48,6 @@ public:
     ~Style();
 
     /*!
-     * If name is found returns icon as a sub-image, else returns NOIMAGE image.
-     */
-    Image*
-    getIcon(std::string name);
-
-    /*!
      * Initialise style from an XML file.
      *
      * Returns false on error.
@@ -62,33 +55,6 @@ public:
     bool
     parseStyle(const char* filename);
 
-    //--------------------------------------------------------------
-    // Fonts
-    //--------------------------------------------------------------
-    //! Font for rendering button text.
-    Font* _buttonFont;
-    //! Default font to render text.
-    Font* _defaultFont;
-    //! Font for rendering input text.
-    Font* _inputFont;
-    //! Font for rendering title text.
-    Font* _titleFont;
-
-    //--------------------------------------------------------------
-    // Icons
-    //--------------------------------------------------------------
-    //! This image stores the icon pack.
-    Image* _iconPack;
-    //! Default size for icons in the icon pack, e.g. Size(48, 48).
-    int _defaultIconSize;
-
-    typedef std::map<std::string, Point> IconMap;
-    //! This is for mapping icons to sub_images.
-    IconMap _iconMap;
-
-    //--------------------------------------------------------------
-    // Pack
-    //--------------------------------------------------------------
     //! This image stores the widget pack.
     Image* _pack;
 
@@ -154,12 +120,6 @@ public:
 #endif
 
 protected:
-    void
-    parseFonts(xmlNodePtr node);
-
-    void
-    parseIcons(xmlNodePtr node);
-
     void
     parseTheme(xmlNodePtr node);
 

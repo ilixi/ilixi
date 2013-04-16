@@ -34,13 +34,7 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_STYLE, "ilixi/graphics/Style", "Style Parser");
 
 Style::Style()
-        : _buttonFont(NULL),
-          _defaultFont(NULL),
-          _inputFont(NULL),
-          _titleFont(NULL),
-          _iconPack(NULL),
-          _defaultIconSize(48),
-          _pack(NULL)
+        : _pack(NULL)
 {
 }
 
@@ -49,31 +43,9 @@ Style::~Style()
     release();
 }
 
-Image*
-Style::getIcon(std::string name)
-{
-    ILOG_TRACE(ILX_STYLE);
-    IconMap::iterator it = _iconMap.find(name);
-    if (it != _iconMap.end())
-    {
-        ILOG_DEBUG( ILX_STYLE, " -> %s @ (%d, %d, %d, %d)\n", name.c_str(), it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize);
-        return new Image(_iconPack, Rectangle(it->second.x(), it->second.y(), _defaultIconSize, _defaultIconSize));
-    }
-    ILOG_WARNING(ILX_STYLE, " -> Cannot find icon: %s\n", name.c_str());
-    return NULL;
-}
-
 void
 Style::release()
 {
-    // fonts
-    delete _buttonFont;
-    delete _defaultFont;
-    delete _inputFont;
-    delete _titleFont;
-
-    // images
-    delete _iconPack;
     delete _pack;
 }
 
@@ -102,36 +74,14 @@ Style::parseStyle(const char* style)
 
         xmlNodePtr group = xml.currentNode();
 
-        while (group != NULL)
-        {
-            if (xmlStrcmp(group->name, (xmlChar*) "fonts") == 0)
-            {
-                ILOG_DEBUG(ILX_STYLE, " -> parsing fonts...\n");
-                parseFonts(group->children);
-            } else if (xmlStrcmp(group->name, (xmlChar*) "icons") == 0)
-            {
-                ILOG_DEBUG(ILX_STYLE, " -> parsing icons...\n");
-                xmlChar* imgFile = xmlGetProp(group, (xmlChar*) "resource");
-                xmlChar* imgDefSize = xmlGetProp(group, (xmlChar*) "defaultSize");
-                _iconPack = new Image(std::string(ILIXI_DATADIR"" + std::string((char*) imgFile)));
-                _defaultIconSize = atoi((char*) imgDefSize);
-                parseIcons(group->children);
-                xmlFree(imgDefSize);
-                xmlFree(imgFile);
-            } else if (xmlStrcmp(group->name, (xmlChar*) "pack") == 0)
-            {
-                ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
-                char* path = strdup(style);
-                path = dirname(path);
-                std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
-                ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
-                _pack = new Image(imgPack);
-                parseTheme(group->children);
-                free(path);
-            }
-
-            group = group->next;
-        } // end while(group)
+        ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
+        char* path = strdup(style);
+        path = dirname(path);
+        std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
+        ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
+        _pack = new Image(imgPack);
+        parseTheme(group);
+        free(path);
 
         ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
 
@@ -143,78 +93,6 @@ Style::parseStyle(const char* style)
     }
 
     return true;
-}
-
-void
-Style::parseFonts(xmlNodePtr node)
-{
-    while (node != NULL)
-    {
-        ILOG_DEBUG(ILX_STYLE, " -> font: %s...\n", node->name);
-        xmlChar* fileC = xmlNodeGetContent(node->children);
-        xmlChar* sizeC = xmlNodeGetContent(node->children->next);
-        xmlChar* styleC = xmlNodeGetContent(node->children->next->next);
-
-        Font::Style fontStyle = Font::Plain;
-        if (styleC)
-        {
-            if (xmlStrcmp(styleC, (xmlChar *) "italic") == 0)
-                fontStyle = Font::Italic;
-            else if (xmlStrcmp(styleC, (xmlChar *) "bold") == 0)
-                fontStyle = Font::Bold;
-        }
-
-        if (xmlStrcmp(node->name, (xmlChar*) "defaultFont") == 0)
-        {
-            _defaultFont = new Font((char*) fileC, atoi((char*) sizeC));
-            _defaultFont->setStyle(fontStyle);
-        } else if (xmlStrcmp(node->name, (xmlChar*) "buttonFont") == 0)
-        {
-            _buttonFont = new Font((char*) fileC, atoi((char*) sizeC));
-            _buttonFont->setStyle(fontStyle);
-        }
-
-        else if (xmlStrcmp(node->name, (xmlChar*) "inputFont") == 0)
-        {
-            _inputFont = new Font((char*) fileC, atoi((char*) sizeC));
-            _inputFont->setStyle(fontStyle);
-        }
-
-        else if (xmlStrcmp(node->name, (xmlChar*) "titleFont") == 0)
-        {
-            _titleFont = new Font((char*) fileC, atoi((char*) sizeC));
-            _titleFont->setStyle(fontStyle);
-        }
-
-        xmlFree(fileC);
-        xmlFree(sizeC);
-        node = node->next;
-    }
-    ILOG_DEBUG(ILX_STYLE, "Parsed fonts.\n");
-}
-
-void
-Style::parseIcons(xmlNodePtr node)
-{
-    _iconMap.clear();
-    while (node != NULL)
-    {
-        xmlChar* iconName = xmlGetProp(node, (xmlChar*) "name");
-        xmlChar* iconRow = xmlGetProp(node, (xmlChar*) "row");
-        xmlChar* iconCol = xmlGetProp(node, (xmlChar*) "col");
-        int x = (atoi((char*) iconCol) - 1) * _defaultIconSize;
-        int y = (atoi((char*) iconRow) - 1) * _defaultIconSize;
-        std::pair<IconMap::iterator, bool> res = _iconMap.insert(std::make_pair((char*) iconName, Point(x, y)));
-        if (!res.second)
-            ILOG_WARNING(ILX_STYLE, "Icon %s already exists!\n", iconName);
-        else
-            ILOG_DEBUG(ILX_STYLE, " -> %s - %d, %d\n", iconName, res.first->second.x(), res.first->second.y());
-
-        xmlFree(iconCol);
-        xmlFree(iconRow);
-        xmlFree(iconName);
-        node = node->next;
-    }
 }
 
 void
@@ -649,35 +527,8 @@ std::istream&
 operator>>(std::istream& is, Style& obj)
 {
     obj.release();
-    std::string iconName;
-    Point p;
-    obj._buttonFont = new Font();
-    obj._defaultFont = new Font();
-    obj._inputFont = new Font();
-    obj._titleFont = new Font();
-    obj._iconPack = new Image();
+
     obj._pack = new Image();
-    int mapSize = 0;
-    is >> *obj._buttonFont;
-    is.ignore(1);
-    is >> *obj._defaultFont;
-    is.ignore(1);
-    is >> *obj._inputFont;
-    is.ignore(1);
-    is >> *obj._titleFont;
-    is.ignore(1);
-    is >> obj._defaultIconSize;
-    is.ignore(1);
-    is >> *obj._iconPack;
-    is >> mapSize;
-    for (int i = 0; i < mapSize; ++i)
-    {
-        is >> iconName;
-        is.ignore(1);
-        is >> p;
-        obj._iconMap.insert(std::make_pair(iconName, p));
-    }
-    is.ignore(1);
     is >> *obj._pack;
     is >> obj.pb >> obj.pbOK >> obj.pbCAN;
     is >> obj.cb >> obj.cbC >> obj.cbT >> obj.rbOn >> obj.rbOff >> obj.slI;
@@ -692,15 +543,6 @@ operator>>(std::istream& is, Style& obj)
 std::ostream&
 operator<<(std::ostream& os, const Style& obj)
 {
-    os << *obj._buttonFont << std::endl;
-    os << *obj._defaultFont << std::endl;
-    os << *obj._inputFont << std::endl;
-    os << *obj._titleFont << std::endl;
-    os << obj._defaultIconSize << std::endl;
-    os << *obj._iconPack << std::endl;
-    os << obj._iconMap.size() << std::endl;
-    for (Style::IconMap::const_iterator it = obj._iconMap.begin(); it != obj._iconMap.end(); ++it)
-        os << it->first << "\t" << it->second << std::endl;
     os << *obj._pack << std::endl;
     os << obj.pb << obj.pbOK << obj.pbCAN;
     os << obj.cb << obj.cbC << obj.cbT << obj.rbOn << obj.rbOff << obj.slI;
