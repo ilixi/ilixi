@@ -54,7 +54,7 @@ PKG_PROG_PKG_CONFIG
 # Options
 ######################################################################
 LOGGER_LEVEL="none"
-AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=no@:>@]), [LOGGER_LEVEL="up to error"])
+AC_ARG_ENABLE([log], AS_HELP_STRING([--enable-log], [enables logger and submits up to error level messages @<:@default=yes@:>@]), [LOGGER_LEVEL="up to error"])
 if test "$enable_log" = "yes"; then
 	AC_DEFINE([LOGGER_ENABLED], [], [Enable logger])
 fi
@@ -204,6 +204,7 @@ AS_IF([test "x$enable_nls" = "xyes"],
     [
         AC_CHECK_HEADER([libintl.h], 
         [
+        	AM_GNU_GETTEXT_VERSION(0.17)
         	AM_GNU_GETTEXT([external])
             AC_DEFINE([HAVE_NLS], [1], [Enable NLS support])
         ],
