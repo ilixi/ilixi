@@ -22,8 +22,6 @@
  */
 
 #include <graphics/Stylist.h>
-#include <graphics/Palette.h>
-#include <graphics/Style.h>
 #include <graphics/Painter.h>
 #include <ilixiGUI.h>
 #include <string.h>
@@ -38,6 +36,8 @@ Stylist::Stylist()
         : StylistBase()
 {
     ILOG_TRACE(ILX_STYLIST);
+    _fonts = new FontPack();
+    _icons = new IconPack();
     _palette = new Palette();
     _style = new Style();
 }
@@ -76,7 +76,7 @@ Stylist::drawDialog(Painter* p, Dialog* dialog)
     else
         p->setBrush(_palette->text);
 
-    p->setFont(*_style->_titleFont);
+    p->setFont(*_fonts->getFont(StyleHint::TitleFont));
     p->drawText(dialog->title(), defaultParameter(StyleHint::FrameOffsetLeft), defaultParameter(StyleHint::FrameOffsetTop));
 }
 
