@@ -5,6 +5,8 @@ miscdata_DATA 	=	application.dtd \
 					compositor.dtd \
 					compositor.xml \
 					configuration.dtd \
+					font_pack.dtd \
+					icon_pack.dtd \
 					palette.dtd \
 					style.dtd \
 					ilixi_catalog.xml \
