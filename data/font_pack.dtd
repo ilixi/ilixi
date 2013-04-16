@@ -1,0 +1,8 @@
+<!ELEMENT FontPack (ButtonFont, DefaultFont, InputFont, TitleFont) >
+	<!ELEMENT ButtonFont  (Name, Size, FontStyle*) >
+	<!ELEMENT DefaultFont (Name, Size, FontStyle*) >
+	<!ELEMENT InputFont   (Name, Size, FontStyle*) >
+	<!ELEMENT TitleFont   (Name, Size, FontStyle*) >
+		<!ELEMENT Name      (#PCDATA) >
+		<!ELEMENT Size      (#PCDATA) >
+		<!ELEMENT FontStyle (#PCDATA) >
