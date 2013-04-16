@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE FontPack PUBLIC "-//ilixi//DTD Fonts v1//EN" "http://www.ilixi.org/dtd/font_pack.dtd">
+<FontPack>
+	<ButtonFont>
+		<Name>Sazanami Gothic</Name>
+		<Size>16</Size>
+		<FontStyle>bold</FontStyle>
+	</ButtonFont>
+
+	<DefaultFont>
+		<Name>Sazanami Gothic</Name>
+		<Size>14</Size>
+	</DefaultFont>
+
+	<InputFont>
+		<Name>Sazanami Gothic</Name>
+		<Size>16</Size>
+	</InputFont>
+
+	<TitleFont>
+		<Name>Sazanami Gothic</Name>
+		<Size>16</Size>
+		<FontStyle>bold</FontStyle>
+	</TitleFont>
+</FontPack>
