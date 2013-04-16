@@ -41,7 +41,7 @@ GroupBox::GroupBox(const std::string& title, Widget* parent)
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
     setConstraints(MinimumConstraint, MinimumConstraint);
-    _title->setFont(stylist()->defaultFont(StyleHint::TitleFont));
+//    _title->setFont(stylist()->defaultFont(StyleHint::TitleFont));
     _title->setSingleLine(true);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &GroupBox::setTitleGeometry));
     setTitle(title);
@@ -165,6 +165,7 @@ void
 GroupBox::updateI18nText()
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
+//    _title->setFont(stylist()->defaultFont(StyleHint::TitleFont));
     setTitle(gettext(_i18nID.c_str()));
 }
 #endif
