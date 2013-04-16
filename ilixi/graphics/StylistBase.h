@@ -24,10 +24,8 @@
 #ifndef ILIXI_STYLISTBASE_H_
 #define ILIXI_STYLISTBASE_H_
 
-#include <types/Rectangle.h>
-#include <types/Enums.h>
-#include <types/Image.h>
-#include <types/Font.h>
+#include <graphics/FontPack.h>
+#include <graphics/IconPack.h>
 #include <graphics/Style.h>
 #include <graphics/Palette.h>
 
@@ -255,6 +253,10 @@ public:
     drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners = AllCorners)=0;
 
 protected:
+    //! This property stores the fonts pack.
+    FontPack* _fonts;
+    //! This property stores the icons pack.
+    IconPack* _icons;
     //! This property stores the palette.
     Palette* _palette;
     //! This property stores the style items.
@@ -269,6 +271,26 @@ protected:
     };
 
     AnimatedElement _focus;
+
+    /*!
+     * Sets the fonts pack using a file.
+     * Returns true if successful.
+     *
+     * @param fontPack path to a valid fonts pack file.
+     */
+    virtual bool
+    setFontPack(const char* fontPack);
+
+
+    /*!
+     * Sets the icons pack using a file.
+     * Returns true if successful.
+     *
+     * @param iconPack path to a valid icons pack file.
+     */
+    virtual bool
+    setIconPack(const char* iconPack);
+
 
     /*!
      * Sets the palette using a file.

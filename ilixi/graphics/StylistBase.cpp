@@ -35,7 +35,9 @@ D_DEBUG_DOMAIN( ILX_STYLISTBASE, "ilixi/graphics/StylistBase", "StylistBase");
 Image* StylistBase::_noImage = NULL;
 
 StylistBase::StylistBase()
-        : _palette(NULL),
+        : _fonts(NULL),
+          _icons(NULL),
+          _palette(NULL),
           _style(NULL)
 {
     ILOG_TRACE(ILX_STYLISTBASE);
@@ -45,21 +47,43 @@ StylistBase::StylistBase()
 
 StylistBase::~StylistBase()
 {
+    delete _fonts;
+    delete _icons;
     delete _palette;
     delete _style;
     delete _noImage;
 }
 
 bool
+StylistBase::setFontPack(const char* fontPack)
+{
+    if (_fonts)
+        return _fonts->parseFonts(fontPack);
+    return false;
+}
+
+bool
+StylistBase::setIconPack(const char* iconPack)
+{
+    if (_icons)
+        return _icons->parseIcons(iconPack);
+    return false;
+}
+
+bool
 StylistBase::setPaletteFromFile(const char* palette)
 {
-    return _palette->parsePalette(palette);
+    if (_palette)
+        return _palette->parsePalette(palette);
+    return false;
 }
 
 bool
 StylistBase::setStyleFromFile(const char* style)
 {
-    return _style->parseStyle(style);
+    if (_style)
+        return _style->parseStyle(style);
+    return false;
 }
 
 Size
@@ -183,17 +207,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 Font*
 StylistBase::defaultFont(StyleHint::Font font) const
 {
-    switch (font)
-    {
-    case StyleHint::ButtonFont:
-        return _style->_buttonFont;
-    case StyleHint::TitleFont:
-        return _style->_titleFont;
-    case StyleHint::InputFont:
-        return _style->_inputFont;
-    default:
-        return _style->_defaultFont;
-    }
+    return _fonts->getFont(font);
 }
 
 Image*
@@ -203,111 +217,111 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
     switch (icon)
     {
     case StyleHint::ArrowNE:
-        return _style->getIcon("arrow_ne");
+        return _icons->getIcon("arrow_ne");
     case StyleHint::ArrowSW:
-        return _style->getIcon("arrow_sw");
+        return _icons->getIcon("arrow_sw");
     case StyleHint::Calendar:
-        return _style->getIcon("calendar");
+        return _icons->getIcon("calendar");
     case StyleHint::Clock:
-        return _style->getIcon("clock");
+        return _icons->getIcon("clock");
     case StyleHint::Comment:
-        return _style->getIcon("comment");
+        return _icons->getIcon("comment");
     case StyleHint::CPU:
-        return _style->getIcon("cpu");
+        return _icons->getIcon("cpu");
     case StyleHint::Cross:
-        return _style->getIcon("cross");
+        return _icons->getIcon("cross");
     case StyleHint::CrossCircle:
-        return _style->getIcon("cross_circle");
+        return _icons->getIcon("cross_circle");
     case StyleHint::Down:
-        return _style->getIcon("arrow_down");
+        return _icons->getIcon("arrow_down");
     case StyleHint::Eject:
-        return _style->getIcon("eject");
+        return _icons->getIcon("eject");
     case StyleHint::File:
-        return _style->getIcon("file");
+        return _icons->getIcon("file");
     case StyleHint::FileDelete:
-        return _style->getIcon("file_delete");
+        return _icons->getIcon("file_delete");
     case StyleHint::FileDownload:
-        return _style->getIcon("file_download");
+        return _icons->getIcon("file_download");
     case StyleHint::FileNew:
-        return _style->getIcon("file_new");
+        return _icons->getIcon("file_new");
     case StyleHint::FileText:
-        return _style->getIcon("file_text");
+        return _icons->getIcon("file_text");
     case StyleHint::FileUpload:
-        return _style->getIcon("file_upload");
+        return _icons->getIcon("file_upload");
     case StyleHint::Flag:
-        return _style->getIcon("flag");
+        return _icons->getIcon("flag");
     case StyleHint::Heart:
-        return _style->getIcon("heart");
+        return _icons->getIcon("heart");
     case StyleHint::Info:
-        return _style->getIcon("info");
+        return _icons->getIcon("info");
     case StyleHint::Left:
-        return _style->getIcon("arrow_left");
+        return _icons->getIcon("arrow_left");
     case StyleHint::Minus:
-        return _style->getIcon("minus");
+        return _icons->getIcon("minus");
     case StyleHint::Movie:
-        return _style->getIcon("movie");
+        return _icons->getIcon("movie");
     case StyleHint::Music:
-            return _style->getIcon("music");
+        return _icons->getIcon("music");
     case StyleHint::Network:
-        return _style->getIcon("network");
+        return _icons->getIcon("network");
     case StyleHint::Next:
-        return _style->getIcon("next");
+        return _icons->getIcon("next");
     case StyleHint::Next2:
-        return _style->getIcon("next2");
+        return _icons->getIcon("next2");
     case StyleHint::Pause:
-        return _style->getIcon("pause");
+        return _icons->getIcon("pause");
     case StyleHint::Phone:
-        return _style->getIcon("phone");
+        return _icons->getIcon("phone");
     case StyleHint::Picture:
-        return _style->getIcon("picture");
+        return _icons->getIcon("picture");
     case StyleHint::Play:
-        return _style->getIcon("play");
+        return _icons->getIcon("play");
     case StyleHint::Plus:
-        return _style->getIcon("plus");
+        return _icons->getIcon("plus");
     case StyleHint::Power:
-        return _style->getIcon("power");
+        return _icons->getIcon("power");
     case StyleHint::Prev:
-        return _style->getIcon("prev");
+        return _icons->getIcon("prev");
     case StyleHint::Prev2:
-        return _style->getIcon("prev2");
+        return _icons->getIcon("prev2");
     case StyleHint::RAM:
-        return _style->getIcon("ram");
+        return _icons->getIcon("ram");
     case StyleHint::Restart:
-        return _style->getIcon("restart");
+        return _icons->getIcon("restart");
     case StyleHint::Ribbon:
-        return _style->getIcon("ribbon");
+        return _icons->getIcon("ribbon");
     case StyleHint::Right:
-        return _style->getIcon("arrow_right");
+        return _icons->getIcon("arrow_right");
     case StyleHint::Search:
-        return _style->getIcon("search");
+        return _icons->getIcon("search");
     case StyleHint::Settings:
-        return _style->getIcon("settings");
+        return _icons->getIcon("settings");
     case StyleHint::Share:
-        return _style->getIcon("share");
+        return _icons->getIcon("share");
     case StyleHint::Standby:
-        return _style->getIcon("standby");
+        return _icons->getIcon("standby");
     case StyleHint::Star:
-        return _style->getIcon("star");
+        return _icons->getIcon("star");
     case StyleHint::Stats:
-        return _style->getIcon("stats");
+        return _icons->getIcon("stats");
     case StyleHint::Stop:
-        return _style->getIcon("stop");
+        return _icons->getIcon("stop");
     case StyleHint::Tag:
-        return _style->getIcon("tag");
+        return _icons->getIcon("tag");
     case StyleHint::ThumbDown:
-        return _style->getIcon("thumb_down");
+        return _icons->getIcon("thumb_down");
     case StyleHint::ThumbUp:
-        return _style->getIcon("thumb_up");
+        return _icons->getIcon("thumb_up");
     case StyleHint::Tick:
-        return _style->getIcon("tick");
+        return _icons->getIcon("tick");
     case StyleHint::TickCircle:
-        return _style->getIcon("tick_circle");
+        return _icons->getIcon("tick_circle");
     case StyleHint::Up:
-        return _style->getIcon("arrow_up");
+        return _icons->getIcon("arrow_up");
     case StyleHint::ZoomIn:
-        return _style->getIcon("zoom_in");
+        return _icons->getIcon("zoom_in");
     case StyleHint::ZoomOut:
-        return _style->getIcon("zoom_out");
+        return _icons->getIcon("zoom_out");
 
     default:
         return NULL;
