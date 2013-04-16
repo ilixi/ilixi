@@ -3,7 +3,7 @@
 
 <Configuration>
 	<HardwareLayers>
-		<DFBLayer id="0" fsu="off" flipMode="none" bufferMode="backVideo" />
+		<DFBLayer id="0" fsu="off" flipMode="new" bufferMode="backVideo" />
 	</HardwareLayers>
 
 	<LogicLayers>
@@ -28,6 +28,8 @@
 
 	<Theme>
 		<Background>@THEMEDIR:dark/bg.dfiff</Background>
+		<FontPack>@THEMEDIR:dark/fonts_en_US.xml</FontPack>
+		<IconPack>@THEMEDIR:dark/icons.xml</IconPack>
 		<Style>@THEMEDIR:dark/style.xml</Style>
 		<Palette>@THEMEDIR:dark/palette.xml</Palette>
 	</Theme>

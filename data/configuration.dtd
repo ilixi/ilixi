@@ -24,8 +24,10 @@
     <!ELEMENT FlipMode          (#PCDATA) >
     <!ELEMENT BufferMode        (#PCDATA) >
         
-<!ELEMENT Theme (Background?, Style, Palette) >
+<!ELEMENT Theme (Background?, FontPack, IconPack, Style, Palette) >
     <!ELEMENT Background (#PCDATA) >
+    <!ELEMENT FontPack  (#PCDATA) >
+    <!ELEMENT IconPack  (#PCDATA) >
     <!ELEMENT Style     (#PCDATA) >
     <!ELEMENT Palette   (#PCDATA) >
     
