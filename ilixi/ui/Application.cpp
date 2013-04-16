@@ -167,6 +167,13 @@ Application::setStylist(StylistBase* stylist)
         return;
 
     _stylist = stylist;
+
+    if (!_stylist->setFontPack(PlatformManager::instance().getFontPack().c_str()))
+        ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
+
+    if (!_stylist->setIconPack(PlatformManager::instance().getIconPack().c_str()))
+        ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
+
     if (!_stylist->setPaletteFromFile(PlatformManager::instance().getPalette().c_str()))
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 
@@ -174,18 +181,36 @@ Application::setStylist(StylistBase* stylist)
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 }
 
-void
+bool
+Application::setFontPack(const char* fontPack)
+{
+    if (_stylist)
+        return _stylist->setFontPack(fontPack);
+    return false;
+}
+
+bool
+Application::setIconPack(const char* iconPack)
+{
+    if (_stylist)
+        return _stylist->setIconPack(iconPack);
+    return false;
+}
+
+bool
 Application::setPaletteFromFile(const char* palette)
 {
     if (_stylist)
-        _stylist->setPaletteFromFile(palette);
+        return _stylist->setPaletteFromFile(palette);
+    return false;
 }
 
-void
+bool
 Application::setStyleFromFile(const char* style)
 {
     if (_stylist)
-        _stylist->setStyleFromFile(style);
+        return _stylist->setStyleFromFile(style);
+    return false;
 }
 
 void

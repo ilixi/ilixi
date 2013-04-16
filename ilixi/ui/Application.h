@@ -131,16 +131,22 @@ protected:
     static void
     setStylist(StylistBase* stylist);
 
+    static bool
+    setFontPack(const char* fontPack);
+
+    static bool
+    setIconPack(const char* iconPack);
+
     /*!
      * Sets the palette file for stylist.
      */
-    static void
+    static bool
     setPaletteFromFile(const char* palette);
 
     /*!
      * Sets the style file for stylist.
      */
-    static void
+    static bool
     setStyleFromFile(const char* style);
 
     void
@@ -159,6 +165,8 @@ private:
      */
     virtual void
     compose(const PaintEvent& event);
+
+    friend class PlatformManager;
 };
 }
 #endif /* ILIXI_APPLICATION_H_ */
