@@ -1081,7 +1081,9 @@ PlatformManager::setTheme(xmlNodePtr node)
                 _fontPack.append(file.substr(found + 10, std::string::npos));
             } else
                 _fontPack = file;
+#ifdef ILIXI_HAVE_NLS
             _fontPackDefault = _fontPack;
+#endif
             ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> FontPack: %s\n", _fontPack.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "IconPack") == 0)
         {
