@@ -55,7 +55,8 @@ Style::parseStyle(const char* style)
     ILOG_TRACE(ILX_STYLE);
     ILOG_DEBUG(ILX_STYLE, " -> file: %s\n", style);
 
-    std::string cacheFile = FileSystem::homeDirectory().append(PrintF("/%u.sxml", createHash(style)));
+    std::string cacheFile = PrintF("%s%u.sxml", FileSystem::ilxDirectory().c_str(), createHash(style));
+    ILOG_DEBUG(ILX_STYLE, " -> cache file: %s\n", cacheFile.c_str());
     if (difftime(FileSystem::getModificationTime(cacheFile), FileSystem::getModificationTime(style)) > 0)
     {
         ILOG_DEBUG(ILX_STYLE, " -> Parsing cached style file.\n");

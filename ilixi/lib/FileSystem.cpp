@@ -112,6 +112,22 @@ homeDirectory()
     return std::string(home);
 }
 
+const std::string
+ilxDirectory()
+{
+    static std::string path = PrintF("%s%s", homeDirectory().c_str(), "/.ilixi/");
+    struct stat myStat;
+    if (!((stat(path.c_str(), &myStat) == 0) && (((myStat.st_mode) & S_IFMT) == S_IFDIR)))
+    {
+        int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        if (status != 0)
+            ILOG_ERROR(ILX_FILESYSTEM, "Cannot create %s - %d\n", path.c_str(), status);
+        else
+            ILOG_ERROR(ILX_FILESYSTEM, "Created %s\n", path.c_str());
+    }
+    return path;
+}
+
 std::string
 directoryName(const std::string& path)
 {

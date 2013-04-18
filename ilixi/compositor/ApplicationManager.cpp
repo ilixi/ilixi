@@ -211,7 +211,7 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
         _monitor->sigStateChanged.connect(sigc::mem_fun(this, &ApplicationManager::handleMemoryState));
     }
 
-    std::string pidFile = FileSystem::homeDirectory().append("/ilx_compositor.pid");
+    std::string pidFile = PrintF("%silx_compositor.pid", FileSystem::ilxDirectory().c_str());
     FILE* _pidFile = fopen(pidFile.c_str(), "w");
     if(!_pidFile)
         ILOG_ERROR(ILX_APPLICATIONMANAGER, "Could not open %s for writing!\n", pidFile.c_str());

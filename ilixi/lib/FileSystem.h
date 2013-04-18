@@ -59,6 +59,9 @@ getModificationTime(const std::string& path);
 std::string
 homeDirectory();
 
+const std::string
+ilxDirectory();
+
 std::string
 directoryName(const std::string& path);
 

@@ -63,7 +63,8 @@ IconPack::parseIcons(const char* iconsFile)
     ILOG_TRACE(ILX_ICONPACK);
     ILOG_DEBUG(ILX_ICONPACK, " -> file: %s\n", iconsFile);
 
-    std::string cacheFile = FileSystem::homeDirectory().append(PrintF("/%u.sxml", createHash(iconsFile)));
+    std::string cacheFile = PrintF("%s%u.sxml", FileSystem::ilxDirectory().c_str(), createHash(iconsFile));
+    ILOG_DEBUG(ILX_ICONPACK, " -> cache file: %s\n", cacheFile.c_str());
     if (difftime(FileSystem::getModificationTime(cacheFile), FileSystem::getModificationTime(iconsFile)) > 0)
     {
         ILOG_DEBUG(ILX_ICONPACK, " -> Parsing cached icons file.\n");

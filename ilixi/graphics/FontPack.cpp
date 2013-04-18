@@ -67,7 +67,8 @@ FontPack::parseFonts(const char* fontsFile)
     ILOG_TRACE(ILX_FONTPACK);
     ILOG_DEBUG(ILX_FONTPACK, " -> file: %s\n", fontsFile);
 
-    std::string cacheFile = FileSystem::homeDirectory().append(PrintF("/%u.sxml", createHash(fontsFile)));
+    std::string cacheFile = PrintF("%s%u.sxml", FileSystem::ilxDirectory().c_str(), createHash(fontsFile));
+    ILOG_DEBUG(ILX_FONTPACK, " -> cache file: %s\n", cacheFile.c_str());
     if (difftime(FileSystem::getModificationTime(cacheFile), FileSystem::getModificationTime(fontsFile)) > 0)
     {
         ILOG_DEBUG(ILX_FONTPACK, " -> Parsing cached fonts file.\n");
