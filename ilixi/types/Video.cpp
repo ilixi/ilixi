@@ -293,6 +293,9 @@ Video::load(const std::string& path)
         if (_streamDesc.caps & DVSCAPS_VIDEO)
         {
             _provider->GetSurfaceDescription(_provider, &_surfaceDesc);
+             if (PlatformManager::instance().forcedPixelFormat() != DSPF_UNKNOWN)
+                _surfaceDesc.pixelformat = PlatformManager::instance().forcedPixelFormat();
+
             PlatformManager::instance().getDFB()->CreateSurface(PlatformManager::instance().getDFB(), &_surfaceDesc, &_frame);
         }
 
