@@ -125,10 +125,10 @@ HorizontalSwitcher::removeThumb(AppThumbnail* thumb)
     if (_thumbs.size() == _num2Slide)
     {
         _currentIndex = 0;
-        scrollTo(currentThumb());
         _left->setVisible(false);
         _right->setVisible(false);
-    }
+    } else if (_thumbs.size() == 0)
+        hide();
 }
 
 void
@@ -215,6 +215,15 @@ HorizontalSwitcher::updateSwitcherGeometry()
 {
     ILOG_TRACE_W(ILX_HSWITCHER);
     _num2Slide = (width() - 200) / 196.0;
+    if (_thumbs.size() > _num2Slide)
+    {
+        _left->setVisible(true);
+        _right->setVisible(true);
+    } else
+    {
+        _left->setVisible(false);
+        _right->setVisible(false);
+    }
     _scroller->setGeometry(0, 20, width(), height() - 40);
     _left->setGeometry(0, 0, 100, 200);
     _right->setGeometry(width() - 100, 0, 100, 200);

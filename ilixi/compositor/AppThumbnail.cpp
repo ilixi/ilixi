@@ -47,7 +47,7 @@ AppThumbnail::AppThumbnail(ILXCompositor* compositor, AppInstance* instance, Wid
         _close->setIcon(ILIXI_DATADIR"images/close.png", Size(32, 32));
         _close->setDrawFrame(false);
         _close->setGeometry(164, 0, 32, 32);
-        _close->sigPressed.connect(sigc::bind<AppInstance*>(sigc::mem_fun(_compositor, &ILXCompositor::killApp), _instance));
+        _close->sigClicked.connect(sigc::bind<AppInstance*>(sigc::mem_fun(_compositor, &ILXCompositor::killApp), _instance));
         addChild(_close);
     }
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppThumbnail::updateThumbGeometry));
