@@ -691,12 +691,17 @@ AppBase::handleEvents(int32_t timeout, bool forceWait)
     bool wait = true;
     if (!forceWait && (!_syncWithSurfaceEvents || _update) && timeout)
     {
-        for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
+        if (__callbacks.size())
+            wait = false;
+        else
         {
-            if (((WindowWidget*) *it)->_updates._updateQueue.size())
+            for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
             {
-                wait = false;
-                break;
+                if (((WindowWidget*) *it)->_updates._updateQueue.size())
+                {
+                    wait = false;
+                    break;
+                }
             }
         }
     }
