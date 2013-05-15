@@ -110,22 +110,26 @@ FontPack::parseFonts(const char* fontsFile)
             {
                 _defaultFont = new Font((char*) fileC, atoi((char*) sizeC));
                 _defaultFont->setStyle(fontStyle);
+                _defaultFont->dfbFont();
             } else if (xmlStrcmp(node->name, (xmlChar*) "ButtonFont") == 0)
             {
                 _buttonFont = new Font((char*) fileC, atoi((char*) sizeC));
                 _buttonFont->setStyle(fontStyle);
+                _buttonFont->dfbFont();
             }
 
             else if (xmlStrcmp(node->name, (xmlChar*) "InputFont") == 0)
             {
                 _inputFont = new Font((char*) fileC, atoi((char*) sizeC));
                 _inputFont->setStyle(fontStyle);
+                _inputFont->dfbFont();
             }
 
             else if (xmlStrcmp(node->name, (xmlChar*) "TitleFont") == 0)
             {
                 _titleFont = new Font((char*) fileC, atoi((char*) sizeC));
                 _titleFont->setStyle(fontStyle);
+                _titleFont->dfbFont();
             }
 
             xmlFree(fileC);
@@ -176,6 +180,11 @@ operator>>(std::istream& is, FontPack& obj)
     is.ignore(1);
     is >> *obj._titleFont;
     is.ignore(1);
+
+    *obj._buttonFont->dfbFont();
+    *obj._defaultFont->dfbFont();
+    *obj._inputFont->dfbFont();
+    *obj._titleFont->dfbFont();
 
     return is;
 }
