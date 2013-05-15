@@ -330,7 +330,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     if (visible())
     {
-        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale(), (event.update.y2 - event.update.y1) / vScale()));
+        Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
 
         AppBase::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
@@ -350,14 +350,13 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     _sourceSurface->GetID(_sourceSurface, &surface_id);
     ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, "onSourceUpdate()\n");
     ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> SURFEVT: acknowledge id %d flip count %d\n", surface_id, event.flip_count);
-    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> id %d\n",surface_id);
+    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> id %d\n", surface_id);
     if (surface_id == AppBase::__instance->_updateID)
     {
-        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n",AppBase::__instance->_updateID);
+        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n", AppBase::__instance->_updateID);
         AppBase::__instance->_update = true;
         AppBase::__instance->_update_timer->restart();
     }
-
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
 
