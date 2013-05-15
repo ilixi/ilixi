@@ -88,7 +88,17 @@ IconPack::parseIcons(const char* iconsFile)
 
         xmlChar* imgFile = xmlGetProp(root, (xmlChar*) "resource");
         xmlChar* imgDefSize = xmlGetProp(root, (xmlChar*) "defaultSize");
-        _iconPack = new Image(std::string(ILIXI_DATADIR"" + std::string((char*) imgFile)));
+        std::string path = (char*) imgFile;
+        std::string file;
+        size_t found = path.find("@IMGDIR:");
+        if (found != std::string::npos)
+        {
+            file = ILIXI_DATADIR"images/";
+            file.append(path.substr(found + 8, std::string::npos));
+        } else
+            file = path;
+
+        _iconPack = new Image(file);
         _iconSize = atoi((char*) imgDefSize);
         xmlFree(imgDefSize);
         xmlFree(imgFile);
