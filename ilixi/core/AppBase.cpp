@@ -389,7 +389,8 @@ AppBase::runTimers()
 
     int64_t nextTimeout;
     Timer* timer;
-    for (TimerList::iterator it = _timers.begin(); it != _timers.end(); ++it)
+    TimerList::iterator it = _timers.begin();
+    while (it != _timers.end())
     {
         timer = (Timer*) *it;
         nextTimeout = timer->expiry() - now;
@@ -399,19 +400,23 @@ AppBase::runTimers()
             if (!timer->funck())
             {
                 if (timer != _update_timer)
+                {
                     it = _timers.erase(it);
-                continue;
+                    continue;
+                }
             } else
                 nextTimeout = timer->expiry() - now;
         }
 
         if (nextTimeout < timeout)
             timeout = nextTimeout;
+        ++it;
     }
 
     pthread_mutex_unlock(&__timerMutex);
-
-    if (timeout > 10000)
+    if (timeout < 1)
+        timeout = 1;
+    else if (timeout > 10000)
         timeout = 10000;
 
     ILOG_DEBUG( ILX_APPBASE, " -> desired timeout %d.%d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
