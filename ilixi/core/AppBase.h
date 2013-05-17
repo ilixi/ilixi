@@ -50,7 +50,6 @@ class AppBase
     friend class Callback;              // add/remove callback
     friend class SurfaceEventListener;  // add/remove SurfaceEventListener
     friend class Timer;                 // add/remove timer
-    friend class WebView;
     friend class Window;                // activeWindow
     friend class WindowWidget;
     friend class SurfaceView;
@@ -68,17 +67,22 @@ public:
     ~AppBase();
 
     /*!
-     * Returns EventBuffer interface.
+     * Post a custom user event.
+     *
+     * @param type of event [0-999].
+     * @param data if not NULL, a pointer to your data.
+     *
+     * \warning make sure your event type is lower than 1000.
      */
-    static IDirectFBEventBuffer*
-    getEventBuffer();
+    static void
+    postUserEvent(unsigned int type, void* data = NULL);
 
     /*!
      * Post a universal event to main event buffer.
      *
      * @param target Widget.
      * @param type of event
-     * @param data if not NULL.
+     * @param data if not NULL, a pointer to your data.
      */
     static void
     postUniversalEvent(Widget* target, unsigned int type, void* data = NULL);
@@ -111,7 +115,8 @@ protected:
     postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step);
 
     /*!
-     * User events are handled before other event types.
+     * Custom user events are handled in this function.
+     * \sa postUserEvent
      */
     virtual void
     handleUserEvent(const DFBUserEvent& event);
@@ -213,7 +218,7 @@ private:
     //! Serialises access to window list.
     pthread_mutex_t __windowMutex;
 
-    typedef std::vector<Timer*> TimerList;
+    typedef std::list<Timer*> TimerList;
     TimerList _timers;
     pthread_mutex_t __timerMutex;
 

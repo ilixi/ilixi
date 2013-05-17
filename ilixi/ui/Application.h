@@ -149,9 +149,6 @@ protected:
     static bool
     setStyleFromFile(const char* style);
 
-    void
-    postUserEvent(unsigned int type, void* data = NULL);
-
 private:
     //! Background image of application.
     Image* _backgroundImage;

@@ -74,7 +74,7 @@ AppBase::AppBase(int* argc, char*** argv, AppOptions options)
 #endif
     pthread_mutex_init(&__windowMutex, &attr);
     pthread_mutex_init(&__timerMutex, &attr);
-
+    pthread_mutexattr_destroy(&attr);
     setenv("XML_CATALOG_FILES", ILIXI_DATADIR"ilixi_catalog.xml", 0);
 
     __cursorNew.x = 0;
@@ -109,6 +109,18 @@ AppBase::~AppBase()
     pthread_mutex_destroy(&__windowMutex);
     pthread_mutex_destroy(&__timerMutex);
     __activeWindow = NULL;
+}
+
+void
+AppBase::postUserEvent(unsigned int type, void* data)
+{
+    DFBUserEvent event;
+    event.clazz = DFEC_USER;
+    event.type = type;
+    event.data = data;
+    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    if (ret != DFB_OK)
+        ILOG_ERROR(ILX_APPBASE, "Cannot post UserEvent!\n");
 }
 
 void
@@ -163,17 +175,13 @@ AppBase::releaseEventBuffer()
     }
 }
 
-IDirectFBEventBuffer*
-AppBase::getEventBuffer()
-{
-    return __buffer;
-}
-
 void
 AppBase::postUniversalEvent(Widget* target, unsigned int type, void* data)
 {
     UniversalEvent event(target, type, data);
-    __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    if (ret != DFB_OK)
+        ILOG_ERROR(ILX_APPBASE, "Cannot post UniversalEvent!\n");
 }
 
 void
@@ -333,26 +341,30 @@ AppBase::removeCallback(Callback* cb)
     return false;
 }
 
+static bool
+timerSort(const Timer* first, const Timer* second)
+{
+    return first->expiry() < second->expiry();
+}
+
 bool
 AppBase::addTimer(Timer* timer)
 {
     if (__instance && timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
-
         TimerList::iterator it = std::find(__instance->_timers.begin(), __instance->_timers.end(), timer);
-        if (it == __instance->_timers.end())
+        if (timer == *it)
         {
-            __instance->_timers.push_back(timer);
-
             pthread_mutex_unlock(&__instance->__timerMutex);
-            ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
-            return true;
+            ILOG_DEBUG(ILX_APPBASE, "Timer %p already added!\n", timer);
+            return false;
         }
-
+        __instance->_timers.push_back(timer);
+        __instance->_timers.sort(timerSort);
         pthread_mutex_unlock(&__instance->__timerMutex);
-        ILOG_DEBUG(ILX_APPBASE, "Timer %p already added!\n", timer);
-        return false;
+        ILOG_DEBUG(ILX_APPBASE, "Timer %p is added.\n", timer);
+        return true;
     }
     return false;
 }
@@ -363,17 +375,19 @@ AppBase::removeTimer(Timer* timer)
     if (__instance && timer)
     {
         pthread_mutex_lock(&__instance->__timerMutex);
-
-        TimerList::iterator it = std::find(__instance->_timers.begin(), __instance->_timers.end(), timer);
-        if (it != __instance->_timers.end())
+        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
         {
-            __instance->_timers.erase(it);
-            pthread_mutex_unlock(&__instance->__timerMutex);
-            ILOG_DEBUG(ILX_APPBASE, "Timer %p is removed.\n", timer);
-            return true;
+            if (timer == *it)
+            {
+                __instance->_timers.erase(it);
+                __instance->_timers.sort(timerSort);
+                pthread_mutex_unlock(&__instance->__timerMutex);
+                ILOG_DEBUG(ILX_APPBASE, "Timer %p is removed.\n", timer);
+                return true;
+            }
         }
-
         pthread_mutex_unlock(&__instance->__timerMutex);
+        ILOG_DEBUG(ILX_APPBASE, "Could not remove Timer %p, not found!\n", timer);
     }
     return false;
 }
@@ -382,37 +396,26 @@ int32_t
 AppBase::runTimers()
 {
     ILOG_TRACE_F(ILX_APPBASE);
-    int32_t timeout = 1000000;
+    int32_t timeout = 10000;
 
     pthread_mutex_lock(&__timerMutex);
-    int64_t now = direct_clock_get_millis();
-
-    int64_t nextTimeout;
-    Timer* timer;
-    TimerList::iterator it = _timers.begin();
-    while (it != _timers.end())
+    if (_timers.size())
     {
-        timer = (Timer*) *it;
-        nextTimeout = timer->expiry() - now;
-        if (nextTimeout <= 0)
+        int64_t now = direct_clock_get_millis();
+        int64_t expiry = _timers.front()->expiry();
+
+        if (expiry <= now)
         {
-            ILOG_DEBUG( ILX_APPBASE, " -> timer %p was supposed to fire at %d.%d\n", timer, (int) (timer->expiry() / 1000), (int)(timer->expiry() % 1000));
-            if (!timer->funck())
-            {
-                if (timer != _update_timer)
-                {
-                    it = _timers.erase(it);
-                    continue;
-                }
-            } else
-                nextTimeout = timer->expiry() - now;
-        }
+            if (!_timers.front()->funck() && _timers.front() != _update_timer)
+                _timers.pop_front();
 
-        if (nextTimeout < timeout)
-            timeout = nextTimeout;
-        ++it;
+            _timers.sort(timerSort);
+
+            if (_timers.size())
+                timeout = _timers.front()->expiry() - now;
+        } else
+            timeout = expiry - now;
     }
-
     pthread_mutex_unlock(&__timerMutex);
     if (timeout < 1)
         timeout = 1;
@@ -777,10 +780,10 @@ AppBase::handleEvents(int32_t timeout, bool forceWait)
 
         case DFEC_UNIVERSAL:
             {
-                ILOG_DEBUG(ILX_APPBASE, "UniversalEvent\n");
                 UniversalEvent* uEvent = (UniversalEvent*) &event;
                 ILOG_DEBUG(ILX_APPBASE, " -> target: %p\n", uEvent->target);
-                uEvent->target->universalEvent(uEvent);
+                if (uEvent->target)
+                    uEvent->target->universalEvent(uEvent);
                 break;
             }
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)

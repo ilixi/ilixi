@@ -214,17 +214,6 @@ Application::setStyleFromFile(const char* style)
 }
 
 void
-Application::postUserEvent(unsigned int type, void* data)
-{
-    DFBUserEvent event;
-    event.clazz = DFEC_USER;
-    event.type = type;
-    event.data = data;
-
-    __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-}
-
-void
 Application::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_APPLICATION);
