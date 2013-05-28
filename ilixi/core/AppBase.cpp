@@ -835,6 +835,11 @@ AppBase::attachDFBWindow(Window* window)
     {
         DFBResult ret;
 
+        if (!window->_dfbWindow) {
+            ILOG_WARNING( ILX_APPBASE, "Window::_dfbWindow is NULL\n");
+            return;
+        }
+
         ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow, __buffer);
         if (ret != DFB_OK)
             ILOG_ERROR( ILX_APPBASE, "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
