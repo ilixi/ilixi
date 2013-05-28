@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE settings PUBLIC "-//ilixi//DTD Compositor v1//EN" "http://www.ilixi.org/dtd/compositor.dtd">
 <settings>
-	<mem_monitor enabled="yes">
+	<mem_monitor enabled="no">
 		<mem_states>
 			<low>0.7</low>
 			<critical>0.9</critical>
