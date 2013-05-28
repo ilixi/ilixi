@@ -863,6 +863,11 @@ AppBase::detachDFBWindow(Window* window)
     {
         DFBResult ret;
 
+        if (!window->_dfbWindow) {
+            ILOG_WARNING( ILX_APPBASE, "Window::_dfbWindow is NULL\n");
+            return;
+        }
+
         ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow, __buffer);
         if (ret != DFB_OK)
             ILOG_ERROR( ILX_APPBASE, "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
