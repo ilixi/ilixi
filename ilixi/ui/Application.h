@@ -33,7 +33,7 @@ namespace ilixi
 /*!
  * This class is used to create a new UI application with its own window.
  */
-class Application : public AppBase, public WindowWidget
+class Application : public WindowWidget, public AppBase
 {
 public:
     /*!
