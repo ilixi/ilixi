@@ -129,9 +129,9 @@ Button::pointerButtonUpEvent(const PointerEvent& event)
     if (_buttonFlag & PressedDown)
     {
         PlatformManager::instance().playSoundEffect("Click");
+        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
         sigClicked();
         toggleChecked();
-        _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
     }
 }
 
