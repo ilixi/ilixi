@@ -56,8 +56,8 @@ Frame::preferredSize() const
 {
     Size s = _layout->preferredSize();
     if (_drawFrame)
-        return Size(s.width() + +_margin.hSum() + stylist()->defaultParameter(StyleHint::FrameOffsetLR), s.height() + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
-    return Size(s.width() + +_margin.hSum(), s.height() + _margin.vSum());
+        return Size(s.width() + _margin.hSum() + stylist()->defaultParameter(StyleHint::FrameOffsetLR), s.height() + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
+    return Size(s.width() + _margin.hSum(), s.height() + _margin.vSum());
 }
 
 int
