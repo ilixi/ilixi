@@ -831,7 +831,7 @@ AppBase::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime)
 void
 AppBase::attachDFBWindow(Window* window)
 {
-    if (window)
+    if (window && !(PlatformManager::instance().appOptions() & OptExclusive))
     {
         DFBResult ret;
 
@@ -859,7 +859,7 @@ AppBase::attachDFBWindow(Window* window)
 void
 AppBase::detachDFBWindow(Window* window)
 {
-    if (window)
+    if (window && !(PlatformManager::instance().appOptions() & OptExclusive))
     {
         DFBResult ret;
 
