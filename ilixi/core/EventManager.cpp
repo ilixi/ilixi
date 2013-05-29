@@ -398,11 +398,13 @@ EventManager::clear(Widget* widget)
 {
     ILOG_TRACE_F(ILX_EVENTMANAGER);
     ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
-    if (_focusedWidget == widget)
+    if (widget == NULL)
+        return;
+    if (_focusedWidget && _focusedWidget == widget)
         _focusedWidget = NULL;
-    if (_grabbedWidget == widget)
+    if (_grabbedWidget && _grabbedWidget == widget)
         _grabbedWidget = NULL;
-    if (_exposedWidget == widget)
+    if (_exposedWidget && _exposedWidget == widget)
         _exposedWidget = NULL;
 }
 
