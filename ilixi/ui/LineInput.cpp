@@ -452,6 +452,7 @@ LineInput::focusOutEvent()
 {
     _cursorTimer.stop();
     _cursorOn = false;
+    _selection.setSize(0, 0);
     update();
 }
 
