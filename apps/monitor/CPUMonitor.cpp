@@ -218,18 +218,12 @@ CPUMonitor::CPU::Ticks::Ticks()
 bool
 CPUMonitor::CPU::parse(FILE* fd)
 {
-    char tagbuffer[32];
     Ticks n; // new ticks
-    if (fscanf(fd, "%32s%d%d%d%d", tagbuffer, &n.U, &n.N, &n.S, &n.I) != 5)
+    if (fscanf(fd, "%*s%d%d%d%d", &n.U, &n.N, &n.S, &n.I) != 4)
     {
         printf("Parse failure\n");
         return false;
     }
-
-    tagbuffer[31] = '\0';
-
-    if (strncmp(tagbuffer, "cpu", 3) != 0)
-        return false; // tag mismatch
 
     // shift readings
     previous = current;
