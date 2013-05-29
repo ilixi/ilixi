@@ -119,11 +119,6 @@ public:
     setOrientation(Orientation orientation);
 
     /*!
-     * This signal is emitted while slider is being dragged.
-     */
-    sigc::signal<void, int> sigMoved;
-
-    /*!
      * This signal is emitted when pointer button is pressed over slider.
      */
     sigc::signal<void> sigPressed;
