@@ -396,7 +396,7 @@ VBoxLayout::tile()
     Widget* widget;
     Widget* left = getNeighbour(Left);
     Widget* right = getNeighbour(Right);
-    Widget* up = _keyNavChildrenFirst ? (*list.end()).widget : getNeighbour(Up);
+    Widget* up = _keyNavChildrenFirst ? list.back().widget : getNeighbour(Up);
     Widget* down = getNeighbour(Down);
     ElementList::iterator itNext, itLast;
     for (ElementList::iterator it = list.begin(), end = list.end(), itLast = (++list.rbegin()).base(); it != end; ++it)
