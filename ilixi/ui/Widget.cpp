@@ -850,9 +850,6 @@ Widget::eventManager() const
     return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-// Protected methods...
-////////////////////////////////////////////////////////////////////////////////////
 bool
 Widget::isChild(Widget* child)
 {
@@ -865,6 +862,9 @@ Widget::isChild(Widget* child)
     return false;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+// Protected methods...
+////////////////////////////////////////////////////////////////////////////////////
 bool
 Widget::addChild(Widget* child)
 {
@@ -1111,7 +1111,7 @@ Widget::setRootWindow(WindowWidget* root)
         _rootWindow = root;
 
         setNeighbours(_neighbours[Up], _neighbours[Down], _neighbours[Left], _neighbours[Right]);
-    } else if (_surface->flags() & Surface::SharedSurface || _surface->flags() & Surface::SubSurface)
+    } else if ((_surface->flags() & Surface::SharedSurface) || (_surface->flags() & Surface::SubSurface))
     {
         _surface->setSurfaceFlag(Surface::InitialiseSurface);
         _surface->release();
