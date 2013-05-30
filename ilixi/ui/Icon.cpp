@@ -45,6 +45,7 @@ Icon::Icon(const std::string& path, Widget* parent)
           _image(new Image(path))
 {
     ILOG_TRACE_W(ILX_ICON);
+    ILOG_DEBUG(ILX_ICON, " -> path: %s\n", path.c_str());
     setConstraints(FixedConstraint, FixedConstraint);
 }
 
@@ -54,6 +55,7 @@ Icon::Icon(const Image& image, Widget* parent)
           _image(new Image(image))
 {
     ILOG_TRACE_W(ILX_ICON);
+    ILOG_DEBUG(ILX_ICON, " -> Source image: %p\n", &image);
     setConstraints(FixedConstraint, FixedConstraint);
 }
 
@@ -65,6 +67,7 @@ Icon::Icon(StyleHint::PackedIcon packedIcon, Widget* parent)
     ILOG_TRACE_W(ILX_ICON);
     setConstraints(FixedConstraint, FixedConstraint);
     _image = stylist()->defaultIcon(packedIcon);
+    ILOG_DEBUG(ILX_ICON, " -> packed icon: %p\n", _image);
 }
 
 Icon::~Icon()
