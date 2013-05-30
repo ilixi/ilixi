@@ -1,415 +1,226 @@
 <?xml version="1.0"?>
-<!DOCTYPE style PUBLIC "-//ilixi//DTD Style v3//EN" "http://www.ilixi.org/dtd/style.dtd">
+<!DOCTYPE style PUBLIC "-//ilixi//DTD Style v4//EN" "http://www.ilixi.org/dtd/style.dtd">
 <style>
 	<PushButton>
-		<def3>
-			<left x="0" y="0" w="15" h="40" />
-			<mid x="15" y="0" w="70" h="40" />
-			<right x="85" y="0" w="15" h="40" />
-		</def3>
-		<pre3>
-			<left x="100" y="0" w="15" h="40" />
-			<mid x="115" y="0" w="70" h="40" />
-			<right x="185" y="0" w="15" h="40" />
-		</pre3>
-		<exp3>
-			<left x="200" y="0" w="15" h="40" />
-			<mid x="215" y="0" w="70" h="40" />
-			<right x="285" y="0" w="15" h="40" />
-		</exp3>
-		<dis3>
-			<left x="300" y="0" w="15" h="40" />
-			<mid x="315" y="0" w="70" h="40" />
-			<right x="385" y="0" w="15" h="40" />
-		</dis3>
-		<foc3>
-			<left x="400" y="0" w="15" h="40" />
-			<mid x="415" y="0" w="70" h="40" />
-			<right x="485" y="0" w="15" h="40" />
-		</foc3>
+		<cell_3H x="0" y="0" w1="12" w2="76" w3="12" h="40" />
+		<pre x="100" y="0" />
+		<exp x="200" y="0" />
+		<dis x="300" y="0" />
+		<foc x="400" y="0" />
 	</PushButton>
+
 	<PushButtonOK>
-		<def3>
-			<left x="0" y="40" w="15" h="40" />
-			<mid x="15" y="40" w="70" h="40" />
-			<right x="85" y="40" w="15" h="40" />
-		</def3>
-		<pre3>
-			<left x="100" y="40" w="15" h="40" />
-			<mid x="115" y="40" w="70" h="40" />
-			<right x="185" y="40" w="15" h="40" />
-		</pre3>
-		<exp3>
-			<left x="200" y="40" w="15" h="40" />
-			<mid x="215" y="40" w="70" h="40" />
-			<right x="285" y="40" w="15" h="40" />
-		</exp3>
-		<dis3>
-			<left x="300" y="40" w="15" h="40" />
-			<mid x="315" y="40" w="70" h="40" />
-			<right x="385" y="40" w="15" h="40" />
-		</dis3>
-		<foc3>
-			<left x="400" y="40" w="15" h="40" />
-			<mid x="415" y="40" w="70" h="40" />
-			<right x="485" y="40" w="15" h="40" />
-		</foc3>
+		<cell_3H x="0" y="40" w1="12" w2="76" w3="12" h="40" />
+		<pre x="100" y="40" />
+		<exp x="200" y="40" />
+		<dis x="300" y="40" />
+		<foc x="400" y="40" />
 	</PushButtonOK>
-	<PushButtonCANCEL>
-		<def3>
-			<left x="0" y="80" w="15" h="40" />
-			<mid x="15" y="80" w="70" h="40" />
-			<right x="85" y="80" w="15" h="40" />
-		</def3>
-		<pre3>
-			<left x="100" y="80" w="15" h="40" />
-			<mid x="115" y="80" w="70" h="40" />
-			<right x="185" y="80" w="15" h="40" />
-		</pre3>
-		<exp3>
-			<left x="200" y="80" w="15" h="40" />
-			<mid x="215" y="80" w="70" h="40" />
-			<right x="285" y="80" w="15" h="40" />
-		</exp3>
-		<dis3>
-			<left x="300" y="80" w="15" h="40" />
-			<mid x="310" y="80" w="70" h="40" />
-			<right x="385" y="80" w="15" h="40" />
-		</dis3>
-		<foc3>
-			<left x="400" y="80" w="15" h="40" />
-			<mid x="415" y="80" w="70" h="40" />
-			<right x="485" y="80" w="15" h="40" />
-		</foc3>
-	</PushButtonCANCEL>
+
+	<PushButtonCancel>
+		<cell_3H x="0" y="80" w1="12" w2="76" w3="12" h="40" />
+		<pre x="100" y="80" />
+		<exp x="200" y="80" />
+		<dis x="300" y="80" />
+		<foc x="400" y="80" />
+	</PushButtonCancel>
+
 	<ToolButton>
-		<def9>
-			<top-left x="0" y="120" w="15" h="15" />
-			<top-mid x="15" y="120" w="70" h="15" />
-			<top-right x="85" y="120" w="15" h="15" />
-			<left x="0" y="135" w="15" h="10" />
-			<mid x="15" y="135" w="70" h="10" />
-			<right x="85" y="135" w="15" h="10" />
-			<bottom-left x="0" y="145" w="15" h="15" />
-			<bottom-mid x="15" y="145" w="70" h="15" />
-			<bottom-right x="85" y="145" w="15" h="15" />
-		</def9>
-		<pre9>
-			<top-left x="100" y="120" w="15" h="15" />
-			<top-mid x="115" y="120" w="70" h="15" />
-			<top-right x="185" y="120" w="15" h="15" />
-			<left x="100" y="135" w="15" h="10" />
-			<mid x="115" y="135" w="70" h="10" />
-			<right x="185" y="135" w="15" h="10" />
-			<bottom-left x="100" y="145" w="15" h="15" />
-			<bottom-mid x="115" y="145" w="70" h="15" />
-			<bottom-right x="185" y="145" w="15" h="15" />
-		</pre9>
-		<exp9>
-			<top-left x="200" y="120" w="15" h="15" />
-			<top-mid x="215" y="120" w="70" h="15" />
-			<top-right x="285" y="120" w="15" h="15" />
-			<left x="200" y="135" w="15" h="10" />
-			<mid x="215" y="135" w="70" h="10" />
-			<right x="285" y="135" w="15" h="10" />
-			<bottom-left x="200" y="145" w="15" h="15" />
-			<bottom-mid x="215" y="145" w="70" h="15" />
-			<bottom-right x="285" y="145" w="15" h="15" />
-		</exp9>
-		<dis9>
-			<top-left x="300" y="120" w="15" h="15" />
-			<top-mid x="315" y="120" w="70" h="15" />
-			<top-right x="385" y="120" w="15" h="15" />
-			<left x="300" y="135" w="15" h="10" />
-			<mid x="315" y="135" w="70" h="10" />
-			<right x="385" y="135" w="15" h="10" />
-			<bottom-left x="300" y="145" w="15" h="15" />
-			<bottom-mid x="315" y="145" w="70" h="15" />
-			<bottom-right x="385" y="145" w="15" h="15" />
-		</dis9>
-		<foc9>
-			<top-left x="400" y="120" w="15" h="15" />
-			<top-mid x="415" y="120" w="70" h="15" />
-			<top-right x="485" y="120" w="15" h="15" />
-			<left x="400" y="135" w="15" h="10" />
-			<mid x="415" y="135" w="70" h="10" />
-			<right x="485" y="135" w="15" h="10" />
-			<bottom-left x="400" y="145" w="15" h="15" />
-			<bottom-mid x="415" y="145" w="70" h="15" />
-			<bottom-right x="485" y="145" w="15" h="15" />
-		</foc9>
+		<cell_9 x="0" y="120" w1="12" w2="76" w3="12" h1="12" h2="16" h3="12" />
+		<pre x="100" y="120" />
+		<exp x="200" y="120" />
+		<dis x="300" y="120" />
+		<foc x="400" y="120" />
 	</ToolButton>
-	<CheckBox>
-		<def1>
-			<left x="500" y="0" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="0" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="0" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="0" w="20" h="20" />
-		</dis1>
 
-		<foc1>
-			<left x="620" y="0" w="20" h="20" />
-		</foc1>
-	</CheckBox>
-	<CheckBoxChecked>
-		<def1>
-			<left x="500" y="20" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="20" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="20" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="20" w="20" h="20" />
-		</dis1>
+	<DirectionalButton1>
+		<cell_9 x="4" y="204" w1="5" w2="22" w3="5" h1="5" h2="22" h3="5" />
+		<pre x="44" y="204" />
+		<exp x="84" y="204" />
+		<dis x="124" y="204" />
+		<foc x="164" y="204" />
+	</DirectionalButton1>
 
-		<foc1>
-			<left x="620" y="20" w="20" h="20" />
-		</foc1>
+	<DirectionalButton2>
+		<cell_9 x="204" y="204" w1="5" w2="22" w3="5" h1="5" h2="22" h3="5" />
+		<pre x="244" y="204" />
+		<exp x="284" y="204" />
+		<dis x="324" y="204" />
+		<foc x="364" y="204" />
+	</DirectionalButton2>
 
-	</CheckBoxChecked>
-	<CheckBoxTriChecked>
-		<def1>
-			<left x="500" y="40" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="40" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="40" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="40" w="20" h="20" />
-		</dis1>
-		<foc1>
-			<left x="620" y="40" w="20" h="20" />
-		</foc1>
-	</CheckBoxTriChecked>
-	<RadioButtonOn>
-		<def1>
-			<left x="500" y="80" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="80" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="80" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="80" w="20" h="20" />
-		</dis1>
-		<foc1>
-			<left x="620" y="80" w="20" h="20" />
-		</foc1>
-	</RadioButtonOn>
-	<RadioButtonOff>
-		<def1>
-			<left x="500" y="60" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="60" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="60" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="60" w="20" h="20" />
-		</dis1>
-		<foc1>
-			<left x="620" y="60" w="20" h="20" />
-		</foc1>
-	</RadioButtonOff>
-	<ProgressBar>
-		<def3>
-			<left x="640" y="0" w="10" h="20" />
-			<mid x="650" y="0" w="190" h="20" />
-			<right x="840" y="0" w="10" h="20" />
-		</def3>
-		<dis3>
-			<left x="640" y="40" w="10" h="20" />
-			<mid x="650" y="40" w="190" h="20" />
-			<right x="840" y="40" w="10" h="20" />
-		</dis3>
-		<pIndicator>
-			<def3>
-				<left x="640" y="20" w="10" h="20" />
-				<mid x="650" y="20" w="190" h="20" />
-				<right x="840" y="20" w="10" h="20" />
-			</def3>
-
-			<dis3>
-				<left x="640" y="60" w="10" h="20" />
-				<mid x="650" y="60" w="190" h="20" />
-				<right x="840" y="60" w="10" h="20" />
-			</dis3>
-		</pIndicator>
-	</ProgressBar>
-	<HSlider>
-		<def3>
-			<left x="640" y="80" w="10" h="20" />
-			<mid x="650" y="80" w="190" h="20" />
-			<right x="840" y="80" w="10" h="20" />
-		</def3>
-		<dis3>
-			<left x="640" y="100" w="10" h="20" />
-			<mid x="650" y="100" w="190" h="20" />
-			<right x="840" y="100" w="10" h="20" />
-		</dis3>
-	</HSlider>
-	<VSlider>
-		<def3>
-			<left x="850" y="0" w="20" h="10" />
-			<mid x="850" y="10" w="20" h="180" />
-			<right x="850" y="190" w="20" h="10" />
-		</def3>
-		<dis3>
-			<left x="870" y="0" w="20" h="10" />
-			<mid x="870" y="10" w="20" h="180" />
-			<right x="870" y="190" w="20" h="10" />
-		</dis3>
-	</VSlider>
-	<SliderIndicator>
-		<def1>
-			<left x="500" y="100" w="20" h="20" />
-		</def1>
-		<pre1>
-			<left x="530" y="100" w="20" h="20" />
-		</pre1>
-		<exp1>
-			<left x="560" y="100" w="20" h="20" />
-		</exp1>
-		<dis1>
-			<left x="590" y="100" w="20" h="20" />
-		</dis1>
-		<foc1>
-			<left x="620" y="100" w="20" h="20" />
-		</foc1>
-	</SliderIndicator>
-	<Frame>
-		<def9>
-			<top-left x="500" y="120" w="15" h="15" />
-			<top-mid x="515" y="120" w="40" h="15" />
-			<top-right x="555" y="120" w="15" h="15" />
-			<left x="500" y="135" w="15" h="40" />
-			<mid x="515" y="135" w="40" h="40" />
-			<right x="555" y="135" w="15" h="40" />
-			<bottom-left x="500" y="175" w="15" h="15" />
-			<bottom-mid x="515" y="175" w="40" h="15" />
-			<bottom-right x="555" y="175" w="15" h="15" />
-		</def9>
-		<dis9>
-			<top-left x="570" y="120" w="15" h="15" />
-			<top-mid x="585" y="120" w="40" h="15" />
-			<top-right x="625" y="120" w="15" h="15" />
-			<left x="570" y="135" w="15" h="40" />
-			<mid x="585" y="135" w="40" h="40" />
-			<right x="625" y="135" w="15" h="40" />
-			<bottom-left x="570" y="175" w="15" h="15" />
-			<bottom-mid x="585" y="175" w="40" h="15" />
-			<bottom-right x="625" y="175" w="15" h="15" />
-		</dis9>
-	</Frame>
-	<Box>
-		<def9>
-			<top-left x="644" y="133" w="10" h="10" />
-			<top-mid x="654" y="133" w="42" h="10" />
-			<top-right x="696" y="133" w="10" h="10" />
-			<left x="644" y="143" w="10" h="42" />
-			<mid x="654" y="143" w="42" h="42" />
-			<right x="696" y="143" w="10" h="42" />
-			<bottom-left x="644" y="185" w="10" h="10" />
-			<bottom-mid x="654" y="185" w="42" h="10" />
-			<bottom-right x="696" y="185" w="10" h="10" />
-		</def9>
-		<dis9>
-			<top-left x="714" y="133" w="10" h="10" />
-			<top-mid x="724" y="133" w="42" h="10" />
-			<top-right x="766" y="133" w="10" h="10" />
-			<left x="714" y="143" w="10" h="42" />
-			<mid x="724" y="143" w="42" h="42" />
-			<right x="766" y="143" w="10" h="42" />
-			<bottom-left x="714" y="185" w="10" h="10" />
-			<bottom-mid x="724" y="185" w="42" h="10" />
-			<bottom-right x="766" y="185" w="10" h="10" />
-		</dis9>
-	</Box>
 	<LineInput>
-		<def9>
-			<top-left x="0" y="160" w="15" h="15" />
-			<top-mid x="15" y="160" w="70" h="15" />
-			<top-right x="85" y="160" w="15" h="15" />
-			<left x="0" y="175" w="15" h="10" />
-			<mid x="15" y="175" w="70" h="10" />
-			<right x="85" y="175" w="15" h="10" />
-			<bottom-left x="0" y="185" w="15" h="15" />
-			<bottom-mid x="15" y="185" w="70" h="15" />
-			<bottom-right x="85" y="185" w="15" h="15" />
-		</def9>
-		<pre9>
-			<top-left x="100" y="160" w="15" h="15" />
-			<top-mid x="115" y="160" w="70" h="15" />
-			<top-right x="185" y="160" w="15" h="15" />
-			<left x="100" y="175" w="15" h="10" />
-			<mid x="115" y="175" w="70" h="10" />
-			<right x="185" y="175" w="15" h="10" />
-			<bottom-left x="100" y="185" w="15" h="15" />
-			<bottom-mid x="115" y="185" w="70" h="15" />
-			<bottom-right x="185" y="185" w="15" h="15" />
-		</pre9>
-		<exp9>
-			<top-left x="200" y="160" w="15" h="15" />
-			<top-mid x="215" y="160" w="70" h="15" />
-			<top-right x="285" y="160" w="15" h="15" />
-			<left x="200" y="175" w="15" h="10" />
-			<mid x="215" y="175" w="70" h="10" />
-			<right x="285" y="175" w="15" h="10" />
-			<bottom-left x="200" y="185" w="15" h="15" />
-			<bottom-mid x="215" y="185" w="70" h="15" />
-			<bottom-right x="285" y="185" w="15" h="15" />
-		</exp9>
-		<dis9>
-			<top-left x="300" y="160" w="15" h="15" />
-			<top-mid x="315" y="160" w="70" h="15" />
-			<top-right x="385" y="160" w="15" h="15" />
-			<left x="300" y="175" w="15" h="10" />
-			<mid x="315" y="175" w="70" h="10" />
-			<right x="385" y="175" w="15" h="10" />
-			<bottom-left x="300" y="185" w="15" h="15" />
-			<bottom-mid x="315" y="185" w="70" h="15" />
-			<bottom-right x="385" y="185" w="15" h="15" />
-		</dis9>
-		<foc9>
-			<top-left x="400" y="160" w="15" h="15" />
-			<top-mid x="415" y="160" w="70" h="15" />
-			<top-right x="485" y="160" w="15" h="15" />
-			<left x="400" y="175" w="15" h="10" />
-			<mid x="415" y="175" w="70" h="10" />
-			<right x="485" y="175" w="15" h="10" />
-			<bottom-left x="400" y="185" w="15" h="15" />
-			<bottom-mid x="415" y="185" w="70" h="15" />
-			<bottom-right x="485" y="185" w="15" h="15" />
-		</foc9>
+		<cell_9 x="4" y="164" w1="8" w2="76" w3="8" h1="8" h2="16" h3="8" />
+		<dis x="104" y="164" />
+		<foc x="204" y="164" />
 	</LineInput>
-	<HScrollBar>
-		<def3>
-			<left x="640" y="120" w="10" h="10" />
-			<mid x="650" y="120" w="190" h="10" />
-			<right x="840" y="120" w="10" h="10" />
-		</def3>
-	</HScrollBar>
-	<VScrollBar>
-		<def3>
-			<left x="890" y="0" w="10" h="10" />
-			<mid x="890" y="10" w="10" h="180" />
-			<right x="890" y="190" w="10" h="10" />
-		</def3>
-	</VScrollBar>
+
+	<LineInput2>
+		<cell_9 x="304" y="164" w1="8" w2="0" w3="8" h1="8" h2="16" h3="8" />
+		<dis x="328" y="164" />
+		<foc x="352" y="164" />
+	</LineInput2>
+
+	<CheckBox>
+		<cell x="501" y="1" w="18" h="18" />
+		<pre x="531" y="1" />
+		<exp x="561" y="1" />
+		<dis x="591" y="1" />
+		<foc x="621" y="1" />
+	</CheckBox>
+
+	<CheckBoxChecked>
+		<cell x="501" y="21" w="18" h="18" />
+		<pre x="531" y="21" />
+		<exp x="561" y="21" />
+		<dis x="591" y="21" />
+		<foc x="621" y="21" />
+	</CheckBoxChecked>
+
+	<CheckBoxTriChecked>
+		<cell x="501" y="41" w="18" h="18" />
+		<pre x="531" y="41" />
+		<exp x="561" y="41" />
+		<dis x="591" y="41" />
+		<foc x="621" y="41" />
+	</CheckBoxTriChecked>
+
+	<RadioButtonOn>
+		<cell x="501" y="81" w="18" h="18" />
+		<pre x="531" y="81" />
+		<exp x="561" y="81" />
+		<dis x="591" y="81" />
+		<foc x="621" y="81" />
+	</RadioButtonOn>
+
+	<RadioButtonOff>
+		<cell x="501" y="61" w="18" h="18" />
+		<pre x="531" y="61" />
+		<exp x="561" y="61" />
+		<dis x="591" y="61" />
+		<foc x="621" y="61" />
+	</RadioButtonOff>
+
+	<HProgressBar>
+		<cell_3H x="639" y="4" w1="10" w2="192" w3="10" h="12" />
+		<dis x="639" y="44" />
+	</HProgressBar>
+
+	<HProgressBarFill>
+		<cell_3H x="639" y="24" w1="10" w2="192" w3="10" h="12" />
+		<dis x="639" y="64" />
+	</HProgressBarFill>
+
+	<VProgressBar>
+		<cell_3V x="959" y="0" w="12" h1="10" h2="190" h3="10" />
+		<dis x="999" y="0" />
+	</VProgressBar>
+
+	<VProgressBarFill>
+		<cell_3V x="979" y="0" w="12" h1="10" h2="190" h3="10" />
+		<dis x="1019" y="0" />
+	</VProgressBarFill>
+
+	<HSlider>
+		<cell_3H x="642" y="80" w1="4" w2="198" w3="4" h="20" />
+		<dis x="642" y="100" />
+		<fill x="642" y="120" />
+		<fill_dis x="642" y="140" />
+	</HSlider>
+
+	<VSlider>
+		<cell_3V x="853" y="2" w="14" h1="4" h2="188" h3="4" />
+		<dis x="873" y="2" />
+		<fill x="893" y="2" />
+		<fill_dis x="913" y="2" />
+	</VSlider>
+
+	<SliderIndicator>
+		<cell x="502" y="101" w="14" h="20" />
+		<pre x="532" y="101" />
+		<exp x="562" y="101" />
+		<dis x="592" y="101" />
+		<foc x="622" y="101" />
+	</SliderIndicator>
+
+	<Frame>
+		<cell_9 x="1146" y="113" w1="20" w2="62" w3="20" h1="20" h2="62" h3="20" />
+		<dis x="1036" y="113" />
+	</Frame>
+
+	<Panel>
+		<cell_9 x="1036" y="2" w1="7" w2="88" w3="7" h1="7" h2="88" h3="7" />
+		<dis x="1146" y="2" />
+		<passive x="1256" y="2" />
+	</Panel>
+
+	<PanelInverse overlap="3">
+		<cell x="509" y="129" w="8" h="8" />
+		<topright x="518" y="129" />
+		<botleft x="509" y="138" />
+		<botright x="518" y="138" />
+	</PanelInverse>
+
+	<PanelInverseDisabled>
+		<cell x="530" y="129" w="8" h="8" />
+		<topright x="539" y="129" />
+		<botleft x="530" y="139" />
+		<botright x="539" y="139" />
+	</PanelInverseDisabled>
+
+	<HScroller>
+		<cell_3H x="641" y="162" w1="6" w2="196" w3="6" h="6" />
+	</HScroller>
+
+	<VScroller>
+		<cell_3V x="942" y="2" w="6" h1="6" h2="184" h3="6" />
+	</VScroller>
+
+	<ScrollBar>
+		<cell_9 x="404" y="205" w1="5" w2="22" w3="5" h1="5" h2="21" h3="4" />
+		<dis x="444" y="204" />
+	</ScrollBar>
+
+	<HScrollBarRidge>
+		<cell x="527" y="178" w="10" h="10" />
+	</HScrollBarRidge>
+
+	<VScrollBarRidge>
+		<cell x="508" y="178" w="10" h="10" />
+	</VScrollBarRidge>
+
+	<ToolBar>
+		<cell x="604" y="180" w="150" h="56" />
+	</ToolBar>
+
+	<ToolBarButton>
+		<cell_3H x="761" y="204" w1="6" w2="20" w3="6" h="32" />
+		<pre x="801" y="204" />
+		<exp x="841" y="204" />
+		<dis x="881" y="204" />
+		<foc x="921" y="204" />
+	</ToolBarButton>
+
+	<HLine>
+		<cell x="507" y="169" w="90" h="2" />
+	</HLine>
+
+	<VLine>
+		<cell x="612" y="73" w="2" h="90" />
+	</VLine>
+
+	<HToolButtonCheck>
+		<cell_3H x="541" y="178" w1="4" w2="52" w3="4" h="4" />
+		<dis x="541" y="187" />
+	</HToolButtonCheck>
+
+	<VToolButtonCheck>
+		<cell_3V x="623" y="124" w="4" h1="4" h2="42" h3="4" />
+		<dis x="633" y="124" />
+	</VToolButtonCheck>
+
+	<DialogPanel>
+		<cell_9 x="1256" y="114" w1="20" w2="60" w3="20" h1="20" h2="60" h3="20" />
+	</DialogPanel>
+
 </style>
