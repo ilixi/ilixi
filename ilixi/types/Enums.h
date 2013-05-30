@@ -46,13 +46,13 @@ enum WidgetState
 //! This enum specifies the type of input events that can be consumed by a widget.
 enum WidgetInputMethod
 {
-    NoInput = 0x0000,                 //!< Widget does not consume pointer or key events.
-    KeyInput = 0x0001,                //!< Widget is capable of consuming key events only.
-    PointerInput = 0x0002,            //!< Widget is capable of consuming pointer events excluding motion.
-    PointerInputTracking = 0x0004,    //!< Widget is capable of consuming pointer motion events only.
-    PointerPassthrough = 0x0008,      //!< Widget passes all pointer events to children. If used with PointerInput widget will consume and pass same events.
-    PointerGrabbing = 0x0010,         //!< Widget can grab pointer events in certain cases.
-    OSKInput = 0x0020,                //!< Widget is capable of consuming input from OSK component only.
+    NoInput = 0x0000,               //!< Widget does not consume pointer or key events.
+    KeyInput = 0x0001,              //!< Widget is capable of consuming key events only.
+    PointerInput = 0x0002,          //!< Widget is capable of consuming pointer events excluding motion.
+    PointerInputTracking = 0x0004,  //!< Widget is capable of consuming pointer motion events only.
+    PointerPassthrough = 0x0008,    //!< Widget passes all pointer events to children. If used with PointerInput, widget will first consume and later pass same event.
+    PointerGrabbing = 0x0010,       //!< Widget can grab pointer events in certain cases.
+    OSKInput = 0x0020,              //!< Widget is capable of consuming input from OSK component only.
     KeyPointer = KeyInput | PointerInput,
     PointerTracking = PointerInput | PointerInputTracking,
     KeyPointerTracking = KeyInput | PointerInput | PointerInputTracking,
@@ -184,6 +184,11 @@ enum Parameter
     ButtonOffset,
     CheckBoxHeight,
     CheckBoxWidth,
+    DialogBottom,
+    DialogLeft,
+    DialogLR,
+    DialogTB,
+    DialogTop,
     FrameOffsetBottom,
     FrameOffsetLeft,
     FrameOffsetLR,
@@ -196,22 +201,32 @@ enum Parameter
     LineInputRight,
     LineInputTB,
     LineInputTop,
-    PushButtonLeft,
-    PushButtonRight,
-    PushButtonLR,
+    LineSeperatorHeight,
+    LineSeperatorWidth,
+    PanelBottom,
+    PanelInvHeight,
+    PanelInvLeft,
+    PanelInvOverlap,
+    PanelInvWidth,
+    PanelLeft,
+    PanelLR,
+    PanelRight,
+    PanelTB,
+    PanelTop,
     PushButtonHeight,
+    PushButtonLeft,
+    PushButtonLR,
+    PushButtonRight,
     RadioHeight,
     RadioWidth,
     ScrollBarHeight,
     ScrollBarWidth,
     SliderIndicatorHeight,
     SliderIndicatorWidth,
-    TabOffsetBottom,
-    TabOffsetLeft,
-    TabOffsetLR,
-    TabOffsetRight,
-    TabOffsetTB,
-    TabOffsetTop,
+    ToolBarButtonHeight,
+    ToolBarButtonLeft,
+    ToolBarButtonLR,
+    ToolBarHeight,
     ToolButtonBottom,
     ToolButtonIndicator,
     ToolButtonLeft,
@@ -291,7 +306,8 @@ enum AppOptions
 {
     OptNone = 0x00000000,               //!< Default application option.
     OptExclusive = 0x00000001,          //!< Application will use layer exclusively.
-    OptDale = 0x00000010,               //!< Enable FusionDale interfaces for Application.
+    OptDaleAuto = 0x00000010,           //!< Automatically enable FusionDale interfaces for Application if compositor is running.
+    OptDaleForce = 0x00000100,          //!< Always enable FusionDale interfaces for Application.
     OptSound = 0x00000020,              //!< Enable FusionSound interfaces for Application.
     OptExclSoundEffect = 0x00000040,    //!< Enable playback of sound effects via compositor.
     OptNoUpdates = 0x00000080,          //!< Disables window updates for Application.
