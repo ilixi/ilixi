@@ -6,11 +6,13 @@ libilixi_ui_la_CFLAGS	= 	$(AM_CFLAGS)
 libilixi_ui_la_LIBADD 	= 	@DEPS_LIBS@				
 libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							Button.cpp \
+							ButtonGroup.cpp \
 							Carousel.cpp \
 							CheckBox.cpp \
 							ComboBox.cpp \
 							ContainerBase.cpp \
 							Dialog.cpp \
+							DirectionalButton.cpp \
 							FileBrowser.cpp \
 							Frame.cpp \
 							GridLayout.cpp \
@@ -21,16 +23,19 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							Label.cpp \
 							LayoutBase.cpp \
 							LineInput.cpp \
+							LineSeperator.cpp \
 							ListBox.cpp \
 							ProgressBar.cpp \
 							PushButton.cpp \
 							RadioButton.cpp \
 							ScrollArea.cpp \
+							ScrollBar.cpp \
 							Slider.cpp \
 							Spacer.cpp \
 							SpinBox.cpp \
 							TabPanel.cpp \
 							TextBase.cpp \
+							ToolBar.cpp \
 							ToolButton.cpp \
 							VBoxLayout.cpp \
 							VideoPlayer.cpp \
@@ -40,11 +45,13 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 ilixi_includedir 		= 	$(includedir)/$(PACKAGE)-$(VERSION)/ui
 ilixi_include_HEADERS 	= 	Application.h \
 							Button.h \
+							ButtonGroup.h \
 							Carousel.h \
 							CheckBox.h \
 							ComboBox.h \
 							ContainerBase.h \
 							Dialog.h \
+							DirectionalButton.h \
 							FileBrowser.h \
 							Frame.h \
 							GridLayout.h \
@@ -55,16 +62,19 @@ ilixi_include_HEADERS 	= 	Application.h \
 							Label.h \
 							LayoutBase.h \
 							LineInput.h \
+							LineSeperator.h \
 							ListBox.h \
 							ProgressBar.h \
 							PushButton.h \
 							RadioButton.h \
 							ScrollArea.h \
+							ScrollBar.h \
 							Slider.h \
 							Spacer.h \
 							SpinBox.h \
 							TabPanel.h \
 							TextBase.h \
+							ToolBar.h \
 							ToolButton.h \
 							VBoxLayout.h \
 							VideoPlayer.h \

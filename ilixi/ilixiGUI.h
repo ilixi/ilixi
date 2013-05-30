@@ -25,9 +25,11 @@
 #define ILIXI_GUI_H_
 
 #include <ui/Application.h>
+#include <ui/ButtonGroup.h>
 #include <ui/CheckBox.h>
 #include <ui/ComboBox.h>
 #include <ui/Dialog.h>
+#include <ui/DirectionalButton.h>
 #include <ui/GridLayout.h>
 #include <ui/GridView.h>
 #include <ui/GroupBox.h>
@@ -35,15 +37,18 @@
 #include <ui/Icon.h>
 #include <ui/Label.h>
 #include <ui/LineInput.h>
+#include <ui/LineSeperator.h>
 #include <ui/ListBox.h>
 #include <ui/ProgressBar.h>
 #include <ui/PushButton.h>
 #include <ui/RadioButton.h>
 #include <ui/ScrollArea.h>
+#include <ui/ScrollBar.h>
 #include <ui/Slider.h>
 #include <ui/Spacer.h>
 #include <ui/SpinBox.h>
 #include <ui/TabPanel.h>
+#include <ui/ToolBar.h>
 #include <ui/ToolButton.h>
 #include <ui/VBoxLayout.h>
 
