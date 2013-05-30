@@ -49,6 +49,7 @@ Image::Image(const std::string& path)
           _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
+    ILOG_DEBUG(ILX_IMAGE, " -> path: %s\n", _imagePath.c_str());
 }
 
 Image::Image(const std::string& path, int width, int height)
@@ -59,6 +60,7 @@ Image::Image(const std::string& path, int width, int height)
           _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
+    ILOG_DEBUG(ILX_IMAGE, " -> path: %s - width: %d height: %d\n", _imagePath.c_str(), _size.width(), _size.height());
 }
 
 Image::Image(const std::string& path, const Size& size)
@@ -69,6 +71,7 @@ Image::Image(const std::string& path, const Size& size)
           _caps(DICAPS_NONE)
 {
     ILOG_TRACE(ILX_IMAGE);
+    ILOG_DEBUG(ILX_IMAGE, " -> path: %s - size: %d, %d\n", _imagePath.c_str(), _size.width(), _size.height());
 }
 
 Image::Image(Image* source, const Rectangle& sourceRect)
@@ -79,7 +82,8 @@ Image::Image(Image* source, const Rectangle& sourceRect)
           _caps(source->_caps)
 {
     ILOG_TRACE(ILX_IMAGE);
-    ILOG_DEBUG(ILX_IMAGE, " -> Size: %d, %d\n", _size.width(), _size.height());
+    ILOG_DEBUG(ILX_IMAGE, " -> SubImage of %p - size: %d, %d\n", source, _size.width(), _size.height());
+    ILOG_DEBUG(ILX_IMAGE, " -> Rect: %d, %d, %d, %d\n", sourceRect.x(), sourceRect.y(), sourceRect.width(), sourceRect.height());
     loadSubImage(source, sourceRect);
 }
 
@@ -134,6 +138,7 @@ Image::size()
 Size
 Image::preferredSize()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (loadImage())
     {
         int w, h;
@@ -146,6 +151,7 @@ Image::preferredSize()
 IDirectFBSurface*
 Image::getDFBSurface()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (loadImage())
         return _dfbSurface;
     else
@@ -193,9 +199,9 @@ Image::setSize(const Size& s)
 void
 Image::invalidateSurface()
 {
-    ILOG_TRACE(ILX_IMAGE);
     if (_dfbSurface)
     {
+        ILOG_TRACE(ILX_IMAGE);
         _dfbSurface->Release(_dfbSurface);
         _dfbSurface = NULL;
         if (_state & SubImage)
@@ -289,6 +295,7 @@ Image::loadImage()
 DFBImageCapabilities
 Image::getCaps()
 {
+    ILOG_TRACE(ILX_IMAGE);
     if (!_dfbSurface)
         loadImage();
     return _caps;
