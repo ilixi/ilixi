@@ -40,7 +40,7 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_COMPOSITOR, "ilixi/compositor/Compositor", "Compositor");
 
 ILXCompositor::ILXCompositor(int argc, char* argv[])
-        : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDale | OptSound)),
+        : Application(&argc, &argv, (AppOptions) (OptExclusive | OptDaleAuto | OptSound)),
           _appMan(NULL),
           _currentApp(NULL),
           _previousApp(NULL),
