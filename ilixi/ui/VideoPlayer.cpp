@@ -335,7 +335,7 @@ VideoPlayer::updateVPGeometry()
                 ILOG_ERROR(ILX_VIDEOPLAYER, "Cannot get video layer surface!\n");
             }
         }
-    } else if (PlatformManager::instance().appOptions() & OptDale)
+    } else if (PlatformManager::instance().appOptions() & OptDaleAuto)
     {
         // TODO video component
     } else
