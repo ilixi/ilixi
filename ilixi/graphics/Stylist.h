@@ -64,6 +64,12 @@ public:
     drawDialog(Painter* painter, Dialog* dialog);
 
     /*!
+     * Draws a directional button.
+     */
+    virtual void
+    drawDirectionalButton(Painter* painter, DirectionalButton* button);
+
+    /*!
      * Draws a frame.
      */
     virtual void
@@ -94,10 +100,22 @@ public:
     drawCheckBox(Painter* painter, CheckBox* checkbox);
 
     /*!
+     * Draws a combobox.
+     */
+    virtual void
+    drawComboBox(Painter* painter, ComboBox* combo, Image* down);
+
+    /*!
      * Draws a line input.
      */
     virtual void
     drawLineInput(Painter* painter, LineInput* input, bool cursor = false);
+
+    /*!
+     * Draws a line seperator.
+     */
+    virtual void
+    drawLineSeperator(Painter* painter, LineSeperator* seperator);
 
     /*!
      * Draws a GridView frame.
@@ -142,6 +160,12 @@ public:
     drawScrollBar(Painter* painter, int x, int y, int w, int h, Orientation orientation);
 
     /*!
+     * Draws a scroll bar with indicator.
+     */
+    virtual void
+    drawScrollBar(Painter* painter, ScrollBar* bar);
+
+    /*!
      * Draws a slider.
      */
     virtual void
@@ -151,19 +175,31 @@ public:
      * Draws a SpinBox.
      */
     virtual void
-    drawSpinBox(Painter* painter, SpinBox* spinBox);
+    drawSpinBox(Painter* painter, SpinBox* spinBox, const Size& size);
 
     /*!
      * Draws a tab panel button.
      */
     virtual void
-    drawTabPanelButton(Painter* painter, TabPanelButton* button);
+    drawTabPanelButton(Painter* painter, TabPanelButton* button, bool first);
 
     /*!
      * Draws a tab panel.
      */
     virtual void
-    drawTabPanel(Painter* painter, TabPanel* panel, int y);
+    drawTabPanel(Painter* painter, TabPanel* panel, int y, int index);
+
+    /*!
+     * Draws a toolbar background only.
+     */
+    virtual void
+    drawToolBar(Painter* painter, ToolBar* toolbar);
+
+    /*!
+     * Draws a toolbar button.
+     */
+    virtual void
+    drawToolBarButton(Painter* painter, ToolBarButton* button);
 
     /*!
      * Draws a toolbutton.
@@ -171,24 +207,30 @@ public:
     virtual void
     drawToolButton(Painter* painter, ToolButton* button);
 
-    /*!
-     * Draws a combobox.
-     */
     virtual void
-    drawComboBox(Painter* painter, ComboBox* combo);
-
-    virtual void
-    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners = AllCorners);
+    drawFrame(Painter* painter, int x, int y, int w, int h);
 
 protected:
     virtual void
     draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
+    void
+    draw9Frame(Painter* painter, const Rectangle& region, const Style::r9& rect);
+
     virtual void
-    draw9Frame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect, Corners corners = AllCorners);
+    draw9Frame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect);
+
+    virtual void
+    draw9FrameMid(Painter* painter, int x, int y, int w, int h, const Style::r9& rect);
+
+    virtual void
+    draw9CFrame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect1, const Style::r9& rect2, Corners corners = AllCorners);
 
     void
-    drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect);
+    drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect, const Style::r1_View_Panel& rect2);
+
+    void
+    drawTabFramePassive(Painter* p, int x, int y, int w, int h, const Style::r9& rect);
 
 };
 }

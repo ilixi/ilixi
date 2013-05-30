@@ -36,10 +36,6 @@ Stylist::Stylist()
         : StylistBase()
 {
     ILOG_TRACE(ILX_STYLIST);
-    _fonts = new FontPack();
-    _icons = new IconPack();
-    _palette = new Palette();
-    _style = new Style();
 }
 
 Stylist::~Stylist()
@@ -68,10 +64,10 @@ Stylist::drawDialog(Painter* p, Dialog* dialog)
 {
 //    int titleHeight = dialog->titleSize().height();
 
-    drawFrame(p, dialog);
+    draw9Frame(p, 0, 0, dialog->width(), dialog->height(), _style->dialog);
 
     // draw title
-    if (dialog->state() & DisabledState)
+    if (!dialog->enabled())
         p->setBrush(_palette->textDisabled);
     else
         p->setBrush(_palette->text);
@@ -81,12 +77,38 @@ Stylist::drawDialog(Painter* p, Dialog* dialog)
 }
 
 void
+Stylist::drawDirectionalButton(Painter* p, DirectionalButton* button)
+{
+    const WidgetState state = button->state();
+
+    if (!button->enabled())
+        draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.dis, _style->db1.dis, button->corners());
+    else if (state & PressedState)
+        draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.pre, _style->db1.pre, button->corners());
+    else if (state & ExposedState)
+        draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.exp, _style->db1.exp, button->corners());
+    else
+        draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.def, _style->db1.def, button->corners());
+
+    if (state & FocusedState)
+        draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.foc, _style->db1.foc, button->corners());
+
+    // Draw button text
+    if (!button->text().empty())
+    {
+        p->setFont(*button->font());
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout(), 0, state & PressedState ? 1 : 0);
+    }
+}
+
+void
 Stylist::drawFrame(Painter* p, Frame* frame)
 {
     const WidgetState state = frame->state();
 
     // Frame
-    if (state & DisabledState)
+    if (!frame->enabled())
         draw9Frame(p, 0, 0, frame->width(), frame->height(), _style->fr.dis);
     else
         draw9Frame(p, 0, 0, frame->width(), frame->height(), _style->fr.def);
@@ -95,7 +117,7 @@ Stylist::drawFrame(Painter* p, Frame* frame)
 void
 Stylist::drawLabel(Painter* p, Label* label)
 {
-    if (label->state() & DisabledState)
+    if (!label->enabled())
         p->setBrush(_palette->textDisabled);
     else
         p->setBrush(_palette->text);
@@ -136,7 +158,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
     // Indicator
     if (checkbox->checked())
     {
-        if (state & DisabledState)
+        if (!checkbox->enabled())
             p->blitImage(_style->_pack, _style->cbC.dis, 0, 0);
         else if (state & PressedState)
             p->blitImage(_style->_pack, _style->cbC.pre, 0, 0);
@@ -149,7 +171,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
             p->blitImage(_style->_pack, _style->cbC.foc, 0, 0);
     } else if (checkbox->partial())
     {
-        if (state & DisabledState)
+        if (!checkbox->enabled())
             p->blitImage(_style->_pack, _style->cbT.dis, 0, 0);
         else if (state & PressedState)
             p->blitImage(_style->_pack, _style->cbT.pre, 0, 0);
@@ -162,7 +184,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
             p->blitImage(_style->_pack, _style->cbT.foc, 0, 0);
     } else
     {
-        if (state & DisabledState)
+        if (!checkbox->enabled())
             p->blitImage(_style->_pack, _style->cb.dis, 0, 0);
         else if ((state & PressedState) || (checkbox->checkable() && checkbox->checked()))
             p->blitImage(_style->_pack, _style->cb.pre, 0, 0);
@@ -185,6 +207,42 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
 }
 
 void
+Stylist::drawComboBox(Painter* p, ComboBox* combo, Image* down)
+{
+    const WidgetState state = combo->state();
+
+    int wB = combo->height();
+    int wBG = combo->width() - wB;
+
+    if (!combo->enabled())
+        draw9CFrame(p, 0, 0, wBG, wB, _style->li.dis, _style->li2.dis, LeftCorners);
+    else
+        draw9CFrame(p, 0, 0, wBG, wB, _style->li.def, _style->li2.def, LeftCorners);
+
+    if (state & FocusedState)
+        draw9CFrame(p, 0, 0, wBG, wB, _style->li.foc, _style->li2.foc, LeftCorners);
+
+    // draw button
+    if (!combo->enabled())
+        draw9CFrame(p, wBG, 0, wB, wB, _style->db2.dis, _style->db1.dis, RightCorners);
+    else if (state & PressedState)
+        draw9CFrame(p, wBG, 0, wB, wB, _style->db2.pre, _style->db1.pre, RightCorners);
+    else if (state & ExposedState)
+        draw9CFrame(p, wBG, 0, wB, wB, _style->db2.exp, _style->db1.exp, RightCorners);
+    else
+        draw9CFrame(p, wBG, 0, wB, wB, _style->db2.def, _style->db1.def, RightCorners);
+
+    if (state & FocusedState)
+        draw9CFrame(p, wBG, 0, wB, wB, _style->db2.foc, _style->db1.foc, RightCorners);
+
+    // TODO fix this down arrow
+    p->stretchImage(down, Rectangle(wBG, 0, wB, wB));
+
+    p->setBrush(_palette->getGroup(state).baseText);
+    p->drawLayout(combo->layout());
+}
+
+void
 Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
 {
     const WidgetState state = input->state();
@@ -192,12 +250,8 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
     // Frame
     if (input->drawFrame())
     {
-        if (state & DisabledState)
+        if (!input->enabled())
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.dis);
-        else if (state & PressedState)
-            draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.pre);
-        else if (state & ExposedState)
-            draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.exp);
         else
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.def);
 
@@ -233,6 +287,12 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
 }
 
 void
+Stylist::drawLineSeperator(Painter* p, LineSeperator* sep)
+{
+    p->stretchImage(_style->_pack, Rectangle(0, 0, sep->width(), sep->height()), sep->orientation() == Horizontal ? _style->hLine : _style->vLine);
+}
+
+void
 Stylist::drawGridView(Painter* p, GridView* grid)
 {
     // TODO: draw GridView frame
@@ -247,8 +307,8 @@ Stylist::drawGroupBox(Painter* p, GroupBox* box)
     int tabHeight = box->titleSize().height();
 
     // Frame
-    drawTabFrame(p, defaultParameter(StyleHint::TabOffsetLeft), 0, box->titleSize().width(), tabHeight, _style->box.def);
-    draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight, _style->box.def);
+    draw9Frame(p, 0, tabHeight, box->width(), box->height() - tabHeight, _style->panel.def);
+    drawTabFrame(p, defaultParameter(StyleHint::PanelLeft), 0, box->titleSize().width() + defaultParameter(StyleHint::PanelInvLeft), tabHeight + defaultParameter(StyleHint::PanelInvOverlap), _style->panel.def, _style->panelInv);
 }
 
 void
@@ -259,7 +319,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     // Frame
     if (button->getPushButtonStyle() == Default)
     {
-        if (state & DisabledState)
+        if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.dis);
         else if ((state & PressedState) || (button->checkable() && button->checked()))
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.pre);
@@ -272,7 +332,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.foc);
     } else if (button->getPushButtonStyle() == OK)
     {
-        if (state & DisabledState)
+        if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.dis);
         else if ((state & PressedState) || (button->checkable() && button->checked()))
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.pre);
@@ -285,7 +345,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.foc);
     } else if (button->getPushButtonStyle() == CANCEL)
     {
-        if (state & DisabledState)
+        if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.dis);
         else if ((state & PressedState) || (button->checkable() && button->checked()))
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.pre);
@@ -314,7 +374,7 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
 
     if (button->checked())
     {
-        if (state & DisabledState)
+        if (!button->enabled())
             p->blitImage(_style->_pack, _style->rbOn.dis, 0, 0);
         else if (state & PressedState)
             p->blitImage(_style->_pack, _style->rbOn.pre, 0, 0);
@@ -327,7 +387,7 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
             p->blitImage(_style->_pack, _style->rbOn.foc, 0, 0);
     } else
     {
-        if (state & DisabledState)
+        if (!button->enabled())
             p->blitImage(_style->_pack, _style->rbOff.dis, 0, 0);
         else if (state & PressedState)
             p->blitImage(_style->_pack, _style->rbOff.pre, 0, 0);
@@ -354,20 +414,40 @@ Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
 {
     const WidgetState state = bar->state();
 
-    // Frame
-    if (state & DisabledState)
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->pr.dis);
-    else
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->pr.def);
-
-    // Indicator
-    if (bar->value())
+    if (bar->orientation() == Horizontal)
     {
-        int fillWidth = bar->width() * bar->value() / bar->range();
-        if (state & DisabledState)
-            draw3Frame(p, 0, 0, fillWidth, bar->height(), _style->prI.dis);
+        // Frame
+        if (!bar->enabled())
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->prH.dis);
         else
-            draw3Frame(p, 0, 0, fillWidth, bar->height(), _style->prI.def);
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->prH.def);
+
+        // Indicator
+        if (bar->value())
+        {
+            int fillWidth = bar->width() * bar->value() / bar->range();
+            if (!bar->enabled())
+                draw3Frame(p, 0, 0, fillWidth, bar->height(), _style->prHI.dis);
+            else
+                draw3Frame(p, 0, 0, fillWidth, bar->height(), _style->prHI.def);
+        }
+    } else
+    {
+        // Frame
+        if (!bar->enabled())
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->prV.dis, true);
+        else
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->prV.def, true);
+
+        // Indicator
+        if (bar->value())
+        {
+            int fillHeight = bar->height() * bar->value() / bar->range();
+            if (!bar->enabled())
+                draw3Frame(p, 0, bar->height() - fillHeight, bar->width(), fillHeight, _style->prVI.dis, true);
+            else
+                draw3Frame(p, 0, bar->height() - fillHeight, bar->width(), fillHeight, _style->prVI.def, true);
+        }
     }
 }
 
@@ -388,6 +468,39 @@ Stylist::drawScrollBar(Painter* p, int x, int y, int w, int h, Orientation orien
 }
 
 void
+Stylist::drawScrollBar(Painter* p, ScrollBar* bar)
+{
+    const WidgetState state = bar->state();
+
+    // background
+    if (!bar->enabled())
+        draw9Frame(p, bar->indicatorRegion(), _style->sb.dis);
+    else
+        draw9Frame(p, bar->indicatorRegion(), _style->sb.def);
+
+    // indicator
+    if (!bar->enabled())
+        draw9Frame(p, bar->indicator(), _style->db1.dis);
+    else if (state & PressedState)
+        draw9Frame(p, bar->indicator(), _style->db1.pre);
+    else if (state & ExposedState)
+        draw9Frame(p, bar->indicator(), _style->db1.exp);
+    else
+        draw9Frame(p, bar->indicator(), _style->db1.def);
+
+    int wDif = bar->indicator().width() - _style->sbRH.width();
+    int hDif = bar->indicator().height() - _style->sbRV.height();
+
+    if (wDif > 5 && hDif > 5)
+    {
+        if (bar->orientation() == Horizontal)
+            p->blitImage(_style->_pack, _style->sbRH, bar->indicator().x() + wDif / 2, hDif / 2);
+        else
+            p->blitImage(_style->_pack, _style->sbRV, wDif / 2, bar->indicator().y() + hDif / 2);
+    }
+}
+
+void
 Stylist::drawSlider(Painter* p, Slider* bar)
 {
     const WidgetState state = bar->state();
@@ -399,10 +512,11 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         // fill
         if (bar->value() > bar->minimum())
         {
+            int offset = bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth) / 2;
             if (bar->inverted())
-                draw3Frame(p, bar->_indicator.x(), 0, bar->width() - bar->_indicator.x(), bar->height(), _style->hSl.dis);
+                draw3Frame(p, offset, 0, bar->width() - offset, bar->height(), _style->hSl.dis);
             else
-                draw3Frame(p, 0, 0, bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth), bar->height(), _style->hSl.dis);
+                draw3Frame(p, 0, 0, offset, bar->height(), _style->hSl.dis);
         }
     } else // Vertical
     {
@@ -411,15 +525,16 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         // fill
         if (bar->value() > bar->minimum())
         {
+            int offset = bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight) / 2;
             if (bar->inverted())
-                draw3Frame(p, 0, 0, bar->width(), bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight), _style->vSl.dis, true);
+                draw3Frame(p, 0, 0, bar->width(), offset, _style->vSl.dis, true);
             else
-                draw3Frame(p, 0, bar->_indicator.y(), bar->width(), bar->height() - bar->_indicator.y(), _style->vSl.dis, true);
+                draw3Frame(p, 0, offset, bar->width(), bar->height() - offset, _style->vSl.dis, true);
         }
     }
 
-    // control
-    if (state & DisabledState)
+// control
+    if (!bar->enabled())
         p->blitImage(_style->_pack, _style->slI.dis, bar->_indicator.x(), bar->_indicator.y());
     else if (state & PressedState)
         p->blitImage(_style->_pack, _style->slI.pre, bar->_indicator.x(), bar->_indicator.y());
@@ -432,22 +547,18 @@ Stylist::drawSlider(Painter* p, Slider* bar)
 }
 
 void
-Stylist::drawSpinBox(Painter* p, SpinBox* box)
+Stylist::drawSpinBox(Painter* p, SpinBox* box, const Size& size)
 {
     const WidgetState state = box->state();
 
     //Frame
-    if (state & DisabledState)
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.dis);
-    else if (state & PressedState)
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.pre);
-//    else if (state & ExposedState)
-//        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.exp);
+    if (!box->enabled())
+        draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.dis);
     else
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.def);
+        draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.def);
 
     if (state & FocusedState)
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li.foc);
+        draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.foc);
 
     if (box->layout().text().size())
     {
@@ -459,14 +570,23 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box)
 }
 
 void
-Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
+Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button, bool first)
 {
     const WidgetState state = button->state();
 
-    if (button->checked())
-        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->box.def);
-    else
-        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->box.dis);
+    if (first)
+    {
+        if (button->checked())
+            drawTabFrame(p, 0, 0, button->width(), button->height(), _style->panel.def, _style->panelInv);
+        else
+            drawTabFramePassive(p, 0, 0, button->width(), button->height(), _style->panel.dis);
+    } else
+    {
+        if (button->checked())
+            drawTabFrame(p, 0, 0, button->width(), button->height(), _style->panel.def, _style->panelInv);
+        else
+            drawTabFramePassive(p, 0, 0, button->width(), button->height(), _style->panel.dis);
+    }
 
     // Text
     if (!button->text().empty())
@@ -481,24 +601,60 @@ Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button)
 }
 
 void
-Stylist::drawTabPanel(Painter* p, TabPanel* panel, int y)
+Stylist::drawTabPanel(Painter* p, TabPanel* panel, int y, int index)
 {
-    draw9Frame(p, 0, y, panel->width(), panel->height() - y, _style->box.def);
+    // TODO use index to draw AllExceptTopLeft
+    draw9Frame(p, 0, y, panel->width(), panel->height() - y, _style->panel.def);
+}
+
+void
+Stylist::drawToolBar(Painter* p, ToolBar* bar)
+{
+    p->stretchImage(_style->_pack, Rectangle(0, 0, bar->width(), bar->height()), _style->tbar);
+}
+
+void
+Stylist::drawToolBarButton(Painter* p, ToolBarButton* button)
+{
+    const WidgetState state = button->state();
+
+    if (!button->enabled())
+        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.dis);
+    else if (state & PressedState)
+//        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.pre);
+        p->fillRectangle(0, 0, button->width(), button->height());
+    else if (state & ExposedState)
+        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.exp);
+    else
+        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.def);
+
+    if (state & FocusedState)
+        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.foc);
+
+    // Draw button text
+    if (!button->text().empty())
+    {
+        p->setFont(*button->font());
+        p->setBrush(_palette->getGroup(state).text);
+        p->drawLayout(button->layout(), 0, state & PressedState ? 1 : 0);
+    }
 }
 
 void
 Stylist::drawToolButton(Painter* p, ToolButton* button)
 {
     const WidgetState state = button->state();
-
+    int y = 0;
     if (button->drawFrame())
     {
         // Frame
-        if (state & DisabledState)
+        if (!button->enabled())
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.dis);
         else if (state & PressedState)
+        {
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.pre);
-        else if (state & ExposedState)
+            y = 1;
+        } else if (state & ExposedState)
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.exp);
         else
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.def);
@@ -512,26 +668,16 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
     if (button->checkable())
     {
         int wIndicator = defaultParameter(StyleHint::ToolButtonIndicator);
+
         bool horizontal = false;
         if ((buttonStyle == ToolButton::IconBelowText) || (buttonStyle == ToolButton::IconAboveText))
             horizontal = true;
-        const WidgetState state = button->state();
-        int y;
-        if (horizontal)
-            y = button->height() - defaultParameter(StyleHint::ToolButtonTop) - wIndicator;
-        else
-            y = defaultParameter(StyleHint::ToolButtonTop);
 
-        if (button->checked())
-            p->setBrush(_palette->getGroup(state).fill);
-        else
-            p->setBrush(_palette->getGroup(state).bg);
-
-        // draw indicator
         if (horizontal)
-            p->fillRectangle(2, y, button->width() - 4, wIndicator);
+            draw3Frame(p, defaultParameter(StyleHint::ToolButtonLeft), button->height() - defaultParameter(StyleHint::ToolButtonBottom) - wIndicator + y, button->width() - defaultParameter(StyleHint::ToolButtonLR), wIndicator, button->checked() ? _style->tbIndH.def : _style->tbIndH.dis);
         else
-            p->fillRectangle(defaultParameter(StyleHint::ToolButtonLeft), defaultParameter(StyleHint::ToolButtonTop), wIndicator, button->height() - defaultParameter(StyleHint::ToolButtonTB));
+            draw3Frame(p, defaultParameter(StyleHint::ToolButtonLeft), defaultParameter(StyleHint::ToolButtonTop) + y, wIndicator, button->height() - defaultParameter(StyleHint::ToolButtonTB), button->checked() ? _style->tbIndV.def : _style->tbIndV.dis, true);
+
     }
 
     // Draw button text
@@ -539,40 +685,14 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
     {
         p->setFont(*button->font());
         p->setBrush(_palette->getGroup(state).text);
-        p->drawLayout(button->layout(), 0, state & PressedState ? 1 : 0);
+        p->drawLayout(button->layout(), 0, y);
     }
 }
 
 void
-Stylist::drawComboBox(Painter* painter, ComboBox* combo)
+Stylist::drawFrame(Painter* painter, int x, int y, int w, int h)
 {
-//    const WidgetState state = combo->state();
-//
-//    // draw frame
-//    painter->setBrush(_palette->getGroup(state).base);
-//    painter->fillRectangle(0, 0, combo->width(), combo->height());
-//    if (state & FocusedState)
-//        painter->setPen(_palette->focusBottom);
-//    else
-//        painter->setPen(_palette->getGroup(state).borderBottom);
-//    painter->drawRectangle(0, 0, combo->width(), combo->height());
-//
-//    // draw button
-//    int x = combo->width() - _style->_comboboxButtonWidth - 1;
-//    painter->setBrush(_palette->getGroup(state).bgBottom);
-//    painter->fillRectangle(x, 1, _style->_comboboxButtonWidth,
-//            combo->height() - 2);
-//    painter->drawImage(_style->_arrowDown, x, 0, _style->_comboboxButtonWidth,
-//            combo->height());
-//
-//    painter->setBrush(_palette->getGroup(state).baseText);
-//    painter->drawLayout(combo->layout());
-}
-
-void
-Stylist::drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners)
-{
-    draw9Frame(painter, x, y, w, h, _style->fr.def, corners);
+    draw9Frame(painter, x, y, w, h, _style->fr.def);
 }
 
 void
@@ -580,49 +700,67 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
 {
     if (vertical)
     {
-        DFBRectangle blitRects[2];
+        if (h < rect.r.dfbRect().h)
+            return;
+        else if (h < rect.l.dfbRect().h + rect.r.dfbRect().h)
+            p->blitImage(_style->_pack, rect.r, x, y + h - rect.r.height());
+        else
+        {
+            DFBRectangle blitRects[2];
 
-        blitRects[0] = rect.l.dfbRect();
-        blitRects[1] = rect.r.dfbRect();
+            blitRects[0] = rect.l.dfbRect();
+            blitRects[1] = rect.r.dfbRect();
 
-        DFBPoint blitPoints[2];
+            DFBPoint blitPoints[2];
 
-        blitPoints[0].x = x;
-        blitPoints[0].y = y;
+            blitPoints[0].x = x;
+            blitPoints[0].y = y;
 
-        blitPoints[1].x = x;
-        blitPoints[1].y = y + h - rect.r.height();
+            blitPoints[1].x = x;
+            blitPoints[1].y = y + h - rect.r.height();
 
-        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
-        p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
+            p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+            p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
+        }
     } else
     {
-        DFBRectangle blitRects[2];
+        if (w < rect.l.dfbRect().w)
+            return;
+        if (w <= rect.l.dfbRect().w + rect.r.dfbRect().w)
+            p->blitImage(_style->_pack, rect.l, x, y);
+        else
+        {
+            DFBRectangle blitRects[2];
 
-        blitRects[0] = rect.l.dfbRect();
-        blitRects[1] = rect.r.dfbRect();
+            blitRects[0] = rect.l.dfbRect();
+            blitRects[1] = rect.r.dfbRect();
 
-        DFBPoint blitPoints[2];
+            DFBPoint blitPoints[2];
 
-        blitPoints[0].x = x;
-        blitPoints[0].y = y;
+            blitPoints[0].x = x;
+            blitPoints[0].y = y;
 
-        blitPoints[1].x = x + w - rect.r.width();
-        blitPoints[1].y = y;
+            blitPoints[1].x = x + w - rect.r.width();
+            blitPoints[1].y = y;
 
-        p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
-        p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m, flags);
+            p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+            p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y, w - rect.l.width() - rect.r.width(), h), rect.m, flags);
+        }
     }
 }
 
 void
-Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rect, Corners corners)
+Stylist::draw9Frame(Painter* p, const Rectangle& region, const Style::r9& rect)
+{
+    draw9Frame(p, region.x(), region.y(), region.width(), region.height(), rect);
+}
+
+void
+Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
 {
     int midWidth = w - rect.tl.width() - rect.tr.width();
     int midHeight = h - rect.bl.height() - rect.tl.height();
     int by = y + h - rect.bl.height();
-
-    // TODO implement corners
 
     DFBRectangle blitRects[4];
 
@@ -693,10 +831,205 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rec
 }
 
 void
-Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+Stylist::draw9FrameMid(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+{
+    int midHeight = h - rect.bm.height() - rect.tm.height();
+
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+    DFBRectangle stretchDestRects[3];
+
+    stretchDestRects[0].x = x;
+    stretchDestRects[0].y = y;
+    stretchDestRects[0].w = w;
+    stretchDestRects[0].h = rect.tm.height();
+
+    stretchDestRects[1].x = x;
+    stretchDestRects[1].y = y + rect.tm.height();
+    stretchDestRects[1].w = w;
+    stretchDestRects[1].h = midHeight;
+
+    stretchDestRects[2].x = x;
+    stretchDestRects[2].y = h - rect.bm.height();
+    stretchDestRects[2].w = w;
+    stretchDestRects[2].h = rect.bm.height();
+
+    DFBRectangle stretchSourceRects[3];
+    stretchSourceRects[0] = rect.tm.dfbRect();
+    stretchSourceRects[1] = rect.m.dfbRect();
+    stretchSourceRects[2] = rect.bm.dfbRect();
+
+    p->batchStretchBlitImage(_style->_pack, stretchSourceRects, stretchDestRects, 3);
+#else
+    p->stretchImage(_style->_pack, Rectangle(x, y, w, rect.tm.height()), rect.tm);
+    p->stretchImage(_style->_pack, Rectangle(x, y + rect.tm.height(), w, midHeight), rect.m);
+    p->stretchImage(_style->_pack, Rectangle(x, h - rect.bm.height(), w, rect.bm.height()), rect.bm);
+#endif
+}
+
+void
+Stylist::draw9CFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect1, const Style::r9& rect2, Corners corners)
+{
+    int midWidth = w - rect1.tl.width() - rect1.tr.width();
+    int midHeight = h - rect1.bl.height() - rect1.tl.height();
+    int by = y + h - rect1.bl.height();
+
+    DFBRectangle blitRects[4];
+
+    if (corners & TopLeft)
+        blitRects[0] = rect1.tl.dfbRect();
+    else
+        blitRects[0] = rect2.tl.dfbRect();
+
+    if (corners & TopRight)
+        blitRects[1] = rect1.tr.dfbRect();
+    else
+        blitRects[1] = rect2.tr.dfbRect();
+
+    if (corners & BottomLeft)
+        blitRects[2] = rect1.bl.dfbRect();
+    else
+        blitRects[2] = rect2.bl.dfbRect();
+
+    if (corners & BottomRight)
+        blitRects[3] = rect1.br.dfbRect();
+    else
+        blitRects[3] = rect2.br.dfbRect();
+
+    DFBPoint blitPoints[4];
+
+    blitPoints[0].x = x;
+    blitPoints[0].y = y;
+
+    blitPoints[1].x = x + w - rect1.tr.width();
+    blitPoints[1].y = y;
+
+    blitPoints[2].x = x;
+    blitPoints[2].y = by;
+
+    blitPoints[3].x = x + w - rect1.br.width();
+    blitPoints[3].y = by;
+
+    p->batchBlitImage(_style->_pack, blitRects, blitPoints, 4);
+
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+    DFBRectangle stretchDestRects[5];
+
+    stretchDestRects[0].x = x + rect1.tl.width();
+    stretchDestRects[0].y = y;
+    stretchDestRects[0].w = midWidth;
+    stretchDestRects[0].h = rect1.tm.height();
+
+    stretchDestRects[1].x = x;
+    stretchDestRects[1].y = y + rect1.tl.height();
+    stretchDestRects[1].w = rect1.tm.height();
+    stretchDestRects[1].h = midHeight;
+
+    stretchDestRects[2].x = x + w - rect1.r.width();
+    stretchDestRects[2].y = y + rect1.tl.height();
+    stretchDestRects[2].w = rect1.r.width();
+    stretchDestRects[2].h = midHeight;
+
+    stretchDestRects[3].x = x + rect1.l.width();
+    stretchDestRects[3].y = y + rect1.tl.height();
+    stretchDestRects[3].w = midWidth;
+    stretchDestRects[3].h = midHeight;
+
+    stretchDestRects[4].x = x + rect1.bl.width();
+    stretchDestRects[4].y = by;
+    stretchDestRects[4].w = midWidth;
+    stretchDestRects[4].h = rect1.bm.height();
+
+    DFBRectangle stretchSourceRects[5];
+    stretchSourceRects[0] = rect1.tm.dfbRect();
+    stretchSourceRects[1] = rect1.l.dfbRect();
+    stretchSourceRects[2] = rect1.r.dfbRect();
+    stretchSourceRects[3] = rect1.m.dfbRect();
+    stretchSourceRects[4] = rect1.bm.dfbRect();
+
+    p->batchStretchBlitImage(_style->_pack, stretchSourceRects, stretchDestRects, 5);
+#else
+    p->stretchImage(_style->_pack, Rectangle(x + rect1.tl.width(), y, midWidth, rect1.tm.height()), rect1.tm);
+    p->stretchImage(_style->_pack, Rectangle(x, y + rect1.tl.height(), rect1.tm.height(), midHeight), rect1.l);
+    p->stretchImage(_style->_pack, Rectangle(x + w - rect1.r.width(), y + rect1.tl.height(), rect1.r.width(), midHeight), rect1.r);
+    p->stretchImage(_style->_pack, Rectangle(x + rect1.l.width(), y + rect1.tl.height(), midWidth, midHeight), rect1.m);
+    p->stretchImage(_style->_pack, Rectangle(x + rect1.bl.width(), by, midWidth, rect1.bm.height()), rect1.bm);
+#endif
+}
+
+void
+Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect, const Style::r1_View_Panel& rect2)
 {
     int midWidth = w - rect.tl.width() - rect.tr.width();
     int midHeight = h - rect.tl.height();
+    int by = y + h - rect.bl.height();
+
+    DFBRectangle blitRects[4];
+
+    blitRects[0] = rect.tl.dfbRect();
+    blitRects[1] = rect.tr.dfbRect();
+    blitRects[2] = rect2.br.dfbRect();
+    blitRects[3] = rect2.bl.dfbRect();
+
+    DFBPoint blitPoints[4];
+
+    blitPoints[0].x = x + rect2.br.width() - defaultParameter(StyleHint::PanelInvOverlap);
+    blitPoints[0].y = y;
+
+    blitPoints[1].x = x + w - rect.tr.width() - rect2.br.width() + defaultParameter(StyleHint::PanelInvOverlap);
+    blitPoints[1].y = y;
+
+    blitPoints[2].x = x;
+    blitPoints[2].y = h - rect2.br.height();
+
+    blitPoints[3].x = x + w - rect2.bl.width();
+    blitPoints[3].y = h - rect2.bl.height();
+
+    p->batchBlitImage(_style->_pack, blitRects, blitPoints, 4);
+
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+    DFBRectangle stretchDestRects[4];
+
+    stretchDestRects[0].x = x + rect.tl.width() + rect2.br.width() - defaultParameter(StyleHint::PanelInvOverlap);
+    stretchDestRects[0].y = y;
+    stretchDestRects[0].w = midWidth - rect2.br.width();
+    stretchDestRects[0].h = rect.tm.height();
+
+    stretchDestRects[1].x = x + rect2.br.width() - defaultParameter(StyleHint::PanelInvOverlap);
+    stretchDestRects[1].y = y + rect.tl.height();
+    stretchDestRects[1].w = rect.tm.height();
+    stretchDestRects[1].h = midHeight - rect2.br.height();
+
+    stretchDestRects[2].x = x + w - rect.tr.width() - rect2.br.width() + defaultParameter(StyleHint::PanelInvOverlap);
+    stretchDestRects[2].y = y + rect.tl.height();
+    stretchDestRects[2].w = rect.tm.height();
+    stretchDestRects[2].h = midHeight - rect2.br.height();
+
+    stretchDestRects[3].x = x + rect.l.width();
+    stretchDestRects[3].y = y + rect.tl.height();
+    stretchDestRects[3].w = midWidth;
+    stretchDestRects[3].h = midHeight;
+
+    DFBRectangle stretchSourceRects[4];
+
+    stretchSourceRects[0] = rect.tm.dfbRect();
+    stretchSourceRects[1] = rect.l.dfbRect();
+    stretchSourceRects[2] = rect.r.dfbRect();
+    stretchSourceRects[3] = rect.m.dfbRect();
+
+    p->batchStretchBlitImage(_style->_pack, stretchSourceRects, stretchDestRects, 4);
+#else
+    p->stretchImage(_style->_pack, Rectangle(x + rect.tl.width(), y, midWidth, rect.tm.height()), rect.tm);
+    p->stretchImage(_style->_pack, Rectangle(x, y + rect.tl.height(), rect.tm.height(), midHeight), rect.l);
+    p->stretchImage(_style->_pack, Rectangle(x + w - rect.tr.width(), y + rect.tl.height(), rect.tm.height(), midHeight), rect.r);
+    p->stretchImage(_style->_pack, Rectangle(x + rect.l.width(), y + rect.tl.height(), midWidth, midHeight), rect.m);
+#endif
+}
+
+void
+Stylist::drawTabFramePassive(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+{
+    int midWidth = w - rect.tl.width() - rect.tr.width();
+    int midHeight = h - rect.tl.height() - defaultParameter(StyleHint::PanelInvOverlap);
     int by = y + h - rect.bl.height();
 
     DFBRectangle blitRects[2];
