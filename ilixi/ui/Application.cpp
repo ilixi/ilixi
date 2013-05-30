@@ -22,6 +22,7 @@
  */
 
 #include <ui/Application.h>
+#include <ui/ToolBar.h>
 #include <graphics/Painter.h>
 #include <graphics/Stylist.h>
 #include <core/Logger.h>
@@ -36,7 +37,9 @@ D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
 Application::Application(int* argc, char*** argv, AppOptions opts)
         : AppBase(argc, argv, opts),
           WindowWidget(),
-          _backgroundImage(NULL)
+          _backgroundImage(NULL),
+          _toolbar(NULL),
+          _toolbarNorth(true)
 {
     ILOG_TRACE_W(ILX_APPLICATION);
 
@@ -50,9 +53,9 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
 
 Application::~Application()
 {
+    ILOG_TRACE_W(ILX_APPLICATION);
     delete _backgroundImage;
     delete _stylist;
-    ILOG_TRACE_W(ILX_APPLICATION);
 }
 
 Image*
@@ -70,12 +73,16 @@ Application::canvasX() const
 int
 Application::canvasY() const
 {
+    if (_toolbar && _toolbarNorth)
+        return _toolbar->preferredSize().height() + _margin.top();
     return _margin.top();
 }
 
 int
 Application::canvasHeight() const
 {
+    if (_toolbar)
+        return height() - _margin.vSum() - _toolbar->preferredSize().height();
     return height() - _margin.vSum();
 }
 
@@ -210,6 +217,39 @@ Application::setStyleFromFile(const char* style)
 {
     if (_stylist)
         return _stylist->setStyleFromFile(style);
+    return false;
+}
+
+void
+Application::updateLayoutGeometry()
+{
+    if (_toolbar)
+    {
+        int h = _toolbar->preferredSize().height();
+        if (_toolbarNorth)
+            _toolbar->setGeometry(0, 0, width(), h);
+        else
+            _toolbar->setGeometry(0, height() - h, width(), h);
+    }
+    _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
+}
+
+const ToolBar*
+Application::toolbar() const
+{
+    return _toolbar;
+}
+
+bool
+Application::setToolbar(ToolBar* toolbar, bool positionNorth)
+{
+    if (addChild(toolbar))
+    {
+        removeChild(_toolbar);
+        _toolbar = toolbar;
+        _toolbarNorth = positionNorth;
+        return true;
+    }
     return false;
 }
 

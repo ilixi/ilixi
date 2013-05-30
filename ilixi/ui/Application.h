@@ -29,11 +29,14 @@
 
 namespace ilixi
 {
+
+class ToolBar;
+
 //! Windowed application.
 /*!
  * This class is used to create a new UI application with its own window.
  */
-class Application : public WindowWidget, public AppBase
+class Application : public AppBase, public WindowWidget
 {
 public:
     /*!
@@ -95,6 +98,18 @@ public:
     void
     setBackgroundImage(std::string imagePath);
 
+    const ToolBar*
+    toolbar() const;
+
+    /*!
+     * Adds a toolbar to application.
+     *
+     * @param bar
+     * @param positionNorth if true places toolbar at top, else at bottom.
+     */
+    bool
+    setToolbar(ToolBar* toolbar, bool positionNorth = true);
+
     /*!
      * This signal is emitted after application window is painted and visible.
      */
@@ -149,9 +164,19 @@ protected:
     static bool
     setStyleFromFile(const char* style);
 
+    /*!
+     * Updates layout and toolbar geometry
+     */
+    virtual void
+    updateLayoutGeometry();
+
 private:
     //! Background image of application.
     Image* _backgroundImage;
+    //! Application toolbar if any.
+    ToolBar* _toolbar;
+    //! This property stores toolbar position.
+    bool _toolbarNorth;
 
     /*!
      * This method is used if application has backgroundFilled set to true.
