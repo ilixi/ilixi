@@ -59,12 +59,53 @@ public:
     Image* _pack;
 
 #ifndef ILX_DOXYGEN_SKIP
+
+    struct r1_Input
+    {
+        Rectangle def;
+        Rectangle pre;
+        Rectangle exp;
+        Rectangle dis;
+        Rectangle foc;
+    };
+
+    struct r1_View_Panel
+    {
+        Rectangle tl;
+        Rectangle tr;
+        Rectangle bl;
+        Rectangle br;
+    };
+
     struct r3
     {
         Rectangle l;
         Rectangle m;
         Rectangle r;
-    } hScr, vScr;
+    };
+
+    struct r3_Input
+    {
+        r3 def;
+        r3 pre;
+        r3 exp;
+        r3 dis;
+        r3 foc;
+    };
+
+    struct r3_View
+    {
+        r3 def;
+        r3 dis;
+    };
+
+    struct r3_View_Fill
+    {
+        r3 def;
+        r3 dis;
+        r3 fill;
+        r3 fill_dis;
+    };
 
     struct r9
     {
@@ -79,24 +120,6 @@ public:
         Rectangle br;
     };
 
-    struct r3_Input
-    {
-        r3 def;
-        r3 pre;
-        r3 exp;
-        r3 dis;
-        r3 foc;
-    } pb, pbOK, pbCAN;
-
-    struct r1_Input
-    {
-        Rectangle def;
-        Rectangle pre;
-        Rectangle exp;
-        Rectangle dis;
-        Rectangle foc;
-    } cb, cbC, cbT, rbOn, rbOff, slI;
-
     struct r9_Input
     {
         r9 def;
@@ -104,19 +127,111 @@ public:
         r9 exp;
         r9 dis;
         r9 foc;
-    } tb, li;
+    };
 
-    struct r3_View
+    struct r9_Input2
     {
-        r3 def;
-        r3 dis;
-    } pr, prI, hSl, vSl;
+        r9 def;
+        r9 dis;
+        r9 foc;
+    };
 
     struct r9_View
     {
         r9 def;
         r9 dis;
-    } fr, box;
+    };
+
+    struct r9_View_Panel
+    {
+        r9 def;
+        r9 dis;
+        r9 passive;
+    };
+
+    // PushButton
+    r3_Input pb;
+    // PushButtonOK
+    r3_Input pbOK;
+    // PushButtonCancel
+    r3_Input pbCAN;
+
+    // ToolButton
+    r9_Input tb;
+    // DirectionalButton1
+    r9_Input db1;
+    // DirectionalButton2
+    r9_Input db2;
+    // LineInput
+    r9_Input2 li;
+    r9_Input2 li2;
+
+    // Checkbox
+    r1_Input cb;
+    // Checkbox checked
+    r1_Input cbC;
+    // Checkbox tri state
+    r1_Input cbT;
+    // RadioButton on
+    r1_Input rbOn;
+    // RadioButton off
+    r1_Input rbOff;
+
+    // Horizontal progress bar
+    r3_View prH;
+    // Horizontal progress bar indicator
+    r3_View prHI;
+    // Vertical progress bar
+    r3_View prV;
+    // Vertical progress bar indicator
+    r3_View prVI;
+
+    // Horizontal slider
+    r3_View_Fill hSl;
+    // Vertical slider
+    r3_View_Fill vSl;
+    // Slider indicator
+    r1_Input slI;
+
+    // Frame
+    r9_View fr;
+
+    // Panel
+    r9_View_Panel panel;
+    // Panel inverse
+    r1_View_Panel panelInv;
+    char overlap;
+    // Panel inverse disabled
+    r1_View_Panel panelInvDis;
+
+    // Horizontal scroller
+    r3 hScr;
+    // Vertical scroller
+    r3 vScr;
+
+    // ScrollBar
+    r9_View sb;
+    // Horizontal scroll bar ridge
+    Rectangle sbRH;
+    // Vertical scroll bar ridge
+    Rectangle sbRV;
+
+    // ToolBar
+    Rectangle tbar;
+    // ToolBarButton
+    r3_Input tbarb;
+
+    // Horizontal line
+    Rectangle hLine;
+    // Vertical line
+    Rectangle vLine;
+
+    // toolbutton indicators
+    r3_View tbIndH;
+    r3_View tbIndV;
+
+    // dialog frame
+    r9 dialog;
 #endif
 
 protected:
@@ -124,13 +239,28 @@ protected:
     parseTheme(xmlNodePtr node);
 
     void
-    getRectangle(xmlNodePtr node, Rectangle& r);
+    getCell(xmlNodePtr node, Rectangle& dest);
 
     void
-    get3Rectangle(xmlNodePtr node, r3& r);
+    getCellN(xmlNodePtr node, const Rectangle& ref, Rectangle& dest);
 
     void
-    get9Rectangle(xmlNodePtr node, r9& r);
+    getCell3H(xmlNodePtr node, r3& dest);
+
+    void
+    getCell3HN(xmlNodePtr node, const r3& ref, r3& dest);
+
+    void
+    getCell3V(xmlNodePtr node, r3& dest);
+
+    void
+    getCell3VN(xmlNodePtr node, const r3& ref, r3& dest);
+
+    void
+    getCell9(xmlNodePtr node, r9& dest);
+
+    void
+    getCell9N(xmlNodePtr node, const r9& ref, r9& dest);
 
 private:
     void
@@ -149,40 +279,10 @@ private:
     operator<<(std::ostream& os, const r3& obj);
 
     friend std::istream&
-    operator>>(std::istream& is, r3_Input& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r3_Input& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r3_View& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r3_View& obj);
-
-    friend std::istream&
     operator>>(std::istream& is, r9& obj);
 
     friend std::ostream&
     operator<<(std::ostream& os, const r9& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r9_Input& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r9_Input& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r9_View& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r9_View& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r1_Input& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r1_Input& obj);
 
 };
 
