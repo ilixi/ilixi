@@ -1,84 +1,124 @@
-<!ELEMENT style (PushButton, PushButtonOK, PushButtonCANCEL, ToolButton, CheckBox, CheckBoxChecked, 
-				CheckBoxTriChecked, RadioButtonOn, RadioButtonOff, ProgressBar, HSlider, VSlider, 
-				SliderIndicator, Frame, Box, LineInput, HScrollBar, VScrollBar)>
+<!ELEMENT style ( PushButton, PushButtonOK, PushButtonCancel,
+                  ToolButton, DirectionalButton1, DirectionalButton2,
+                  LineInput, LineInput2,
+                  CheckBox, CheckBoxChecked, CheckBoxTriChecked,
+                  RadioButtonOn, RadioButtonOff,
+                  HProgressBar, HProgressBarFill, 
+                  VProgressBar, VProgressBarFill,
+                  HSlider, VSlider, SliderIndicator,
+                  Frame, Panel, PanelInverse, PanelInverseDisabled,
+                  HScroller, VScroller,
+                  ScrollBar, HScrollBarRidge, VScrollBarRidge,
+                  ToolBar, ToolBarButton,
+                  HLine, VLine,
+                  HToolButtonCheck, VToolButtonCheck,
+                  DialogPanel
+		)>
 
-	<!ELEMENT PushButton (def3, pre3, exp3, dis3, foc3)>
-	<!ELEMENT PushButtonOK (def3, pre3, exp3, dis3, foc3)>
-	<!ELEMENT PushButtonCANCEL (def3, pre3, exp3, dis3, foc3)>
+
+<!-- Buttons have all five states -->
+<!ELEMENT PushButton 		(cell_3H, pre, exp, dis, foc) >
+<!ELEMENT PushButtonOK 		(cell_3H, pre, exp, dis, foc) >
+<!ELEMENT PushButtonCancel 	(cell_3H, pre, exp, dis, foc) >
+
+<!ELEMENT ToolButton 		(cell_9, pre, exp, dis, foc) >
+<!ELEMENT DirectionalButton1	(cell_9, pre, exp, dis, foc) >
+<!ELEMENT DirectionalButton2	(cell_9, pre, exp, dis, foc) >
+<!ELEMENT LineInput 		(cell_9, dis, foc) >
+<!ELEMENT LineInput2 		(cell_9, dis, foc) >
+
+<!-- Frame is used for dialogs -->
+<!ELEMENT Frame 		(cell_9, dis) >
+
+<!-- Panel is used for drawing tabs and group box widgets -->
+<!ELEMENT Panel 		(cell_9, dis, passive) >
+<!ELEMENT PanelInverse		(cell, topright, botleft, botright) >
+	<!ATTLIST PanelInverse overlap CDATA "0" >
+<!ELEMENT PanelInverseDisabled	(cell, topright, botleft, botright) >
+
+<!-- CheckBox has all five states -->
+<!ELEMENT CheckBox		(cell, pre, exp, dis, foc) >
+<!ELEMENT CheckBoxChecked	(cell, pre, exp, dis, foc) >
+<!ELEMENT CheckBoxTriChecked	(cell, pre, exp, dis, foc) >
+
+<!-- RadioButton has all five states -->
+<!ELEMENT RadioButtonOn		(cell, pre, exp, dis, foc) >
+<!ELEMENT RadioButtonOff	(cell, pre, exp, dis, foc) >
+
+<!-- Horizontal and vertical progress bars have default and disabled states only -->
+<!ELEMENT HProgressBar 		(cell_3H, dis) >
+<!ELEMENT HProgressBarFill	(cell_3H, dis) >
+<!ELEMENT VProgressBar 		(cell_3V, dis) >
+<!ELEMENT VProgressBarFill	(cell_3V, dis) >
+
+<!-- Horizontal and vertical sliders have default and fill images only -->
+<!ELEMENT HSlider 		(cell_3H, dis, fill, fill_dis) >
+<!ELEMENT VSlider		(cell_3V, dis, fill, fill_dis) >
+<!-- Same control is used for both sliders -->
+<!ELEMENT SliderIndicator	(cell, pre, exp, dis, foc) >
+
+<!-- Small scroll indicator, used instead of a scrollbar -->
+<!ELEMENT HScroller 		(cell_3H) >
+<!ELEMENT VScroller 		(cell_3V) >
+
+<!-- ScrollBar defines background -->
+<!ELEMENT ScrollBar 		(cell_9, dis) >
+<!-- HScrollBarRidge and VScrollBarRidge define ridges on indicator -->
+<!ELEMENT HScrollBarRidge	(cell) >
+<!ELEMENT VScrollBarRidge	(cell) >
+
+<!-- defines a background image for ToolBar-->
+<!ELEMENT ToolBar		(cell) >
+<!ELEMENT ToolBarButton		(cell_3H, pre, exp, dis, foc) >
+
+<!ELEMENT HLine			(cell) >
+<!ELEMENT VLine			(cell) >
+
+<!ELEMENT HToolButtonCheck 		(cell_3H, dis) >
+<!ELEMENT VToolButtonCheck		(cell_3V, dis) >
+
+<!ELEMENT DialogPanel 		(cell_9) >
+
+
+<!-- sub-elements are defined below -->
+<!ELEMENT cell EMPTY>
+	<!ATTLIST cell x CDATA #REQUIRED y CDATA #REQUIRED h CDATA #REQUIRED w CDATA #REQUIRED >
+
+<!ELEMENT cell_3H EMPTY>
+	<!ATTLIST cell_3H x CDATA #REQUIRED y CDATA #REQUIRED w1 CDATA #REQUIRED w2 CDATA #REQUIRED w3 CDATA #REQUIRED h CDATA #REQUIRED>
+
+<!ELEMENT cell_3V EMPTY>
+	<!ATTLIST cell_3V x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h1 CDATA #REQUIRED h2 CDATA #REQUIRED h3 CDATA #REQUIRED >
 	
-	<!ELEMENT CheckBox (def1, pre1, exp1, dis1, foc1)>
-	<!ELEMENT CheckBoxChecked (def1, pre1, exp1, dis1, foc1)>
-	<!ELEMENT CheckBoxTriChecked (def1, pre1, exp1, dis1, foc1)>
-	
-	<!ELEMENT RadioButtonOn (def1, pre1, exp1, dis1, foc1)>
-	<!ELEMENT RadioButtonOff (def1, pre1, exp1, dis1, foc1)>
-	
-	<!ELEMENT ProgressBar (def3, dis3, pIndicator)>
-	<!ELEMENT HSlider (def3, dis3)>
-	<!ELEMENT VSlider (def3, dis3)>
-	<!ELEMENT SliderIndicator (def1, pre1, exp1, dis1, foc1) >
-	<!ELEMENT Frame (def9, dis9)>
-	<!ELEMENT Box (def9, dis9)>
-	<!ELEMENT ToolButton (def9, pre9, exp9, dis9, foc9)>
-	<!ELEMENT LineInput (def9, pre9, exp9, dis9, foc9)>
-	<!ELEMENT HScrollBar (def3) >
-	<!ELEMENT VScrollBar (def3) >
-	
-	<!ELEMENT pIndicator (def3, dis3) >
-		
-	<!ELEMENT def1 (left) >
-	<!ELEMENT pre1 (left) >
-	<!ELEMENT exp1 (left) >
-	<!ELEMENT dis1 (left) >
-	<!ELEMENT foc1 (left) >
-	
-	<!ELEMENT def3 (left, mid, right) >
-	<!ELEMENT pre3 (left, mid, right) >
-	<!ELEMENT exp3 (left, mid, right) >
-	<!ELEMENT dis3 (left, mid, right) >
-	<!ELEMENT foc3 (left, mid, right) >
-	
-	<!ELEMENT def9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
-	<!ELEMENT pre9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
-	<!ELEMENT exp9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
-	<!ELEMENT dis9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
-	<!ELEMENT foc9 (top-left, top-mid, top-right, left, mid, right, bottom-left, bottom-mid, bottom-right) >
+<!ELEMENT cell_9 EMPTY>
+	<!ATTLIST cell_9 x CDATA #REQUIRED y CDATA #REQUIRED w1 CDATA #REQUIRED w2 CDATA #REQUIRED w3 CDATA #REQUIRED h1 CDATA #REQUIRED h2 CDATA #REQUIRED h3 CDATA #REQUIRED >
 
-	<!ELEMENT left EMPTY>
-	<!ATTLIST left x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT pre EMPTY>
+	<!ATTLIST pre x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT mid EMPTY>
-	<!ATTLIST mid x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT exp EMPTY>
+	<!ATTLIST exp x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT right EMPTY>
-	<!ATTLIST right x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT dis EMPTY>
+	<!ATTLIST dis x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT top-left EMPTY>
-	<!ATTLIST top-left x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT foc EMPTY>
+	<!ATTLIST foc x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT top-mid EMPTY>
-	<!ATTLIST top-mid x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT fill EMPTY>
+	<!ATTLIST fill x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT top-right EMPTY>
-	<!ATTLIST top-right x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT fill_dis EMPTY>
+	<!ATTLIST fill_dis x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT bottom-left EMPTY>
-	<!ATTLIST bottom-left x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT passive EMPTY>
+	<!ATTLIST passive x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT bottom-mid EMPTY>
-	<!ATTLIST bottom-mid x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT topright EMPTY>
+	<!ATTLIST topright x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT bottom-right EMPTY>
-	<!ATTLIST bottom-right x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT botleft EMPTY>
+	<!ATTLIST botleft x CDATA #REQUIRED y CDATA #REQUIRED >
 
-	<!ELEMENT check EMPTY>
-	<!ATTLIST check x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
-
-	<!ELEMENT tri-check EMPTY>
-	<!ATTLIST tri-check x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
-
-	<!ELEMENT radioOff EMPTY>
-	<!ATTLIST radioOff x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
-
-	<!ELEMENT radioOn EMPTY>
-	<!ATTLIST radioOn x CDATA #REQUIRED y CDATA #REQUIRED w CDATA #REQUIRED h CDATA #REQUIRED>
+<!ELEMENT botright EMPTY>
+	<!ATTLIST botright x CDATA #REQUIRED y CDATA #REQUIRED >
