@@ -450,13 +450,13 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
             if (!(_options & OptExclusive) && FileSystem::fileExists(FileSystem::homeDirectory().append("/ilx_compositor.pid")))
             {
                 ILOG_DEBUG(ILX_PLATFORMMANAGER, "Enabling OptExclSoundEffect.\n");
-                _options = (AppOptions) (_options | OptExclSoundEffect | OptDale);
+                _options = (AppOptions) (_options | OptExclSoundEffect | OptDaleAuto);
             }
         }
 #endif
 
 #if ILIXI_HAVE_FUSIONDALE
-        if ((_options & OptDale) && DaleDFB::initDale(argc, argv) == DFB_OK)
+        if ((_options & OptDaleAuto) && DaleDFB::initDale(argc, argv) == DFB_OK)
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionDale is ready.\n");
 #endif
 
@@ -485,7 +485,7 @@ PlatformManager::release()
             _cursorImage->Release(_cursorImage);
 
 #if ILIXI_HAVE_FUSIONDALE
-        if (_options & OptDale)
+        if (_options & OptDaleAuto)
         {
             ILOG_DEBUG(ILX_PLATFORMMANAGER, "Releasing FusionDale...\n");
             DaleDFB::releaseDale();
