@@ -42,6 +42,11 @@ StylistBase::StylistBase()
 {
     ILOG_TRACE(ILX_STYLISTBASE);
     _noImage = new Image(ILIXI_DATADIR"images/noImage.png", 48, 48);
+
+    _fonts = new FontPack();
+    _icons = new IconPack();
+    _palette = new Palette();
+    _style = new Style();
     //initAnimations();
 }
 
@@ -94,7 +99,7 @@ StylistBase::defaultSize(StyleHint::Size size) const
     case StyleHint::PushButton:
         return Size(defaultParameter(StyleHint::PushButtonLR), _style->pb.def.m.height());
     case StyleHint::ProgressBar:
-        return Size(100, _style->pr.def.m.height());
+        return Size(100, _style->prH.def.m.height());
     case StyleHint::Slider:
         return Size(100, _style->hSl.def.m.height());
     case StyleHint::SliderV:
@@ -109,15 +114,15 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 {
     switch (parameter)
     {
+    case StyleHint::ButtonOffset:
+        return 0;
+
     case StyleHint::PushButtonLeft:
         return _style->pb.def.l.width();
-
     case StyleHint::PushButtonRight:
         return _style->pb.def.r.width();
-
     case StyleHint::PushButtonLR:
         return _style->pb.def.l.width() + _style->pb.def.r.width();
-
     case StyleHint::PushButtonHeight:
         return _style->pb.def.l.height();
 
@@ -126,13 +131,21 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::CheckBoxWidth:
         return _style->cb.def.width();
 
+    case StyleHint::DialogBottom:
+        return _style->dialog.bm.height();
+    case StyleHint::DialogLeft:
+        return _style->dialog.tl.width();
+    case StyleHint::DialogLR:
+        return _style->dialog.tl.width() + _style->dialog.tr.width();
+    case StyleHint::DialogTB:
+        return _style->dialog.tm.height() + _style->dialog.bm.height();
+    case StyleHint::DialogTop:
+        return _style->dialog.tm.height();
+
     case StyleHint::RadioHeight:
         return _style->rbOn.def.height();
     case StyleHint::RadioWidth:
         return _style->rbOn.def.width();
-
-    case StyleHint::ButtonOffset:
-        return 5;
 
     case StyleHint::FrameOffsetLeft:
         return _style->fr.def.l.width();
@@ -147,18 +160,27 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::FrameOffsetTB:
         return _style->fr.def.tm.height() + _style->fr.def.bm.height();
 
-    case StyleHint::TabOffsetLeft:
-        return _style->box.def.l.width();
-    case StyleHint::TabOffsetRight:
-        return _style->box.def.r.width();
-    case StyleHint::TabOffsetTop:
-        return _style->box.def.tm.height();
-    case StyleHint::TabOffsetBottom:
-        return _style->box.def.bm.height();
-    case StyleHint::TabOffsetLR:
-        return _style->box.def.l.width() + _style->box.def.r.width();
-    case StyleHint::TabOffsetTB:
-        return _style->box.def.tm.height() + _style->box.def.bm.height();
+    case StyleHint::PanelLeft:
+        return _style->panel.def.l.width();
+    case StyleHint::PanelRight:
+        return _style->panel.def.r.width();
+    case StyleHint::PanelTop:
+        return _style->panel.def.tm.height();
+    case StyleHint::PanelBottom:
+        return _style->panel.def.bm.height();
+    case StyleHint::PanelLR:
+        return _style->panel.def.l.width() + _style->panel.def.r.width();
+    case StyleHint::PanelTB:
+        return _style->panel.def.tm.height() + _style->panel.def.bm.height();
+
+    case StyleHint::PanelInvOverlap:
+        return _style->overlap;
+    case StyleHint::PanelInvHeight:
+        return _style->panelInv.br.height() - _style->overlap;
+    case StyleHint::PanelInvLeft:
+        return _style->panelInv.br.width() - _style->overlap;
+    case StyleHint::PanelInvWidth:
+            return _style->panelInv.br.width() - _style->overlap + _style->panelInv.bl.width() - _style->overlap;
 
     case StyleHint::LineInputLeft:
         return _style->li.def.l.width();
@@ -172,6 +194,21 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->li.def.bl.height();
     case StyleHint::LineInputTB:
         return _style->li.def.tl.height() + _style->li.def.bl.height();
+
+    case StyleHint::LineSeperatorHeight:
+        return _style->hLine.height();
+    case StyleHint::LineSeperatorWidth:
+        return _style->vLine.width();
+
+    case StyleHint::ToolBarHeight:
+        return _style->tbar.height();
+
+    case StyleHint::ToolBarButtonLeft:
+        return _style->tbarb.def.l.width();
+    case StyleHint::ToolBarButtonLR:
+        return _style->tbarb.def.l.width() + _style->tbarb.def.r.width();
+    case StyleHint::ToolBarButtonHeight:
+        return _style->tbarb.def.m.height();
 
     case StyleHint::ToolButtonLeft:
         return _style->tb.def.l.width();
@@ -187,7 +224,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
         return _style->tb.def.tm.height() + _style->tb.def.bm.height();
 
     case StyleHint::ToolButtonIndicator:
-        return 8;
+        return _style->tbIndV.def.l.height();
 
     case StyleHint::SliderIndicatorWidth:
         return _style->slI.def.width();

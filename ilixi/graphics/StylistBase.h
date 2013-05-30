@@ -40,21 +40,26 @@ class Application;
 class CheckBox;
 class ComboBox;
 class Dialog;
+class DirectionalButton;
 class Frame;
 class GridView;
 class GroupBox;
 class Icon;
 class Label;
 class LineInput;
+class LineSeperator;
 class ListBox;
 class ProgressBar;
 class PushButton;
 class RadioButton;
 class ScrollArea;
+class ScrollBar;
 class Slider;
 class SpinBox;
 class TabPanel;
 class TabPanelButton;
+class ToolBar;
+class ToolBarButton;
 class ToolButton;
 
 class StylistBase
@@ -133,6 +138,12 @@ public:
     drawDialog(Painter* painter, Dialog* dialog)=0;
 
     /*!
+     * Draws a directional button.
+     */
+    virtual void
+    drawDirectionalButton(Painter* painter, DirectionalButton* button)=0;
+
+    /*!
      * Draws a frame.
      */
     virtual void
@@ -167,6 +178,12 @@ public:
      */
     virtual void
     drawLineInput(Painter* painter, LineInput* input, bool cursor = false)=0;
+
+    /*!
+     * Draws a line seperator.
+     */
+    virtual void
+    drawLineSeperator(Painter* painter, LineSeperator* seperator)=0;
 
     /*!
      * Draws a GridView frame.
@@ -211,6 +228,12 @@ public:
     drawScrollBar(Painter* painter, int x, int y, int w, int h, Orientation orientation)=0;
 
     /*!
+     * Draws a scroll bar with indicator.
+     */
+    virtual void
+    drawScrollBar(Painter* painter, ScrollBar* bar)=0;
+
+    /*!
      * Draws a slider.
      */
     virtual void
@@ -220,19 +243,31 @@ public:
      * Draws a spinbox.
      */
     virtual void
-    drawSpinBox(Painter* painter, SpinBox* spinBox)=0;
+    drawSpinBox(Painter* painter, SpinBox* spinBox, const Size& size)=0;
 
     /*!
      * Draws a tab panel button.
      */
     virtual void
-    drawTabPanelButton(Painter* painter, TabPanelButton* button)=0;
+    drawTabPanelButton(Painter* painter, TabPanelButton* button, bool first)=0;
 
     /*!
      * Draws a tab panel.
      */
     virtual void
-    drawTabPanel(Painter* painter, TabPanel* panel, int y)=0;
+    drawTabPanel(Painter* painter, TabPanel* panel, int y, int index)=0;
+
+    /*!
+     * Draws a toolbar background only.
+     */
+    virtual void
+    drawToolBar(Painter* painter, ToolBar* toolbar)=0;
+
+    /*!
+     * Draws a toolbar button.
+     */
+    virtual void
+    drawToolBarButton(Painter* painter, ToolBarButton* button)=0;
 
     /*!
      * Draws a toolbutton.
@@ -244,13 +279,13 @@ public:
      * Draws a combobox.
      */
     virtual void
-    drawComboBox(Painter* painter, ComboBox* combo)=0;
+    drawComboBox(Painter* painter, ComboBox* combo, Image* down)=0;
 
     /*!
      * Draws a frame using given coordinates.
      */
     virtual void
-    drawFrame(Painter* painter, int x, int y, int w, int h, Corners corners = AllCorners)=0;
+    drawFrame(Painter* painter, int x, int y, int w, int h)=0;
 
 protected:
     //! This property stores the fonts pack.
@@ -281,7 +316,6 @@ protected:
     virtual bool
     setFontPack(const char* fontPack);
 
-
     /*!
      * Sets the icons pack using a file.
      * Returns true if successful.
@@ -290,7 +324,6 @@ protected:
      */
     virtual bool
     setIconPack(const char* iconPack);
-
 
     /*!
      * Sets the palette using a file.
