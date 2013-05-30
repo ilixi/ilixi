@@ -42,8 +42,7 @@ public:
 
     ComboBox(const std::string& title, Widget* parent = 0);
 
-    ComboBox(const std::string& title, const StringList& items, Widget* parent =
-                     0);
+    ComboBox(const std::string& title, const StringList& items, Widget* parent = 0);
 
     virtual
     ~ComboBox();
@@ -69,18 +68,7 @@ public:
     void
     setSelected(unsigned int index);
 
-private:
-    Dialog* _dialog;
-    ScrollArea* _scrollArea;
-    VBoxLayout* _vlayout;
-
-    unsigned int _selectedIndex;
-
-    std::vector<RadioButton*> _items;
-
-    void
-    updateSelected(int index);
-
+protected:
     virtual void
     keyUpEvent(const KeyEvent& keyEvent);
 
@@ -90,8 +78,33 @@ private:
     virtual void
     pointerWheelEvent(const PointerEvent& event);
 
+    /*!
+     * Just updates.
+     */
+    virtual void
+    focusInEvent();
+
+    /*!
+     * Just updates.
+     */
+    virtual void
+    focusOutEvent();
+
     virtual void
     compose(const PaintEvent& event);
+
+private:
+    Dialog* _dialog;
+    ScrollArea* _scrollArea;
+    VBoxLayout* _vlayout;
+    Image* _down;
+
+    unsigned int _selectedIndex;
+
+    std::vector<RadioButton*> _items;
+
+    void
+    updateSelected(int index);
 
     virtual void
     updateTextBaseGeometry();

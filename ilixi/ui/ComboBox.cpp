@@ -28,6 +28,7 @@
 #include <ui/ScrollArea.h>
 #include <ui/VBoxLayout.h>
 #include <graphics/Painter.h>
+#include <core/Logger.h>
 #include <sigc++/bind.h>
 #include <algorithm>
 
@@ -40,6 +41,7 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
         : Widget(parent),
           TextBase(title, this)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 
@@ -51,48 +53,39 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
     _dialog = new Dialog(title, Dialog::CancelButtonOption);
     _dialog->setLayout(new VBoxLayout());
     _dialog->addWidget(_scrollArea);
-    _dialog->sigFinished.connect(
-            sigc::mem_fun(this, &ComboBox::updateSelected));
+    _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
+
+    _down = stylist()->defaultIcon(StyleHint::Down);
 }
 
-ComboBox::ComboBox(const std::string& title, const StringList& items,
-                   Widget* parent)
-        : TextBase("", parent)
+ComboBox::ComboBox(const std::string& title, const StringList& items, Widget* parent)
+        : Widget(parent),
+          TextBase("", parent)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     setText(title);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 
     _dialog = new Dialog(title, Dialog::CancelButtonOption);
-    _dialog->sigFinished.connect(
-            sigc::mem_fun(this, &ComboBox::updateSelected));
+    _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
 
     addItems(items);
     setSelected(_selectedIndex);
+    _down = stylist()->defaultIcon(StyleHint::Down);
 }
 
 ComboBox::~ComboBox()
 {
     delete _dialog;
+    delete _down;
 }
 
 Size
 ComboBox::preferredSize() const
 {
     Size s = textExtents();
-//    return Size(
-//            s.width()
-//                    + 2
-//                            * std::max(
-//                                    stylist()->defaultParameter(
-//                                            StyleHint::BorderWidth),
-//                                    stylist()->defaultParameter(
-//                                            StyleHint::ComboBoxRadius))
-//                    + stylist()->defaultParameter(
-//                            StyleHint::ComboBoxButtonWidth),
-//            s.height()
-//                    + 2 * stylist()->defaultParameter(StyleHint::BorderWidth));
-    return Size();
+    return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + s.height(), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
 }
 
 unsigned int
@@ -122,9 +115,7 @@ ComboBox::addItem(const std::string& item)
     setText(item);
     RadioButton* rb = new RadioButton(item);
     rb->toggleChecked();
-    rb->sigClicked.connect(
-            sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish),
-                            _selectedIndex));
+    rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish), _selectedIndex));
 
     _items.push_back(rb);
     _vlayout->addWidget(rb);
@@ -138,9 +129,7 @@ ComboBox::addItems(const StringList& items)
     {
         RadioButton* rb = new RadioButton(*it);
 
-        rb->sigClicked.connect(
-                sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish),
-                                _items.size()));
+        rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish), _items.size()));
 
         _items.push_back(rb);
         _vlayout->addWidget(_items.back());
@@ -188,11 +177,24 @@ ComboBox::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
+ComboBox::focusInEvent()
+{
+    update();
+}
+
+void
+ComboBox::focusOutEvent()
+{
+    update();
+}
+
+
+void
 ComboBox::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    stylist()->drawComboBox(&p, this);
+    stylist()->drawComboBox(&p, this, _down);
     p.end();
 }
 
@@ -209,19 +211,10 @@ ComboBox::updateSelected(int index)
 void
 ComboBox::updateTextBaseGeometry()
 {
-//    int border = std::max(
-//            stylist()->defaultParameter(StyleHint::BorderWidth),
-//            stylist()->defaultParameter(StyleHint::ComboBoxRadius));
-//    int x = border;
-//    int y = stylist()->defaultParameter(StyleHint::BorderWidth);
-//
-//    _layout.setBounds(
-//            x,
-//            y,
-//            width() - x
-//                    - stylist()->defaultParameter(
-//                            StyleHint::ComboBoxButtonWidth),
-//            height() - 2 * stylist()->defaultParameter(StyleHint::BorderWidth));
+    int x = stylist()->defaultParameter(StyleHint::LineInputLeft);
+    int y = stylist()->defaultParameter(StyleHint::LineInputTop);
+
+    _layout.setBounds(x, y, width() - x - height(), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     _layout.doLayout(font());
 }
 
