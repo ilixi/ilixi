@@ -54,7 +54,7 @@ volumeListener(void* ctx, void* arg)
 }
 
 ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
-        : Application(&argc, &argv, AppOptions(OptDale | OptSound)),
+        : Application(&argc, &argv, AppOptions(OptDaleAuto | OptSound)),
           _soundComponent(NULL),
           _music(NULL),
           _bandSliderFont(NULL)

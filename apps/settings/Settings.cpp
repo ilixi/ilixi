@@ -36,7 +36,7 @@ namespace ilixi
 {
 
 Settings::Settings(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale),
+        : Application(&argc, &argv, OptDaleAuto),
           _comp(NULL)
 {
     setMargin(5);

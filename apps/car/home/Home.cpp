@@ -65,7 +65,7 @@ receiveAppList(void* ctx, void* arg)
 }
 
 Home::Home(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale),
+        : Application(&argc, &argv, OptDaleAuto),
           _compositor(NULL)
 {
     ILOG_TRACE_W(ILX_HOMEAPP);

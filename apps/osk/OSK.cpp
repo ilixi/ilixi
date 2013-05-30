@@ -32,7 +32,7 @@
 D_DEBUG_DOMAIN( ILX_OSK, "ilixi/osk/ILXOSK", "ILXOSK");
 
 ILXOSK::ILXOSK(int argc, char* argv[])
-        : Application(&argc, &argv, OptDale),
+        : Application(&argc, &argv, OptDaleAuto),
           _bg(NULL),
           _keyboard(NULL)
 {

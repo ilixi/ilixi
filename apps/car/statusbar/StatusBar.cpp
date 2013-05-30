@@ -112,7 +112,7 @@ backHidden(void* ctx, void* arg)
 //*****************************************************************
 
 ILXStatusBar::ILXStatusBar(int argc, char* argv[])
-        : Application(&argc, &argv, (AppOptions) (OptDale))
+        : Application(&argc, &argv, (AppOptions) (OptDaleAuto))
 {
     setBackgroundFilled(true);
     setBackgroundImage(ILIXI_DATADIR"car/statusbar/statusbar_bg.png");

@@ -60,7 +60,7 @@ appStatusChanged(void* ctx, void* arg)
 //*****************************************************************
 
 PStatusBar::PStatusBar(int argc, char* argv[])
-        : Application(&argc, &argv, (AppOptions) (OptDale)),
+        : Application(&argc, &argv, (AppOptions) (OptDaleAuto)),
           _bg(NULL),
           _listFont(NULL),
           _soundComponent(NULL),
