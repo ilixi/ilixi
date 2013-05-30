@@ -25,6 +25,7 @@
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 #include <sstream>
+#include <stdlib.h>
 
 namespace ilixi
 {
@@ -47,17 +48,15 @@ SpinBox::SpinBox(int value, Widget* parent)
     setConstraints(FixedConstraint, FixedConstraint);
     setInputMethod(PointerPassthrough);
 
-    _minus = new ToolButton("-");
-    _minus->setRepeatable(true);
-    _minus->setToolButtonStyle(ToolButton::IconOnly);
-    _minus->setIcon(StyleHint::Minus, Size(32, 32));
+    _minus = new DirectionalButton();
+    _minus->setIcon(StyleHint::Minus, Size(24, 24));
+    _minus->setButtonDirection(Left);
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
     addChild(_minus);
 
-    _plus = new ToolButton("+");
-    _plus->setRepeatable(true);
-    _plus->setToolButtonStyle(ToolButton::IconOnly);
-    _plus->setIcon(StyleHint::Plus, Size(32, 32));
+    _plus = new DirectionalButton();
+    _plus->setIcon(StyleHint::Plus, Size(24, 24));
+    _plus->setButtonDirection(Right);
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
     if (_max == _value)
         _plus->setDisabled();
@@ -82,11 +81,14 @@ SpinBox::preferredSize() const
     ILOG_TRACE_W(ILX_SPINBOX);
     Size plus = _plus->preferredSize();
     Size minus = _minus->preferredSize();
-    Size text = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
+    Size valueText = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
+    Size minText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _min));
+    Size maxText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _max));
+    int maxL = std::max(std::max(valueText.width(), minText.width()), maxText.width());
     ILOG_DEBUG(ILX_SPINBOX, " -> plus: %d, %d\n", plus.width(), plus.height());
     ILOG_DEBUG(ILX_SPINBOX, " -> minus: %d, %d\n", minus.width(), minus.height());
-    ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", text.width(), text.height());
-    return Size(text.width() + 20 + plus.width() + minus.width(), std::max(plus.height(), text.height() + stylist()->defaultParameter(StyleHint::LineInputTB)));
+    ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", valueText.width(), valueText.height());
+    return Size(maxL + plus.width() + minus.width(), std::max(plus.height(), valueText.height() + stylist()->defaultParameter(StyleHint::LineInputTB)));
 }
 
 int
@@ -248,7 +250,7 @@ SpinBox::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    stylist()->drawSpinBox(&p, this);
+    stylist()->drawSpinBox(&p, this, _plus->size());
     p.end();
 }
 

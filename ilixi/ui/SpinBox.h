@@ -24,7 +24,7 @@
 #ifndef ILIXI_SPINBOX_H_
 #define ILIXI_SPINBOX_H_
 
-#include <ui/ToolButton.h>
+#include <ui/DirectionalButton.h>
 
 namespace ilixi
 {
@@ -160,9 +160,9 @@ protected:
 
 private:
     //! Button for increments.
-    ToolButton* _plus;
+    DirectionalButton* _plus;
     //! Button for decrements.
-    ToolButton* _minus;
+    DirectionalButton* _minus;
 
     //! Prefix for input.
     std::string _prefix;
