@@ -45,7 +45,7 @@ GroupBox::GroupBox(const std::string& title, Widget* parent)
     _title->setSingleLine(true);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &GroupBox::setTitleGeometry));
     setTitle(title);
-    setMargin(5);
+    setMargin(0);
     addChild(_title);
 }
 
@@ -58,7 +58,7 @@ int
 GroupBox::heightForWidth(int width) const
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
-    return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::FrameOffsetLR)) + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height();
+    return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::PanelLR)) + stylist()->defaultParameter(StyleHint::PanelTB) + _titleSize.height();
 }
 
 Size
@@ -66,7 +66,7 @@ GroupBox::preferredSize() const
 {
     ILOG_TRACE_W(ILX_GROUPBOX);
     Size s = _layout->preferredSize();
-    return Size(std::max(s.width(), _titleSize.width()) + _margin.hSum() + stylist()->defaultParameter(StyleHint::FrameOffsetLR), s.height() + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height());
+    return Size(std::max(s.width(), _titleSize.width()) + _margin.hSum() + stylist()->defaultParameter(StyleHint::PanelLR), s.height() + _margin.vSum() + stylist()->defaultParameter(StyleHint::PanelTB) + _titleSize.height());
 }
 
 std::string
@@ -114,10 +114,10 @@ GroupBox::doLayout()
     ILOG_TRACE_W(ILX_GROUPBOX);
     Size textSize = _title->preferredSize();
     if (_titleIcon)
-        _titleSize.setWidth(textSize.width() + textSize.height() + 5 + stylist()->defaultParameter(StyleHint::TabOffsetLR));
+        _titleSize.setWidth(textSize.width() + textSize.height() + 5 + stylist()->defaultParameter(StyleHint::PanelLR));
     else
-        _titleSize.setWidth(textSize.width() + stylist()->defaultParameter(StyleHint::TabOffsetLR));
-    _titleSize.setHeight(textSize.height() + stylist()->defaultParameter(StyleHint::TabOffsetTop));
+        _titleSize.setWidth(textSize.width() + stylist()->defaultParameter(StyleHint::PanelLR));
+    _titleSize.setHeight(textSize.height() + stylist()->defaultParameter(StyleHint::PanelTop));
     _title->setSize(textSize);
 
     if (parent())
@@ -136,21 +136,21 @@ GroupBox::compose(const PaintEvent& event)
 int
 GroupBox::canvasY() const
 {
-    return _margin.top() + stylist()->defaultParameter(StyleHint::FrameOffsetTop) + _titleSize.height();
+    return _margin.top() + stylist()->defaultParameter(StyleHint::PanelTop) + _titleSize.height();
 }
 
 int
 GroupBox::canvasHeight() const
 {
-    return height() - _margin.vSum() - _titleSize.height() - stylist()->defaultParameter(StyleHint::FrameOffsetTB);
+    return height() - _margin.vSum() - _titleSize.height() - stylist()->defaultParameter(StyleHint::PanelTB);
 }
 
 void
 GroupBox::setTitleGeometry()
 {
     Size textSize = _title->preferredSize();
-    int x = 2 * stylist()->defaultParameter(StyleHint::TabOffsetLeft);
-    int y = stylist()->defaultParameter(StyleHint::TabOffsetTop);
+    int x = 2 * stylist()->defaultParameter(StyleHint::PanelLeft);
+    int y = stylist()->defaultParameter(StyleHint::PanelTop);
     if (_titleIcon)
     {
         _titleIcon->setGeometry(x, y, textSize.height(), textSize.height());
