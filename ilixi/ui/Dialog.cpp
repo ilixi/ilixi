@@ -56,8 +56,8 @@ Dialog::heightForWidth(int width) const
 {
     ILOG_TRACE_W(ILX_DIALOG);
     if (_buttonLayout)
-        return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::FrameOffsetLR)) + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height() + _buttonLayout->preferredSize().height();
-    return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::FrameOffsetLR)) + _margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height();
+        return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::DialogLR)) + _margin.vSum() + stylist()->defaultParameter(StyleHint::DialogTB) + _titleSize.height() + _buttonLayout->preferredSize().height();
+    return _layout->heightForWidth(width - _margin.hSum() - stylist()->defaultParameter(StyleHint::DialogLR)) + _margin.vSum() + stylist()->defaultParameter(StyleHint::DialogTB) + _titleSize.height();
 }
 
 Size
@@ -70,7 +70,7 @@ Dialog::preferredSize() const
     Size buttonLayoutSize = _buttonLayout ? _buttonLayout->preferredSize() : Size();
     ILOG_DEBUG(ILX_DIALOG, " -> _buttonLayout size: %dx%d\n", buttonLayoutSize.width(), buttonLayoutSize.height());
 
-    Size s(std::max(layoutSize.width() + _margin.hSum(), std::max(_titleSize.width(), buttonLayoutSize.width())) + stylist()->defaultParameter(StyleHint::FrameOffsetLR), layoutSize.height() + _margin.vSum() + _titleSize.height() + buttonLayoutSize.height() + 2 * spacing() + stylist()->defaultParameter(StyleHint::FrameOffsetTB));
+    Size s(std::max(layoutSize.width() + _margin.hSum(), std::max(_titleSize.width(), buttonLayoutSize.width())) + stylist()->defaultParameter(StyleHint::DialogLR), layoutSize.height() + _margin.vSum() + _titleSize.height() + buttonLayoutSize.height() + 2 * spacing() + stylist()->defaultParameter(StyleHint::DialogTB));
     ILOG_DEBUG(ILX_DIALOG, " -> size: %dx%d\n", s.width(), s.height());
     return s;
 }
@@ -216,7 +216,7 @@ int
 Dialog::canvasY() const
 {
     ILOG_TRACE_W(ILX_DIALOG);
-    return _margin.top() + stylist()->defaultParameter(StyleHint::FrameOffsetTop) + _titleSize.height();
+    return _margin.top() + stylist()->defaultParameter(StyleHint::DialogTop) + _titleSize.height();
 }
 
 int
@@ -224,8 +224,8 @@ Dialog::canvasHeight() const
 {
     ILOG_TRACE_W(ILX_DIALOG);
     if (_buttonLayout)
-        return height() - (_margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height() + _buttonLayout->preferredSize().height() + 2 * spacing());
-    return height() - (_margin.vSum() + stylist()->defaultParameter(StyleHint::FrameOffsetTB) + _titleSize.height() + spacing());
+        return height() - (_margin.vSum() + stylist()->defaultParameter(StyleHint::DialogTB) + _titleSize.height() + _buttonLayout->preferredSize().height() + 2 * spacing());
+    return height() - (_margin.vSum() + stylist()->defaultParameter(StyleHint::DialogTB) + _titleSize.height() + spacing());
 }
 
 void
@@ -253,9 +253,9 @@ Dialog::updateButtonLayoutGeometry()
     _layout->setNeighbour(Down, _buttonLayout);
     _buttonLayout->setNeighbour(Up, _layout);
 
-    _buttonLayout->moveTo(stylist()->defaultParameter(StyleHint::FrameOffsetLeft), height() - (buttonLayoutSize.height() + stylist()->defaultParameter(StyleHint::FrameOffsetBottom)));
+    _buttonLayout->moveTo(stylist()->defaultParameter(StyleHint::DialogLeft), height() - (buttonLayoutSize.height() + stylist()->defaultParameter(StyleHint::DialogBottom)));
 
-    _buttonLayout->setSize(width() - stylist()->defaultParameter(StyleHint::FrameOffsetLR), buttonLayoutSize.height());
+    _buttonLayout->setSize(width() - stylist()->defaultParameter(StyleHint::DialogLR), buttonLayoutSize.height());
 }
 
 } /* namespace ilixi */
