@@ -184,7 +184,7 @@ Key::compose(const PaintEvent& event)
         Painter p(this);
         p.begin(event);
         p.setBrush(stylist()->palette()->getGroup(state()).text);
-        p.drawText(_cycleLabel, stylist()->defaultParameter(StyleHint::TabOffsetLeft), stylist()->defaultParameter(StyleHint::TabOffsetTop));
+        p.drawText(_cycleLabel, stylist()->defaultParameter(StyleHint::PanelLeft), stylist()->defaultParameter(StyleHint::PanelTop));
     }
 }
 
