@@ -30,7 +30,8 @@ namespace ilixi
 {
 
 TabPanelButton::TabPanelButton(std::string label, Widget* parent)
-        : Button(label, parent)
+        : Button(label, parent),
+          _first(false)
 {
     setInputMethod(KeyPointer);
     setCheckable(true);
@@ -48,7 +49,7 @@ TabPanelButton::preferredSize() const
         return stylist()->defaultSize(StyleHint::PushButton);
 
     Size t = textExtents();
-    return Size(stylist()->defaultParameter(StyleHint::TabOffsetLR) + t.width(), stylist()->defaultParameter(StyleHint::TabOffsetTB) + t.height());
+    return Size(stylist()->defaultParameter(StyleHint::PanelLR) + stylist()->defaultParameter(StyleHint::PanelInvWidth) + t.width(), stylist()->defaultParameter(StyleHint::PanelTB) + t.height());
 }
 
 void
@@ -57,18 +58,24 @@ TabPanelButton::toggleChecked()
 }
 
 void
+TabPanelButton::setFirst(bool first)
+{
+    _first = first;
+}
+
+void
 TabPanelButton::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    stylist()->drawTabPanelButton(&painter, this);
+    stylist()->drawTabPanelButton(&painter, this, _first);
     painter.end();
 }
 
 void
 TabPanelButton::updateTextBaseGeometry()
 {
-    _layout.setBounds(stylist()->defaultParameter(StyleHint::TabOffsetLeft), stylist()->defaultParameter(StyleHint::TabOffsetTop), width() - stylist()->defaultParameter(StyleHint::TabOffsetLR), height() - stylist()->defaultParameter(StyleHint::TabOffsetTop));
+    _layout.setBounds(stylist()->defaultParameter(StyleHint::PanelInvLeft) + stylist()->defaultParameter(StyleHint::PanelLeft), stylist()->defaultParameter(StyleHint::PanelTop), width() - stylist()->defaultParameter(StyleHint::PanelLR) - stylist()->defaultParameter(StyleHint::PanelInvLeft), height() - stylist()->defaultParameter(StyleHint::PanelTop));
     _layout.doLayout(font());
 }
 
@@ -199,6 +206,8 @@ TabPanel::addTab(Widget* widget, std::string label)
     TabData page;
     page.widget = widget;
     page.button = new TabPanelButton(label, this);
+    if (_currentIndex == 0)
+        page.button->setFirst(true);
     page.button->setChecked(true);
     page.button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &TabPanel::setCurrentTab), _currentIndex));
 
@@ -277,7 +286,7 @@ TabPanel::compose(const PaintEvent& event)
 {
     Painter painter(this);
     painter.begin(event);
-    stylist()->drawTabPanel(&painter, this, _canvasOffsetY);
+    stylist()->drawTabPanel(&painter, this, _canvasOffsetY, _currentIndex);
     painter.end();
 }
 
@@ -287,9 +296,10 @@ TabPanel::updateChildrenFrameGeometry()
     _canvasOffsetY = 0;
     for (unsigned int i = 0; i < _tabs.size(); i++)
         _canvasOffsetY = std::max(_canvasOffsetY, _tabs[i].button->preferredSize().height());
-    int buttonX = stylist()->defaultParameter(StyleHint::FrameOffsetLR);
+    int buttonX = stylist()->defaultParameter(StyleHint::PanelInvWidth);
     int buttonW = 0;
     int buttonH = _canvasOffsetY;
+    _canvasOffsetY -= stylist()->defaultParameter(StyleHint::PanelInvOverlap);
 
     int pageWidth = canvasWidth();
     int pageHeight = canvasHeight();
@@ -301,8 +311,9 @@ TabPanel::updateChildrenFrameGeometry()
     {
         // set button
         buttonW = _tabs[i].button->preferredSize().width();
-        _tabs[i].button->setGeometry(buttonX, 0, buttonW, buttonH);
+        _tabs[i].button->setGeometry(buttonX, 0, buttonW, buttonH); //- stylist()->defaultParameter(StyleHint::PanelInvWidth)
         buttonX += buttonW;
+        buttonX -= stylist()->defaultParameter(StyleHint::PanelInvWidth);
 
         // set page
         _tabs[i].widget->moveTo(canvasX(), canvasY());
@@ -343,10 +354,12 @@ TabPanel::paintChildren(const PaintEvent& event)
 {
     for (unsigned int i = 0; i < _tabs.size(); i++)
     {
-        _tabs[i].button->paint(event);
         if (i == _currentIndex)
             _tabs[i].widget->paint(event);
+        else
+            _tabs[i].button->paint(event);
     }
+    _tabs[_currentIndex].button->paint(event);
 }
 
 } /* namespace ilixi */

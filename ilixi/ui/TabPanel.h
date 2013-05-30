@@ -51,6 +51,9 @@ public:
     virtual void
     toggleChecked();
 
+    void
+    setFirst(bool first);
+
 protected:
     void
     compose(const PaintEvent& event);
@@ -59,6 +62,8 @@ protected:
     updateTextBaseGeometry();
 
 private:
+    bool _first;
+
     virtual Font*
     defaultFont() const;
 };
