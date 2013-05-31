@@ -327,7 +327,7 @@ ToolButton::updateTextBaseGeometry()
         if ((_toolButtonStyle == TextOnly) || (_toolButtonStyle == IconOnly) || (_toolButtonStyle == IconBeforeText))
         {
             x += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(StyleHint::ButtonOffset);
-            wUsed = x;
+            wUsed += stylist()->defaultParameter(StyleHint::ToolButtonIndicator) + stylist()->defaultParameter(StyleHint::ButtonOffset);
         }
     }
 
