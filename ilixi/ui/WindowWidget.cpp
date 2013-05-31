@@ -368,6 +368,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return target->consumePointerEvent(PointerEvent(PointerButtonDown, event));
 
     case DWET_MOTION:
+        if(_eventManager->grabbedWidget() && event.buttons == 0)
+            _eventManager->setGrabbedWidget(NULL);
         return target->consumePointerEvent(PointerEvent(PointerMotion, event));
 
     case DWET_WHEEL:
