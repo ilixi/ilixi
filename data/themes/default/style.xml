@@ -123,15 +123,15 @@
 
 	<HSlider>
 		<cell_3H x="642" y="80" w1="4" w2="198" w3="4" h="20" />
-		<dis x="642" y="100" />
-		<fill x="642" y="120" />
+		<dis x="642" y="120" />
+		<fill x="642" y="100" />
 		<fill_dis x="642" y="140" />
 	</HSlider>
 
 	<VSlider>
 		<cell_3V x="853" y="2" w="14" h1="4" h2="188" h3="4" />
-		<dis x="873" y="2" />
-		<fill x="893" y="2" />
+		<dis x="893" y="2" />
+		<fill x="873" y="2" />
 		<fill_dis x="913" y="2" />
 	</VSlider>
 
@@ -157,7 +157,7 @@
 	<PanelInverse overlap="3">
 		<cell x="509" y="129" w="8" h="8" />
 		<topright x="518" y="129" />
-		<botleft x="509" y="138" />
+		<botleft x="510" y="138" />
 		<botright x="518" y="138" />
 	</PanelInverse>
 
