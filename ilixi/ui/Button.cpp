@@ -95,6 +95,7 @@ Button::setCheckable(bool checkable)
         _buttonFlag = (ButtonFlags) (_buttonFlag | Checkable);
     else
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checkable);
+    doLayout();
 }
 
 void
