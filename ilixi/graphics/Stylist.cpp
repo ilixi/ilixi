@@ -207,7 +207,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
 }
 
 void
-Stylist::drawComboBox(Painter* p, ComboBox* combo, Image* down)
+Stylist::drawComboBox(Painter* p, ComboBox* combo)
 {
     const WidgetState state = combo->state();
 
@@ -234,9 +234,6 @@ Stylist::drawComboBox(Painter* p, ComboBox* combo, Image* down)
 
     if (state & FocusedState)
         draw9CFrame(p, wBG, 0, wB, wB, _style->db2.foc, _style->db1.foc, RightCorners);
-
-    // TODO fix this down arrow
-    p->stretchImage(down, Rectangle(wBG, 0, wB, wB));
 
     p->setBrush(_palette->getGroup(state).baseText);
     p->drawLayout(combo->layout());

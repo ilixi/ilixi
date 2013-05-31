@@ -103,7 +103,7 @@ public:
      * Draws a combobox.
      */
     virtual void
-    drawComboBox(Painter* painter, ComboBox* combo, Image* down);
+    drawComboBox(Painter* painter, ComboBox* combo);
 
     /*!
      * Draws a line input.

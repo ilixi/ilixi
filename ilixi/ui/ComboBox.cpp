@@ -55,7 +55,8 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
     _dialog->addWidget(_scrollArea);
     _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
 
-    _down = stylist()->defaultIcon(StyleHint::Down);
+    _down = new Icon(StyleHint::Down);
+    addChild(_down);
 }
 
 ComboBox::ComboBox(const std::string& title, const StringList& items, Widget* parent)
@@ -72,13 +73,13 @@ ComboBox::ComboBox(const std::string& title, const StringList& items, Widget* pa
 
     addItems(items);
     setSelected(_selectedIndex);
-    _down = stylist()->defaultIcon(StyleHint::Down);
+    _down = new Icon(StyleHint::Down);
+    addChild(_down);
 }
 
 ComboBox::~ComboBox()
 {
     delete _dialog;
-    delete _down;
 }
 
 Size
@@ -188,13 +189,12 @@ ComboBox::focusOutEvent()
     update();
 }
 
-
 void
 ComboBox::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    stylist()->drawComboBox(&p, this, _down);
+    stylist()->drawComboBox(&p, this);
     p.end();
 }
 
@@ -213,6 +213,8 @@ ComboBox::updateTextBaseGeometry()
 {
     int x = stylist()->defaultParameter(StyleHint::LineInputLeft);
     int y = stylist()->defaultParameter(StyleHint::LineInputTop);
+    int iconOffset = (height() - 16) / 2;
+    _down->setGeometry(width() - height() + iconOffset, iconOffset, 16, 16);
 
     _layout.setBounds(x, y, width() - x - height(), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     _layout.doLayout(font());

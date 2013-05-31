@@ -279,7 +279,7 @@ public:
      * Draws a combobox.
      */
     virtual void
-    drawComboBox(Painter* painter, ComboBox* combo, Image* down)=0;
+    drawComboBox(Painter* painter, ComboBox* combo)=0;
 
     /*!
      * Draws a frame using given coordinates.

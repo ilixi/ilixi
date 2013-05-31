@@ -25,6 +25,7 @@
 #define ILIXI_COMBOBOX_H_
 
 #include <ui/TextBase.h>
+#include <ui/Icon.h>
 #include <vector>
 
 namespace ilixi
@@ -97,7 +98,7 @@ private:
     Dialog* _dialog;
     ScrollArea* _scrollArea;
     VBoxLayout* _vlayout;
-    Image* _down;
+    Icon* _down;
 
     unsigned int _selectedIndex;
 
