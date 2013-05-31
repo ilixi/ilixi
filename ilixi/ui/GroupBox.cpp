@@ -114,9 +114,9 @@ GroupBox::doLayout()
     ILOG_TRACE_W(ILX_GROUPBOX);
     Size textSize = _title->preferredSize();
     if (_titleIcon)
-        _titleSize.setWidth(textSize.width() + textSize.height() + 5 + stylist()->defaultParameter(StyleHint::PanelLR));
+        _titleSize.setWidth(textSize.width() + textSize.height() + stylist()->defaultParameter(StyleHint::ButtonOffset) + stylist()->defaultParameter(StyleHint::PanelLR) + stylist()->defaultParameter(StyleHint::PanelInvWidth));
     else
-        _titleSize.setWidth(textSize.width() + stylist()->defaultParameter(StyleHint::PanelLR));
+        _titleSize.setWidth(textSize.width() + stylist()->defaultParameter(StyleHint::PanelLR) + stylist()->defaultParameter(StyleHint::PanelInvWidth));
     _titleSize.setHeight(textSize.height() + stylist()->defaultParameter(StyleHint::PanelTop));
     _title->setSize(textSize);
 
@@ -149,7 +149,7 @@ void
 GroupBox::setTitleGeometry()
 {
     Size textSize = _title->preferredSize();
-    int x = 2 * stylist()->defaultParameter(StyleHint::PanelLeft);
+    int x = 2 * stylist()->defaultParameter(StyleHint::PanelLeft) + stylist()->defaultParameter(StyleHint::PanelInvLeft);
     int y = stylist()->defaultParameter(StyleHint::PanelTop);
     if (_titleIcon)
     {
