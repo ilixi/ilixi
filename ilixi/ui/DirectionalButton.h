@@ -111,7 +111,7 @@ public:
      * @param size in pixels.
      */
     void
-    setIcon(const std::string& path, const Size& size = Size(48, 48));
+    setIcon(const std::string& path, const Size& size = Size(16, 16));
 
     /*!
      * Sets icon using stock icons.
