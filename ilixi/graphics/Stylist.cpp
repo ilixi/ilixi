@@ -507,29 +507,35 @@ Stylist::drawSlider(Painter* p, Slider* bar)
 
     if (bar->orientation() == Horizontal)
     {
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->hSl.def);
+        if (!bar->enabled())
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->hSl.dis);
+        else
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->hSl.def);
 
         // fill
         if (bar->value() > bar->minimum())
         {
             int offset = bar->_indicator.x() + defaultParameter(StyleHint::SliderIndicatorWidth) / 2;
             if (bar->inverted())
-                draw3Frame(p, offset, 0, bar->width() - offset, bar->height(), _style->hSl.dis);
+                draw3Frame(p, offset, 0, bar->width() - offset, bar->height(), bar->enabled() ? _style->hSl.fill : _style->hSl.fill_dis);
             else
-                draw3Frame(p, 0, 0, offset, bar->height(), _style->hSl.dis);
+                draw3Frame(p, 0, 0, offset, bar->height(), bar->enabled() ? _style->hSl.fill : _style->hSl.fill_dis);
         }
     } else // Vertical
     {
-        draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.def, true);
+        if (!bar->enabled())
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.dis);
+        else
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.def, true);
 
         // fill
         if (bar->value() > bar->minimum())
         {
             int offset = bar->_indicator.y() + defaultParameter(StyleHint::SliderIndicatorHeight) / 2;
             if (bar->inverted())
-                draw3Frame(p, 0, 0, bar->width(), offset, _style->vSl.dis, true);
+                draw3Frame(p, 0, 0, bar->width(), offset, bar->enabled() ? _style->vSl.fill : _style->vSl.fill_dis, true);
             else
-                draw3Frame(p, 0, offset, bar->width(), bar->height() - offset, _style->vSl.dis, true);
+                draw3Frame(p, 0, offset, bar->width(), bar->height() - offset, bar->enabled() ? _style->vSl.fill : _style->vSl.fill_dis, true);
         }
     }
 
