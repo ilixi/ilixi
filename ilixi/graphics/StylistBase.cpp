@@ -115,7 +115,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     switch (parameter)
     {
     case StyleHint::ButtonOffset:
-        return 0;
+        return 5;
 
     case StyleHint::PushButtonLeft:
         return _style->pb.def.l.width();
