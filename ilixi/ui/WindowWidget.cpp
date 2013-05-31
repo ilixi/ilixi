@@ -458,10 +458,15 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         case DIKS_OK:
         case DIKS_RETURN:
             {
-                if (_eventManager->grabbedWidget() != _eventManager->focusedWidget())
-                    _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
+                if (_eventManager->focusedWidget() && (_eventManager->focusedWidget()->inputMethod() & OSKInput))
+                    return _eventManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, event));
                 else
-                    _eventManager->setGrabbedWidget(NULL);
+                {
+                    if (_eventManager->grabbedWidget() != _eventManager->focusedWidget())
+                        _eventManager->setGrabbedWidget(_eventManager->focusedWidget());
+                    else
+                        _eventManager->setGrabbedWidget(NULL);
+                }
                 return true;
             }
             break;
