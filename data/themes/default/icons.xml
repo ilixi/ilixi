@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE IconPack PUBLIC "-//ilixi//DTD Icons v1//EN" "http://www.ilixi.org/dtd/icon_pack.dtd">
-<IconPack resource="@IMGDIR:ui-icons.png" defaultSize="48">
+<IconPack resource="@IMGDIR:ui-icons.png" defaultSize="16">
 	<Icon row="1" col="1" name="arrow_sw" />
 	<Icon row="2" col="1" name="arrow_down" />
 	<Icon row="3" col="1" name="arrow_left" />
@@ -56,7 +56,6 @@
 	<Icon row="5" col="5" name="ram" />
 	<Icon row="6" col="5" name="picture" />
 	<Icon row="7" col="5" name="phone" />
-	<Icon row="8" col="5" name="info" />
 	<Icon row="9" col="5" name="power" />
 	<Icon row="10" col="5" name="standby" />
 	<Icon row="11" col="5" name="restart" />
