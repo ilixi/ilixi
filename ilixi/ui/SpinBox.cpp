@@ -49,13 +49,13 @@ SpinBox::SpinBox(int value, Widget* parent)
     setInputMethod(PointerPassthrough);
 
     _minus = new DirectionalButton();
-    _minus->setIcon(StyleHint::Minus, Size(24, 24));
+    _minus->setIcon(StyleHint::Minus);
     _minus->setButtonDirection(Left);
     _minus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::decrement));
     addChild(_minus);
 
     _plus = new DirectionalButton();
-    _plus->setIcon(StyleHint::Plus, Size(24, 24));
+    _plus->setIcon(StyleHint::Plus);
     _plus->setButtonDirection(Right);
     _plus->sigClicked.connect(sigc::mem_fun(this, &SpinBox::increment));
     if (_max == _value)
