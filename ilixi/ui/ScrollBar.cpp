@@ -118,16 +118,16 @@ ScrollBar::setOrientation(Orientation orientation)
     {
         setConstraints(ExpandingConstraint, FixedConstraint);
         _dec->setButtonDirection(Left);
-        _dec->setIcon(StyleHint::Left, Size(12, 12));
+        _dec->setIcon(StyleHint::Left);
         _inc->setButtonDirection(Right);
-        _inc->setIcon(StyleHint::Right, Size(12, 12));
+        _inc->setIcon(StyleHint::Right);
     } else
     {
         setConstraints(FixedConstraint, ExpandingConstraint);
         _dec->setButtonDirection(Up);
-        _dec->setIcon(StyleHint::Up, Size(12, 12));
+        _dec->setIcon(StyleHint::Up);
         _inc->setButtonDirection(Down);
-        _inc->setIcon(StyleHint::Down, Size(12, 12));
+        _inc->setIcon(StyleHint::Down);
     }
     doLayout();
 }
