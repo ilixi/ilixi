@@ -22,7 +22,7 @@
  */
 
 #include <ui/WindowWidget.h>
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 
@@ -52,7 +52,7 @@ WindowWidget::WindowWidget(Widget* parent)
 
     if (PlatformManager::instance().appOptions() & OptExclusive)
     {
-        if (AppBase::activeWindow())
+        if (Application::activeWindow())
             ILOG_THROW( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
     } else
         _window = new Window();
@@ -68,7 +68,7 @@ WindowWidget::~WindowWidget()
     sem_destroy(&_updates._updateReady);
     sem_destroy(&_updates._paintReady);
 
-    AppBase::removeWindow(this);
+    Application::removeWindow(this);
     delete _eventManager;
     delete _window;
 }
@@ -98,7 +98,7 @@ WindowWidget::update()
         _updates._updateQueueRight.push_back(frameGeometry());
 #endif
         pthread_mutex_unlock(&_updates._listLock);
-        AppBase::__instance->updateFromWindow();
+        Application::__instance->updateFromWindow();
     }
 }
 
@@ -116,7 +116,7 @@ WindowWidget::update(const PaintEvent& event)
         _updates._updateQueueRight.push_back(event.right);
 #endif
         pthread_mutex_unlock(&_updates._listLock);
-        AppBase::__instance->updateFromWindow();
+        Application::__instance->updateFromWindow();
     }
 }
 
@@ -191,7 +191,7 @@ WindowWidget::paint(const PaintEvent& event)
 
                 paintChildren(evt);
 
-                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
+                PlatformManager::instance().renderCursor(Application::cursorPosition());
 
                 surface()->flip(evt.rect);
 #endif
@@ -219,7 +219,10 @@ WindowWidget::repaint(const PaintEvent& event)
 void
 WindowWidget::setBackgroundFilled(bool fill)
 {
-    _backgroundFlags |= BGFAll;
+    if (fill)
+        _backgroundFlags |= BGFFill;
+    else
+        _backgroundFlags &= ~BGFFill;
 }
 
 bool
@@ -250,7 +253,7 @@ void
 WindowWidget::showWindow()
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
-    if (!AppBase::activeWindow() && (PlatformManager::instance().appOptions() & OptExclusive))
+    if (!Application::activeWindow() && (PlatformManager::instance().appOptions() & OptExclusive))
     {
         _exclusiveSurface = PlatformManager::instance().getLayerSurface(_layerName);
         if (_exclusiveSurface == NULL)
@@ -258,7 +261,7 @@ WindowWidget::showWindow()
         int w, h;
         _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
 
-        AppBase::addWindow(this);
+        Application::addWindow(this);
         setSize(Size(w, h));
         setRootWindow(this);
     } else // DIALOGS
@@ -268,7 +271,7 @@ WindowWidget::showWindow()
 
         if (_window->initDFBWindow(preferredSize()))
         {
-            AppBase::addWindow(this);
+            Application::addWindow(this);
             setSize(_window->windowSize());
             setRootWindow(this);
         }
@@ -295,7 +298,7 @@ WindowWidget::showWindow()
     if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->showWindow();
 
-    AppBase::setActiveWindow(this);
+    Application::setActiveWindow(this);
 }
 
 void
@@ -309,7 +312,7 @@ WindowWidget::closeWindow()
 
     _eventManager->clear();
 
-    AppBase::removeWindow(this);
+    Application::removeWindow(this);
 
     setRootWindow(NULL);
 

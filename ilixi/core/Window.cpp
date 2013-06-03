@@ -21,7 +21,7 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 #include <core/Window.h>
@@ -125,7 +125,7 @@ Window::initDFBWindow(const Size& size)
         return false;
     }
 
-    if (!AppBase::activeWindow())
+    if (!Application::activeWindow())
     {
         ILOG_DEBUG(ILX_WINDOW, " -> Main window is initialising...\n");
         desc.posx = 0;
@@ -136,7 +136,7 @@ Window::initDFBWindow(const Size& size)
         ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     } else // other windows
     {
-        Size appSize = AppBase::appSize();
+        Size appSize = Application::appSize();
         ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising...\n");
         int w = size.width();
         int h = size.height();

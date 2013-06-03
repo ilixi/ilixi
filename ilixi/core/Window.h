@@ -35,7 +35,7 @@ namespace ilixi
  */
 class Window
 {
-    friend class AppBase;
+    friend class Application;
     friend class WindowWidget;
 public:
 

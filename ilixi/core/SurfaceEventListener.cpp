@@ -22,7 +22,7 @@
  */
 
 #include <core/SurfaceEventListener.h>
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <core/Logger.h>
 
 namespace ilixi
@@ -56,7 +56,7 @@ SurfaceEventListener::sourceSurface() const
 void
 SurfaceEventListener::attachSourceSurface()
 {
-    AppBase::addSurfaceEventListener(this);
+    Application::addSurfaceEventListener(this);
     _cb.start();
 }
 
@@ -64,7 +64,7 @@ void
 SurfaceEventListener::detachSourceSurface()
 {
     _cb.stop();
-    AppBase::removeSurfaceEventListener(this);
+    Application::removeSurfaceEventListener(this);
 }
 
 bool
@@ -79,7 +79,7 @@ SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
             ILOG_DEBUG(ILX_SURFACELISTENER_UPDATES, " -> SURFEVT: receive id %d flip count %d\n", event.surface_id, event.flip_count );
             _queue.push(event);
 
-            AppBase::__instance->accountSurfaceEvent( event, _lastTime );
+            Application::__instance->accountSurfaceEvent( event, _lastTime );
 
             _lastTime = event.time_stamp;
         }

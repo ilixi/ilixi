@@ -22,7 +22,7 @@
  */
 
 #include <ui/SurfaceView.h>
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 #include <ui/WindowWidget.h>
@@ -332,7 +332,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     {
         Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
 
-        AppBase::__instance->_updateFromSurfaceView = true;
+        Application::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(
                 Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
@@ -343,7 +343,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
-        AppBase::__instance->_updateFromSurfaceView = false;
+        Application::__instance->_updateFromSurfaceView = false;
     } //else if (!(_svState & SV_SHOULD_BLOCK))
 
     DFBSurfaceID surface_id;
@@ -351,11 +351,11 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
     ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, "onSourceUpdate()\n");
     ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> SURFEVT: acknowledge id %d flip count %d\n", surface_id, event.flip_count);
     ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> id %d\n", surface_id);
-    if (surface_id == AppBase::__instance->_updateID)
+    if (surface_id == Application::__instance->_updateID)
     {
-        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n", AppBase::__instance->_updateID);
-        AppBase::__instance->_update = true;
-        AppBase::__instance->_update_timer->restart();
+        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n", Application::__instance->_updateID);
+        Application::__instance->_update = true;
+        Application::__instance->_update_timer->restart();
     }
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);

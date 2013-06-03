@@ -22,7 +22,7 @@
  */
 
 #include <core/Callback.h>
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <lib/Animation.h>
 #include <lib/Timer.h>
 
@@ -42,13 +42,13 @@ Callback::~Callback()
 void
 Callback::start()
 {
-    AppBase::addCallback(this);
+    Application::addCallback(this);
 }
 
 void
 Callback::stop()
 {
-    AppBase::removeCallback(this);
+    Application::removeCallback(this);
 }
 
 } /* namespace ilixi */

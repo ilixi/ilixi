@@ -24,7 +24,6 @@
 #include <lib/Notify.h>
 #include <core/DaleDFB.h>
 #include <core/ComponentData.h>
-#include <core/AppBase.h>
 #include <core/Logger.h>
 #include <lib/Util.h>
 

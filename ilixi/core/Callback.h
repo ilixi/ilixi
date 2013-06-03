@@ -49,7 +49,7 @@ Functionoid::~Functionoid()
 //! Inserts/removes Functionoids to/from main loop.
 class Callback
 {
-    friend class AppBase;
+    friend class Application;
 
 public:
     /*!

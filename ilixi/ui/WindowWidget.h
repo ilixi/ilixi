@@ -36,9 +36,9 @@ namespace ilixi
 //! Base class for windowed widgets.
 class WindowWidget : public Frame
 {
-    friend class Widget;
-    friend class AppBase;
+    friend class Application;
     friend class Surface;
+    friend class Widget;
 public:
     /*!
      * Constructor.

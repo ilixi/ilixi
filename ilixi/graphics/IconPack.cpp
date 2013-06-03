@@ -47,6 +47,7 @@ Image*
 IconPack::getIcon(std::string name)
 {
     ILOG_TRACE(ILX_ICONPACK);
+    ILOG_DEBUG(ILX_ICONPACK, " -> name: %s\n", name.c_str());
     IconMap::iterator it = _iconMap.find(name);
     if (it != _iconMap.end())
     {

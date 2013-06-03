@@ -32,7 +32,7 @@ namespace ilixi
 //! Provides timers with milliseconds intervals.
 class Timer : public sigc::trackable
 {
-    friend class AppBase;
+    friend class Application;
 public:
     /*!
      * Constructor.

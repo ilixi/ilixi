@@ -22,7 +22,7 @@
  */
 
 #include <lib/Timer.h>
-#include <core/AppBase.h>
+#include <ui/Application.h>
 #include <core/Window.h>
 #include <core/Logger.h>
 
@@ -47,7 +47,7 @@ Timer::Timer()
 
 Timer::~Timer()
 {
-    AppBase::removeTimer(this);
+    Application::removeTimer(this);
 }
 
 bool
@@ -80,7 +80,7 @@ Timer::start(unsigned int msec, unsigned int repeats)
     _expiry = direct_clock_get_millis() + _interval;
     ILOG_TRACE_F(ILX_TIMER);
     ILOG_DEBUG( ILX_TIMER, " -> Interval %d msec (trigger time %d.%d)\n", _interval, (int) (_expiry/1000), (int)(_expiry%1000));
-    AppBase::addTimer(this);
+    Application::addTimer(this);
 }
 
 void
@@ -102,7 +102,7 @@ Timer::stop()
 {
     ILOG_TRACE_F(ILX_TIMER);
     _running = false;
-    AppBase::removeTimer(this);
+    Application::removeTimer(this);
 }
 
 void
