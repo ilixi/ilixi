@@ -586,7 +586,7 @@ Surface::updateSurface(const PaintEvent& event)
             _dfbSurface = _owner->_rootWindow->windowSurface();
             _dfbSurface->AddRef(_dfbSurface);
 #else
-            ILOG_DEBUG(ILX_SURFACE, " -> RootSurface: 0x%03x\n", _flags);
+            ILOG_DEBUG(ILX_SURFACE, " -> RootSurface %p flags 0x%03x\n", this, _flags);
             _dfbSurface = _owner->_rootWindow->windowSurface();
             _dfbSurface->AddRef(_dfbSurface);
 #endif
@@ -606,7 +606,17 @@ Surface::updateSurface(const PaintEvent& event)
             }
 #else
             ILOG_DEBUG(ILX_SURFACE, " -> SubSurface: 0x%03x\n", _flags);
-            ret = createDFBSubSurface(_owner->surfaceGeometry(), _owner->_parent->surface()->dfbSurface());
+
+            Widget* parent =_owner->_parent;
+            while(parent->surface()->flags() & SharedSurface)
+            {
+                if (parent->parent())
+                    parent = parent->parent();
+                else
+                    break;
+            }
+
+            ret = createDFBSubSurface(_owner->frameGeometry(), parent->surface()->dfbSurface());
 #endif
         } else if (_owner->_parent)
         {
