@@ -69,9 +69,9 @@ Painter::begin(const PaintEvent& event)
     }
 #else
     if (_myWidget->surface()->flags() & Surface::SharedSurface)
-    _myWidget->surface()->clip(event.rect);
+        _myWidget->surface()->clip(event.rect);
     else
-    _myWidget->surface()->clip(Rectangle(event.rect.x() - _myWidget->absX(), event.rect.y() - _myWidget->absY(), event.rect.width(), event.rect.height()));
+        _myWidget->surface()->clip(Rectangle(event.rect.x() - _myWidget->absX(), event.rect.y() - _myWidget->absY(), event.rect.width(), event.rect.height()));
 #endif
     _state = Active;
     dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
