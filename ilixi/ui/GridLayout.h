@@ -190,6 +190,14 @@ public:
     bool
     addWidget(Widget* widget, int row, int col, int rowSpan = 0, int colSpan = 0);
 
+    /*!
+     * Removes and deletes a child widget if destroy is true.
+     *
+     * Returns true if successful.
+     */
+    virtual bool
+    removeWidget(Widget* widget, bool destroy = true);
+
     void
     tile();
 

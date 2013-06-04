@@ -383,6 +383,33 @@ GridLayout::addWidget(Widget* widget, int row, int col, int rowSpan, int colSpan
     return true;
 }
 
+bool
+GridLayout::removeWidget(Widget* widget, bool destroy)
+{
+    ILOG_TRACE_W(ILX_GRIDLAYOUT);
+    if (isChild(widget))
+    {
+        RadioButton* radio = dynamic_cast<RadioButton*>(widget);
+        if (radio)
+            _group->remove(radio);
+    }
+
+    if (removeChild(widget, destroy))
+    {
+        for (int i = 0; i < _rows * _cols; i++)
+        {
+            if (_cells[i] && _cells[i]->widget == widget)
+            {
+                delete _cells[i];
+                _cells[i] = NULL;
+            }
+        }
+        doLayout();
+        return true;
+    }
+    return false;
+}
+
 void
 GridLayout::tile()
 {
@@ -843,8 +870,7 @@ GridLayout::tile()
                     if (_keyNavChildrenFirst)
                     {
                         int rC = (r + 1) * _cols;
-                        widget->setNeighbour(Right,
-                                ((rC < _rows * _cols) && _cells[rC]) ? _cells[rC]->widget : getNeighbour(Right));
+                        widget->setNeighbour(Right, ((rC < _rows * _cols) && _cells[rC]) ? _cells[rC]->widget : getNeighbour(Right));
                     } else
                         widget->setNeighbour(Right, getNeighbour(Right));
                 } else
