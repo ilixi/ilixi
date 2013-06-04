@@ -398,7 +398,7 @@ Application::handleEvents(int32_t timeout, bool forceWait)
         case DFEC_WINDOW:
             if (!(PlatformManager::instance().appOptions() & OptExclusive) && event.window.type != DWET_UPDATE)
             {
-                if (event.window.type == DWET_MOTION)
+                if (event.window.type == DWET_MOTION && event.window.buttons == 0)
                     lastMotion = event.window;
                 else if (lastMotion.type == DWET_NONE)
                 {
