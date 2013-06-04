@@ -699,6 +699,24 @@ Stylist::drawFrame(Painter* painter, int x, int y, int w, int h)
 }
 
 void
+Stylist::drawToolButtonFrame(Painter* p, int x, int y, int w, int h, WidgetState state)
+{
+    if (state & DisabledState)
+        draw9Frame(p, 0, 0, w, h, _style->tb.dis);
+    else if (state & PressedState)
+    {
+        draw9Frame(p, 0, 0, w, h, _style->tb.pre);
+        y = 1;
+    } else if (state & ExposedState)
+        draw9Frame(p, 0, 0, w, h, _style->tb.exp);
+    else
+        draw9Frame(p, 0, 0, w, h, _style->tb.def);
+
+    if (state & FocusedState)
+        draw9Frame(p, 0, 0, w, h, _style->tb.foc);
+}
+
+void
 Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rect, bool vertical, const DFBSurfaceBlittingFlags& flags)
 {
     if (vertical)

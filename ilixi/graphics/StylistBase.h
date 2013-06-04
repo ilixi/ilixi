@@ -287,6 +287,12 @@ public:
     virtual void
     drawFrame(Painter* painter, int x, int y, int w, int h)=0;
 
+    /*!
+     * Draws a tool button frame using given coordinates.
+     */
+    virtual void
+    drawToolButtonFrame(Painter* painter, int x, int y, int w, int h, WidgetState state)=0;
+
 protected:
     //! This property stores the fonts pack.
     FontPack* _fonts;
