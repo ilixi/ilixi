@@ -560,10 +560,13 @@ Application::postUserEvent(unsigned int type, void* data)
 void
 Application::postUniversalEvent(Widget* target, unsigned int type, void* data)
 {
-    UniversalEvent event(target, type, data);
-    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    if (ret != DFB_OK)
-        ILOG_ERROR(ILX_APPLICATION, "Cannot post UniversalEvent!\n");
+    if (__instance)
+    {
+        UniversalEvent event(target, type, data);
+        DFBResult ret = __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+        if (ret != DFB_OK)
+            ILOG_ERROR(ILX_APPLICATION, "Cannot post UniversalEvent!\n");
+    }
 }
 
 void

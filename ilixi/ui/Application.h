@@ -135,7 +135,7 @@ public:
      * @param type of event
      * @param data if not NULL, a pointer to your data.
      */
-    void
+    static void
     postUniversalEvent(Widget* target, unsigned int type, void* data = NULL);
 
     /*!
