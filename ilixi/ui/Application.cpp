@@ -531,6 +531,8 @@ Application::updateLayoutGeometry()
             _toolbar->setGeometry(0, 0, width(), h);
         else
             _toolbar->setGeometry(0, height() - h, width(), h);
+        _toolbar->setNeighbour(Down, _layout);
+        _layout->setNeighbour(Up, _toolbar);
     }
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
