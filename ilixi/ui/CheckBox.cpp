@@ -87,14 +87,17 @@ CheckBox::toggleChecked()
             {
                 setChecked(false);
                 _buttonFlag = (ButtonFlags) (_buttonFlag | Partial);
+                update();
                 sigCheckStateChanged(Partial);
             } else if (partial())
             {
                 _buttonFlag = (ButtonFlags) (_buttonFlag & ~Partial);
+                update();
                 sigCheckStateChanged(Unchecked);
             } else
             {
                 setChecked(true);
+                update();
                 sigCheckStateChanged(Checked);
             }
         } else
@@ -102,16 +105,17 @@ CheckBox::toggleChecked()
             if (checked())
             {
                 setChecked(false);
+                update();
                 sigCheckChanged(false);
                 sigCheckStateChanged(Unchecked);
             } else
             {
                 setChecked(true);
+                update();
                 sigCheckChanged(true);
                 sigCheckStateChanged(Checked);
             }
         }
-        update();
     }
 }
 

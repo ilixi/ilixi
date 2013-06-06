@@ -121,9 +121,9 @@ Slider::setValue(float value, bool signal)
             _value = value;
 
         updateIndicatorPosition();
+        update();
         if (signal)
             sigValueChanged(_value);
-        update();
         ILOG_DEBUG(ILX_SLIDER, "Value: %f\n", _value);
     }
 }
@@ -282,8 +282,8 @@ Slider::pointerButtonDownEvent(const PointerEvent& pointerEvent)
 void
 Slider::pointerButtonUpEvent(const PointerEvent& pointerEvent)
 {
-    sigReleased();
     update();
+    sigReleased();
 }
 
 void

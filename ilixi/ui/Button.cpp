@@ -70,8 +70,8 @@ Button::click(unsigned int ms)
         sigStateChanged(this, _state);
     }
     PlatformManager::instance().playSoundEffect("Click");
-    sigClicked();
     toggleChecked();
+    sigClicked();
 }
 
 void
@@ -83,9 +83,10 @@ Button::toggleChecked()
             setChecked(false);
         else
             setChecked(true);
+        update();
         sigCheckChanged(checked());
-    }
-    update();
+    } else
+        update();
 }
 
 void
@@ -119,8 +120,8 @@ void
 Button::pointerButtonDownEvent(const PointerEvent& event)
 {
     _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
-    sigPressed();
     update();
+    sigPressed();
 }
 
 void
@@ -131,8 +132,8 @@ Button::pointerButtonUpEvent(const PointerEvent& event)
     {
         PlatformManager::instance().playSoundEffect("Click");
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
-        sigClicked();
         toggleChecked();
+        sigClicked();
     }
 }
 

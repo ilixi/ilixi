@@ -222,8 +222,8 @@ DirectionalButton::pointerButtonDownEvent(const PointerEvent& event)
     if (_icon)
         _icon->setState(PressedState);
 
-    sigPressed();
     update();
+    sigPressed();
 }
 
 void
@@ -240,8 +240,8 @@ DirectionalButton::pointerButtonUpEvent(const PointerEvent& event)
         if (_icon)
             _icon->setState(DefaultState);
         PlatformManager::instance().playSoundEffect("Click");
-        sigClicked();
         toggleChecked();
+        sigClicked();
     }
 }
 

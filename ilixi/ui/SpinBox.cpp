@@ -206,8 +206,8 @@ SpinBox::setValue(int value)
         _layout.setText(ss.str());
 
         doLayout();
-        sigValueChanged(_value);
         update();
+        sigValueChanged(_value);
     }
 }
 
