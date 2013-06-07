@@ -624,8 +624,7 @@ Stylist::drawToolBarButton(Painter* p, ToolBarButton* button)
     if (!button->enabled())
         draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.dis);
     else if (state & PressedState)
-//        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.pre);
-        p->fillRectangle(0, 0, button->width(), button->height());
+        draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.pre);
     else if (state & ExposedState)
         draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.exp);
     else
