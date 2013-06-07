@@ -56,7 +56,9 @@
 	<Icon row="5" col="5" name="ram" />
 	<Icon row="6" col="5" name="picture" />
 	<Icon row="7" col="5" name="phone" />
+	<Icon row="8" col="5" name="home" />
 	<Icon row="9" col="5" name="power" />
 	<Icon row="10" col="5" name="standby" />
 	<Icon row="11" col="5" name="restart" />
+	<Icon row="12" col="5" name="window" />
 </IconPack>

@@ -126,6 +126,7 @@ enum PackedIcon
     FileUpload,
     Flag,
     Heart,
+    Home,
     Info,
     Left,
     Minus,
@@ -159,6 +160,7 @@ enum PackedIcon
     Tick,
     TickCircle,
     Up,
+    Window,
     ZoomIn,
     ZoomOut
 };

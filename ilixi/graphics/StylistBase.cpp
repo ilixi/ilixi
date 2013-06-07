@@ -180,7 +180,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::PanelInvLeft:
         return _style->panelInv.br.width() - _style->overlap;
     case StyleHint::PanelInvWidth:
-            return _style->panelInv.br.width() - _style->overlap + _style->panelInv.bl.width() - _style->overlap;
+        return _style->panelInv.br.width() - _style->overlap + _style->panelInv.bl.width() - _style->overlap;
 
     case StyleHint::LineInputLeft:
         return _style->li.def.l.width();
@@ -289,6 +289,8 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("flag");
     case StyleHint::Heart:
         return _icons->getIcon("heart");
+    case StyleHint::Home:
+        return _icons->getIcon("home");
     case StyleHint::Info:
         return _icons->getIcon("info");
     case StyleHint::Left:
@@ -355,6 +357,8 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("tick_circle");
     case StyleHint::Up:
         return _icons->getIcon("arrow_up");
+    case StyleHint::Window:
+        return _icons->getIcon("window");
     case StyleHint::ZoomIn:
         return _icons->getIcon("zoom_in");
     case StyleHint::ZoomOut:
