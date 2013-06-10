@@ -31,7 +31,8 @@
 #include <compositor/SoundComponent.h>
 #include <compositor/Switcher.h>
 #include <lib/FPSCalculator.h>
-#include <ui/Application.h>
+#include <core/Application.h>
+
 extern "C"
 {
 #include <directfb_windows.h>

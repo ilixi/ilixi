@@ -21,8 +21,9 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <core/Application.h>
+
 #include <core/Callback.h>
-#include <ui/Application.h>
 #include <lib/Animation.h>
 #include <lib/Timer.h>
 

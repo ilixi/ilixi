@@ -22,7 +22,8 @@
  */
 
 #include <core/SurfaceEventListener.h>
-#include <ui/Application.h>
+
+#include <core/Application.h>
 #include <core/Logger.h>
 
 namespace ilixi
