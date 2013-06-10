@@ -24,7 +24,7 @@
 #ifndef ILIXI_SCROLLAREA_H_
 #define ILIXI_SCROLLAREA_H_
 
-#include <ui/Widget.h>
+#include <ui/ScrollBar.h>
 #include <queue>
 
 namespace ilixi
@@ -77,10 +77,10 @@ public:
     setAutoScrolling(bool autoScroll);
 
     /*!
-     * Sets whether horizontal and vertical thumbs are always visible.
+     * Sets whether to use thumbs or bars.
      */
     void
-    setScollerAlways(bool horizontal, bool vertical);
+    setUseThumbs(bool useThumbs);
 
     /*!
      * Sets smooth scrolling on or off.
@@ -145,27 +145,38 @@ private:
     //! These options control the functionality of ScrollArea.
     enum ScrollAreaOptions
     {
-        DrawFrame = 0x00001,  //!< Draws frame around scroll area
-        DrawHorizontalThumb = 0x00002,  //!< Flag controlling drawing of horizontal thumb
-        DrawVerticalThumb = 0x00004,  //!< Flag controlling drawing of vertical thumb
-        HorizontalAlways = 0x00010,  //!< Makes horizontal thumb always visible.
-        HorizontalAuto = 0x00020,  //!< Makes horizontal thumb visible automatically.
-        HorizontalScroll = 0x00040,  //!< Whether horizontal scrolling is enabled.
-        SmoothScrolling = 0x00100,  //!< Content has its own surface.
-        TargetedScroll = 0x00200,  //!< Alters scrolling mode, used for scrolling to desired coordinates.
-        VerticalAlways = 0x01000,  //!< Makes vertical thumb always visible automatically.
-        VerticalAuto = 0x02000,  //!< Makes vertical thumb visible automatically.
-        VerticalScroll = 0x04000,  //!< Whether vertical scrolling is enabled .
+        DrawFrame = 0x00001,                //!< Draws frame around scroll area
+
+        SmoothScrolling = 0x00100,          //!< Content has its own surface.
+        TargetedScroll = 0x00200,           //!< Alters scrolling mode, used for scrolling to desired coordinates using animation.
+
+        HasHorizontal = 0x00002,            //!< Flag controlling drawing of horizontal thumb
+        HasVertical = 0x00004,              //!< Flag controlling drawing of vertical thumb
+        UseBars = 0x00008,                  //!< Flag controlling drawing of bars
+
+        HorizontalAlways = 0x00010,         //!< Makes horizontal thumb/bar always visible.
+        HorizontalAuto = 0x00020,           //!< Makes horizontal thumb/bar visible automatically.
+        HorizontalScrollEnabled = 0x00040,  //!< Whether horizontal scrolling is enabled.
+
+        VerticalAlways = 0x01000,           //!< Makes vertical thumb/bar always visible automatically.
+        VerticalAuto = 0x02000,             //!< Makes vertical thumb/bar visible automatically.
+        VerticalScrollEnabled = 0x04000,    //!< Whether vertical scrolling is enabled.
     };
 
     //! This property stores the options for ScrollArea.
     int _options;
     //! This is the content of scroll area.
     Widget* _content;
+    //! This property stores the horizontal bar.
+    ScrollBar* _horizontalBar;
+    //! This property stores the vertical bar.
+    ScrollBar* _verticalBar;
 
     //! Animation for sliding in x and y directions..
     TweenAnimation* _ani;
+    //! Tween for x axis.
     Tween* _xTween;
+    //! Tween for y axis.
     Tween* _yTween;
 
     //! Content can not go beyond this point.
@@ -177,10 +188,10 @@ private:
     std::queue<PointerEvent> _events;
 
     void
-    updateHThumb();
+    updateHDraws(int contentWidth);
 
     void
-    updateVThumb();
+    updateVDraws(int contentHeight);
 
     //! Sets helper variables and dimension of content.
     void
@@ -189,6 +200,12 @@ private:
     //! Updates position of content.
     void
     updateScrollArea();
+
+    void
+    barScrollX(int x);
+
+    void
+    barScrollY(int y);
 };
 
 }

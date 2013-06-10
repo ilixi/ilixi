@@ -34,13 +34,23 @@ D_DEBUG_DOMAIN( ILX_SCROLLAREA, "ilixi/ui/ScrollArea", "ScrollArea");
 
 ScrollArea::ScrollArea(Widget* parent)
         : Widget(parent),
-          _options(HorizontalAuto | VerticalAuto),
-          _content(NULL)
+          _options(HorizontalAuto | VerticalAuto | UseBars),
+          _content(NULL),
+          _horizontalBar(NULL),
+          _verticalBar(NULL)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
     setInputMethod((WidgetInputMethod) (PointerInput | PointerTracking | PointerGrabbing));
     setConstraints(NoConstraint, NoConstraint);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &ScrollArea::updateScollAreaGeometry));
+
+    _horizontalBar = new ScrollBar();
+    _horizontalBar->sigValueChanged.connect(sigc::mem_fun(this, &ScrollArea::barScrollX));
+    addChild(_horizontalBar);
+
+    _verticalBar = new ScrollBar(Vertical);
+    _verticalBar->sigValueChanged.connect(sigc::mem_fun(this, &ScrollArea::barScrollY));
+    addChild(_verticalBar);
 
     _ani = new TweenAnimation();
 
@@ -95,17 +105,12 @@ ScrollArea::setContent(Widget* content)
 }
 
 void
-ScrollArea::setScollerAlways(bool horizontal, bool vertical)
+ScrollArea::setUseThumbs(bool useThumbs)
 {
-    if (horizontal)
-        _options |= HorizontalAlways;
+    if (useThumbs)
+        _options &= ~UseBars;
     else
-        _options &= ~HorizontalAlways;
-
-    if (vertical)
-        _options |= VerticalAlways;
-    else
-        _options &= ~VerticalAlways;
+        _options |= UseBars;
 }
 
 void
@@ -215,7 +220,26 @@ ScrollArea::paint(const PaintEvent& event)
                 _content->surface()->flip();
 //                surface()->blit(_content->surface(), Rectangle(-_cx, -_cy, width(), height()), 0, 0);
             } else
-                paintChildren(evt);
+            {
+                _horizontalBar->paint(evt);
+                _verticalBar->paint(evt);
+                if (_content)
+                {
+                    if (_options & UseBars)
+                    {
+                        int w = width();
+                        int h = height();
+                        if (_options & HasVertical)
+                            w = width() - _verticalBar->width();
+                        if (_options & HasHorizontal)
+                            h = height() - _horizontalBar->height();
+                        Rectangle r(absX(), absY(), w, h);
+                        evt.rect = evt.rect.intersected(r);
+                        _content->paint(evt);
+                    } else
+                        _content->paint(evt);
+                }
+            }
             compose(evt);
         }
     }
@@ -297,26 +321,35 @@ ScrollArea::pointerWheelEvent(const PointerEvent& event)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
     ILOG_DEBUG(ILX_SCROLLAREA, " -> step: %d\n", event.wheelStep);
-    _ani->stop();
-    if (_options & VerticalScroll)
+    if (_options & UseBars)
     {
-        int y = _yTween->endValue() + height() / 10 * event.wheelStep;
-        if (y < height() - _content->height())
-            y = height() - _content->height();
-        else if (y > 0)
-            y = 0;
-        _yTween->setRange(_content->y(), y);
-    } else if (_options & HorizontalScroll)
+        if (_options & VerticalScrollEnabled)
+            _verticalBar->setValue(_verticalBar->value() - event.wheelStep * _verticalBar->step());
+        else if (_options & HorizontalScrollEnabled)
+            _horizontalBar->setValue(_horizontalBar->value() - event.wheelStep * _horizontalBar->step());
+    } else
     {
-        int x = _xTween->endValue() + width() / 10 * event.wheelStep;
-        if (x < width() - _content->width())
-            x = width() - _content->width();
-        else if (x > 0)
-            x = 0;
-        _xTween->setRange(_content->x(), x);
+        _ani->stop();
+        if (_options & VerticalScrollEnabled)
+        {
+            int y = _yTween->endValue() + height() / 10 * event.wheelStep;
+            if (y < height() - _content->height())
+                y = height() - _content->height();
+            else if (y > 0)
+                y = 0;
+            _yTween->setRange(_content->y(), y);
+        } else if (_options & HorizontalScrollEnabled)
+        {
+            int x = _xTween->endValue() + width() / 10 * event.wheelStep;
+            if (x < width() - _content->width())
+                x = width() - _content->width();
+            else if (x > 0)
+                x = 0;
+            _xTween->setRange(_content->x(), x);
+        }
+        _options |= TargetedScroll;
+        _ani->start();
     }
-    _options |= TargetedScroll;
-    _ani->start();
 }
 
 void
@@ -329,15 +362,15 @@ ScrollArea::compose(const PaintEvent& event)
     if (_options & DrawFrame)
         stylist()->drawScrollArea(&p, this);
 
-    if (_ani->state() == Animation::Running)
+    if (!(_options & UseBars) && (_ani->state() == Animation::Running))
     {
-        if (_options & DrawHorizontalThumb)
+        if (_options & HasHorizontal)
         {
             int x = 1 + (width() - _thumbs.width() - 12.0) * _xTween->value() / _sMax.x();
             stylist()->drawScrollBar(&p, x, height() - stylist()->defaultParameter(StyleHint::ScrollBarHeight), _thumbs.width(), stylist()->defaultParameter(StyleHint::ScrollBarHeight), Horizontal);
         }
 
-        if (_options & DrawVerticalThumb)
+        if (_options & HasVertical)
         {
             int y = 1 + (height() - _thumbs.height() - 12.0) * _yTween->value() / _sMax.y();
             stylist()->drawScrollBar(&p, width() - stylist()->defaultParameter(StyleHint::ScrollBarWidth), y, stylist()->defaultParameter(StyleHint::ScrollBarWidth), _thumbs.height(), Vertical);
@@ -346,27 +379,54 @@ ScrollArea::compose(const PaintEvent& event)
 }
 
 void
-ScrollArea::updateHThumb()
+ScrollArea::updateHDraws(int contentWidth)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_options & HorizontalAlways)
-        _options |= (HorizontalScroll | DrawHorizontalThumb);
-    else if ((_options & HorizontalAuto) && _content->width() > width())
-        _options |= (HorizontalScroll | DrawHorizontalThumb);
+        _options |= (HorizontalScrollEnabled | HasHorizontal);
+    else if ((_options & HorizontalAuto) && contentWidth > width())
+        _options |= (HorizontalScrollEnabled | HasHorizontal);
     else
-        _options &= ~(HorizontalScroll | DrawHorizontalThumb);
+        _options &= ~(HorizontalScrollEnabled | HasHorizontal);
+
+    if ((_options & UseBars) && (_options & HasHorizontal))
+    {
+        int val = contentWidth - width();
+        if (val < 0)
+            _horizontalBar->setDisabled();
+        else
+            _horizontalBar->setEnabled();
+        _horizontalBar->setVisible(true);
+        _horizontalBar->setRange(0, val);
+        _horizontalBar->setStep(val / 10 + val % 10);
+
+    } else
+        _horizontalBar->setVisible(false);
 }
 
 void
-ScrollArea::updateVThumb()
+ScrollArea::updateVDraws(int contentHeight)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
     if (_options & VerticalAlways)
-        _options |= (VerticalScroll | DrawVerticalThumb);
-    else if ((_options & VerticalAuto) && _content->height() > height())
-        _options |= (VerticalScroll | DrawVerticalThumb);
+        _options |= (VerticalScrollEnabled | HasVertical);
+    else if ((_options & VerticalAuto) && contentHeight > height())
+        _options |= (VerticalScrollEnabled | HasVertical);
     else
-        _options &= ~(VerticalScroll | DrawVerticalThumb);
+        _options &= ~(VerticalScrollEnabled | HasVertical);
+
+    if ((_options & UseBars) && (_options & HasVertical))
+    {
+        int val = contentHeight - height();
+        if (val < 0)
+            _verticalBar->setDisabled();
+        else
+            _verticalBar->setEnabled();
+        _verticalBar->setVisible(true);
+        _verticalBar->setRange(0, val);
+        _verticalBar->setStep(val / 10 + val % 10);
+    } else
+        _verticalBar->setVisible(false);
 }
 
 void
@@ -376,26 +436,39 @@ ScrollArea::updateScollAreaGeometry()
     if (!_content)
         return;
 
+    int w = width();
+    int h = height();
+
     _content->moveTo(0, 0);
+    _content->sendToBack();
+
     Size contentSize = _content->preferredSize();
+
     if (contentSize.isValid())
     {
         _content->setSize(contentSize);
-
-        _sMax = Rectangle(width() - _content->width(), height() - _content->height(), width() / 3, height() / 3);
-
-        _thumbs = Size(width() * width() / _content->width() - 4, height() * height() / _content->height() - 4);
+        _sMax = Rectangle(w - _content->width(), h - _content->height(), w / 3, h / 3);
+        _thumbs = Size(w * w / _content->width() - 4, h * h / _content->height() - 4);
+        updateHDraws(_content->width());
+        updateVDraws(_content->height());
     }
 
-    updateHThumb();
+    if (_options & UseBars)
+    {
+        Size vS = _verticalBar->preferredSize();
+        _verticalBar->setGeometry(width() - vS.width(), 0, vS.width(), height());
+        Size hS = _horizontalBar->preferredSize();
+        _horizontalBar->setGeometry(0, h - hS.height(), w - vS.width(), hS.height());
 
-    if (_content->width() < width() && (_content->xConstraint() & GrowPolicy))
-        _content->setWidth(width());
+        w = width() - vS.width();
+        h = height() - hS.height();
+    }
 
-    updateVThumb();
+    if (_content->width() < w && (_content->xConstraint() & GrowPolicy))
+        _content->setWidth(w);
 
-    if (_content->height() < height() && (_content->yConstraint() & GrowPolicy))
-        _content->setHeight(height());
+    if (_content->height() < h && (_content->yConstraint() & GrowPolicy))
+        _content->setHeight(h);
 }
 
 void
@@ -403,42 +476,42 @@ ScrollArea::updateScrollArea()
 {
     if (pressed())
     {
-//        if (_options & HorizontalScroll)
-//        {
-//            float deltaX = _sCur.x() - _sPre.x();
-//
-//            if (_cx > 0)
-//                deltaX *= 1.0 - (_cx / _sMax.width());
-//            else if (_cx < _sMax.x())
-//                deltaX *= 1.0 - ((_sMax.x() - _cx) / _sMax.width());
-//
-//            _cx += deltaX;
-//        }
-//
-//        if (_options & VerticalScroll)
-//        {
-//            float deltaY = _sCur.y() - _sPre.y();
-//
-//            if (_cy > 0)
-//                deltaY *= 1.0 - (_cy / _sMax.height());
-//            else if (_cy < _sMax.y())
-//                deltaY *= 1.0 - ((_sMax.y() - _cy) / _sMax.height());
-//
-//            _cy += deltaY;
-//        }
-//
-//        _sPre = _sCur;
     } else if (_options & TargetedScroll)
     {
-        if (_options & HorizontalScroll)
-            _content->setX(_xTween->value());
-        if (_options & VerticalScroll)
-            _content->setY(_yTween->value());
+        if (_options & HorizontalScrollEnabled)
+        {
+            if (_options & UseBars)
+                _horizontalBar->setValue(-_xTween->value());
+            else
+                _content->setX(_xTween->value());
+        }
+        if (_options & VerticalScrollEnabled)
+        {
+            if (_options & UseBars)
+                _verticalBar->setValue(-_yTween->value());
+            else
+                _content->setY(_yTween->value());
+
+        }
         ILOG_DEBUG(ILX_SCROLLAREA, " -> content at %f, %f\n", _xTween->value(), _yTween->value());
     } else
     {
     }
 
+    update();
+}
+
+void
+ScrollArea::barScrollX(int x)
+{
+    _content->setX(-x);
+    update();
+}
+
+void
+ScrollArea::barScrollY(int y)
+{
+    _content->setY(-y);
     update();
 }
 
