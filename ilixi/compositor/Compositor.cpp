@@ -67,7 +67,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
     setMargin(0);
 
-    _backgroundFlags = BGFFill;
+    appWindow()->setBackgroundClear(false);
     _syncWithSurfaceEvents = true;
 
     _fps = new FPSCalculator();
@@ -77,7 +77,7 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
 ILXCompositor::~ILXCompositor()
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     delete _appMan;
     delete _fps;
     delete _compComp;
@@ -104,7 +104,7 @@ ILXCompositor::appMan() const
 void
 ILXCompositor::showInstance(AppInstance* instance)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     toggleSwitcher(false);
     if (!instance || !instance->view())
     {
@@ -146,7 +146,7 @@ ILXCompositor::showInstance(AppInstance* instance)
 void
 ILXCompositor::toggleLauncher(bool show)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     if (show && _home)
         showInstance(_home);
     else if (_previousApp)
@@ -156,20 +156,20 @@ ILXCompositor::toggleLauncher(bool show)
 void
 ILXCompositor::toggleSwitcher(bool show)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     if (!_switcher)
         return;
     if (show && _switcher->itemCount() > 0)
     {
         _switcher->show();
         _compComp->signalSwitcher(true);
-        eventManager()->setGrabbedWidget(NULL);
+        appWindow()->eventManager()->setGrabbedWidget(NULL);
         toggleOSK(false);
         if (_switcher->currentThumb())
             _switcher->currentThumb()->setFocus();
     } else
     {
-        _backgroundFlags |= BGFClear;
+        appWindow()->setBackgroundClear(true);
         _switcher->hide();
         _compComp->signalSwitcher(false);
         if (_currentApp)
@@ -224,7 +224,7 @@ ILXCompositor::getSwitcherGeometry() const
 void
 ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
     if (rect.y + rect.h > _appGeometry.bottom() - _oskGeometry.height())
         _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (_appGeometry.bottom() - _oskGeometry.height()), rect.w, rect.h);
@@ -243,7 +243,7 @@ ILXCompositor::toggleOSK(bool show)
 {
     if (_osk)
     {
-        ILOG_TRACE_W(ILX_COMPOSITOR);
+        ILOG_TRACE_F(ILX_COMPOSITOR);
 
         if (_currentApp && _currentApp->pid() == _oskTargetPID)
         {
@@ -290,7 +290,7 @@ ILXCompositor::sendOSKInput(uint32_t key, unsigned int mask)
 void
 ILXCompositor::setLayerOpacity(u8 opacity)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> %d\n", opacity);
     IDirectFBDisplayLayer* layer = PlatformManager::instance().getLayer("ui");
     layer->SetOpacity(layer, opacity);
@@ -340,7 +340,7 @@ ILXCompositor::onVisible()
 IDirectFBWindow*
 ILXCompositor::getWindow(DFBWindowID wid)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     if (wid)
     {
         ILOG_DEBUG(ILX_COMPOSITOR, " -> DFBWindowID: %u\n", wid);
@@ -369,7 +369,7 @@ ILXCompositor::getWindow(DFBWindowID wid)
 void
 ILXCompositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
@@ -382,7 +382,7 @@ ILXCompositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
 void
 ILXCompositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
@@ -395,7 +395,7 @@ ILXCompositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
 void
 ILXCompositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfig, const SaWManWindowInfo* info)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
@@ -414,7 +414,7 @@ ILXCompositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfi
 void
 ILXCompositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info, int order, DFBWindowID other)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", info->win_id);
 
     CompositorEventData* data = new CompositorEventData;
@@ -434,21 +434,21 @@ ILXCompositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info
 void
 ILXCompositor::stateWindow(DFBWindowID wid, const DFBWindowState* state)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", wid);
 }
 
 void
 ILXCompositor::focusWindow(DFBWindowID wid)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> ID %u\n", wid);
 }
 
 void
 ILXCompositor::processRemoved(AppInstance* instance)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> PID %u\n", instance->pid());
 
     CompositorEventData* data = new CompositorEventData;
@@ -460,7 +460,7 @@ ILXCompositor::processRemoved(AppInstance* instance)
 void
 ILXCompositor::processTerminated(AppInstance* instance)
 {
-    ILOG_TRACE_W(ILX_COMPOSITOR);
+    ILOG_TRACE_F(ILX_COMPOSITOR);
     ILOG_DEBUG(ILX_COMPOSITOR, " -> PID %u\n", instance->pid());
 
     CompositorEventData* data = new CompositorEventData;
@@ -489,7 +489,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_STATUSBAR\n");
                     _statusBar = data->instance;
-                    _statusBar->setView(new AppView(this, data->instance, this));
+                    _statusBar->setView(new AppView(this, data->instance));
                     _statusBar->view()->setGeometry(_barGeometry);
                     addWidget(_statusBar->view());
                     _statusBar->view()->setZ(0);
@@ -502,7 +502,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                     _osk = data->instance;
                     if (!_osk->view())
                     {
-                        _osk->setView(new AppView(this, data->instance, this));
+                        _osk->setView(new AppView(this, data->instance));
                         _osk->view()->setGeometry(_oskGeometry);
                         addWidget(_osk->view());
                         if (_statusBar)
@@ -515,7 +515,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_HOME\n");
 
                     _home = data->instance;
-                    _home->setView(new AppView(this, _home, this));
+                    _home->setView(new AppView(this, _home));
                     data->instance->view()->setGeometry(_appGeometry);
                     addWidget(_home->view());
                     _home->view()->setZ(0);
@@ -525,7 +525,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_SYSTEM\n");
 
-                    data->instance->setView(new AppView(this, data->instance, this));
+                    data->instance->setView(new AppView(this, data->instance));
                     data->instance->view()->setGeometry(_appGeometry);
                     addWidget(data->instance->view());
                     data->instance->view()->setZ(0);
@@ -537,7 +537,7 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
 
                     if (data->instance->thumb() == NULL)
                     {
-                        data->instance->setView(new AppView(this, data->instance, this));
+                        data->instance->setView(new AppView(this, data->instance));
                         data->instance->view()->setGeometry(_appGeometry);
                         data->instance->view()->setZ(-5);
                         addWidget(data->instance->view());
@@ -726,7 +726,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 }
                 return true;
             }
-            return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_TAB));
+            return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_TAB));
 
         case DIKS_ESCAPE:
             return true;
@@ -737,7 +737,7 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 _switcher->sigSwitchRequest(_switcher->currentThumb()->instance());
                 return true;
             } else
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_OK));
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_OK));
 
         case DIKS_SPACE:
             if (_switcher && _switcher->visible())
@@ -748,18 +748,18 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 return false;
 
         case DIKS_RETURN:
-            if (eventManager()->focusedWidget())
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
+            if (appWindow()->eventManager()->focusedWidget())
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_RETURN));
             break;
 
         case DIKS_CURSOR_UP:
-            if (eventManager()->focusedWidget())
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
+            if (appWindow()->eventManager()->focusedWidget())
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_UP));
             break;
 
         case DIKS_CURSOR_DOWN:
-            if (eventManager()->focusedWidget())
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
+            if (appWindow()->eventManager()->focusedWidget())
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_DOWN));
             break;
 
         case DIKS_CURSOR_LEFT:
@@ -767,8 +767,8 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             {
                 _switcher->scrollToNext();
                 return true;
-            } else if (eventManager()->focusedWidget())
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
+            } else if (appWindow()->eventManager()->focusedWidget())
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_LEFT));
             break;
 
         case DIKS_CURSOR_RIGHT:
@@ -776,8 +776,8 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
             {
                 _switcher->scrollToPrevious();
                 return true;
-            } else if (eventManager()->focusedWidget())
-                return eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
+            } else if (appWindow()->eventManager()->focusedWidget())
+                return appWindow()->eventManager()->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent, (DFBInputDeviceKeySymbol) DIKS_CURSOR_RIGHT));
             break;
 
         case DIKS_F11:
@@ -955,9 +955,9 @@ ILXCompositor::appVisible()
 {
     AppInfo* info = _currentApp->appInfo();
     if (info->appFlags() & APP_NEEDS_CLEAR)
-        _backgroundFlags |= BGFClear;
+        appWindow()->setBackgroundClear(true);
     else
-        _backgroundFlags &= ~BGFClear;
+        appWindow()->setBackgroundClear(false);
 }
 
 } /* namespace ilixi */
