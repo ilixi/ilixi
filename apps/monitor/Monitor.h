@@ -22,7 +22,7 @@
 #ifndef MONITOR_H_
 #define MONITOR_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/ProgressBar.h>
 #include <ui/Label.h>
 #include <lib/Timer.h>

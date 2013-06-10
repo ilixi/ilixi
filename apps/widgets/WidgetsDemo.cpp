@@ -38,13 +38,12 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     setLayout(new VBoxLayout());
 
     ToolBar* bar = new ToolBar();
-
     ToolBarButton* barB1 = new ToolBarButton();
-    barB1->setIcon(StyleHint::Tick);
+    barB1->setIcon(StyleHint::Left);
     bar->addWidget(barB1);
 
     ToolBarButton* barB2 = new ToolBarButton();
-    barB2->setIcon(StyleHint::Movie);
+    barB2->setIcon(StyleHint::Right);
     bar->addWidget(barB2);
 
     ToolBarButton* barB3 = new ToolBarButton("test3");
@@ -52,9 +51,10 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     bar->addWidget(barB3);
     setToolbar(bar);
 
+    // Add tab
     TabPanel* tab = new TabPanel();
-
-//    GroupBox* frame = new GroupBox("Test");
+//    tab->surface()->setSurfaceFlag(Surface::SubSurface);
+//    tab->surface()->unsetSurfaceFlag(Surface::SharedSurface);
     addWidget(tab);
 
     VBoxLayout* vBox = new VBoxLayout();
@@ -91,7 +91,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     vBox->addWidget(pb2);
 
     ToolButton* tb1 = new ToolButton("ToolButton");
-//    tb1->setToolButtonStyle(ToolButton::IconBelowText);
+    tb1->setToolButtonStyle(ToolButton::IconBelowText);
     tb1->setCheckable(true);
     vBox->addWidget(tb1);
 
@@ -115,7 +115,8 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     VBoxLayout* vBox2 = new VBoxLayout();
     tab->addTab(vBox2, "LineInputs");
 
-    LineInput *li1 = new LineInput("Line input has some text...");
+    LineInput *li1 = new LineInput("123...");
+    li1->sigTextEntered.connect(sigc::mem_fun(this, &WidgetsDemo::print));
     vBox2->addWidget(li1);
     vBox2->addWidget(new Spacer(Vertical));
 
@@ -215,6 +216,12 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
 
 WidgetsDemo::~WidgetsDemo()
 {
+}
+
+void
+WidgetsDemo::print(const std::string& text)
+{
+    printf("%s\n", text.c_str());
 }
 
 int

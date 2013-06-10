@@ -24,7 +24,7 @@
 #ifndef ILIXI_DEMO3_H_
 #define ILIXI_DEMO3_H_
 
-#include "ui/Application.h"
+#include "core/Application.h"
 
 class WidgetsDemo : public ilixi::Application
 {
@@ -33,6 +33,9 @@ public:
 
   virtual
   ~WidgetsDemo();
+
+  void
+  print(const std::string&);
 };
 
 #endif /* ILIXI_DEMO3_H_ */
