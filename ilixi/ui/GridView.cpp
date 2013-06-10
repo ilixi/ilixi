@@ -193,6 +193,12 @@ GridView::setDrawFrame(bool drawFrame)
 }
 
 void
+GridView::setUseThumbs(bool useThumbs)
+{
+    _scrollArea->setUseThumbs(useThumbs);
+}
+
+void
 GridView::setGridSize(unsigned int rows, unsigned int cols)
 {
     if (rows != _layout->rows() || cols != _layout->columns())

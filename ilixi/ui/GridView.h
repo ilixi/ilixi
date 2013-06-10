@@ -154,6 +154,13 @@ public:
     void
     setDrawFrame(bool drawFrame);
 
+    /*!
+     * Sets whether to use thumb or scrollbar.
+     * @param useThumbs if true do not use a scrollbar.
+     */
+    void
+    setUseThumbs(bool useThumbs);
+
     void
     setGridSize(unsigned int rows, unsigned int cols);
 
