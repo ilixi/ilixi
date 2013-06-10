@@ -4,14 +4,16 @@ noinst_LTLIBRARIES 			= 	libilixi_core.la
 libilixi_core_la_CPPFLAGS	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ $(AM_CFLAGS)
 libilixi_core_la_CFLAGS		= 	$(AM_CFLAGS)
 libilixi_core_la_LIBADD 	= 	@DEPS_LIBS@
-libilixi_core_la_SOURCES 	= 	Callback.cpp \
+libilixi_core_la_SOURCES 	= 	Application.cpp \
+								Callback.cpp \
 	     						EventManager.cpp \
 	     						Logger.cpp \
 	     						PlatformManager.cpp \
 	     						Window.cpp
 						
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
-ilixi_include_HEADERS		=	Callback.h \
+ilixi_include_HEADERS		=	Application.h \
+								Callback.h \
 	     						EventManager.h \
 	     						Logger.h \
 	     						PlatformManager.h \
@@ -34,7 +36,8 @@ libilixi_core_la_SOURCES 	+= 	SoundDFB.cpp
 ilixi_include_HEADERS		+=	SoundDFB.h
 
 if WITH_REFLEX
-CORE_REFLEX					= 	Callback_rflx.cpp \
+CORE_REFLEX					= 	Application_rflx.cpp \
+								Callback_rflx.cpp \
 	     						EventManager_rflx.cpp \
 	     						Logger_rflx.cpp \
 	     						SurfaceEventListener_rflx.cpp \

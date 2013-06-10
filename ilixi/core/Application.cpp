@@ -21,11 +21,10 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ui/Application.h>
-#include <ui/ToolBar.h>
-#include <core/Logger.h>
+#include <core/Application.h>
+
 #include <core/PlatformManager.h>
-#include <graphics/Painter.h>
+#include <core/Logger.h>
 #include <graphics/Stylist.h>
 #include <directfb_util.h>
 #include <algorithm>
@@ -34,19 +33,16 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/ui/Application", "Application");
-D_DEBUG_DOMAIN( ILX_APPLICATION_UPDATES, "ilixi/ui/Application/Updates", "Application Updates");
+D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/core/Application", "Application");
+D_DEBUG_DOMAIN( ILX_APPLICATION_UPDATES, "ilixi/core/Application/Updates", "Application Updates");
 
 IDirectFBEventBuffer* Application::__buffer = NULL;
 Application* Application::__instance = NULL;
 
 Application::Application(int* argc, char*** argv, AppOptions opts)
-        : WindowWidget(),
+        : _appWindow(NULL),
           __flags(APS_HIDDEN),
           __activeWindow(NULL),
-          _backgroundImage(NULL),
-          _toolbar(NULL),
-          _toolbarNorth(true),
           _update(false),
           _updateFromSurfaceView(false),
           _updateID(0),
@@ -56,7 +52,7 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
           _updateDisable(0),
           _syncWithSurfaceEvents(false)
 {
-    ILOG_TRACE_W(ILX_APPLICATION);
+    ILOG_TRACE_F(ILX_APPLICATION);
 
     if (__instance)
         ILOG_THROW(ILX_APPLICATION, "Cannot allow more than one instance!\n");
@@ -92,19 +88,18 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
     _update_timer->setRepeats(1);
 
     setStylist(new Stylist());
-    setBackgroundImage(PlatformManager::instance().getBackground());
-    setBackgroundFilled(true);
-    setMargins(0, 0, 0, 0);
 
-    sigAbort.connect(sigc::mem_fun(this, &Application::quit));
+    // TODO create AppWindow
+    _appWindow = new AppWindow(this);
+    _appWindow->sigAbort.connect(sigc::mem_fun(this, &Application::quit));
 }
 
 Application::~Application()
 {
-    ILOG_TRACE_W(ILX_APPLICATION);
-    delete _backgroundImage;
-    delete _stylist;
+    ILOG_TRACE_F(ILX_APPLICATION);
+    delete _appWindow;
     delete _update_timer;
+    delete Widget::_stylist;
     releaseEventBuffer();
     PlatformManager::instance().release();
 
@@ -117,50 +112,40 @@ Application::~Application()
     __activeWindow = NULL;
 }
 
-Image*
-Application::background() const
+int
+Application::width() const
 {
-    return (_backgroundImage);
+    return _appWindow->width();
 }
 
 int
-Application::canvasX() const
+Application::height() const
 {
-    return _margin.left();
+    return _appWindow->height();
 }
 
-int
-Application::canvasY() const
+bool
+Application::addWidget(Widget* widget)
 {
-    if (_toolbar && _toolbarNorth)
-        return _toolbar->preferredSize().height() + _margin.top();
-    return _margin.top();
+    return _appWindow->addWidget(widget);
 }
 
-int
-Application::canvasHeight() const
+bool
+Application::removeWidget(Widget* widget)
 {
-    if (_toolbar)
-        return height() - _margin.vSum() - _toolbar->preferredSize().height();
-    return height() - _margin.vSum();
+    return _appWindow->removeWidget(widget);
 }
 
-int
-Application::canvasWidth() const
+void
+Application::update()
 {
-    return width() - _margin.hSum();
-}
-
-const ToolBar*
-Application::toolbar() const
-{
-    return _toolbar;
+    _appWindow->update();
 }
 
 void
 Application::quit()
 {
-    setVisible(false);
+    _appWindow->setVisible(false);
     __flags = (AppFlags) (__flags | APS_TERM);
 }
 
@@ -191,29 +176,168 @@ Application::exec()
 }
 
 void
-Application::setBackgroundImage(std::string imagePath)
+Application::setBackgroundImage(const std::string& imagePath)
 {
-    if (_backgroundImage)
-        delete _backgroundImage;
+    _appWindow->setBackgroundImage(imagePath);
+}
 
-    _backgroundImage = new Image(imagePath);
-    setBackgroundFilled(true);
+void
+Application::setLayout(LayoutBase* layout)
+{
+    _appWindow->setLayout(layout);
+}
 
-    ILOG_DEBUG( ILX_APPLICATION, "Background is set [%s]\n", imagePath.c_str());
+void
+Application::setMargins(int top, int bottom, int left, int right)
+{
+    _appWindow->setMargins(top, bottom, left, right);
+}
+
+void
+Application::setMargin(const Margin& margin)
+{
+    _appWindow->setMargin(margin);
 }
 
 bool
 Application::setToolbar(ToolBar* toolbar, bool positionNorth)
 {
-    if (addChild(toolbar))
+    return _appWindow->setToolbar(toolbar, positionNorth);
+}
+
+void
+Application::postUserEvent(unsigned int type, void* data)
+{
+    DFBUserEvent event;
+    event.clazz = DFEC_USER;
+    event.type = type;
+    event.data = data;
+    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    if (ret != DFB_OK)
+        ILOG_ERROR(ILX_APPLICATION, "Cannot post UserEvent!\n");
+}
+
+void
+Application::postUniversalEvent(Widget* target, unsigned int type, void* data)
+{
+    if (__instance)
     {
-        removeChild(_toolbar);
-        _toolbar = toolbar;
-        _toolbarNorth = positionNorth;
-        doLayout();
-        return true;
+        UniversalEvent event(target, type, data);
+        DFBResult ret = __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+        if (ret != DFB_OK)
+            ILOG_ERROR(ILX_APPLICATION, "Cannot post UniversalEvent!\n");
     }
-    return false;
+}
+
+void
+Application::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask modifierMask, DFBInputDeviceLockState lockState, bool down)
+{
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        DFBInputEvent event;
+        event.clazz = DFEC_INPUT;
+        event.type = down ? DIET_KEYPRESS : DIET_KEYRELEASE;
+        event.flags = (DFBInputEventFlags) (DIEF_KEYSYMBOL | DIEF_MODIFIERS | DIEF_LOCKS);
+        event.key_symbol = symbol;
+        event.modifiers = modifierMask;
+        event.locks = lockState;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    } else
+    {
+        DFBWindowEvent event;
+        event.clazz = DFEC_WINDOW;
+        event.window_id = activeWindow()->windowID();
+        event.type = down ? DWET_KEYDOWN : DWET_KEYUP;
+        event.flags = DWEF_NONE;
+        event.key_symbol = symbol;
+        event.modifiers = modifierMask;
+        event.locks = lockState;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    }
+}
+
+void
+Application::postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step)
+{
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        DFBInputEvent event_1;
+        event_1.clazz = DFEC_INPUT;
+        event_1.type = DIET_AXISMOTION;
+        event_1.flags = (DFBInputEventFlags) (DIEF_AXISABS | DIEF_FOLLOW);
+        event_1.axis = DIAI_X;
+        event_1.axisabs = x;
+        event_1.max = __layerSize.w;
+        event_1.min = 0;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_1) );
+
+        DFBInputEvent event_2;
+        event_2.clazz = DFEC_INPUT;
+        event_2.type = DIET_AXISMOTION;
+        event_2.flags = DIEF_AXISABS;
+        event_2.axis = DIAI_Y;
+        event_2.axisabs = y;
+        event_2.max = __layerSize.h;
+        event_2.min = 0;
+        event_2.button = (DFBInputDeviceButtonIdentifier) button;
+        event_2.buttons = (DFBInputDeviceButtonMask) buttonMask;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_2) );
+
+        if (type == PointerButtonDown)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_BUTTONPRESS;
+            event_3.flags = DIEF_NONE;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+
+        } else if (type == PointerButtonUp)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_BUTTONRELEASE;
+            event_3.flags = DIEF_NONE;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+        } else if (type == PointerWheel)
+        {
+            DFBInputEvent event_3;
+            event_3.clazz = DFEC_INPUT;
+            event_3.type = DIET_AXISMOTION;
+            event_3.flags = DIEF_AXISABS;
+            event_3.axis = DIAI_Z;
+            event_3.axisabs = step;
+            event_3.max = __layerSize.h;
+            event_3.min = 0;
+            event_3.button = (DFBInputDeviceButtonIdentifier) button;
+            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
+            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+        }
+    } else
+    {
+        DFBWindowEvent event;
+        event.clazz = DFEC_WINDOW;
+        event.type = (DFBWindowEventType) type;
+        event.window_id = activeWindow()->windowID();
+        event.flags = DWEF_NONE;
+        event.x = x;
+        event.y = y;
+        event.cx = cx;
+        event.cy = cy;
+        event.step = step;
+        event.button = (DFBInputDeviceButtonIdentifier) button;
+        event.buttons = (DFBInputDeviceButtonMask) buttonMask;
+        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+    }
+}
+
+AppWindow*
+Application::appWindow() const
+{
+    return _appWindow;
 }
 
 void
@@ -221,8 +345,7 @@ Application::show()
 {
     if (__flags & APS_HIDDEN)
     {
-        _backgroundImage->setSize(size());
-        showWindow();
+        _appWindow->showWindow();
         __flags = APS_VISIBLE;
         sigVisible();
     }
@@ -233,7 +356,7 @@ Application::hide()
 {
     if (__flags & APS_VISIBLE)
     {
-        closeWindow();
+        _appWindow->closeWindow();
         __flags = APS_HIDDEN;
         sigHidden();
     }
@@ -465,7 +588,7 @@ void
 Application::setStylist(StylistBase* stylist)
 {
     // TODO we will allow setting custom stylist in the future.
-    if (_stylist)
+    if (__instance->_appWindow->_stylist)
     {
         ILOG_WARNING(ILX_APPLICATION, "setStylist()  -  Not implemented!");
         return;
@@ -474,206 +597,56 @@ Application::setStylist(StylistBase* stylist)
     if (!stylist)
         return;
 
-    _stylist = stylist;
+    __instance->_appWindow->_stylist = stylist;
 
-    if (!_stylist->setFontPack(PlatformManager::instance().getFontPack().c_str()))
+    if (!__instance->_appWindow->_stylist->setFontPack(PlatformManager::instance().getFontPack().c_str()))
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 
-    if (!_stylist->setIconPack(PlatformManager::instance().getIconPack().c_str()))
+    if (!__instance->_appWindow->_stylist->setIconPack(PlatformManager::instance().getIconPack().c_str()))
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 
-    if (!_stylist->setPaletteFromFile(PlatformManager::instance().getPalette().c_str()))
+    if (!__instance->_appWindow->_stylist->setPaletteFromFile(PlatformManager::instance().getPalette().c_str()))
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 
-    if (!_stylist->setStyleFromFile(PlatformManager::instance().getStyle().c_str()))
+    if (!__instance->_appWindow->_stylist->setStyleFromFile(PlatformManager::instance().getStyle().c_str()))
         ILOG_THROW(ILX_APPLICATION, "Please fix your configuration file!\n");
 }
 
 bool
 Application::setFontPack(const char* fontPack)
 {
-    if (_stylist)
-        return _stylist->setFontPack(fontPack);
+    if (__instance->_appWindow->_stylist)
+        return __instance->_appWindow->_stylist->setFontPack(fontPack);
     return false;
 }
 
 bool
 Application::setIconPack(const char* iconPack)
 {
-    if (_stylist)
-        return _stylist->setIconPack(iconPack);
+    if (__instance->_appWindow->_stylist)
+        return __instance->_appWindow->_stylist->setIconPack(iconPack);
     return false;
 }
 
 bool
 Application::setPaletteFromFile(const char* palette)
 {
-    if (_stylist)
-        return _stylist->setPaletteFromFile(palette);
+    if (__instance->_appWindow->_stylist)
+        return __instance->_appWindow->_stylist->setPaletteFromFile(palette);
     return false;
 }
 
 bool
 Application::setStyleFromFile(const char* style)
 {
-    if (_stylist)
-        return _stylist->setStyleFromFile(style);
+    if (__instance->_appWindow->_stylist)
+        return __instance->_appWindow->_stylist->setStyleFromFile(style);
     return false;
-}
-
-void
-Application::updateLayoutGeometry()
-{
-    if (_toolbar)
-    {
-        int h = _toolbar->preferredSize().height();
-        if (_toolbarNorth)
-            _toolbar->setGeometry(0, 0, width(), h);
-        else
-            _toolbar->setGeometry(0, height() - h, width(), h);
-        _toolbar->setNeighbour(Down, _layout);
-        _layout->setNeighbour(Up, _toolbar);
-    }
-    _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
 
 void
 Application::compose(const PaintEvent& event)
 {
-    ILOG_TRACE_W(ILX_APPLICATION);
-    Painter painter(this);
-    painter.begin(event);
-    stylist()->drawAppFrame(&painter, this);
-    painter.end();
-}
-
-void
-Application::postUserEvent(unsigned int type, void* data)
-{
-    DFBUserEvent event;
-    event.clazz = DFEC_USER;
-    event.type = type;
-    event.data = data;
-    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    if (ret != DFB_OK)
-        ILOG_ERROR(ILX_APPLICATION, "Cannot post UserEvent!\n");
-}
-
-void
-Application::postUniversalEvent(Widget* target, unsigned int type, void* data)
-{
-    if (__instance)
-    {
-        UniversalEvent event(target, type, data);
-        DFBResult ret = __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-        if (ret != DFB_OK)
-            ILOG_ERROR(ILX_APPLICATION, "Cannot post UniversalEvent!\n");
-    }
-}
-
-void
-Application::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifierMask modifierMask, DFBInputDeviceLockState lockState, bool down)
-{
-    if (PlatformManager::instance().appOptions() & OptExclusive)
-    {
-        DFBInputEvent event;
-        event.clazz = DFEC_INPUT;
-        event.type = down ? DIET_KEYPRESS : DIET_KEYRELEASE;
-        event.flags = (DFBInputEventFlags) (DIEF_KEYSYMBOL | DIEF_MODIFIERS | DIEF_LOCKS);
-        event.key_symbol = symbol;
-        event.modifiers = modifierMask;
-        event.locks = lockState;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    } else
-    {
-        DFBWindowEvent event;
-        event.clazz = DFEC_WINDOW;
-        event.window_id = activeWindow()->windowID();
-        event.type = down ? DWET_KEYDOWN : DWET_KEYUP;
-        event.flags = DWEF_NONE;
-        event.key_symbol = symbol;
-        event.modifiers = modifierMask;
-        event.locks = lockState;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    }
-}
-
-void
-Application::postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step)
-{
-    if (PlatformManager::instance().appOptions() & OptExclusive)
-    {
-        DFBInputEvent event_1;
-        event_1.clazz = DFEC_INPUT;
-        event_1.type = DIET_AXISMOTION;
-        event_1.flags = (DFBInputEventFlags) (DIEF_AXISABS | DIEF_FOLLOW);
-        event_1.axis = DIAI_X;
-        event_1.axisabs = x;
-        event_1.max = __layerSize.w;
-        event_1.min = 0;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_1) );
-
-        DFBInputEvent event_2;
-        event_2.clazz = DFEC_INPUT;
-        event_2.type = DIET_AXISMOTION;
-        event_2.flags = DIEF_AXISABS;
-        event_2.axis = DIAI_Y;
-        event_2.axisabs = y;
-        event_2.max = __layerSize.h;
-        event_2.min = 0;
-        event_2.button = (DFBInputDeviceButtonIdentifier) button;
-        event_2.buttons = (DFBInputDeviceButtonMask) buttonMask;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_2) );
-
-        if (type == PointerButtonDown)
-        {
-            DFBInputEvent event_3;
-            event_3.clazz = DFEC_INPUT;
-            event_3.type = DIET_BUTTONPRESS;
-            event_3.flags = DIEF_NONE;
-            event_3.button = (DFBInputDeviceButtonIdentifier) button;
-            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
-
-        } else if (type == PointerButtonUp)
-        {
-            DFBInputEvent event_3;
-            event_3.clazz = DFEC_INPUT;
-            event_3.type = DIET_BUTTONRELEASE;
-            event_3.flags = DIEF_NONE;
-            event_3.button = (DFBInputDeviceButtonIdentifier) button;
-            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
-        } else if (type == PointerWheel)
-        {
-            DFBInputEvent event_3;
-            event_3.clazz = DFEC_INPUT;
-            event_3.type = DIET_AXISMOTION;
-            event_3.flags = DIEF_AXISABS;
-            event_3.axis = DIAI_Z;
-            event_3.axisabs = step;
-            event_3.max = __layerSize.h;
-            event_3.min = 0;
-            event_3.button = (DFBInputDeviceButtonIdentifier) button;
-            event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
-        }
-    } else
-    {
-        DFBWindowEvent event;
-        event.clazz = DFEC_WINDOW;
-        event.type = (DFBWindowEventType) type;
-        event.window_id = activeWindow()->windowID();
-        event.flags = DWEF_NONE;
-        event.x = x;
-        event.y = y;
-        event.cx = cx;
-        event.cy = cy;
-        event.step = step;
-        event.button = (DFBInputDeviceButtonIdentifier) button;
-        event.buttons = (DFBInputDeviceButtonMask) buttonMask;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    }
 }
 
 WindowWidget *

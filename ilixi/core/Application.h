@@ -29,18 +29,16 @@
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 #include <core/SurfaceEventListener.h>
 #endif
-#include <ui/WindowWidget.h>
+#include <ui/AppWindow.h>
 
 namespace ilixi
 {
-
-class ToolBar;
 
 //! Windowed application.
 /*!
  * This class is used to create a new UI application with its own window.
  */
-class Application : public WindowWidget
+class Application
 {
 public:
     /*!
@@ -55,40 +53,38 @@ public:
     ~Application();
 
     /*!
-     * Returns background image.
+     * Returns application window width in pixels.
      */
-    Image*
-    background() const;
+    int
+    width() const;
 
     /*!
-     * Returns frame's canvas x-coordinate including the left margin.
+     * Returns application window height in pixels.
      */
-    virtual int
-    canvasX() const;
+    int
+    height() const;
 
     /*!
-     * Returns frame's canvas y-coordinate including the top margin.
+     * Adds a new child widget to application window.
+     *
+     * \sa ContainerBase::addWidget()
      */
-    virtual int
-    canvasY() const;
+    bool
+    addWidget(Widget* widget);
 
     /*!
-     * Returns frame's canvas height excluding margins.
+     * Removes a child widget from container.
+     *
+     * \sa addWidget()
      */
-    virtual int
-    canvasHeight() const;
+    bool
+    removeWidget(Widget* widget);
 
     /*!
-     * Returns frame's canvas width excluding margins.
+     * Updates application window.
      */
-    virtual int
-    canvasWidth() const;
-
-    /*!
-     * Returns current toolbar if any.
-     */
-    const ToolBar*
-    toolbar() const;
+    void
+    update();
 
     /*!
      * Terminates application.
@@ -106,7 +102,25 @@ public:
      * Sets a background image.
      */
     void
-    setBackgroundImage(std::string imagePath);
+    setBackgroundImage(const std::string& imagePath);
+
+    /*!
+     * Set application window layout.
+     */
+    void
+    setLayout(LayoutBase* layout);
+
+    /*!
+     * Sets application window's layout margins.
+     */
+    void
+    setMargins(int top, int bottom, int left, int right);
+
+    /*!
+     * Sets application window's layout margins.
+     */
+    void
+    setMargin(const Margin& margin);
 
     /*!
      * Adds a toolbar to application.
@@ -190,6 +204,9 @@ protected:
         APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
         APS_CUSTOM = 0x0000008      //!< Disable waking up of buffer when an update is received.
     };
+
+    AppWindow*
+    appWindow() const;
 
     /*!
      * Shows application window.
@@ -280,17 +297,9 @@ protected:
     setStyleFromFile(const char* style);
 
     /*!
-     * Updates layout and toolbar geometry
-     */
-    virtual void
-    updateLayoutGeometry();
-
-    /*!
-     * This method is used if application has backgroundFilled set to true.
-     * Default implementation uses a Stylist to tile the background image or
-     * fill background with a colour from palette.
+     * This method is called if custom compose is set.
      *
-     * \sa setBackgroundFilled()
+     * \sa setCustomCompose
      */
     virtual void
     compose(const PaintEvent& event);
@@ -300,18 +309,14 @@ private:
     static Application* __instance;
     //! Event buffer for application.
     static IDirectFBEventBuffer* __buffer;
+
+    AppWindow* _appWindow;
     //! Application state.
     AppFlags __flags;
     //! Old and new cursor positions.
     DFBPoint __cursorOld, __cursorNew;
     //! Max. available screen dimension.
     DFBDimension __layerSize;
-    //! Background image of application.
-    Image* _backgroundImage;
-    //! Application toolbar if any.
-    ToolBar* _toolbar;
-    //! This property stores toolbar position.
-    bool _toolbarNorth;
 
     typedef std::list<Callback*> CallbackList;
     //! List of callbacks
@@ -480,8 +485,9 @@ private:
 
 #endif
 
-    friend class ILXCompositor;
+    friend class AppWindow;
     friend class Callback;              // add/remove callback
+    friend class ILXCompositor;
     friend class PlatformManager;
     friend class SurfaceEventListener;  // add/remove SurfaceEventListener
     friend class SurfaceView;

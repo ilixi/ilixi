@@ -4,7 +4,7 @@ noinst_LTLIBRARIES 		= 	libilixi_ui.la
 libilixi_ui_la_CPPFLAGS	= 	$(AM_CPPFLAGS) @DEPS_CFLAGS@ 
 libilixi_ui_la_CFLAGS	= 	$(AM_CFLAGS)
 libilixi_ui_la_LIBADD 	= 	@DEPS_LIBS@				
-libilixi_ui_la_SOURCES 	= 	Application.cpp \
+libilixi_ui_la_SOURCES 	= 	AppWindow.cpp \
 							Button.cpp \
 							ButtonGroup.cpp \
 							Carousel.cpp \
@@ -43,7 +43,7 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							WindowWidget.cpp
           				
 ilixi_includedir 		= 	$(includedir)/$(PACKAGE)-$(VERSION)/ui
-ilixi_include_HEADERS 	= 	Application.h \
+ilixi_include_HEADERS 	= 	AppWindow.h \
 							Button.h \
 							ButtonGroup.h \
 							Carousel.h \
