@@ -24,7 +24,7 @@
 #ifndef DIALER_H_
 #define DIALER_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/LineInput.h>
 #include <ui/PushButton.h>
 

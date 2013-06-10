@@ -24,6 +24,7 @@
 #ifndef SETTINGS_H_
 #define SETTINGS_H_
 
+#include <core/Application.h>
 #include <ilixiGUI.h>
 #include <core/DaleDFB.h>
 

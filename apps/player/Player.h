@@ -8,7 +8,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/VideoPlayer.h>
 #include <ui/FileBrowser.h>
 

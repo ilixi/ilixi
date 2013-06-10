@@ -24,7 +24,7 @@
 #ifndef STACKER_H_
 #define STACKER_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/ToolButton.h>
 
 namespace ilixi
@@ -49,6 +49,7 @@ namespace ilixi
 
     void
     lower();
+
   private:
     ToolButton* pb1;
   };
