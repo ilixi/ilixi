@@ -24,7 +24,7 @@
 #ifndef OSK_H_
 #define OSK_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include "Keyboard.h"
 
 using namespace ilixi;
@@ -52,9 +52,6 @@ private:
     Image* _bg;
     OSKHelper* _helper;
     Keyboard* _keyboard;
-
-    void
-    compose(const PaintEvent& event);
 };
 
 #endif /* OSK_H_ */

@@ -36,8 +36,7 @@ ILXOSK::ILXOSK(int argc, char* argv[])
           _bg(NULL),
           _keyboard(NULL)
 {
-    ILOG_TRACE_W(ILX_OSK);
-    setBackgroundFilled(true);
+    ILOG_TRACE_F(ILX_OSK);
     _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
     setMargin(10);
 
@@ -46,7 +45,7 @@ ILXOSK::ILXOSK(int argc, char* argv[])
     _helper = new OSKHelper();
     addWidget(_helper);
 
-    _keyboard = new Keyboard(_helper, this);
+    _keyboard = new Keyboard(_helper);
 
     bool numpad = false;
     for (int i = 1; i < argc; i++)
@@ -66,7 +65,7 @@ ILXOSK::ILXOSK(int argc, char* argv[])
 
 ILXOSK::~ILXOSK()
 {
-    ILOG_TRACE_W(ILX_OSK);
+    ILOG_TRACE_F(ILX_OSK);
     delete _bg;
 }
 
@@ -109,15 +108,6 @@ ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
     return false;
 }
 #endif
-
-void
-ILXOSK::compose(const PaintEvent& event)
-{
-    Painter painter(this);
-    painter.begin(event);
-    painter.stretchImage(_bg, 0, 0, width(), height());
-    painter.end();
-}
 
 int
 main(int argc, char* argv[])
