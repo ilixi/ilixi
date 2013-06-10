@@ -184,8 +184,8 @@ ScrollBar::setValue(int value)
         }
         updateIndicatorGeometry();
         update();
+        sigValueChanged(_value);
     }
-
 }
 
 void
@@ -237,14 +237,23 @@ ScrollBar::setSBIndicator(const Point& p)
     int cursor = 0;
     if (_orientation == Horizontal)
     {
-        cursor = p.x() - _indicatorRegion.x();
+        if (p.x() < _pRect.x())
+            cursor = 0;
+        else if (p.x() > _pRect.right())
+            cursor = _pRect.width();
+        else
+            cursor = p.x() - _pRect.x();
         setValue(((_max - _min) * cursor / (_indicatorRegion.width() - _indicator.width() - .0)) + _min);
     } else
     {
-        cursor = p.y() - _indicatorRegion.y();
+        if (p.y() < _pRect.y())
+            cursor = 0;
+        else if (p.y() > _pRect.bottom())
+            cursor = _pRect.height();
+        else
+            cursor = p.y() - _pRect.y();
         setValue(((_max - _min) * cursor / (_indicatorRegion.height() - _indicator.height() - .0)) + _min);
     }
-    sigValueChanged(_value);
 }
 
 void
@@ -284,6 +293,9 @@ ScrollBar::updateSBGeometry()
             w = stylist()->defaultParameter(StyleHint::ToolButtonLR);
         _indicator.setSize(w, height());
         _indicator.moveTo(_indicatorRegion.x() + (_indicatorRegion.width() - _indicator.width()) * _value / (_max - _min), 0);
+
+        _pRect.moveTo(_indicatorRegion.x() + _indicator.width() / 2, _indicatorRegion.y());
+        _pRect.setSize(_indicatorRegion.width() - _indicator.width(), _indicatorRegion.height());
     } else
     {
         _dec->setGeometry(0, 0, width(), s.height());
@@ -295,6 +307,9 @@ ScrollBar::updateSBGeometry()
             h = stylist()->defaultParameter(StyleHint::ToolButtonTB);
         _indicator.setSize(width(), h);
         _indicator.moveTo(0, _indicatorRegion.y() + (_indicatorRegion.height() - _indicator.height()) * _value / (_max - _min));
+
+        _pRect.moveTo(_indicatorRegion.x(), _indicatorRegion.y() + _indicator.height() / 2);
+        _pRect.setSize(_indicatorRegion.width(), _indicatorRegion.height() - _indicator.height());
     }
 }
 

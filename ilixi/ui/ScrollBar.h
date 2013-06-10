@@ -128,6 +128,8 @@ private:
     Rectangle _indicator;
     //! This property stores a rectangle where indicator moves.
     Rectangle _indicatorRegion;
+    //! This property stores the pointer input translation rectangle.
+    Rectangle _pRect;
     //! Button for decrementing value.
     DirectionalButton* _dec;
     //! Button for incrementing value.
