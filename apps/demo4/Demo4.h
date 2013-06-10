@@ -24,20 +24,19 @@
 #ifndef ILIXI_DEMO4_H_
 #define ILIXI_DEMO4_H_
 
-#include "ui/Application.h"
-
+#include "core/Application.h"
 
 namespace ilixi
 {
 
-  class Demo4 : public ilixi::Application
-  {
-  public:
+class Demo4 : public ilixi::Application
+{
+public:
     Demo4(int argc, char* argv[]);
 
     virtual
     ~Demo4();
-  };
+};
 
 } /* namespace ilixi */
 #endif /* ILIXI_DEMO4_H_ */

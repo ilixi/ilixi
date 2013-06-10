@@ -32,10 +32,9 @@ using namespace ilixi;
 Gallery::Gallery(int argc, char* argv[])
         : Application(&argc, &argv)
 {
-    setBackgroundFilled(true);
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
     setLayout(new GridLayout(4, 4));
-    setSpacing(1);
+    appWindow()->setSpacing(1);
 
     char file[128];
     ImageWidget* widget;

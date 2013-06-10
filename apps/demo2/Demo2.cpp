@@ -31,7 +31,6 @@ using namespace ilixi;
 Demo2::Demo2(int argc, char* argv[])
         : Application(&argc, &argv)
 {
-    setBackgroundFilled(true);
     setLayout(new HBoxLayout());
 
     _icon = new Icon();

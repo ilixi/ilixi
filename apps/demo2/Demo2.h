@@ -24,7 +24,7 @@
 #ifndef ILIXI_DEMO2_H_
 #define ILIXI_DEMO2_H_
 
-#include "ui/Application.h"
+#include "core/Application.h"
 #include "ui/Icon.h"
 
 class Demo2 : public ilixi::Application

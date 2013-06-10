@@ -24,7 +24,7 @@
 #ifndef ILIXI_GALLERY_H_
 #define ILIXI_GALLERY_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include "ImageDialog.h"
 
 class Gallery : public ilixi::Application
