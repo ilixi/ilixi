@@ -55,7 +55,7 @@ public:
      * Draws application frame.
      */
     virtual void
-    drawAppFrame(Painter* painter, Application* app);
+    drawAppFrame(Painter* painter, AppWindow* app);
 
     /*!
      * Draws a dialog's frame and its title.

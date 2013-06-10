@@ -36,7 +36,7 @@ class TweenAnimation;
 class Painter;
 class Widget;
 // Forward declarations for the rest of standard UI elements.
-class Application;
+class AppWindow;
 class CheckBox;
 class ComboBox;
 class Dialog;
@@ -129,7 +129,7 @@ public:
      * Draws application frame.
      */
     virtual void
-    drawAppFrame(Painter* painter, Application* app) =0;
+    drawAppFrame(Painter* painter, AppWindow* app) =0;
 
     /*!
      * Draws a dialog's frame and its title.

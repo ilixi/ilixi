@@ -48,7 +48,7 @@ Stylist::~Stylist()
 //////////////////////////////////////////////////////////////////////////
 
 void
-Stylist::drawAppFrame(Painter* p, Application* app)
+Stylist::drawAppFrame(Painter* p, AppWindow* app)
 {
     if (app->background())
         p->stretchImage(app->background(), 0, 0, app->width(), app->height());
