@@ -24,7 +24,7 @@
 #ifndef ILIXI_GUI_H_
 #define ILIXI_GUI_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/ButtonGroup.h>
 #include <ui/CheckBox.h>
 #include <ui/ComboBox.h>
