@@ -22,7 +22,7 @@
  */
 
 #include <lib/Timer.h>
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <core/Window.h>
 #include <core/Logger.h>
 
