@@ -22,7 +22,7 @@
  */
 
 #include <ui/SurfaceView.h>
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 #include <ui/WindowWidget.h>
