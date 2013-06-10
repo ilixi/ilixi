@@ -68,8 +68,7 @@ Home::Home(int argc, char* argv[])
         : Application(&argc, &argv, OptDaleAuto),
           _compositor(NULL)
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
-    setBackgroundFilled(true);
+    ILOG_TRACE_F(ILX_HOMEAPP);
 
     if (!_circle)
     {
@@ -83,7 +82,7 @@ Home::Home(int argc, char* argv[])
 
     DaleDFB::comaGetComponent("Compositor", &_compositor);
 
-    sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
+    appWindow()->sigGeometryUpdated.connect(sigc::mem_fun(this, &Home::updateHomeGeometry));
     sigVisible.connect(sigc::mem_fun(this, &Home::requestAppList));
 }
 
@@ -111,7 +110,7 @@ Home::runApp(const char* name)
 void
 Home::initButtons(const Home::AppDataVector& dataVector)
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     for (Home::AppDataVector::const_iterator it = dataVector.begin(); it != dataVector.end(); ++it)
         _pages->addItem(((Compositor::AppData) *it).name, ((Compositor::AppData) *it).icon);
     _pages->initPages();
@@ -131,7 +130,7 @@ Home::requestAppList()
 void
 Home::updateHomeGeometry()
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     _pages->setGeometry(0, 100, width(), height() - 200);
 }
 
