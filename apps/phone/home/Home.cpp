@@ -86,8 +86,7 @@ PHome::PHome(int argc, char* argv[])
         : Application(&argc, &argv, OptDaleAuto),
           _compositor(NULL)
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
-    setBackgroundFilled(true);
+    ILOG_TRACE_F(ILX_HOMEAPP);
 
     setMargin(10);
     setLayout(new HBoxLayout());
@@ -105,7 +104,7 @@ PHome::PHome(int argc, char* argv[])
 
 PHome::~PHome()
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     if (_compositor)
         _compositor->Release(_compositor);
 }
@@ -113,7 +112,7 @@ PHome::~PHome()
 void
 PHome::runApp(const std::string& name)
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     if (_compositor)
     {
         void *ptr;
@@ -127,7 +126,7 @@ PHome::runApp(const std::string& name)
 void
 PHome::initButtons(const PHome::AppDataVector& dataVector)
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     for (PHome::AppDataVector::const_iterator it = dataVector.begin(); it != dataVector.end(); ++it)
     {
         PAppButton* button = new PAppButton(((Compositor::AppData) *it).name);
@@ -139,13 +138,13 @@ PHome::initButtons(const PHome::AppDataVector& dataVector)
         _view->addItem(button);
         _buttons.push_back(button);
     }
-    eventManager()->selectNext();
+    appWindow()->eventManager()->selectNext();
 }
 
 void
 PHome::requestAppList()
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     if (_compositor)
     {
         _compositor->Listen(_compositor, Compositor::AppStatus, appStatusChanged, this);
@@ -157,7 +156,7 @@ PHome::requestAppList()
 void
 PHome::updateHomeGeometry()
 {
-    ILOG_TRACE_W(ILX_HOMEAPP);
+    ILOG_TRACE_F(ILX_HOMEAPP);
     _view->setGeometry(10, 10, width() - 20, height() - 20);
 }
 

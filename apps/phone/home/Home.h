@@ -24,7 +24,7 @@
 #ifndef HOME_H_
 #define HOME_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/GridView.h>
 #include <core/DaleDFB.h>
 #include <core/ComponentData.h>

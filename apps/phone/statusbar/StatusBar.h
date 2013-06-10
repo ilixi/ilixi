@@ -24,7 +24,7 @@
 #ifndef STATUSBAR_H_
 #define STATUSBAR_H_
 
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <ui/Label.h>
 #include <ui/ListBox.h>
 #include <core/DaleDFB.h>

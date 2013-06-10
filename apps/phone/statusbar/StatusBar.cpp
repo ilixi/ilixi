@@ -54,7 +54,7 @@ appStatusChanged(void* ctx, void* arg)
 {
     PStatusBar* home = (PStatusBar*) ctx;
     Compositor::VisibilityData notification = *((Compositor::VisibilityData*) arg);
-    home->eventManager()->setFocusedWidget(NULL);
+    home->appWindow()->eventManager()->setFocusedWidget(NULL);
 }
 
 //*****************************************************************
@@ -66,8 +66,8 @@ PStatusBar::PStatusBar(int argc, char* argv[])
           _soundComponent(NULL),
           _compComponent(NULL)
 {
-    setBackgroundFilled(true);
     _bg = new Image(ILIXI_DATADIR"phone/statusbar/bg.png");
+    appWindow()->setCustomCompose(true);
 
     setMargins(15, 45, 15, 15);
     VBoxLayout* mainLayout = new VBoxLayout();
@@ -195,7 +195,7 @@ PStatusBar::showApp(const std::string& title)
 void
 PStatusBar::compose(const PaintEvent& event)
 {
-    Painter p(this);
+    Painter p(appWindow());
     p.begin(event);
     p.blitImage(_bg, Rectangle(0, 0, 150, 20), 0, 0);
     p.stretchImage(_bg, Rectangle(0, 20, 150, height() - 80), Rectangle(0, 20, 150, 380));
