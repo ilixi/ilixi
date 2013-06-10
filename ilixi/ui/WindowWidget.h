@@ -58,12 +58,6 @@ public:
     backgroundFilled() const;
 
     /*!
-     * Returns and interface to the focus manager.
-     */
-    EventManager* const
-    windowEventManager() const;
-
-    /*!
      * This method will queue a PaintEvent.
      */
     virtual void
@@ -102,13 +96,21 @@ public:
     void
     setBackgroundFilled(bool fill);
 
+    /*!
+     * Sets whether window widget clears before painting.
+     */
+    void
+    setBackgroundClear(bool clear);
+
     virtual bool
     consumePointerEvent(const PointerEvent& pointerEvent);
 
 protected:
     enum BackgroundFlags
     {
-        BGFNone = 0x000, BGFClear = 0x001, BGFFill = 0x002, BGFAll = 0x003
+        BGFNone = 0x000,
+        BGFClear = 0x001,
+        BGFFill = 0x002
     };
 
     //! This flag specifies whether frame fills its background.

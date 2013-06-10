@@ -22,7 +22,7 @@
  */
 
 #include <ui/WindowWidget.h>
-#include <ui/Application.h>
+#include <core/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 
@@ -35,7 +35,7 @@ IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
 
 WindowWidget::WindowWidget(Widget* parent)
         : Frame(parent),
-          _backgroundFlags(BGFAll),
+          _backgroundFlags(BGFFill | BGFClear),
           _window(NULL),
           _eventManager(NULL),
           _layerName("ui")
@@ -77,12 +77,6 @@ bool
 WindowWidget::backgroundFilled() const
 {
     return _backgroundFlags & BGFFill;
-}
-
-EventManager* const
-WindowWidget::windowEventManager() const
-{
-    return _eventManager;
 }
 
 void
@@ -223,6 +217,15 @@ WindowWidget::setBackgroundFilled(bool fill)
         _backgroundFlags |= BGFFill;
     else
         _backgroundFlags &= ~BGFFill;
+}
+
+void
+WindowWidget::setBackgroundClear(bool clear)
+{
+    if (clear)
+        _backgroundFlags |= BGFClear;
+    else
+        _backgroundFlags &= ~BGFClear;
 }
 
 bool
@@ -523,7 +526,7 @@ WindowWidget::updateWindow()
     Rectangle updateTempRight = _updates._updateQueueRight[0];
     if (size > 1)
         for (int i = 1; i < size; ++i)
-            updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
+                updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
 
     _updates._updateQueueRight.clear();
 #endif
