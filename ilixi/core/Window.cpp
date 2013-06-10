@@ -21,10 +21,11 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ui/Application.h>
+#include <core/Window.h>
+
+#include <core/Application.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
-#include <core/Window.h>
 #include <algorithm>
 
 namespace ilixi
