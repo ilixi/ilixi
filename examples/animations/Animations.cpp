@@ -39,6 +39,8 @@ Animations::Animations(int argc, char* argv[])
     }
 
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
+    appWindow()->setCustomCompose(true);
+
     _fps = new FPSCalculator();
 
     _frame = new Frame();
@@ -80,7 +82,7 @@ Animations::Animations(int argc, char* argv[])
     addWidget(_button3);
     sigVisible.connect(sigc::mem_fun(this, &Animations::setButtonAnimation));
 
-    _backgroundFlags = BGFFill;
+    appWindow()->setBackgroundClear(false);
 }
 
 Animations::~Animations()
@@ -93,7 +95,7 @@ Animations::compose(const PaintEvent& event)
 {
     _fps->funck();
 
-    Painter p(this);
+    Painter p(appWindow());
     p.begin(event);
     if (_affine)
     {
@@ -104,14 +106,14 @@ Animations::compose(const PaintEvent& event)
         affine.scale(anim->tweenValue(1), anim->tweenValue(1));
         affine.translate(width() / 2, height() / 2);
         p.setAffine2D(affine);
-        p.stretchImage(background(), frameGeometry());
+        p.stretchImage(appWindow()->background(), appWindow()->frameGeometry());
         p.setAffine2D();
     } else
-        p.stretchImage(background(), frameGeometry());
+        p.stretchImage(appWindow()->background(), appWindow()->frameGeometry());
 
     p.setBrush(Color(255, 0, 0));
     std::string text = PrintF("FPS: %.1f", _fps->fps());
-    Size s = stylist()->defaultFont()->extents(text);
+    Size s = appWindow()->stylist()->defaultFont()->extents(text);
     p.drawText(text, width() - s.width() - 10, 10);
     p.end();
 }

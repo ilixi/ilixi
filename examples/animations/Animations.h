@@ -1,6 +1,7 @@
 #ifndef ANIMATIONS_H_
 #define ANIMATIONS_H_
 
+#include <core/Application.h>
 #include <ilixiGUI.h>
 #include <lib/AnimationSequence.h>
 #include <lib/TweenAnimation.h>
