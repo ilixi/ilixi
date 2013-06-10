@@ -36,7 +36,7 @@ D_DEBUG_DOMAIN( ILX_NOTIFICATION, "ilixi/compositor/Notification", "Notification
 Image* Notification::_bg = NULL;
 
 Notification::Notification(const Compositor::NotificationData& data, ILXCompositor* parent)
-        : Widget(parent),
+        : Widget(parent->appWindow()),
           _compositor(parent),
           _notState(Init),
           _clicked(false)
