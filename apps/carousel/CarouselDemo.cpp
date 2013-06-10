@@ -30,9 +30,9 @@
 namespace ilixi
 {
 
-  CarouselDemo::CarouselDemo(int argc, char* argv[]) :
-      Application(&argc, &argv)
-  {
+CarouselDemo::CarouselDemo(int argc, char* argv[])
+        : Application(&argc, &argv)
+{
     setBackgroundImage(ILIXI_DATADIR"images/ilixi_bg.jpg");
 
     setLayout(new VBoxLayout());
@@ -43,40 +43,40 @@ namespace ilixi
     char file[128];
     ImageWidget* widget;
     for (int i = 0; i < 8; ++i)
-      {
+    {
         sprintf(file, "%sgallery/%d.jpg\0", ILIXI_DATADIR, i % 5);
         widget = new ImageWidget(file);
         widget->setImage(new Image(file, 196, 196));
         carousel->addWidget(widget);
-      }
-  }
+    }
+}
 
-  CarouselDemo::~CarouselDemo()
-  {
-  }
+CarouselDemo::~CarouselDemo()
+{
+}
 
-  void
-  CarouselDemo::compose(const PaintEvent& event)
-  {
-    Painter painter(this);
+void
+CarouselDemo::compose(const PaintEvent& event)
+{
+    Painter painter(appWindow());
     painter.begin(event);
 #ifdef ILIXI_STEREO_OUTPUT
     if (event.eye == PaintEvent::LeftEye)
-      painter.stretchImage(background(), -30, 0, width(), height());
+    painter.stretchImage(appWindow()->background(), -30, 0, width(), height());
     else
-      painter.stretchImage(background(), 30, 0, width(), height());
+    painter.stretchImage(appWindow()->background(), 30, 0, width(), height());
 #else
-    painter.stretchImage(background(), 0, 0, width(), height());
+    painter.stretchImage(appWindow()->background(), 0, 0, width(), height());
 #endif
     painter.end();
-  }
+}
 
 } /* namespace ilixi */
 
 int
 main(int argc, char* argv[])
 {
-  ilixi::CarouselDemo app(argc, argv);
-  app.exec();
-  return 0;
+    ilixi::CarouselDemo app(argc, argv);
+    app.exec();
+    return 0;
 }

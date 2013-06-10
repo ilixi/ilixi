@@ -24,23 +24,23 @@
 #ifndef CAROUSELDEMO_H_
 #define CAROUSELDEMO_H_
 
-#include "ui/Application.h"
+#include "core/Application.h"
 
 namespace ilixi
 {
 
-  class CarouselDemo : public Application
-  {
-  public:
+class CarouselDemo : public Application
+{
+public:
     CarouselDemo(int argc, char* argv[]);
 
     virtual
     ~CarouselDemo();
 
-  protected:
+protected:
     virtual void
     compose(const ilixi::PaintEvent& event);
-  };
+};
 
 } /* namespace ilixi */
 #endif /* CAROUSELDEMO_H_ */
