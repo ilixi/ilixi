@@ -94,6 +94,7 @@ PHome::PHome(int argc, char* argv[])
 
     _view = new GridView();
     _view->setGridSize(10, 4);
+    _view->setUseThumbs(true);
     addWidget(_view);
 
     DaleDFB::comaGetComponent("Compositor", &_compositor);
