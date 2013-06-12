@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 ######################################################################
 AC_INIT([ilixi],[1.0.0],[tarik@ilixi.org],[ilixi],[http://www.ilixi.org])
-AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_SRCDIR([ilixi_config.h.in])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config/m4])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([ilixi_config.h])
 AX_PREFIX_CONFIG_H(ilixi/ilixiConfig.h)
 AC_PREREQ(2.65)
 
