@@ -31,7 +31,7 @@
 
 namespace ilixi
 {
-#ifdef ILIXI_LOGGER_ENABLED
+
 D_DEBUG_DOMAIN( ILX, "ilixi", "ilixi");
 D_DEBUG_DOMAIN( ILX_CORE, "ilixi/core", "Important stuff");
 D_DEBUG_DOMAIN( ILX_GRAPHICS, "ilixi/graphics", "Primarily graphics related");
@@ -39,6 +39,7 @@ D_DEBUG_DOMAIN( ILX_LIB, "ilixi/lib", "Non-essential helpers");
 D_DEBUG_DOMAIN( ILX_TYPES, "ilixi/types", "Types");
 D_DEBUG_DOMAIN( ILX_UI, "ilixi/ui", "Widgets");
 
+#ifdef ILIXI_LOGGER_ENABLED
 /*!
  * Opens a connection to Syslog in preparation for submitting messages.
  */
@@ -89,11 +90,11 @@ ilixi_log(int level, const char* message, ...);
 #define ILOG_INFO(_fmt...)              do {} while(0)
 #define ILOG_NOTICE(_fmt...)            do {} while(0)
 #define ILOG_WARNING(_fmt...)           do {} while(0)
-#define ILOG_ERROR(_fmt...)             do {} while(0)
-#define ILOG_FATAL(_fmt...)             do {} while(0)
+#define ILOG_ERROR(Domain,_fmt...)      do { printf(" -> ERROR (%s): ", Domain.name); printf(_fmt); } while(0)
+#define ILOG_FATAL(Domain,_fmt...)      do { printf(" -> FATAL (%s): ", Domain.name); printf(_fmt); } while(0)
 #define ILOG_OPEN(ident)                do {} while(0)
 #define ILOG_CLOSE()                    do {} while(0)
 #endif // end ILIXI_LOGGER_ENABLED
-#define ILOG_THROW(Domain, _msg)        do { ILOG_ERROR(Domain, _msg); throw std::runtime_error( _msg ); } while(0)
+#define ILOG_THROW(Domain, _msg)        do { ILOG_FATAL(Domain, _msg); throw std::runtime_error( _msg ); } while(0)
 }
 #endif /* ILIXI_LOGGER_H_ */
