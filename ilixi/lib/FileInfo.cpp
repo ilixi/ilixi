@@ -264,7 +264,7 @@ FileInfo::symLinkTarget() const
 {
     if (_ready && isSymLink())
     {
-        char* buffer = canonicalize_file_name(_file.c_str());
+        char* buffer = realpath(_file.c_str(),NULL);
         std::string s(buffer);
         free(buffer);
         return s;

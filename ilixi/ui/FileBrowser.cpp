@@ -135,7 +135,7 @@ FileBrowserItem::pointerButtonDownEvent(const PointerEvent& pointerEvent)
     if (_info->isDir())
     {
         s = _info->file();
-        char* buffer = canonicalize_file_name(s.c_str());
+        char* buffer = realpath(s.c_str(),NULL);
         std::string s(buffer);
         free(buffer);
         _owner->setPath(s + "/");
@@ -151,7 +151,7 @@ FileBrowserItem::keyUpEvent(const KeyEvent& keyEvent)
         if (_info->isDir())
         {
             s = _info->file();
-            char* buffer = canonicalize_file_name(s.c_str());
+            char* buffer = realpath(s.c_str(),NULL);
             std::string s(buffer);
             free(buffer);
             _owner->setPath(s + "/");
