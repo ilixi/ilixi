@@ -1,0 +1,68 @@
+Android Build
+=============
+
+
+Quick info
+
+	First compile DirectFB and ilixi for the host (to be sure that all
+	headers and flux generated files are created)
+
+	In DirectFB/build-android:
+
+	Run
+		./prepare.sh
+
+	to fetch and unpack the required freetype2 sources
+
+	Now in this directory:
+		./prepare.sh
+
+	Now make sure that your ilixi folder is in the same
+	folder then your DirectFB tree:
+
+       ~|-- whatever
+	      |-- DirectFB
+	      |-- ilixi
+
+
+	Then go to the ilixi_widgets or ilixi_calc subfolders located in build-android and type
+		./prepare.sh
+		ndk-build
+		ant debug
+
+	to get an .apk in bin/.
+
+	You can install it on the device by doing
+
+		ant debug install
+
+
+	The examples will need their files in /mnt/sdcard/directfb on your device. Do this:
+
+		adb shell
+		mkdir /mnt/sdcard/ilixi
+		^D
+
+	go to the ilixi folder and edit data/ilixi_config.xml
+		Change
+		<Background>@THEMEDIR:dark/bg.dfiff</Background>
+		to
+		<Background>@THEMEDIR:dark/bg.png</Background>
+
+		Change
+		<PixelFormat>DEFAULT</PixelFormat>
+		to
+		<PixelFormat>ARGB</PixelFormat>
+
+		Edit data/themes/dark/palette.xml and change every 
+		<color> 
+		to
+		<color alpha="255>
+		
+		Now copy the data folder to your sdcard:
+
+		adb push data /mnt/sdcard/ilixi/
+
+
+
+Now you should be ready to run ilixi_widgets and/or ilixi_calc on your android device!
