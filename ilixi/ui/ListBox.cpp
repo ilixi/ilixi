@@ -227,6 +227,12 @@ ListBox::setDrawFrame(bool drawFrame)
 }
 
 void
+ListBox::setUseThumbs(bool useThumbs)
+{
+    _scrollArea->setUseThumbs(useThumbs);
+}
+
+void
 ListBox::compose(const PaintEvent& event)
 {
     if (_drawFrame)

@@ -156,6 +156,13 @@ public:
     setDrawFrame(bool drawFrame);
 
     /*!
+     * Sets whether to use thumb or scrollbar.
+     * @param useThumbs if true do not use a scrollbar.
+     */
+    void
+    setUseThumbs(bool useThumbs);
+
+    /*!
      * This signal is emitted when current item index is changed.
      *
      * Signal will pass old index and new index.
