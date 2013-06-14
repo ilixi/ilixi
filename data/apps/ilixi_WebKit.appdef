@@ -6,7 +6,7 @@
 	<licence>LGPLv3</licence>
 	<category>Default</category>
 	<version>1.0</version>
-	<icon>@DATADIR:webkitdfb.png</icon>
+	<icon>@DATADIR:ilixi_WebKit.png</icon>
 	<exec>ilixi_WebKit</exec>
     <args>http://www.directfb.org</args>
     <flags>APP_ALLOW_MULTIPLE</flags>
