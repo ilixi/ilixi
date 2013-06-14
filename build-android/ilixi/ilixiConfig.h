@@ -1,0 +1,27 @@
+#define ILIXI_DATADIR "/mnt/sdcard/ilixi/"
+#define ILIXI_HAVE_DLFCN_H 1
+#define ILIXI_HAVE_INTTYPES_H 1
+#define ILIXI_HAVE_MEMORY_H 1
+#define ILIXI_HAVE_SPAWN_H 1
+#define ILIXI_HAVE_STDARG_H 1
+#define ILIXI_HAVE_STDBOOL_H 1
+#define ILIXI_HAVE_STDINT_H 1
+#define ILIXI_HAVE_STDIO_H 1
+#define ILIXI_HAVE_STDLIB_H 1
+#define ILIXI_HAVE_STRINGS_H 1
+#define ILIXI_HAVE_STRING_H 1
+#define ILIXI_HAVE_SYS_STAT_H 1
+#define ILIXI_HAVE_SYS_TYPES_H 1
+#define ILIXI_HAVE_TIME_H 1
+#define ILIXI_HAVE_UNISTD_H 1
+#define ILIXI_HAVE__BOOL 1
+#define ILIXI_IMAGEDIR "/mnt/sdcard/ilixi/images/"
+#define ILIXI_PACKAGE_BUGREPORT "tarik@ilixi.org"
+#define ILIXI_PACKAGE_NAME "ilixi"
+#define ILIXI_PACKAGE_STRING "ilixi 1.0.0"
+#define ILIXI_PACKAGE_URL "http://www.ilixi.org"
+#define ILIXI_PACKAGE_VERSION "1.0.0"
+#define ILIXI_STDC_HEADERS 1
+#define ILIXI_LOGGER_ENABLED
+#define ILIXI_LOG_DEBUG_ENABLED
+
