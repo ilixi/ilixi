@@ -227,6 +227,9 @@ private:
     compose(const PaintEvent& event);
 
     void
+    clearCursorIndex(const std::string&);
+
+    void
     updateTextBaseGeometry();
 
     virtual Font*

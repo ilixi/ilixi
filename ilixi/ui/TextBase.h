@@ -135,7 +135,7 @@ public:
     /*!
      * This signal is emitted if the text is changed.
      */
-    sigc::signal<void, std::string> sigTextChanged;
+    sigc::signal<void, const std::string&> sigTextChanged;
 
     /*!
      * This signal is emitted once the font is changed.

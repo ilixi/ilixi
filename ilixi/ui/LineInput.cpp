@@ -49,6 +49,7 @@ LineInput::LineInput(const std::string& text, Widget* parent)
     setInputMethod(KeyPointerTrackingOSK);
     _layout.setSingleLine(true);
     _cursorTimer.sigExec.connect(sigc::mem_fun(this, &LineInput::drawCursor));
+    sigTextChanged.connect(sigc::mem_fun(this, &LineInput::clearCursorIndex));
 }
 
 LineInput::~LineInput()
@@ -473,6 +474,13 @@ LineInput::drawCursor()
 {
     _cursorOn = !_cursorOn;
     update(PaintEvent(mapFromSurface(_cursor), z()));
+}
+
+void
+LineInput::clearCursorIndex(const std::string& text)
+{
+    _cursorIndex = text.length();
+    _selectedIndex = 0;
 }
 
 void
