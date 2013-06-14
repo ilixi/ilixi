@@ -102,7 +102,11 @@ getModificationTime(const std::string& path)
 std::string
 homeDirectory()
 {
+#ifdef ANDROID_NDK
+    const char *home = "/mnt/sdcard/ilixi/";
+#else
     const char *home = getenv("HOME");
+#endif
     if (!home)
     {
         home = getenv("TMPDIR");

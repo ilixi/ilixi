@@ -41,9 +41,11 @@ XMLReader::loadFile(const std::string& file, int parserOptions)
         ILOG_ERROR(ILX_XMLREADER, "Failed to allocate parser context!\n");
         return false;
     }
-
+#ifdef ANDROID_NDK
+    _doc = xmlCtxtReadFile(_ctxt, file.c_str(), NULL, XML_PARSE_RECOVER | XML_PARSE_NOENT | XML_PARSE_NOBLANKS);
+#else
     _doc = xmlCtxtReadFile(_ctxt, file.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
-
+#endif
     if (_doc == NULL)
     {
         xmlFreeParserCtxt(_ctxt);

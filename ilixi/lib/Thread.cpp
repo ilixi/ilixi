@@ -27,6 +27,12 @@
 #include <unistd.h>
 #include <errno.h>
 
+#ifdef ANDROID_NDK
+extern "C" {
+#include <compat/pthread_cancel.h>
+}
+#endif
+
 namespace ilixi
 {
 
@@ -72,6 +78,7 @@ Thread::start()
         return false;
     }
 
+#ifndef ANDROID_NDK
     if (_stackSize > 0)
     {
         void *sp;
@@ -91,6 +98,7 @@ Thread::start()
             return false;
         }
     }
+#endif
 
     rc = pthread_create(&_pThread, &attr, Thread::wrapper, (void*) this);
     if (rc != 0)
@@ -129,11 +137,13 @@ Thread::cancel()
     _running = false;
     pthread_mutex_unlock(&_runMutex);
 
+#ifndef ANDROID_NDK
     if (status != PTHREAD_CANCELED )
     {
         ILOG_ERROR(ILX_THREAD, "Thread (id: %lu) returned unexpected result!\n", _pThread);
         return false;
     }
+#endif
 
     sigTerminated();
     ILOG_DEBUG(ILX_THREAD, "Thread (id: %lu) cancelled.\n", _pThread);

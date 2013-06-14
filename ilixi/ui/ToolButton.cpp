@@ -26,6 +26,12 @@
 #include <graphics/Painter.h>
 #include <core/Logger.h>
 
+#ifdef ANDROID_NDK
+extern "C" {
+#include <compat/pthread_cancel.h>
+}
+#endif
+
 namespace ilixi
 {
 
