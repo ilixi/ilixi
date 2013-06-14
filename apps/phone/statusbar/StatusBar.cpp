@@ -97,6 +97,7 @@ PStatusBar::PStatusBar(int argc, char* argv[])
     iconLayout->addWidget(_vol);
 
     _list = new ListBox();
+    _list->setUseThumbs(true);
     _list->setYConstraint(ExpandingConstraint);
     addWidget(_list);
 
