@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>Calculator</name>
+	<author>Tarik Sekmen</author>
+	<licence>LGPL</licence>
+	<category>System</category>
+	<version>1.0</version>
+	<icon>@DATADIR:calc.png</icon>
+	<exec>ilixi_calc</exec>
+	<args></args>
+	<flags></flags>
+	<deps>DEP_MOUSE</deps>
+</app>

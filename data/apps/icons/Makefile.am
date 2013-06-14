@@ -4,6 +4,7 @@ miscdata_DATA 	=	8tracks.png \
 					andi.png \
 					animations.png \
 					bbc.png \
+					calc.png \
 					clanbomber2.png \
 					dfbterm.png \
 					facebook.png \
@@ -13,6 +14,7 @@ miscdata_DATA 	=	8tracks.png \
 					google.png \
 					googlemaps.png \
 					googleplus.png \
+					ilixi_WebKit.png \
 					input.png \
 					knuckles.png \
 					matrix.png \

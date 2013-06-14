@@ -1,5 +1,5 @@
 ## Makefile.am for apps/
-SUBDIRS = gallery demo2 demo4 carousel player stacking monitor widgets 
+SUBDIRS = calc gallery demo2 demo4 carousel player stacking monitor widgets
 if WITH_FUSIONDALE
 
 if WITH_SAWMAN
