@@ -84,7 +84,7 @@ SpinBox::preferredSize() const
     Size valueText = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
     Size minText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _min));
     Size maxText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _max));
-    int maxL = std::max(std::max(valueText.width(), minText.width()), maxText.width());
+    int maxL = std::max(std::max(valueText.width(), minText.width()), maxText.width()) + 10;
     ILOG_DEBUG(ILX_SPINBOX, " -> plus: %d, %d\n", plus.width(), plus.height());
     ILOG_DEBUG(ILX_SPINBOX, " -> minus: %d, %d\n", minus.width(), minus.height());
     ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", valueText.width(), valueText.height());
@@ -283,7 +283,7 @@ SpinBox::updateSpinBoxGeometry()
     _minus->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), _plus);
     _plus->setGeometry(width() - minus.width(), 0, minus.width(), minus.height());
     _plus->setNeighbours(getNeighbour(Up), getNeighbour(Down), _minus, getNeighbour(Right));
-    _layout.setBounds(_plus->width(), (height() - text.height()) / 2, width() - _plus->width() - _minus->width(), text.height());
+    _layout.setBounds(_plus->width() + 5, (height() - text.height()) / 2, width() - _plus->width() - _minus->width() - 10, text.height());
     _layout.doLayout(font);
 }
 
