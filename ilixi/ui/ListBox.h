@@ -180,7 +180,7 @@ public:
     sigc::signal<void, Widget*> sigItemSelected;
 
 protected:
-    void
+    virtual void
     compose(const PaintEvent& event);
 
 private:

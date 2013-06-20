@@ -62,7 +62,10 @@ ListBox::~ListBox()
 Size
 ListBox::preferredSize() const
 {
-    return _scrollArea->preferredSize();
+    Size s = _scrollArea->preferredSize();
+    if (_drawFrame)
+        return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
+    return s;
 }
 
 void
@@ -224,6 +227,7 @@ void
 ListBox::setDrawFrame(bool drawFrame)
 {
     _drawFrame = drawFrame;
+    doLayout();
 }
 
 void
@@ -246,7 +250,10 @@ ListBox::compose(const PaintEvent& event)
 void
 ListBox::updateListBoxGeometry()
 {
-    _scrollArea->setGeometry(0, 0, width(), height());
+    if (_drawFrame)
+        _scrollArea->setGeometry(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+    else
+        _scrollArea->setGeometry(0, 0, width(), height());
 }
 
 void
