@@ -853,7 +853,7 @@ GridLayout::tile()
                     if (_keyNavChildrenFirst)
                     {
                         int lC = r * _cols - 1;
-                        widget->setNeighbour(Left, lC > 0 ? _cells[lC]->widget : getNeighbour(Left));
+                        widget->setNeighbour(Left, lC > 0 ? (_cells[lC] ? _cells[lC]->widget : NULL) : getNeighbour(Left));
                     } else
                         widget->setNeighbour(Left, getNeighbour(Left));
 
@@ -864,7 +864,7 @@ GridLayout::tile()
                 } else if (c == _cols - 1)
                 {
                     if (left >= 0)
-                        widget->setNeighbour(Left, _cells[left] ? _cells[left]->widget : NULL);
+                        widget->setNeighbour(Left, _cells[left] ? (_cells[left] ? _cells[left]->widget : NULL) : NULL);
                     else
                         widget->setNeighbour(Left, getNeighbour(Left));
                     if (_keyNavChildrenFirst)
