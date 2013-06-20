@@ -451,17 +451,26 @@ ScrollArea::updateScollAreaGeometry()
         _thumbs = Size(w * w / _content->width() - 4, h * h / _content->height() - 4);
         updateHDraws(_content->width());
         updateVDraws(_content->height());
-    }
 
-    if (_options & UseBars)
-    {
-        Size vS = _verticalBar->preferredSize();
-        _verticalBar->setGeometry(width() - vS.width(), 0, vS.width(), height());
-        Size hS = _horizontalBar->preferredSize();
-        _horizontalBar->setGeometry(0, h - hS.height(), w - vS.width(), hS.height());
+        if (_options & UseBars)
+        {
+            Size vS = Size(0, 0);
+            if (_options & HasVertical)
+            {
+                vS = _verticalBar->preferredSize();
+                _verticalBar->setGeometry(width() - vS.width(), 0, vS.width(), height());
+            }
 
-        w = width() - vS.width();
-        h = height() - hS.height();
+            Size hS = Size(0, 0);
+            if (_options & HasVertical)
+            {
+                hS = _horizontalBar->preferredSize();
+                _horizontalBar->setGeometry(0, h - hS.height(), w - vS.width(), hS.height());
+            }
+
+            w = width() - vS.width();
+            h = height() - hS.height();
+        }
     }
 
     if (_content->width() < w && (_content->xConstraint() & GrowPolicy))
