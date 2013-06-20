@@ -38,6 +38,7 @@ Demo2::Demo2(int argc, char* argv[])
     addWidget(_icon);
 
     ListBox* box = new ListBox();
+    box->setDrawFrame(true);
     addWidget(box);
 
     ScrollItem* item;

@@ -39,7 +39,7 @@ ImageDialog::ImageDialog(const std::string& title, Widget* parent) :
 
   VBoxLayout* vb1 = new VBoxLayout();
   _icon = new Icon();
-  _icon->setMinimumSize(196, 196);
+  _icon->setMaximumSize(196, 196);
   _icon->setConstraints(FixedConstraint, FixedConstraint);
   vb1->addWidget(_icon);
 
