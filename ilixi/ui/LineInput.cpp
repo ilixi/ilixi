@@ -481,6 +481,9 @@ LineInput::clearCursorIndex(const std::string& text)
 {
     _cursorIndex = text.length();
     _selectedIndex = 0;
+    updateCursorPosition();
+    updateSelectionRect();
+    update();
 }
 
 void
