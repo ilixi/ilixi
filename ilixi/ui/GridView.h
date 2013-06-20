@@ -119,10 +119,16 @@ public:
     removeItem(unsigned int index);
 
     /*!
-     * Returns current orientation, i.e. horizontal or vertical.
+     * Returns number of columns.
      */
-    Orientation
-    orientation() const;
+    unsigned int
+    columns() const;
+
+    /*!
+     * Returns number of rows.
+     */
+    unsigned int
+    rows() const;
 
     /*!
      * Scrolls to given item at index.
@@ -141,14 +147,6 @@ public:
     setCurrentItem(Widget* item);
 
     /*!
-     * Sets orientation.
-     *
-     * If orientation is changed it will remove existing layout and all child items.
-     */
-    void
-    setOrientation(Orientation orientation);
-
-    /*!
      * Sets whether frame is drawn.
      */
     void
@@ -161,8 +159,18 @@ public:
     void
     setUseThumbs(bool useThumbs);
 
+    /*!
+     * Sets number of rows and columns.
+     */
     void
     setGridSize(unsigned int rows, unsigned int cols);
+
+    /*!
+     * Sets space between children.
+     */
+    void
+    setLayoutSpacing(int spacing);
+
 
     /*!
      * This signal is emitted when current item index is changed.

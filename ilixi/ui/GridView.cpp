@@ -61,7 +61,10 @@ Size
 GridView::preferredSize() const
 {
     ILOG_TRACE_W(ILX_GRIDVIEW);
-    return _scrollArea->preferredSize();
+    Size s = _scrollArea->preferredSize();
+    if (_drawFrame)
+        return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
+    return s;
 }
 
 void
@@ -163,6 +166,18 @@ GridView::removeItem(unsigned int index)
     return false;
 }
 
+unsigned int
+GridView::columns() const
+{
+    return _layout->columns();
+}
+
+unsigned int
+GridView::rows() const
+{
+    return _layout->rows();
+}
+
 void
 GridView::setCurrentItem(unsigned int index)
 {
@@ -190,6 +205,7 @@ void
 GridView::setDrawFrame(bool drawFrame)
 {
     _drawFrame = drawFrame;
+    doLayout();
 }
 
 void
@@ -210,6 +226,12 @@ GridView::setGridSize(unsigned int rows, unsigned int cols)
 }
 
 void
+GridView::setLayoutSpacing(int spacing)
+{
+    _layout->setSpacing(spacing);
+}
+
+void
 GridView::compose(const PaintEvent& event)
 {
     if (_drawFrame)
@@ -223,7 +245,10 @@ GridView::compose(const PaintEvent& event)
 void
 GridView::updateGridViewGeometry()
 {
-    _scrollArea->setGeometry(0, 0, width(), height());
+    if (_drawFrame)
+        _scrollArea->setGeometry(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+    else
+        _scrollArea->setGeometry(0, 0, width(), height());
 }
 
 void
