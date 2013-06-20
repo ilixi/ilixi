@@ -74,6 +74,7 @@ Painter::begin(const PaintEvent& event)
         _myWidget->surface()->clip(Rectangle(event.rect.x() - _myWidget->absX(), event.rect.y() - _myWidget->absY(), event.rect.width(), event.rect.height()));
 #endif
     _state = Active;
+    dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_NOFX);
     dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
 }
 
