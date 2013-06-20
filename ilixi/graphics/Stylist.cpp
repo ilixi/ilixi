@@ -129,8 +129,10 @@ Stylist::drawLabel(Painter* p, Label* label)
 void
 Stylist::drawListBox(Painter* p, ListBox* box)
 {
-    // TODO: draw ListBox frame
-    p->drawRectangle(0, 0, box->width(), box->height());
+    if (!box->enabled())
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li2.dis);
+    else
+        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li2.def);
 }
 
 void
@@ -292,8 +294,10 @@ Stylist::drawLineSeperator(Painter* p, LineSeperator* sep)
 void
 Stylist::drawGridView(Painter* p, GridView* grid)
 {
-    // TODO: draw GridView frame
-    p->drawRectangle(0, 0, grid->width(), grid->height());
+    if (!grid->enabled())
+        draw9Frame(p, 0, 0, grid->width(), grid->height(), _style->li2.dis);
+    else
+        draw9Frame(p, 0, 0, grid->width(), grid->height(), _style->li2.def);
 }
 
 void
