@@ -39,6 +39,7 @@ class WindowWidget : public Frame
     friend class Application;
     friend class Surface;
     friend class Widget;
+    friend class EventManager;
 public:
     /*!
      * Constructor.

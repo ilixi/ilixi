@@ -71,6 +71,15 @@ Window::windowSize() const
     return Size(w, h);
 }
 
+Point
+Window::windowPosition() const
+{
+    int x = 0, y = 0;
+    if (_dfbWindow)
+        _dfbWindow->GetPosition(_dfbWindow, &x, &y);
+    return Point(x, y);
+}
+
 void
 Window::showWindow()
 {

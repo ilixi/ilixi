@@ -25,6 +25,7 @@
 #define ILIXI_WINDOW_H_
 
 #include <types/Size.h>
+#include <types/Point.h>
 
 namespace ilixi
 {
@@ -67,6 +68,12 @@ public:
      */
     Size
     windowSize() const;
+
+    /*!
+     * Returns the position of window.
+     */
+    Point
+    windowPosition() const;
 
     /*!
      *  Makes the window visible and starts input event thread.
