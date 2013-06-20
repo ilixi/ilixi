@@ -35,7 +35,8 @@ ScrollBar::ScrollBar(Orientation orientation, Widget* parent)
           _min(0),
           _max(100),
           _value(0),
-          _step(1)
+          _step(1),
+          _direction(Down)
 {
     setInputMethod((WidgetInputMethod) (PointerTracking | PointerGrabbing));
     setConstraints(ExpandingConstraint, FixedConstraint);
@@ -80,6 +81,12 @@ ScrollBar::indicatorRegion() const
     return _indicatorRegion;
 }
 
+Direction
+ScrollBar::direction() const
+{
+    return _direction;
+}
+
 int
 ScrollBar::max() const
 {
@@ -117,17 +124,35 @@ ScrollBar::setOrientation(Orientation orientation)
     if (_orientation == Horizontal)
     {
         setConstraints(ExpandingConstraint, FixedConstraint);
-        _dec->setButtonDirection(Left);
         _dec->setIcon(StyleHint::Left);
-        _inc->setButtonDirection(Right);
         _inc->setIcon(StyleHint::Right);
+
+        if (_direction == Up)
+        {
+            _dec->setCorners((Corners) TopLeft);
+            _inc->setCorners((Corners) TopRight);
+        } else
+        {
+            _dec->setCorners((Corners) BottomLeft);
+            _inc->setCorners((Corners) BottomRight);
+        }
+
     } else
     {
         setConstraints(FixedConstraint, ExpandingConstraint);
-        _dec->setButtonDirection(Up);
         _dec->setIcon(StyleHint::Up);
-        _inc->setButtonDirection(Down);
         _inc->setIcon(StyleHint::Down);
+
+        if (_direction == Left)
+        {
+            _dec->setCorners((Corners) TopLeft);
+            _inc->setCorners((Corners) BottomLeft);
+        } else
+        {
+            _dec->setCorners((Corners) TopRight);
+            _inc->setCorners((Corners) BottomRight);
+        }
+
     }
     doLayout();
 }
@@ -159,6 +184,12 @@ int
 ScrollBar::value() const
 {
     return _value;
+}
+
+void
+ScrollBar::setDirection(Direction direction)
+{
+    _direction = direction;
 }
 
 void

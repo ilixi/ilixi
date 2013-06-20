@@ -46,6 +46,9 @@ public:
     const Rectangle&
     indicatorRegion() const;
 
+    Direction
+    direction() const;
+
     int
     max() const;
 
@@ -60,6 +63,9 @@ public:
 
     int
     value() const;
+
+    void
+    setDirection(Direction direction);
 
     void
     setMax(int max);
@@ -122,6 +128,8 @@ private:
     int _value;
     //! This property stores step amount in both directions, e.g. button press.
     int _step;
+    //! This property stores the placement of bar in parent container.
+    Direction _direction;
     //! This property stores the orientation of scroll bar.
     Orientation _orientation;
     //! This property stores indicator rectangle which receives pointer events.
