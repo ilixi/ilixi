@@ -36,7 +36,6 @@ GridView::GridView(Widget* parent)
         : Widget(parent),
           _scrollArea(NULL),
           _layout(NULL),
-          _drawFrame(false),
           _currentIndex(0),
           _currentItem(NULL)
 {
@@ -61,10 +60,7 @@ Size
 GridView::preferredSize() const
 {
     ILOG_TRACE_W(ILX_GRIDVIEW);
-    Size s = _scrollArea->preferredSize();
-    if (_drawFrame)
-        return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
-    return s;
+    return _scrollArea->preferredSize();
 }
 
 void
@@ -110,7 +106,7 @@ GridView::currentIndex() const
 bool
 GridView::drawFrame() const
 {
-    return _drawFrame;
+    return _scrollArea->drawFrame();
 }
 
 int
@@ -204,8 +200,7 @@ GridView::setCurrentItem(Widget* item)
 void
 GridView::setDrawFrame(bool drawFrame)
 {
-    _drawFrame = drawFrame;
-    doLayout();
+    _scrollArea->setDrawFrame(drawFrame);
 }
 
 void
@@ -234,21 +229,12 @@ GridView::setLayoutSpacing(int spacing)
 void
 GridView::compose(const PaintEvent& event)
 {
-    if (_drawFrame)
-    {
-        Painter p(this);
-        p.begin(event);
-        stylist()->drawGridView(&p, this);
-    }
 }
 
 void
 GridView::updateGridViewGeometry()
 {
-    if (_drawFrame)
-        _scrollArea->setGeometry(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
-    else
-        _scrollArea->setGeometry(0, 0, width(), height());
+    _scrollArea->setGeometry(0, 0, width(), height());
 }
 
 void

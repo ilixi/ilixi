@@ -198,8 +198,6 @@ private:
     ScrollArea* _scrollArea;
     //! This is the internal grid layout.
     GridLayout* _layout;
-    //! This flag specifies whether frame is drawn.
-    bool _drawFrame;
     //! Index of current item.
     unsigned int _currentIndex;
     //! Points to current/last focused item.
