@@ -38,8 +38,7 @@ ListBox::ListBox(Widget* parent)
           _orientation(Vertical),
           _scrollArea(NULL),
           _layout(NULL),
-          _drawFrame(false),
-          _currentIndex(0),
+          _currentIndex(-1),
           _currentItem(NULL)
 {
     ILOG_TRACE_W(ILX_LISTBOX);
@@ -62,10 +61,7 @@ ListBox::~ListBox()
 Size
 ListBox::preferredSize() const
 {
-    Size s = _scrollArea->preferredSize();
-    if (_drawFrame)
-        return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
-    return s;
+    return _scrollArea->preferredSize();
 }
 
 void
@@ -146,9 +142,22 @@ bool
 ListBox::removeItem(Widget* item)
 {
     ILOG_TRACE_W(ILX_LISTBOX);
-    if (item == _currentItem)
-        setCurrentItem(_currentIndex + 1 > _items.size() ? 0 : _currentIndex + 1);
-    return _layout->removeWidget(item);
+    if (_layout->removeWidget(item))
+    {
+        for (WidgetListIterator it = _items.begin(); it != _items.end(); ++it)
+        {
+            if (*it == item)
+            {
+                _items.erase(it);
+                break;
+            }
+        }
+
+        setCurrentItem(_currentIndex > _items.size() ? 0 : _currentIndex - 1);
+
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -176,9 +185,13 @@ ListBox::setCurrentItem(unsigned int index)
     ILOG_TRACE_W(ILX_LISTBOX);
     if (_currentIndex != index && index < _items.size())
     {
-        _currentIndex = index;
-        _currentItem = itemAtIndex(_currentIndex);
+        _currentItem = itemAtIndex(index);
         _scrollArea->scrollTo(_currentItem);
+
+        int oldIndex = _currentIndex;
+        _currentIndex = index;
+        if (_currentIndex != oldIndex)
+            sigIndexChanged(oldIndex, _currentIndex);
     }
 }
 
@@ -190,6 +203,11 @@ ListBox::setCurrentItem(Widget* item)
     {
         _currentItem = item;
         _scrollArea->scrollTo(_currentItem);
+
+        int oldIndex = _currentIndex;
+        _currentIndex = itemIndex(_currentItem);
+        if (_currentIndex != oldIndex)
+            sigIndexChanged(oldIndex, _currentIndex);
     }
 }
 
@@ -220,14 +238,13 @@ ListBox::setOrientation(Orientation orientation)
 bool
 ListBox::drawFrame() const
 {
-    return _drawFrame;
+    return _scrollArea->drawFrame();
 }
 
 void
 ListBox::setDrawFrame(bool drawFrame)
 {
-    _drawFrame = drawFrame;
-    doLayout();
+    _scrollArea->setDrawFrame(drawFrame);
 }
 
 void
@@ -239,21 +256,13 @@ ListBox::setUseThumbs(bool useThumbs)
 void
 ListBox::compose(const PaintEvent& event)
 {
-    if (_drawFrame)
-    {
-        Painter p(this);
-        p.begin(event);
-        stylist()->drawListBox(&p, this);
-    }
 }
 
 void
 ListBox::updateListBoxGeometry()
 {
-    if (_drawFrame)
-        _scrollArea->setGeometry(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
-    else
-        _scrollArea->setGeometry(0, 0, width(), height());
+    _scrollArea->setGeometry(0, 0, width(), height());
+    _scrollArea->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
 }
 
 void
@@ -264,10 +273,7 @@ ListBox::trackItem(Widget* item, WidgetState state)
 
     if (state & FocusedState)
     {
-        int oldIndex = _currentIndex;
         setCurrentItem(item);
-        if (_currentIndex != oldIndex)
-            sigIndexChanged(oldIndex, _currentIndex);
         sigItemSelected(item);
     }
 

@@ -128,7 +128,7 @@ public:
     /*!
      * Scrolls to given item at index.
      *
-     * Setting current item with this method will not emit signals.
+     * Setting current item with this method will not emit sigItemSelected.
      */
     void
     setCurrentItem(unsigned int index);
@@ -136,7 +136,7 @@ public:
     /*!
      * Scrolls to given item.
      *
-     * Setting current item with this method will not emit signals.
+     * Setting current item with this method will not emit sigItemSelected.
      */
     void
     setCurrentItem(Widget* item);
@@ -190,8 +190,6 @@ private:
     ScrollArea* _scrollArea;
     //! This is the internal layout.
     LayoutBase* _layout;
-    //! This flag specifies whether frame is drawn.
-    bool _drawFrame;
     //! Index of current item.
     unsigned int _currentIndex;
     //! Points to current/last focused item.
