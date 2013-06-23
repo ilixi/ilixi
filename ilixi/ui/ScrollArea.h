@@ -63,6 +63,12 @@ public:
     preferredSize() const;
 
     /*!
+     * Returns whether frame is drawn.
+     */
+    bool
+    drawFrame() const;
+
+    /*!
      * Sets the content for scroll area.
      *
      * Warning: Previous widget will be destroyed implicitly.
@@ -87,6 +93,12 @@ public:
      */
     void
     setSmoothScrolling(bool smoothScroll);
+
+    /*!
+     * Sets whether frame is drawn.
+     */
+    void
+    setDrawFrame(bool drawFrame);
 
     /*!
      * Scrolls to given local coordinates.
@@ -161,6 +173,7 @@ private:
         VerticalAlways = 0x01000,           //!< Makes vertical thumb/bar always visible automatically.
         VerticalAuto = 0x02000,             //!< Makes vertical thumb/bar visible automatically.
         VerticalScrollEnabled = 0x04000,    //!< Whether vertical scrolling is enabled.
+        ContentWasScrolled = 0x08000
     };
 
     //! This property stores the options for ScrollArea.

@@ -88,6 +88,12 @@ ScrollArea::preferredSize() const
     return Size(100, 100);
 }
 
+bool
+ScrollArea::drawFrame() const
+{
+    return _options & DrawFrame;
+}
+
 void
 ScrollArea::setContent(Widget* content)
 {
@@ -138,6 +144,15 @@ ScrollArea::setSmoothScrolling(bool smoothScroll)
 }
 
 void
+ScrollArea::setDrawFrame(bool drawFrame)
+{
+    if (drawFrame)
+        _options |= DrawFrame;
+    else
+        _options &= ~DrawFrame;
+}
+
+void
 ScrollArea::scrollTo(int x, int y)
 {
     _ani->stop();
@@ -145,7 +160,7 @@ ScrollArea::scrollTo(int x, int y)
     _yTween->setInitialValue(_yTween->value());
     _xTween->setEndValue(x);
     _yTween->setEndValue(y);
-    _options |= TargetedScroll;
+    _options |= TargetedScroll | ContentWasScrolled;
     _ani->start();
 }
 
@@ -159,25 +174,33 @@ ScrollArea::scrollTo(Widget* widget, bool center)
     if (!_content->isChild(widget))
         return;
 
-    Rectangle wRect = Rectangle(_content->x() + widget->x(), _content->y() + widget->y(), widget->width(), widget->height());
-    if (!center && surfaceGeometry().contains(wRect, true))
+    Rectangle wRect = Rectangle(widget->x() + _content->x(), widget->y() + _content->y(), widget->width(), widget->height());
+    ILOG_DEBUG(ILX_SCROLLAREA, " -> wRect %d %d %d %d\n", wRect.x(), wRect.y(), wRect.width(), wRect.height());
+    Rectangle sRect = Rectangle(0, 0, width(), height());
+    if (_options & DrawFrame)
+        sRect.setRectangle(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+    ILOG_DEBUG(ILX_SCROLLAREA, " -> sRect %d %d %d %d\n", sRect.x(), sRect.y(), sRect.width(), sRect.height());
+
+    if (!center && sRect.contains(wRect, true))
     {
         ILOG_DEBUG(ILX_SCROLLAREA, " -> widget is fully visible.\n");
         return;
     } else
     {
+        wRect = mapToSurface(widget->frameGeometry());
         Point endP = wRect.topLeft();
+
         if (wRect.right() > x() + width())
-            endP.setX(wRect.right() - (x() + width()));
+            if (_options & DrawFrame)
+                endP.setX(wRect.right() - width() + stylist()->defaultParameter(StyleHint::LineInputLR));
+            else
+                endP.setX(wRect.right() - width());
 
         if (wRect.bottom() > y() + height())
-            endP.setY(wRect.bottom() - (y() + height()));
-
-        if (endP.x() < x())
-            endP.setX(wRect.x() - x());
-
-        if (endP.y() < y())
-            endP.setY(wRect.y() - y());
+            if (_options & DrawFrame)
+                endP.setY(wRect.bottom() - height() + stylist()->defaultParameter(StyleHint::LineInputTB));
+            else
+                endP.setY(wRect.bottom() - height());
 
         if (center)
         {
@@ -192,8 +215,8 @@ ScrollArea::scrollTo(Widget* widget, bool center)
         if (endP.x() != 0 || endP.y() != 0)
         {
             _ani->stop();
-            _options |= TargetedScroll;
-            ILOG_DEBUG(ILX_SCROLLAREA, " -> content %d, %d\n", _content->x(), _content->y());
+            _options |= TargetedScroll | ContentWasScrolled;
+            ILOG_DEBUG(ILX_SCROLLAREA, " -> content %d, %d\n", _content->absX(), _content->absY());
             ILOG_DEBUG(ILX_SCROLLAREA, " -> endP %d, %d\n", endP.x(), endP.y());
             ILOG_DEBUG(ILX_SCROLLAREA, " -> scrolling content to %f, %f\n", _xTween->endValue(), _yTween->endValue());
             _ani->start();
@@ -210,6 +233,8 @@ ScrollArea::paint(const PaintEvent& event)
         PaintEvent evt(this, event);
         if (evt.isValid())
         {
+            compose(evt);
+
             if (_options & SmoothScrolling)
             {
 
@@ -234,13 +259,38 @@ ScrollArea::paint(const PaintEvent& event)
                         if (_options & HasHorizontal)
                             h = height() - _horizontalBar->height();
                         Rectangle r(absX(), absY(), w, h);
+                        if (_options & DrawFrame)
+                            r.setRectangle(absX() + stylist()->defaultParameter(StyleHint::LineInputLeft), absY() + stylist()->defaultParameter(StyleHint::LineInputTop), w - stylist()->defaultParameter(StyleHint::LineInputLR), h - stylist()->defaultParameter(StyleHint::LineInputTB));
                         evt.rect = evt.rect.intersected(r);
                         _content->paint(evt);
                     } else
+                    {
+                        if (_options & DrawFrame)
+                        {
+                            Rectangle r(absX(), absY(), width(), height());
+                            r.setRectangle(absX() + stylist()->defaultParameter(StyleHint::LineInputLeft), absY() + stylist()->defaultParameter(StyleHint::LineInputTop), width() - stylist()->defaultParameter(StyleHint::LineInputLR), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
+                            evt.rect = evt.rect.intersected(r);
+                        }
                         _content->paint(evt);
+                    }
                 }
             }
-            compose(evt);
+            if (!(_options & UseBars) && (_ani->state() == Animation::Running))
+            {
+                Painter p(this);
+                p.begin(event);
+                if (_options & HasHorizontal)
+                {
+                    int x = 1 + (width() - _thumbs.width() - 12.0) * _xTween->value() / _sMax.x();
+                    stylist()->drawScrollBar(&p, x, height() - stylist()->defaultParameter(StyleHint::ScrollBarHeight), _thumbs.width(), stylist()->defaultParameter(StyleHint::ScrollBarHeight), Horizontal);
+                }
+
+                if (_options & HasVertical)
+                {
+                    int y = 1 + (height() - _thumbs.height() - 12.0) * _yTween->value() / _sMax.y();
+                    stylist()->drawScrollBar(&p, width() - stylist()->defaultParameter(StyleHint::ScrollBarWidth), y, stylist()->defaultParameter(StyleHint::ScrollBarWidth), _thumbs.height(), Vertical);
+                }
+            }
         }
     }
 }
@@ -356,25 +406,12 @@ void
 ScrollArea::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_SCROLLAREA);
-    Painter p(this);
-    p.begin(event);
-
     if (_options & DrawFrame)
-        stylist()->drawScrollArea(&p, this);
-
-    if (!(_options & UseBars) && (_ani->state() == Animation::Running))
     {
-        if (_options & HasHorizontal)
-        {
-            int x = 1 + (width() - _thumbs.width() - 12.0) * _xTween->value() / _sMax.x();
-            stylist()->drawScrollBar(&p, x, height() - stylist()->defaultParameter(StyleHint::ScrollBarHeight), _thumbs.width(), stylist()->defaultParameter(StyleHint::ScrollBarHeight), Horizontal);
-        }
-
-        if (_options & HasVertical)
-        {
-            int y = 1 + (height() - _thumbs.height() - 12.0) * _yTween->value() / _sMax.y();
-            stylist()->drawScrollBar(&p, width() - stylist()->defaultParameter(StyleHint::ScrollBarWidth), y, stylist()->defaultParameter(StyleHint::ScrollBarWidth), _thumbs.height(), Vertical);
-        }
+        Painter p(this);
+        p.begin(event);
+        stylist()->drawScrollArea(&p, this, _sMax);
+        p.end();
     }
 }
 
@@ -392,6 +429,8 @@ ScrollArea::updateHDraws(int contentWidth)
     if ((_options & UseBars) && (_options & HasHorizontal))
     {
         int val = contentWidth - width();
+        if (_options & DrawFrame)
+            val += stylist()->defaultParameter(StyleHint::LineInputLR);
         if (val < 0)
             _horizontalBar->setDisabled();
         else
@@ -418,6 +457,8 @@ ScrollArea::updateVDraws(int contentHeight)
     if ((_options & UseBars) && (_options & HasVertical))
     {
         int val = contentHeight - height();
+        if (_options & DrawFrame)
+            val += stylist()->defaultParameter(StyleHint::LineInputTB);
         if (val < 0)
             _verticalBar->setDisabled();
         else
@@ -439,8 +480,18 @@ ScrollArea::updateScollAreaGeometry()
     int w = width();
     int h = height();
 
-    _content->moveTo(0, 0);
+    if (!(_options & ContentWasScrolled))
+    {
+        if (_options & DrawFrame)
+        {
+            _content->moveTo(stylist()->defaultParameter(StyleHint::LineInputLeft), stylist()->defaultParameter(StyleHint::LineInputTop));
+            w -= stylist()->defaultParameter(StyleHint::LineInputLR);
+            h -= stylist()->defaultParameter(StyleHint::LineInputTB);
+        } else
+            _content->moveTo(0, 0);
+    }
     _content->sendToBack();
+    _content->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
 
     Size contentSize = _content->preferredSize();
 
@@ -459,17 +510,25 @@ ScrollArea::updateScollAreaGeometry()
             {
                 vS = _verticalBar->preferredSize();
                 _verticalBar->setGeometry(width() - vS.width(), 0, vS.width(), height());
-            }
+                _verticalBar->setNeighbours(getNeighbour(Up), getNeighbour(Down), _content, getNeighbour(Right));
+                _content->setNeighbour(Right, _verticalBar);
+                _sMax.setWidth(width() - _verticalBar->width());
+            } else
+                _sMax.setWidth(width());
 
             Size hS = Size(0, 0);
-            if (_options & HasVertical)
+            if (_options & HasHorizontal)
             {
                 hS = _horizontalBar->preferredSize();
                 _horizontalBar->setGeometry(0, h - hS.height(), w - vS.width(), hS.height());
-            }
+                _horizontalBar->setNeighbours(_content, getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
+                _content->setNeighbour(Down, _horizontalBar);
+                _sMax.setHeight(height() - _horizontalBar->height());
+            } else
+                _sMax.setHeight(height());
 
-            w = width() - vS.width();
-            h = height() - hS.height();
+            w -= vS.width();
+            h -= hS.height();
         }
     }
 
@@ -513,14 +572,20 @@ ScrollArea::updateScrollArea()
 void
 ScrollArea::barScrollX(int x)
 {
-    _content->setX(-x);
+    if (_options & DrawFrame)
+        _content->setX(-x + stylist()->defaultParameter(StyleHint::LineInputLeft));
+    else
+        _content->setX(-x);
     update();
 }
 
 void
 ScrollArea::barScrollY(int y)
 {
-    _content->setY(-y);
+    if (_options & DrawFrame)
+        _content->setY(-y + stylist()->defaultParameter(StyleHint::LineInputTop));
+    else
+        _content->setY(-y);
     update();
 }
 
