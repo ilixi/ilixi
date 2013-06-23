@@ -313,10 +313,17 @@ ScrollBar::updateSBGeometry()
 {
     ILOG_TRACE_W(ILX_SCROLLBAR);
     Size s = _dec->preferredSize();
+    _dec->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
+    _inc->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
+
     if (_orientation == Horizontal)
     {
         _dec->setGeometry(0, 0, s.width(), height());
         _inc->setGeometry(width() - s.width(), 0, s.width(), height());
+
+        _dec->setNeighbour(Right, _inc);
+        _inc->setNeighbour(Right, _dec);
+
         int wUsed = _dec->width() + _inc->width();
         _indicatorRegion.setRectangle(_dec->width(), 0, width() - wUsed, height());
         int w = _step * (_indicatorRegion.width() - wUsed - .0) / (_max - _min);
@@ -331,6 +338,10 @@ ScrollBar::updateSBGeometry()
     {
         _dec->setGeometry(0, 0, width(), s.height());
         _inc->setGeometry(0, height() - s.height(), width(), s.height());
+
+        _dec->setNeighbour(Down, _inc);
+        _inc->setNeighbour(Up, _dec);
+
         int hUsed = _dec->height() + _inc->height();
         _indicatorRegion.setRectangle(0, _dec->height(), width(), height() - hUsed);
         int h = _step * (_indicatorRegion.height() - hUsed - .0) / (_max - _min);
