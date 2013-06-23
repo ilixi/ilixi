@@ -82,12 +82,6 @@ public:
     drawLabel(Painter* painter, Label* label);
 
     /*!
-     * Draws a ListBox frame.
-     */
-    virtual void
-    drawListBox(Painter* painter, ListBox* box);
-
-    /*!
      * Draws an icon.
      */
     virtual void
@@ -118,12 +112,6 @@ public:
     drawLineSeperator(Painter* painter, LineSeperator* seperator);
 
     /*!
-     * Draws a GridView frame.
-     */
-    virtual void
-    drawGridView(Painter* painter, GridView* grid);
-
-    /*!
      * Draws a groupbox.
      */
     virtual void
@@ -151,7 +139,7 @@ public:
      * Draws a scrollarea frame.
      */
     virtual void
-    drawScrollArea(Painter* painter, ScrollArea* area);
+    drawScrollArea(Painter* painter, ScrollArea* area, const Rectangle& content);
 
     /*!
      * Draws a scrollbar inside given rectangle and orientation.

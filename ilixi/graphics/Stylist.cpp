@@ -127,15 +127,6 @@ Stylist::drawLabel(Painter* p, Label* label)
 }
 
 void
-Stylist::drawListBox(Painter* p, ListBox* box)
-{
-    if (!box->enabled())
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li2.dis);
-    else
-        draw9Frame(p, 0, 0, box->width(), box->height(), _style->li2.def);
-}
-
-void
 Stylist::drawIcon(Painter* p, Icon* icon)
 {
     if (!icon->enabled())
@@ -292,15 +283,6 @@ Stylist::drawLineSeperator(Painter* p, LineSeperator* sep)
 }
 
 void
-Stylist::drawGridView(Painter* p, GridView* grid)
-{
-    if (!grid->enabled())
-        draw9Frame(p, 0, 0, grid->width(), grid->height(), _style->li2.dis);
-    else
-        draw9Frame(p, 0, 0, grid->width(), grid->height(), _style->li2.def);
-}
-
-void
 Stylist::drawGroupBox(Painter* p, GroupBox* box)
 {
     const WidgetState state = box->state();
@@ -453,10 +435,12 @@ Stylist::drawProgressBar(Painter* p, ProgressBar* bar)
 }
 
 void
-Stylist::drawScrollArea(Painter* p, ScrollArea* area)
+Stylist::drawScrollArea(Painter* p, ScrollArea* area, const Rectangle& content)
 {
-    // TODO draw ScrollArea frame.
-    p->drawRectangle(0, 0, area->width(), area->height());
+    if (!area->enabled())
+        draw9Frame(p, 0, 0, content.width(), content.height(), _style->li2.dis);
+    else
+        draw9Frame(p, 0, 0, content.width(), content.height(), _style->li2.def);
 }
 
 void

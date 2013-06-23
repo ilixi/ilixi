@@ -187,7 +187,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::LineInputRight:
         return _style->li.def.r.width();
     case StyleHint::LineInputLR:
-        return _style->li.def.l.width() + _style->li.def.l.width();
+        return _style->li.def.l.width() + _style->li.def.r.width();
     case StyleHint::LineInputTop:
         return _style->li.def.tl.height();
     case StyleHint::LineInputBottom:
