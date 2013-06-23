@@ -135,11 +135,16 @@ AppWindow::updateLayoutGeometry()
     {
         int h = _toolbar->preferredSize().height();
         if (_toolbarNorth)
+        {
             _toolbar->setGeometry(0, 0, width(), h);
-        else
+            _toolbar->setNeighbour(Down, _layout);
+            _layout->setNeighbour(Up, _toolbar);
+        } else
+        {
             _toolbar->setGeometry(0, height() - h, width(), h);
-        _toolbar->setNeighbour(Down, _layout);
-        _layout->setNeighbour(Up, _toolbar);
+            _toolbar->setNeighbour(Up, _layout);
+            _layout->setNeighbour(Down, _toolbar);
+        }
     }
     _layout->setGeometry(canvasX(), canvasY(), canvasWidth(), canvasHeight());
 }
