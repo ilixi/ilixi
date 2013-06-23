@@ -127,6 +127,7 @@ void
 ButtonGroup::updateButtonGroupGeometry()
 {
     _box->setGeometry(0, 0, width(), height());
+    _box->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
 }
 
 } /* namespace ilixi */
