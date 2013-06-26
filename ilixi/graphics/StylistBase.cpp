@@ -253,16 +253,44 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
     ILOG_TRACE(ILX_STYLISTBASE);
     switch (icon)
     {
+    case StyleHint::Alarm:
+        return _icons->getIcon("alarm");
     case StyleHint::ArrowNE:
         return _icons->getIcon("arrow_ne");
     case StyleHint::ArrowSW:
         return _icons->getIcon("arrow_sw");
+    case StyleHint::Attach:
+        return _icons->getIcon("attach");
+    case StyleHint::Back:
+        return _icons->getIcon("back");
+    case StyleHint::Backspace:
+        return _icons->getIcon("backspace");
+    case StyleHint::Battery0:
+        return _icons->getIcon("battery0");
+    case StyleHint::Battery1:
+        return _icons->getIcon("battery1");
+    case StyleHint::Battery2:
+        return _icons->getIcon("battery2");
+    case StyleHint::Battery3:
+        return _icons->getIcon("battery3");
+    case StyleHint::Brightness:
+        return _icons->getIcon("brightness");
     case StyleHint::Calendar:
         return _icons->getIcon("calendar");
+    case StyleHint::Camera:
+        return _icons->getIcon("camera");
+    case StyleHint::Caps:
+        return _icons->getIcon("caps");
+    case StyleHint::Chat:
+        return _icons->getIcon("chat");
     case StyleHint::Clock:
         return _icons->getIcon("clock");
     case StyleHint::Comment:
         return _icons->getIcon("comment");
+    case StyleHint::Contacts1:
+        return _icons->getIcon("contacts1");
+    case StyleHint::Contacts2:
+        return _icons->getIcon("contacts2");
     case StyleHint::CPU:
         return _icons->getIcon("cpu");
     case StyleHint::Cross:
@@ -271,6 +299,8 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("cross_circle");
     case StyleHint::Down:
         return _icons->getIcon("arrow_down");
+    case StyleHint::Edit:
+        return _icons->getIcon("edit");
     case StyleHint::Eject:
         return _icons->getIcon("eject");
     case StyleHint::File:
@@ -287,6 +317,16 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("file_upload");
     case StyleHint::Flag:
         return _icons->getIcon("flag");
+    case StyleHint::Folder:
+        return _icons->getIcon("folder");
+    case StyleHint::Forward:
+        return _icons->getIcon("forward");
+    case StyleHint::Fullscreen:
+        return _icons->getIcon("fullscreen");
+    case StyleHint::Grid:
+        return _icons->getIcon("grid");
+    case StyleHint::Hangup:
+        return _icons->getIcon("hangup");
     case StyleHint::Heart:
         return _icons->getIcon("heart");
     case StyleHint::Home:
@@ -295,8 +335,16 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("info");
     case StyleHint::Left:
         return _icons->getIcon("arrow_left");
+    case StyleHint::Lock:
+        return _icons->getIcon("lock");
+    case StyleHint::Microphone:
+        return _icons->getIcon("microphone");
+    case StyleHint::MicrophoneMuted:
+        return _icons->getIcon("microphone_muted");
     case StyleHint::Minus:
         return _icons->getIcon("minus");
+    case StyleHint::Mixer:
+        return _icons->getIcon("mixer");
     case StyleHint::Movie:
         return _icons->getIcon("movie");
     case StyleHint::Music:
@@ -307,12 +355,16 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("next");
     case StyleHint::Next2:
         return _icons->getIcon("next2");
+    case StyleHint::Open:
+        return _icons->getIcon("open");
     case StyleHint::Pause:
         return _icons->getIcon("pause");
     case StyleHint::Phone:
         return _icons->getIcon("phone");
     case StyleHint::Picture:
         return _icons->getIcon("picture");
+    case StyleHint::Pin:
+        return _icons->getIcon("pin");
     case StyleHint::Play:
         return _icons->getIcon("play");
     case StyleHint::Plus:
@@ -327,16 +379,22 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("ram");
     case StyleHint::Restart:
         return _icons->getIcon("restart");
+    case StyleHint::Return:
+        return _icons->getIcon("return");
     case StyleHint::Ribbon:
         return _icons->getIcon("ribbon");
     case StyleHint::Right:
         return _icons->getIcon("arrow_right");
+    case StyleHint::Save:
+        return _icons->getIcon("save");
     case StyleHint::Search:
         return _icons->getIcon("search");
     case StyleHint::Settings:
         return _icons->getIcon("settings");
     case StyleHint::Share:
         return _icons->getIcon("share");
+    case StyleHint::Space:
+        return _icons->getIcon("space");
     case StyleHint::Standby:
         return _icons->getIcon("standby");
     case StyleHint::Star:
@@ -345,6 +403,8 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("stats");
     case StyleHint::Stop:
         return _icons->getIcon("stop");
+    case StyleHint::Switch:
+        return _icons->getIcon("switch");
     case StyleHint::Tag:
         return _icons->getIcon("tag");
     case StyleHint::ThumbDown:
@@ -355,8 +415,20 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
         return _icons->getIcon("tick");
     case StyleHint::TickCircle:
         return _icons->getIcon("tick_circle");
+    case StyleHint::Trash:
+        return _icons->getIcon("trash");
+    case StyleHint::Unlock:
+        return _icons->getIcon("unlock");
+    case StyleHint::Unpin:
+        return _icons->getIcon("unpin");
     case StyleHint::Up:
         return _icons->getIcon("arrow_up");
+    case StyleHint::Volume1:
+        return _icons->getIcon("volume1");
+    case StyleHint::Volume2:
+        return _icons->getIcon("volume2");
+    case StyleHint::VolumeMuted:
+        return _icons->getIcon("volume_muted");
     case StyleHint::Window:
         return _icons->getIcon("window");
     case StyleHint::ZoomIn:
