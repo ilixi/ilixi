@@ -81,10 +81,8 @@ RemoteContentArea::compose(const PaintEvent& event)
     Painter p(this);
     p.begin(event);
 
-    p.blitImage(_bgDef, Rectangle(0, 0, 15, 15), 0, 0);
-
-    p.stretchImage(_bgDef, Rectangle(15, 0, width() - 15, height()), Rectangle(15, 0, 91, 55)); // mid
-    p.stretchImage(_bgDef, Rectangle(0, 15, 15, height()), Rectangle(0, 15, 15, 39)); // left
+    p.blitImage(_bgDef, Rectangle(0, 0, 15, 55), 0, 0);
+    p.stretchImage(_bgDef, Rectangle(15, 0, width() - 15, 55), Rectangle(15, 0, 91, 55)); // mid
     p.end();
 }
 

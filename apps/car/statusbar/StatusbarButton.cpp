@@ -127,12 +127,10 @@ StatusbarButton::compose(const PaintEvent& event)
 
     Painter p(this);
     p.begin(event);
-    p.blitImage(bgDef, Rectangle(0, y, 15, 15), 0, 0);
-    p.blitImage(bgDef, Rectangle(106, y, 20, 15), width() - 20, 0);
+    p.blitImage(bgDef, Rectangle(0, y, 15, 55), 0, 0);
+    p.blitImage(bgDef, Rectangle(106, y, 20, 55), width() - 20, 0);
 
-    p.stretchImage(bgDef, Rectangle(15, 0, width() - 35, height()), Rectangle(15, y, 90, 55)); // mid
-    p.stretchImage(bgDef, Rectangle(0, 15, 15, height()), Rectangle(0, y + 15, 15, 39)); // left
-    p.stretchImage(bgDef, Rectangle(width() - 20, 15, 20, height()), Rectangle(106, y + 15, 20, 39)); // right
+    p.stretchImage(bgDef, Rectangle(15, 0, width() - 35, 55), Rectangle(15, y, 90, 55)); // mid
 
     p.drawImage(_images[buttonState()], (width() - 48) / 2, (height() - 48) / 2);
     p.end();
