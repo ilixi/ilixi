@@ -2,63 +2,100 @@
 <!DOCTYPE IconPack PUBLIC "-//ilixi//DTD Icons v1//EN" "http://www.ilixi.org/dtd/icon_pack.dtd">
 <IconPack resource="@IMGDIR:ui-icons.png" defaultSize="16">
 	<Icon row="1" col="1" name="arrow_sw" />
-	<Icon row="2" col="1" name="arrow_down" />
-	<Icon row="3" col="1" name="arrow_left" />
-	<Icon row="4" col="1" name="cross" />
-	<Icon row="5" col="1" name="tick" />
-	<Icon row="6" col="1" name="minus" />
-	<Icon row="7" col="1" name="play" />
-	<Icon row="8" col="1" name="next" />
-	<Icon row="9" col="1" name="movie" />
-	<Icon row="10" col="1" name="prev" />
-	<Icon row="11" col="1" name="calendar" />
-	<Icon row="12" col="1" name="share" />
 	<Icon row="1" col="2" name="arrow_ne" />
-	<Icon row="2" col="2" name="arrow_up" />
-	<Icon row="3" col="2" name="arrow_right" />
-	<Icon row="4" col="2" name="cross_circle" />
-	<Icon row="5" col="2" name="tick_circle" />
-	<Icon row="6" col="2" name="plus" />
-	<Icon row="7" col="2" name="pause" />
-	<Icon row="8" col="2" name="next2" />
-	<Icon row="9" col="2" name="stop" />
-	<Icon row="10" col="2" name="prev2" />
-	<Icon row="11" col="2" name="clock" />
-	<Icon row="12" col="2" name="comment" />
 	<Icon row="1" col="3" name="ribbon" />
-	<Icon row="2" col="3" name="search" />
-	<Icon row="3" col="3" name="star" />
-	<Icon row="4" col="3" name="tag" />
-	<Icon row="5" col="3" name="thumb_down" />
-	<Icon row="6" col="3" name="thumb_up" />
-	<Icon row="7" col="3" name="zoom_in" />
-	<Icon row="8" col="3" name="zoom_out" />
-	<Icon row="9" col="3" name="file_upload" />
-	<Icon row="10" col="3" name="file_text" />
-	<Icon row="11" col="3" name="file_add" />
-	<Icon row="12" col="3" name="file_download" />
 	<Icon row="1" col="4" name="file_delete" />
-	<Icon row="2" col="4" name="file" />
-	<Icon row="3" col="4" name="settings" />
-	<Icon row="4" col="4" name="info" />
-	<Icon row="5" col="4" name="heart" />
-	<Icon row="6" col="4" name="flag" />
-	<Icon row="7" col="4" name="stats" />
-	<Icon row="8" col="4" name="eject" />
-	<Icon row="9" col="4" name="music" />
-	<Icon row="10" col="4" name="usb" />
-	<Icon row="11" col="4" name="wifi" />
-	<Icon row="12" col="4" name="tools" />
 	<Icon row="1" col="5" name="headphone" />
+	<Icon row="2" col="1" name="arrow_down" />
+	<Icon row="2" col="2" name="arrow_up" />
+	<Icon row="2" col="3" name="search" />
+	<Icon row="2" col="4" name="file" />
 	<Icon row="2" col="5" name="network" />
+	<Icon row="3" col="1" name="arrow_left" />
+	<Icon row="3" col="2" name="arrow_right" />
+	<Icon row="3" col="3" name="star" />
+	<Icon row="3" col="4" name="settings" />
 	<Icon row="3" col="5" name="sdcard" />
+	<Icon row="4" col="1" name="cross" />
+	<Icon row="4" col="2" name="cross_circle" />
+	<Icon row="4" col="3" name="tag" />
+	<Icon row="4" col="4" name="info" />
 	<Icon row="4" col="5" name="cpu" />
+	<Icon row="5" col="1" name="tick" />
+	<Icon row="5" col="2" name="tick_circle" />
+	<Icon row="5" col="3" name="thumb_down" />
+	<Icon row="5" col="4" name="heart" />
 	<Icon row="5" col="5" name="ram" />
+	<Icon row="6" col="1" name="minus" />
+	<Icon row="6" col="2" name="plus" />
+	<Icon row="6" col="3" name="thumb_up" />
+	<Icon row="6" col="4" name="flag" />
 	<Icon row="6" col="5" name="picture" />
+	<Icon row="7" col="1" name="play" />
+	<Icon row="7" col="2" name="pause" />
+	<Icon row="7" col="3" name="zoom_in" />
+	<Icon row="7" col="4" name="stats" />
 	<Icon row="7" col="5" name="phone" />
+	<Icon row="8" col="1" name="next" />
+	<Icon row="8" col="2" name="next2" />
+	<Icon row="8" col="3" name="zoom_out" />
+	<Icon row="8" col="4" name="eject" />
 	<Icon row="8" col="5" name="home" />
+	<Icon row="9" col="1" name="movie" />
+	<Icon row="9" col="2" name="stop" />
+	<Icon row="9" col="3" name="file_upload" />
+	<Icon row="9" col="4" name="music" />
 	<Icon row="9" col="5" name="power" />
+	<Icon row="10" col="1" name="prev" />
+	<Icon row="10" col="2" name="prev2" />
+	<Icon row="10" col="3" name="file_text" />
+	<Icon row="10" col="4" name="usb" />
 	<Icon row="10" col="5" name="standby" />
+	<Icon row="11" col="1" name="calendar" />
+	<Icon row="11" col="2" name="clock" />
+	<Icon row="11" col="3" name="file_add" />
+	<Icon row="11" col="4" name="wifi" />
 	<Icon row="11" col="5" name="restart" />
+	<Icon row="12" col="1" name="share" />
+	<Icon row="12" col="2" name="comment" />
+	<Icon row="12" col="3" name="file_download" />
+	<Icon row="12" col="4" name="tools" />
 	<Icon row="12" col="5" name="window" />
+	<Icon row="13" col="1" name="back" />
+	<Icon row="13" col="2" name="forward" />
+	<Icon row="13" col="3" name="return" />
+	<Icon row="13" col="4" name="space" />
+	<Icon row="13" col="5" name="backspace" />
+	<Icon row="14" col="1" name="caps" />
+	<Icon row="14" col="2" name="fullscreen" />
+	<Icon row="14" col="3" name="contacts1" />
+	<Icon row="14" col="4" name="edit" />
+	<Icon row="14" col="5" name="camera" />
+	<Icon row="15" col="1" name="volume2" />
+	<Icon row="15" col="2" name="volume1" />
+	<Icon row="15" col="3" name="volume_muted" />
+	<Icon row="15" col="4" name="contacts2" />
+	<Icon row="15" col="5" name="pin" />
+	<Icon row="16" col="1" name="unpin" />
+	<Icon row="16" col="2" name="battery0" />
+	<Icon row="16" col="3" name="battery1" />
+	<Icon row="16" col="4" name="battery2" />
+	<Icon row="16" col="5" name="battery3" />
+	<Icon row="17" col="1" name="folder" />
+	<Icon row="17" col="2" name="open" />
+	<Icon row="17" col="3" name="save" />
+	<Icon row="17" col="4" name="mixer" />
+	<Icon row="17" col="5" name="chat" />
+	<Icon row="18" col="1" name="program" />
+	<Icon row="18" col="2" name="lock" />
+	<Icon row="18" col="3" name="unlock" />
+	<Icon row="18" col="4" name="brightness" />
+	<Icon row="18" col="5" name="attach" />
+	<Icon row="19" col="1" name="alarm" />
+	<Icon row="19" col="2" name="grid" />
+	<Icon row="19" col="3" name="trash" />
+	<Icon row="19" col="4" name="microphone" />
+	<Icon row="19" col="5" name="microphone_mute" />
+	<Icon row="20" col="1" name="hangup" />
+	<Icon row="20" col="2" name="switch" />
 </IconPack>
