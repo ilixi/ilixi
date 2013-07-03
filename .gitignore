@@ -35,6 +35,7 @@ ilixi/ilixiConfig.h
 ilixi_settings.xml
 data/ilixi_catalog.xml
 
+apps/calc/ilixi_calc
 apps/car/ccompositor/ilixi_carcomp
 apps/car/home/ilixi_carhome
 apps/car/statusbar/ilixi_carstatus
@@ -52,6 +53,7 @@ apps/phone/dialer/ilixi_dialer
 apps/phone/home/ilixi_phome
 apps/phone/pcompositor/ilixi_pcomp
 apps/phone/statusbar/ilixi_pstatus
+apps/sip/ilixi_sip
 apps/player/ilixi_player
 apps/settings/ilixi_settings
 apps/soundmixer/ilixi_mixer
