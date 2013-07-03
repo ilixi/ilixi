@@ -52,37 +52,40 @@ ContactManager::add(const std::string& name, const std::string& addr)
 bool
 ContactManager::remove(const std::string& addr)
 {
-//    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
-//    {
-//        if (*it->name == name.c_str())
-//        {
-//            _list.erase(it);
-//            return;
-//        }
-//    }
-    return true;
+    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
+    {
+        std::string uri = ((ContactData) *it).addr;
+        if (addr.find(uri) != std::string::npos)
+        {
+            _list.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string
 ContactManager::getName(const std::string& addr)
 {
-//    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
-//    {
-//        if (*it->addr == addr.c_str())
-//            return *it->name;
-//    }
-//    return "";
+    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
+    {
+        std::string uri = ((ContactData) *it).addr;
+        if (addr.find(uri) != std::string::npos)
+            return ((ContactData) *it).name;
+    }
+    return "Unknown";
 }
 
 std::string
 ContactManager::getAddr(const std::string& name)
 {
-//    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
-//    {
-//        if (*it->name == name.c_str())
-//            return *it->addr;
-//    }
-//    return "";
+    for (ContactList::iterator it = _list.begin(); it != _list.end(); ++it)
+    {
+        std::string contact = ((ContactData) *it).name;
+        if (name.find(contact) != std::string::npos)
+            return ((ContactData) *it).addr;
+    }
+    return "Unknown";
 }
 
 void

@@ -352,6 +352,7 @@ App::handleUserEvent(const DFBUserEvent& event)
     {
         _incomingCall->execute();
         _call->setContact(_caller->text());
+        _history->add(true, _manager->getName(_caller->text()), _caller->text());
     }
 }
 
@@ -418,8 +419,6 @@ void
 App::acceptCall()
 {
     showScreen(3);
-    std::string name = _manager->getName(_caller->text());
-    _history->add(true, name, _caller->text());
     if (_sipComponent)
         DaleDFB::comaCallComponent(_sipComponent, BSM_CALL_ACCEPT, NULL);
 }

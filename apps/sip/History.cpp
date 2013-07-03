@@ -63,12 +63,6 @@ History::History(Widget* parent)
     _video->setIcon(StyleHint::Camera);
     _video->sigClicked.connect(sigc::bind<bool>(sigc::mem_fun(this, &History::callContact), true));
     group2->addButton(_video);
-
-    for (int i = 0; i < 5; ++i)
-    {
-        HistoryItem* item = new HistoryItem(i % 2, PrintF("ABC %d", i), "bok");
-        _history->addItem(item);
-    }
 }
 
 History::~History()
