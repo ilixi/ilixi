@@ -87,6 +87,9 @@ Dialer::~Dialer()
 bool
 Dialer::consumeKey(const DFBWindowEvent& event)
 {
+    if (!visible())
+        return false;
+
     switch (event.type)
     {
     case DWET_KEYDOWN:
