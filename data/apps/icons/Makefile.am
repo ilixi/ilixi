@@ -14,6 +14,7 @@ miscdata_DATA 	=	8tracks.png \
 					google.png \
 					googlemaps.png \
 					googleplus.png \
+					ilixi_sip.png \
 					ilixi_WebKit.png \
 					input.png \
 					knuckles.png \

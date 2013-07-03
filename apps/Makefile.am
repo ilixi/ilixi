@@ -1,5 +1,10 @@
 ## Makefile.am for apps/
 SUBDIRS = calc gallery demo2 demo4 carousel player stacking monitor widgets
+
+if WITH_BARESIP
+SUBDIRS += sip
+endif
+
 if WITH_FUSIONDALE
 
 if WITH_SAWMAN

@@ -1,2 +1,6 @@
 ## Makefile.am for apps/phone
-SUBDIRS = appdefs dialer home pcompositor statusbar
+SUBDIRS = appdefs home pcompositor statusbar
+
+if !WITH_BARESIP
+SUBDIRS += dialer
+endif

@@ -215,6 +215,9 @@ AS_IF([test "x$enable_nls" = "xyes"],
     ]
 )
 
+enable_sip=no
+AC_CHECK_HEADER([baresip_dale.h], [enable_sip=yes], [AC_MSG_WARN([*** Baresip not found!])], [])
+
 PKG_CHECK_MODULES(DEPS, $REQ_PACKAGES)
 AC_SUBST(REQ_PACKAGES)
 
@@ -261,6 +264,7 @@ AM_CONDITIONAL([WITH_NLS], [test x$enable_nls = xyes])
 AM_CONDITIONAL([WITH_WNN], [test x$enable_wnn = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
+AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -293,6 +297,7 @@ AC_CONFIG_FILES([ \
         apps/phone/statusbar/Makefile \
         apps/player/Makefile \
         apps/settings/Makefile \
+        apps/sip/Makefile \
         apps/soundmixer/images/Makefile \
         apps/soundmixer/Makefile \
         apps/stacking/Makefile \
