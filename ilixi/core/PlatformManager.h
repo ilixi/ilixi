@@ -57,6 +57,7 @@ namespace ilixi
 class PlatformManager
 {
     friend class Application;
+    friend class Service;
 
 public:
     /*!

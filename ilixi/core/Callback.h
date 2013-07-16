@@ -50,6 +50,7 @@ Functionoid::~Functionoid()
 class Callback
 {
     friend class Application;
+    friend class Service;
 
 public:
     /*!

@@ -9,6 +9,7 @@ libilixi_core_la_SOURCES 	= 	Application.cpp \
 	     						EventManager.cpp \
 	     						Logger.cpp \
 	     						PlatformManager.cpp \
+	     						Service.cpp \
 	     						Window.cpp
 						
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
@@ -17,6 +18,7 @@ ilixi_include_HEADERS		=	Application.h \
 	     						EventManager.h \
 	     						Logger.h \
 	     						PlatformManager.h \
+	     						Service.h \
 	     						Window.h
 
 if WITH_FUSIONDALE

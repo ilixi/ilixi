@@ -33,6 +33,7 @@ namespace ilixi
 class Timer : public sigc::trackable
 {
     friend class Application;
+    friend class Service;
 public:
     /*!
      * Constructor.
