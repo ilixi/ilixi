@@ -34,7 +34,7 @@ namespace ilixi
 //! Listens to incoming events from a surface.
 class SurfaceEventListener : public Functionoid
 {
-    friend class Application;
+    friend class Engine;
 
 public:
     /*!

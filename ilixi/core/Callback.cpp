@@ -21,9 +21,9 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <core/Application.h>
-
 #include <core/Callback.h>
+
+#include <core/Engine.h>
 #include <lib/Animation.h>
 #include <lib/Timer.h>
 
@@ -43,13 +43,13 @@ Callback::~Callback()
 void
 Callback::start()
 {
-    Application::addCallback(this);
+    Engine::instance().addCallback(this);
 }
 
 void
 Callback::stop()
 {
-    Application::removeCallback(this);
+    Engine::instance().removeCallback(this);
 }
 
 } /* namespace ilixi */

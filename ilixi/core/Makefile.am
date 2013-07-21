@@ -6,6 +6,7 @@ libilixi_core_la_CFLAGS		= 	$(AM_CFLAGS)
 libilixi_core_la_LIBADD 	= 	@DEPS_LIBS@
 libilixi_core_la_SOURCES 	= 	Application.cpp \
 								Callback.cpp \
+								Engine.cpp \
 	     						EventManager.cpp \
 	     						Logger.cpp \
 	     						PlatformManager.cpp \
@@ -15,6 +16,7 @@ libilixi_core_la_SOURCES 	= 	Application.cpp \
 ilixi_includedir			= 	$(includedir)/$(PACKAGE)-$(VERSION)/core
 ilixi_include_HEADERS		=	Application.h \
 								Callback.h \
+								Engine.h \
 	     						EventManager.h \
 	     						Logger.h \
 	     						PlatformManager.h \

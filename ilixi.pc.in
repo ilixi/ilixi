@@ -16,4 +16,4 @@ Version: @VERSION@
 URL: @PACKAGE_URL@
 Requires: @REQ_PACKAGES@
 Libs: -L${libdir} -l@PACKAGE@-@VERSION@
-Cflags: -I${includedir}/@PACKAGE@-@VERSION@ -I${libdir}/@PACKAGE@-@VERSION@/include
+Cflags: -I${includedir}/@PACKAGE@-@VERSION@

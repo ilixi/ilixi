@@ -2,6 +2,7 @@
 #include <ui/HBoxLayout.h>
 #include <ui/VBoxLayout.h>
 #include <ui/Spacer.h>
+#include <core/Engine.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 
@@ -104,7 +105,7 @@ sipCallIncoming(void* ctx, void* arg)
     App* app = (App*) ctx;
     MessageData data;
     data = *((MessageData*) arg);
-    app->postUserEvent(BSN_CALL_INCOMING, NULL);
+    Engine::instance().postUserEvent(BSN_CALL_INCOMING, NULL);
     app->_caller->setText(data.body);
     app->_status->addMessage(PrintF("Incoming call %s!", data.body));
 }

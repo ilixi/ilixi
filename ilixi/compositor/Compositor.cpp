@@ -21,14 +21,15 @@
  along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <compositor/Notification.h>
 #include <compositor/Compositor.h>
+
+#include <compositor/Notification.h>
+#include <core/Engine.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 #include <lib/Notify.h>
-#include <ui/Label.h>
-
 #include <lib/XMLReader.h>
+#include <ui/Label.h>
 
 #include <sigc++/bind.h>
 #include <sstream>
@@ -194,7 +195,7 @@ ILXCompositor::killApp(AppInstance* instance)
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
 
-    postUserEvent(CET_Term, data);
+    Engine::instance().postUserEvent(CET_Term, data);
 }
 
 const Rectangle&
@@ -376,7 +377,7 @@ ILXCompositor::addWindow(AppInstance* instance, const SaWManWindowInfo* info)
     data->instance = instance;
     data->windowID = info->win_id;
 
-    postUserEvent(CET_Add, data);
+    Engine::instance().postUserEvent(CET_Add, data);
 }
 
 void
@@ -389,7 +390,7 @@ ILXCompositor::removeWindow(AppInstance* instance, const SaWManWindowInfo* info)
     data->instance = instance;
     data->windowID = info->win_id;
 
-    postUserEvent(CET_Remove, data);
+    Engine::instance().postUserEvent(CET_Remove, data);
 }
 
 void
@@ -408,7 +409,7 @@ ILXCompositor::configWindow(AppInstance* instance, SaWManWindowReconfig *reconfi
     data->reconfig->request = reconfig->request;
     data->windowID = info->win_id;
     usleep(10000);
-    postUserEvent(CET_Config, data);
+    Engine::instance().postUserEvent(CET_Config, data);
 }
 
 void
@@ -428,7 +429,7 @@ ILXCompositor::restackWindow(AppInstance* instance, const SaWManWindowInfo* info
     data->reconfig->request = reconfig;
     data->windowID = info->win_id;
 
-    postUserEvent(CET_Restack, data);
+    Engine::instance().postUserEvent(CET_Restack, data);
 }
 
 void
@@ -454,7 +455,7 @@ ILXCompositor::processRemoved(AppInstance* instance)
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
 
-    postUserEvent(CET_Quit, data);
+    Engine::instance().postUserEvent(CET_Quit, data);
 }
 
 void
@@ -466,7 +467,7 @@ ILXCompositor::processTerminated(AppInstance* instance)
     CompositorEventData* data = new CompositorEventData;
     data->instance = instance;
 
-    postUserEvent(CET_Crash, data);
+    Engine::instance().postUserEvent(CET_Crash, data);
 }
 
 void

@@ -25,10 +25,6 @@
 #define ILIXI_APPLICATION_H_
 
 #include <lib/Util.h>
-#include <core/Callback.h>
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-#include <core/SurfaceEventListener.h>
-#endif
 #include <ui/AppWindow.h>
 
 namespace ilixi
@@ -38,7 +34,7 @@ namespace ilixi
 /*!
  * This class is used to create a new UI application with its own window.
  */
-class Application
+class Application : public sigc::trackable
 {
 public:
     /*!
@@ -89,7 +85,7 @@ public:
     /*!
      * Terminates application.
      */
-    void
+    static void
     quit();
 
     /*!
@@ -130,27 +126,6 @@ public:
      */
     bool
     setToolbar(ToolBar* toolbar, bool positionNorth = true);
-
-    /*!
-     * Post a custom user event.
-     *
-     * @param type of event [0-999].
-     * @param data if not NULL, a pointer to your data.
-     *
-     * \warning make sure your event type is lower than 1000.
-     */
-    void
-    postUserEvent(unsigned int type, void* data = NULL);
-
-    /*!
-     * Post a universal event to main event buffer.
-     *
-     * @param target Widget.
-     * @param type of event
-     * @param data if not NULL, a pointer to your data.
-     */
-    static void
-    postUniversalEvent(Widget* target, unsigned int type, void* data = NULL);
 
     /*!
      * This will post a key input event to active window.
@@ -199,10 +174,11 @@ protected:
      */
     enum AppFlags
     {
-        APS_TERM = 0x0000001,       //!< Application is about to terminate shortly.
-        APS_VISIBLE = 0x0000002,    //!< Application has a visible window and has access to events.
-        APS_HIDDEN = 0x0000004,     //!< Application has no window and has no access to events.
-        APS_CUSTOM = 0x0000008      //!< Disable waking up of buffer when an update is received.
+        APS_NONE = 0x0000000,           //!< Default application state.
+        APS_INITIALISED = 0x0000001,    //!< Application is initialised.
+        APS_VISIBLE = 0x0000002,        //!< Application has a visible window and has access to events.
+        APS_HIDDEN = 0x0000004,         //!< Application has no window and has no access to events.
+        APS_CUSTOM = 0x0000008          //!< Disable waking up of buffer when an update is received.
     };
 
     AppWindow*
@@ -232,18 +208,6 @@ protected:
      */
     virtual bool
     windowPreEventFilter(const DFBWindowEvent& event);
-
-    /*!
-     * Executes each timer and returns a timeout for next interval in ms.
-     */
-    int32_t
-    runTimers();
-
-    /*!
-     * Executes callbacks.
-     */
-    void
-    runCallbacks();
 
     /*!
      * All events are handled using this function.
@@ -307,8 +271,6 @@ protected:
 private:
     //! AppBase instance.
     static Application* __instance;
-    //! Event buffer for application.
-    static IDirectFBEventBuffer* __buffer;
 
     AppWindow* _appWindow;
     //! Application state.
@@ -318,16 +280,6 @@ private:
     //! Max. available screen dimension.
     DFBDimension __layerSize;
 
-    typedef std::list<Callback*> CallbackList;
-    //! List of callbacks
-    CallbackList __callbacks;
-    //! Serialises access to __callbacks.
-    pthread_mutex_t __cbMutex;
-
-    typedef std::list<Timer*> TimerList;
-    TimerList _timers;
-    pthread_mutex_t __timerMutex;
-
     typedef std::list<WindowWidget*> WindowList;
     //! Application wide list of windows.
     WindowList __windowList;
@@ -336,6 +288,26 @@ private:
     //! Serialises access to window list.
     pthread_mutex_t __windowMutex;
 
+#if ILIXI_HAS_SURFACEEVENTS
+    // Surface event sync. stuff
+    Timer* _update_timer;
+
+    DFBSurfaceID _updateID;
+
+    bool _update;
+
+    bool _updateFromSurfaceView;
+
+    bool _syncWithSurfaceEvents;
+
+    unsigned int _updateFlipCount;
+
+    long long _updateDiff;
+
+    long long _updateTime;
+
+    long long _updateDisable;
+#endif // end ILIXI_HAS_SURFACEEVENTS
     /*!
      * Returns active window.
      */
@@ -353,12 +325,6 @@ private:
      */
     static DFBPoint
     cursorPosition();
-
-    void
-    initEventBuffer();
-
-    void
-    releaseEventBuffer();
 
     void
     handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type);
@@ -402,75 +368,7 @@ private:
     static void
     detachDFBWindow(Window* window);
 
-    /*!
-     * Adds callback.
-     */
-    static bool
-    addCallback(Callback* cb);
-
-    /*!
-     * Removes callback.
-     */
-    static bool
-    removeCallback(Callback* cb);
-
-    /*!
-     * Adds a new timer to be monitored.
-     */
-    static bool
-    addTimer(Timer* timer);
-
-    /*!
-     * Removes timer.
-     */
-    static bool
-    removeTimer(Timer* timer);
-
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-    typedef std::list<SurfaceEventListener*> SurfaceListenerList;
-    //! List of surface event listeners.
-    SurfaceListenerList __selList;
-    //! Serialises access to _selList.
-    pthread_mutex_t __selMutex;
-
-    // Surface event sync. stuff
-
-    Timer* _update_timer;
-
-    DFBSurfaceID _updateID;
-
-    bool _update;
-
-    bool _updateFromSurfaceView;
-
-    bool _syncWithSurfaceEvents;
-
-    unsigned int _updateFlipCount;
-
-    long long _updateDiff;
-
-    long long _updateTime;
-
-    long long _updateDisable;
-
-    /*!
-     * Adds surface event listener.
-     */
-    static bool
-    addSurfaceEventListener(SurfaceEventListener* sel);
-
-    /*!
-     * Removes surface event listener.
-     */
-    static bool
-    removeSurfaceEventListener(SurfaceEventListener* sel);
-
-    /*!
-     * Forwards incoming surface event to corresponding surface event listener object.
-     */
-    void
-    consumeSurfaceEvent(const DFBSurfaceEvent& event);
-
+#if ILIXI_HAS_SURFACEEVENTS
     void
     accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime);
 
@@ -482,16 +380,12 @@ private:
 
     void
     disableSurfaceEventSync(long long micros);
-
-#endif
-
+#endif // end ILIXI_HAS_SURFACEEVENTS
     friend class AppWindow;
-    friend class Callback;              // add/remove callback
     friend class ILXCompositor;
     friend class PlatformManager;
-    friend class SurfaceEventListener;  // add/remove SurfaceEventListener
+    friend class SurfaceEventListener;  // accountSurfaceEvent
     friend class SurfaceView;
-    friend class Timer;                 // add/remove timer
     friend class Window;                // appsize() and activeWindow()
     friend class WindowWidget;
 };

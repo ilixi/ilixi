@@ -23,9 +23,12 @@
 
 #include <core/Application.h>
 
-#include <core/PlatformManager.h>
+#include <core/Engine.h>
 #include <core/Logger.h>
+#include <core/PlatformManager.h>
+
 #include <graphics/Stylist.h>
+
 #include <directfb_util.h>
 #include <algorithm>
 #include <string.h>
@@ -33,24 +36,30 @@
 namespace ilixi
 {
 
+#define ILX_COMPOSITOR_SYNC 0
 D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/core/Application", "Application");
+D_DEBUG_DOMAIN( ILX_APPLICATION_TIMER, "ilixi/core/Application/Timers", "Application Timers");
 D_DEBUG_DOMAIN( ILX_APPLICATION_UPDATES, "ilixi/core/Application/Updates", "Application Updates");
 
-IDirectFBEventBuffer* Application::__buffer = NULL;
 Application* Application::__instance = NULL;
 
 Application::Application(int* argc, char*** argv, AppOptions opts)
         : _appWindow(NULL),
           __flags(APS_HIDDEN),
+#if ILIXI_HAS_SURFACEEVENTS
           __activeWindow(NULL),
           _update(false),
           _updateFromSurfaceView(false),
+          _update_timer(NULL),
           _updateID(0),
           _updateFlipCount(0),
           _updateDiff(0),
           _updateTime(0),
           _updateDisable(0),
           _syncWithSurfaceEvents(false)
+#else
+__activeWindow(NULL)
+#endif
 {
     ILOG_TRACE_F(ILX_APPLICATION);
 
@@ -62,13 +71,9 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&__cbMutex, &attr);
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-    pthread_mutex_init(&__selMutex, NULL);
-#endif
     pthread_mutex_init(&__windowMutex, &attr);
-    pthread_mutex_init(&__timerMutex, &attr);
     pthread_mutexattr_destroy(&attr);
+
     setenv("XML_CATALOG_FILES", ILIXI_DATADIR"ilixi_catalog.xml", 0);
 
     __cursorNew.x = 0;
@@ -77,76 +82,88 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
     __cursorOld.y = 0;
 
     PlatformManager::instance().initialize(argc, argv, opts);
-    initEventBuffer();
+    Engine::instance().initialise();
+
+#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
+    _update_timer = new Timer();
+    _update_timer->sigExec.connect(sigc::mem_fun(this, &Application::updateTimeout));
+    _update_timer->setInterval(1000);
+    _update_timer->setRepeats(1);
+#endif
+
     Size s = PlatformManager::instance().getLayerSize("ui");
     __layerSize.w = s.width() - 1;
     __layerSize.h = s.height() - 1;
-
-    _update_timer = new Timer();
-    _update_timer->sigExec.connect(sigc::mem_fun(this, &Application::updateTimeout));
-    _update_timer->setInterval(100);
-    _update_timer->setRepeats(1);
 
     setStylist(new Stylist());
 
     // TODO create AppWindow
     _appWindow = new AppWindow(this);
-    _appWindow->sigAbort.connect(sigc::mem_fun(this, &Application::quit));
+    _appWindow->sigAbort.connect(sigc::ptr_fun(&Application::quit));
 }
 
 Application::~Application()
 {
     ILOG_TRACE_F(ILX_APPLICATION);
+
     delete _appWindow;
-    delete _update_timer;
     delete Widget::_stylist;
-    releaseEventBuffer();
+
+    Engine::instance().release();
     PlatformManager::instance().release();
 
-    pthread_mutex_destroy(&__cbMutex);
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-    pthread_mutex_destroy(&__selMutex);
-#endif
     pthread_mutex_destroy(&__windowMutex);
-    pthread_mutex_destroy(&__timerMutex);
+
     __activeWindow = NULL;
 }
 
 int
 Application::width() const
 {
-    return _appWindow->width();
+    if (_appWindow)
+        return _appWindow->width();
+    return 0;
 }
 
 int
 Application::height() const
 {
-    return _appWindow->height();
+    if (_appWindow)
+        return _appWindow->height();
+    return 0;
 }
 
 bool
 Application::addWidget(Widget* widget)
 {
-    return _appWindow->addWidget(widget);
+    if (_appWindow)
+        return _appWindow->addWidget(widget);
+    return false;
 }
 
 bool
 Application::removeWidget(Widget* widget)
 {
-    return _appWindow->removeWidget(widget);
+    if (_appWindow)
+        return _appWindow->removeWidget(widget);
+    return false;
 }
 
 void
 Application::update()
 {
-    _appWindow->update();
+    if (_appWindow)
+        _appWindow->update();
 }
 
 void
 Application::quit()
 {
-    _appWindow->setVisible(false);
-    __flags = (AppFlags) (__flags | APS_TERM);
+    if (__instance)
+    {
+        __instance->_appWindow->setVisible(false);
+        Engine::instance().stop();
+    }
 }
 
 void
@@ -158,12 +175,11 @@ Application::exec()
 
     while (true)
     {
-        if (__flags & APS_TERM)
+        if (Engine::instance().stopped())
             break;
         else
         {
-            runCallbacks();
-            handleEvents(runTimers());
+            __instance->handleEvents(Engine::instance().cycle());
             updateWindows();
         }
     }
@@ -178,55 +194,37 @@ Application::exec()
 void
 Application::setBackgroundImage(const std::string& imagePath)
 {
-    _appWindow->setBackgroundImage(imagePath);
+    if (_appWindow)
+        _appWindow->setBackgroundImage(imagePath);
 }
 
 void
 Application::setLayout(LayoutBase* layout)
 {
-    _appWindow->setLayout(layout);
+    if (_appWindow)
+        _appWindow->setLayout(layout);
 }
 
 void
 Application::setMargins(int top, int bottom, int left, int right)
 {
-    _appWindow->setMargins(top, bottom, left, right);
+    if (_appWindow)
+        _appWindow->setMargins(top, bottom, left, right);
 }
 
 void
 Application::setMargin(const Margin& margin)
 {
-    _appWindow->setMargin(margin);
+    if (_appWindow)
+        _appWindow->setMargin(margin);
 }
 
 bool
 Application::setToolbar(ToolBar* toolbar, bool positionNorth)
 {
-    return _appWindow->setToolbar(toolbar, positionNorth);
-}
-
-void
-Application::postUserEvent(unsigned int type, void* data)
-{
-    DFBUserEvent event;
-    event.clazz = DFEC_USER;
-    event.type = type;
-    event.data = data;
-    DFBResult ret = __buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-    if (ret != DFB_OK)
-        ILOG_ERROR(ILX_APPLICATION, "Cannot post UserEvent!\n");
-}
-
-void
-Application::postUniversalEvent(Widget* target, unsigned int type, void* data)
-{
-    if (__instance)
-    {
-        UniversalEvent event(target, type, data);
-        DFBResult ret = __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
-        if (ret != DFB_OK)
-            ILOG_ERROR(ILX_APPLICATION, "Cannot post UniversalEvent!\n");
-    }
+    if (_appWindow)
+        return _appWindow->setToolbar(toolbar, positionNorth);
+    return false;
 }
 
 void
@@ -241,7 +239,7 @@ Application::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifier
         event.key_symbol = symbol;
         event.modifiers = modifierMask;
         event.locks = lockState;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+        Engine::instance().postEvent(DFB_EVENT(&event) );
     } else
     {
         DFBWindowEvent event;
@@ -252,7 +250,7 @@ Application::postKeyEvent(DFBInputDeviceKeySymbol symbol, DFBInputDeviceModifier
         event.key_symbol = symbol;
         event.modifiers = modifierMask;
         event.locks = lockState;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+        Engine::instance().postEvent(DFB_EVENT(&event) );
     }
 }
 
@@ -269,7 +267,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
         event_1.axisabs = x;
         event_1.max = __layerSize.w;
         event_1.min = 0;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_1) );
+        Engine::instance().postEvent(DFB_EVENT(&event_1) );
 
         DFBInputEvent event_2;
         event_2.clazz = DFEC_INPUT;
@@ -281,7 +279,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
         event_2.min = 0;
         event_2.button = (DFBInputDeviceButtonIdentifier) button;
         event_2.buttons = (DFBInputDeviceButtonMask) buttonMask;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_2) );
+        Engine::instance().postEvent(DFB_EVENT(&event_2) );
 
         if (type == PointerButtonDown)
         {
@@ -291,7 +289,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
             event_3.flags = DIEF_NONE;
             event_3.button = (DFBInputDeviceButtonIdentifier) button;
             event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+            Engine::instance().postEvent(DFB_EVENT(&event_3) );
 
         } else if (type == PointerButtonUp)
         {
@@ -301,7 +299,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
             event_3.flags = DIEF_NONE;
             event_3.button = (DFBInputDeviceButtonIdentifier) button;
             event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+            Engine::instance().postEvent(DFB_EVENT(&event_3) );
         } else if (type == PointerWheel)
         {
             DFBInputEvent event_3;
@@ -314,7 +312,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
             event_3.min = 0;
             event_3.button = (DFBInputDeviceButtonIdentifier) button;
             event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
-            __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event_3) );
+            Engine::instance().postEvent(DFB_EVENT(&event_3) );
         }
     } else
     {
@@ -330,7 +328,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
         event.step = step;
         event.button = (DFBInputDeviceButtonIdentifier) button;
         event.buttons = (DFBInputDeviceButtonMask) buttonMask;
-        __instance->__buffer->PostEvent(__buffer, DFB_EVENT(&event) );
+        Engine::instance().postEvent(DFB_EVENT(&event) );
     }
 }
 
@@ -345,7 +343,8 @@ Application::show()
 {
     if (__flags & APS_HIDDEN)
     {
-        _appWindow->showWindow();
+        if (_appWindow)
+            _appWindow->showWindow();
         __flags = APS_VISIBLE;
         sigVisible();
     }
@@ -356,7 +355,8 @@ Application::hide()
 {
     if (__flags & APS_VISIBLE)
     {
-        _appWindow->closeWindow();
+        if (_appWindow)
+            _appWindow->closeWindow();
         __flags = APS_HIDDEN;
         sigHidden();
     }
@@ -373,118 +373,37 @@ Application::windowPreEventFilter(const DFBWindowEvent& event)
     return false;
 }
 
-static bool
-timerSort(const Timer* first, const Timer* second)
-{
-    return first->expiry() < second->expiry();
-}
-
-int32_t
-Application::runTimers()
-{
-    ILOG_TRACE_F(ILX_APPLICATION);
-    int32_t timeout = 10000;
-
-    pthread_mutex_lock(&__timerMutex);
-    if (_timers.size())
-    {
-        int64_t now = direct_clock_get_millis();
-        int64_t expiry = _timers.front()->expiry();
-
-        if (expiry <= now)
-        {
-            if (!_timers.front()->funck() && _timers.front() != _update_timer)
-                _timers.pop_front();
-
-            _timers.sort(timerSort);
-
-            if (_timers.size())
-                timeout = _timers.front()->expiry() - now;
-        } else
-            timeout = expiry - now;
-    }
-    pthread_mutex_unlock(&__timerMutex);
-    if (timeout < 1)
-        timeout = 1;
-    else if (timeout > 10000)
-        timeout = 10000;
-
-    ILOG_DEBUG(ILX_APPLICATION, " -> desired timeout %d.%d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
-    return timeout;
-}
-
-void
-Application::runCallbacks()
-{
-    ILOG_TRACE_F(ILX_APPLICATION);
-
-    pthread_mutex_lock(&__cbMutex);
-    std::vector<Callback*> list_copy;
-    CallbackList::iterator it = __callbacks.begin();
-    while (it != __callbacks.end())
-    {
-        list_copy.push_back(*it);
-        ++it;
-    }
-    std::vector<Callback*>::iterator it2 = list_copy.begin();
-    while (it2 != list_copy.end())
-    {
-        if (((Callback*) *it2)->_funck->funck() == 0)
-        {
-            ILOG_DEBUG(ILX_APPLICATION, " -> Callback %p is removed.\n", ((Callback*) *it2));
-            removeCallback(*it2);
-        }
-        ++it2;
-    }
-    pthread_mutex_unlock(&__cbMutex);
-}
-
 void
 Application::handleEvents(int32_t timeout, bool forceWait)
 {
     ILOG_TRACE_F(ILX_APPLICATION);
-    DFBEvent event;
-    DFBWindowEvent lastMotion; // Used for compressing motion events.
-
-    lastMotion.type = DWET_NONE;
-
-    if (timeout < 1)
-        ILOG_ERROR(ILX_APPLICATION, "Timeout error with value %d\n", timeout);
 
     bool wait = true;
-    if (!forceWait && (!_syncWithSurfaceEvents || _update) && timeout)
+#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
+    if (!forceWait && (!_syncWithSurfaceEvents || _update))
+#else
+    if (!forceWait)
+#endif
     {
-        if (__callbacks.size())
-            wait = false;
-        else
+        for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         {
-            for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
+            if (((WindowWidget*) *it)->_updates._updateQueue.size())
             {
-                if (((WindowWidget*) *it)->_updates._updateQueue.size())
-                {
-                    wait = false;
-                    break;
-                }
+                wait = false;
+                break;
             }
         }
     }
 
     if (wait)
-    {
-        // discard window update event in buffer.
-        DFBResult ret = __buffer->PeekEvent(__buffer, &event);
-        if (ret == DFB_OK)
-        {
-            if ((event.clazz == DFEC_WINDOW) && (event.window.type == DWET_UPDATE))
-                __buffer->GetEvent(__buffer, &event);
-        }
+        Engine::instance().waitForEvents(timeout);
 
-        ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> wait for event with timeout: %d.%d seconds\n", timeout / 1000, timeout % 1000);
-        __buffer->WaitForEventWithTimeout(__buffer, timeout / 1000, timeout % 1000);
-        ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> got event! \n");
-    }
+    DFBEvent event;
+    DFBWindowEvent lastMotion; // Used for compressing motion events.
 
-    while (__buffer->GetEvent(__buffer, &event) == DFB_OK)
+    lastMotion.type = DWET_NONE;
+
+    while (Engine::instance().getNextEvent(&event) == DFB_OK)
     {
         switch (event.clazz)
         {
@@ -544,15 +463,12 @@ Application::handleEvents(int32_t timeout, bool forceWait)
                 ILOG_DEBUG(ILX_APPLICATION, " -> target: %p\n", uEvent->target);
                 if (uEvent->target)
                     uEvent->target->universalEvent(uEvent);
-                break;
             }
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+            break;
+
+#if ILIXI_HAS_SURFACEEVENTS
         case DFEC_SURFACE:
-            {
-                ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> SURFACE EVENT [%3d]  %4d,%4d-%4dx%4d (count %d)\n", event.surface.surface_id, DFB_RECTANGLE_VALS_FROM_REGION(&event.surface.update), event.surface.flip_count);
-                for (SurfaceListenerList::iterator it = __selList.begin(); it != __selList.end(); ++it)
-                    ((SurfaceEventListener*) *it)->consumeSurfaceEvent((const DFBSurfaceEvent&) event);
-            }
+            Engine::instance().consumeSurfaceEvent((const DFBSurfaceEvent&) event);
             break;
 #endif
         default:
@@ -570,14 +486,19 @@ void
 Application::updateWindows()
 {
     ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
+#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
     if ((!_syncWithSurfaceEvents || _update) && !(PlatformManager::instance().appOptions() & OptNoUpdates))
+#endif
+    if (!(PlatformManager::instance().appOptions() & OptNoUpdates))
     {
         pthread_mutex_lock(&__windowMutex);
 
         for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
             ((WindowWidget*) *it)->updateWindow();
 
+#if ILIXI_HAS_SURFACEEVENTS
         _update = false;
+#endif
 
         pthread_mutex_unlock(&__windowMutex);
     }
@@ -672,29 +593,6 @@ DFBPoint
 Application::cursorPosition()
 {
     return __instance->__cursorNew;
-}
-
-void
-Application::initEventBuffer()
-{
-    ILOG_TRACE_F(ILX_APPLICATION);
-    if (PlatformManager::instance().appOptions() & OptExclusive)
-    {
-        if (PlatformManager::instance().getDFB()->CreateInputEventBuffer(PlatformManager::instance().getDFB(), DICAPS_ALL, DFB_TRUE, &__buffer) != DFB_OK)
-            ILOG_THROW(ILX_APPLICATION, "Error while creating input event buffer!\n");
-    } else if (PlatformManager::instance().getDFB()->CreateEventBuffer(PlatformManager::instance().getDFB(), &__buffer) != DFB_OK)
-        ILOG_THROW(ILX_APPLICATION, "Error while creating event buffer!\n");
-}
-
-void
-Application::releaseEventBuffer()
-{
-    if (__buffer)
-    {
-        ILOG_DEBUG(ILX_APPLICATION, "Releasing event buffer.\n");
-        __buffer->Release(__buffer);
-        __buffer = NULL;
-    }
 }
 
 void
@@ -890,17 +788,13 @@ Application::attachDFBWindow(Window* window)
             return;
         }
 
-        ret = window->_dfbWindow->AttachEventBuffer(window->_dfbWindow, __buffer);
-        if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPLICATION, "AttachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+        ret = Engine::instance().attachWindow(window->_dfbWindow);
 
         ret = window->_dfbWindow->RequestFocus(window->_dfbWindow);
         if (ret != DFB_OK)
             ILOG_ERROR( ILX_APPLICATION, "RequestFocus error: %s! \n", DirectFBErrorString(ret));
 
-        ret = __buffer->Reset(__buffer);
-        if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPLICATION, "Buffer reset error: %s!\n", DirectFBErrorString(ret));
+        ret = Engine::instance().resetBuffer();
 
         ILOG_DEBUG(ILX_APPLICATION, "Window %p is attached.\n", window);
     }
@@ -919,211 +813,22 @@ Application::detachDFBWindow(Window* window)
             return;
         }
 
-        ret = window->_dfbWindow->DetachEventBuffer(window->_dfbWindow, __buffer);
-        if (ret != DFB_OK)
-            ILOG_ERROR( ILX_APPLICATION, "DetachEventBuffer error: %s!\n", DirectFBErrorString(ret));
+        ret = Engine::instance().detachWindow(window->_dfbWindow);
 
-        ret = __buffer->Reset(__buffer);
-        if (ret != DFB_OK)
-            ILOG_ERROR(ILX_APPLICATION, "Buffer reset error: %s", DirectFBErrorString(ret));
+        ret = Engine::instance().resetBuffer();
 
         ILOG_DEBUG(ILX_APPLICATION, "Window %p is detached.\n", window);
     }
 }
 
-bool
-Application::addCallback(Callback* cb)
-{
-    if (__instance && cb)
-    {
-        pthread_mutex_lock(&__instance->__cbMutex);
-
-        CallbackList::iterator it = std::find(__instance->__callbacks.begin(), __instance->__callbacks.end(), cb);
-        if (cb == *it)
-        {
-            pthread_mutex_unlock(&__instance->__cbMutex);
-            ILOG_DEBUG(ILX_APPLICATION, "Callback %p already added!\n", cb);
-            return false;
-        }
-        __instance->__callbacks.push_back(cb);
-
-        pthread_mutex_unlock(&__instance->__cbMutex);
-        ILOG_DEBUG(ILX_APPLICATION, "Callback %p is added.\n", cb);
-        return true;
-    }
-    return false;
-}
-
-bool
-Application::removeCallback(Callback* cb)
-{
-    if (__instance && cb)
-    {
-        pthread_mutex_lock(&__instance->__cbMutex);
-
-        for (CallbackList::iterator it = __instance->__callbacks.begin(); it != __instance->__callbacks.end(); ++it)
-        {
-            if (cb == *it)
-            {
-                __instance->__callbacks.erase(it);
-                pthread_mutex_unlock(&__instance->__cbMutex);
-                ILOG_DEBUG(ILX_APPLICATION, "Callback %p is removed.\n", cb);
-                return true;
-            }
-        }
-
-        pthread_mutex_unlock(&__instance->__cbMutex);
-    }
-    return false;
-}
-
-bool
-Application::addTimer(Timer* timer)
-{
-    if (__instance && timer)
-    {
-        pthread_mutex_lock(&__instance->__timerMutex);
-        TimerList::iterator it = std::find(__instance->_timers.begin(), __instance->_timers.end(), timer);
-        if (timer == *it)
-        {
-            pthread_mutex_unlock(&__instance->__timerMutex);
-            ILOG_DEBUG(ILX_APPLICATION, "Timer %p already added!\n", timer);
-            return false;
-        }
-        __instance->_timers.push_back(timer);
-        __instance->_timers.sort(timerSort);
-        pthread_mutex_unlock(&__instance->__timerMutex);
-        ILOG_DEBUG(ILX_APPLICATION, "Timer %p is added.\n", timer);
-        return true;
-    }
-    return false;
-}
-
-bool
-Application::removeTimer(Timer* timer)
-{
-    if (__instance && timer)
-    {
-        pthread_mutex_lock(&__instance->__timerMutex);
-        for (TimerList::iterator it = __instance->_timers.begin(); it != __instance->_timers.end(); ++it)
-        {
-            if (timer == *it)
-            {
-                __instance->_timers.erase(it);
-                __instance->_timers.sort(timerSort);
-                pthread_mutex_unlock(&__instance->__timerMutex);
-                ILOG_DEBUG(ILX_APPLICATION, "Timer %p is removed.\n", timer);
-                return true;
-            }
-        }
-        pthread_mutex_unlock(&__instance->__timerMutex);
-        ILOG_DEBUG(ILX_APPLICATION, "Could not remove Timer %p, not found!\n", timer);
-    }
-    return false;
-}
-
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
-
-bool Application::addSurfaceEventListener(SurfaceEventListener* sel)
-{
-    if (__instance && sel)
-    {
-        pthread_mutex_lock(&__instance->__selMutex);
-
-        SurfaceListenerList::iterator it = std::find(__instance->__selList.begin(), __instance->__selList.end(), sel);
-        if (sel == *it)
-        {
-            pthread_mutex_unlock(&__instance->__selMutex);
-            ILOG_ERROR(ILX_APPLICATION, "SurfaceEventListener %p already added!\n", sel);
-            return false;
-        }
-
-        ILOG_DEBUG(ILX_APPLICATION, "SurfaceEventListener %p is added.\n", sel);
-        // check whether to attach source surface
-        bool attach = true;
-        for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
-        {
-            if (sel->sourceSurface() == ((SurfaceEventListener*) *it)->sourceSurface())
-            attach = false;
-        }
-
-        if (attach)
-        {
-            sel->sourceSurface()->MakeClient(sel->sourceSurface());
-            sel->sourceSurface()->AttachEventBuffer(sel->sourceSurface(), __buffer);
-            ILOG_DEBUG(ILX_APPLICATION, " -> Surface[%p] is attached.\n", sel->sourceSurface());
-        }
-
-        __instance->__selList.push_back(sel);
-        pthread_mutex_unlock(&__instance->__selMutex);
-        return true;
-    }
-    return false;
-}
-
-bool
-Application::removeSurfaceEventListener(SurfaceEventListener* sel)
-{
-    if (__instance && sel)
-    {
-        pthread_mutex_lock(&__instance->__selMutex);
-
-        bool ret = false;
-        IDirectFBSurface* source = sel->sourceSurface();
-
-        for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
-        {
-            if (sel == *it)
-            {
-                __instance->__selList.erase(it);
-                ILOG_DEBUG(ILX_APPLICATION, "SurfaceEventListener %p is removed.\n", sel);
-                ret = true;
-                break;
-            }
-        }
-
-        if (ret)
-        {
-            bool detach = true;
-            for (SurfaceListenerList::iterator it = __instance->__selList.begin(); it != __instance->__selList.end(); ++it)
-            {
-                if (source == ((SurfaceEventListener*) *it)->sourceSurface())
-                    detach = false;
-            }
-            pthread_mutex_unlock(&__instance->__selMutex);
-
-            if (detach)
-            {
-                sel->sourceSurface()->DetachEventBuffer(sel->sourceSurface(), __buffer);
-                ILOG_DEBUG(ILX_APPLICATION, " -> Surface[%p] is detached.\n", sel->sourceSurface());
-            }
-            return true;
-        } else
-        {
-            pthread_mutex_unlock(&__instance->__selMutex);
-            return false;
-        }
-    }
-    return false;
-}
-
-void
-Application::consumeSurfaceEvent(const DFBSurfaceEvent& event)
-{
-    pthread_mutex_lock(&__selMutex);
-
-    for (SurfaceListenerList::iterator it = __selList.begin(); it != __selList.end(); ++it)
-        ((SurfaceEventListener*) *it)->consumeSurfaceEvent(event);
-
-    pthread_mutex_unlock(&__selMutex);
-}
-
+#if ILIXI_HAS_SURFACEEVENTS
 void
 Application::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime)
 {
+    ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
+#if ILX_COMPOSITOR_SYNC
     if (event.surface_id != _updateID || event.flip_count != _updateFlipCount)
     {
-        ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
         long long diff = event.time_stamp - lastTime;
 
         ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> account surface id %d, updateID %d, flip_count %u, updateFlipCount %u\n", event.surface_id, _updateID, event.flip_count, _updateFlipCount);
@@ -1137,21 +842,24 @@ Application::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTim
             _updateTime = event.time_stamp;
         }
     }
-
+#endif
 }
 
 void
 Application::updateTimeout()
 {
     ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
+#if ILX_COMPOSITOR_SYNC
     _update = true;
     _updateDiff = 0;
+#endif
 }
 
 void
 Application::updateFromWindow()
 {
     ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
+#if ILX_COMPOSITOR_SYNC
     long long current_time = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
     ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> time %16lld   disable %16lld\n", current_time, _updateDisable);
 
@@ -1159,18 +867,19 @@ Application::updateFromWindow()
     {
         _update = true;
         _updateDiff = 0;
-        if (!(__flags & APS_CUSTOM))
-            __buffer->WakeUp(__buffer);
     }
+#endif
 }
 
 void
 Application::disableSurfaceEventSync(long long micros)
 {
     ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
+#if ILX_COMPOSITOR_SYNC
     _updateDisable = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC) + micros;
     ILOG_DEBUG(ILX_APPLICATION_UPDATES, " ->   disable %16lld\n", _updateDisable);
+#endif
 }
+#endif
 
-#endif // ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 } /* namespace ilixi */

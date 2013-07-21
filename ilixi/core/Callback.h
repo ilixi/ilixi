@@ -49,8 +49,7 @@ Functionoid::~Functionoid()
 //! Inserts/removes Functionoids to/from main loop.
 class Callback
 {
-    friend class Application;
-    friend class Service;
+    friend class Engine;
 
 public:
     /*!
