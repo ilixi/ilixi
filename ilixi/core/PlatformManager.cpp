@@ -251,7 +251,7 @@ PlatformManager::renderCursor(const DFBPoint& point)
         if (_cursorTarget)
         {
             _cursorTarget->SetClip(_cursorTarget, NULL);
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+#if ILIXI_STEREO_OUTPUT && (ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0))
             _cursorTarget->SetStereoEye(_cursorTarget, DSSE_LEFT);
 #endif
             _cursorTarget->SetBlittingFlags(_cursorTarget, DSBLIT_BLEND_ALPHACHANNEL);
