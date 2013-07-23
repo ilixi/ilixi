@@ -180,7 +180,7 @@ private:
         {
             if (valid)
             {
-                rect.unite(ext);
+                rect = rect.united(ext);
             } else
             {
                 rect = ext;
