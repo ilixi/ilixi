@@ -349,7 +349,7 @@ ILXCompositor::getWindow(DFBWindowID wid)
         DFBResult ret = PlatformManager::instance().getDFB()->GetDisplayLayer(PlatformManager::instance().getDFB(), PlatformManager::instance().getLayerID("ui"), &layer);
         if (ret)
         {
-            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetDisplayLayer: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetDisplayLayer: %s\n", DirectFBErrorString(ret));
             return NULL;
         }
 
@@ -358,7 +358,7 @@ ILXCompositor::getWindow(DFBWindowID wid)
         if (ret)
         {
             layer->Release(layer);
-            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetWindow: %s", DirectFBErrorString(ret));
+            ILOG_ERROR( ILX_COMPOSITOR, "Error! GetWindow: %s\n", DirectFBErrorString(ret));
             return NULL;
         }
         layer->Release(layer);
