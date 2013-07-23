@@ -153,6 +153,14 @@ public:
     void
     postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step);
 
+#if ILIXI_HAS_SURFACEEVENTS
+    static long long
+    getFrameTime();
+
+    static void
+    setFrameTime(long long micros);
+#endif
+
     /*!
      * This signal is emitted after application window is painted and visible.
      */
@@ -307,6 +315,8 @@ private:
     long long _updateTime;
 
     long long _updateDisable;
+
+    long long _frameTime;
 #endif // end ILIXI_HAS_SURFACEEVENTS
     /*!
      * Returns active window.

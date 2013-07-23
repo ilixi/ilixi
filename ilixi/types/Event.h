@@ -213,31 +213,35 @@ struct PaintEvent
     PaintEvent()
     {
         eye = BothEyes;
+        micros = 0;
     }
 
     PaintEvent(Widget* widget, const PaintEvent& evt);
 
 #ifdef ILIXI_STEREO_OUTPUT
     PaintEvent(Rectangle l, Rectangle r)
-            : right(r),
-              rect(l),
-              eye(BothEyes)
+    : right(r),
+    rect(l),
+    eye(BothEyes),
+    micros(0)
     {
     }
 
     PaintEvent(Rectangle r, int disparity)
-            : right(r),
-              rect(r),
-              eye(BothEyes)
+    : right(r),
+    rect(r),
+    eye(BothEyes),
+    micros(0)
     {
         right.translate(-disparity, 0);
         rect.translate(disparity, 0);
     }
 
     PaintEvent(Rectangle r, PaintEventEye e)
-            : right(r),
-              rect(r),
-              eye(e)
+    : right(r),
+    rect(r),
+    eye(e),
+    micros(0)
     {
     }
 
@@ -245,9 +249,9 @@ struct PaintEvent
     isValid()
     {
         if (eye & LeftEye)
-            return rect.isValid();
+        return rect.isValid();
         else
-            return right.isValid();
+        return right.isValid();
     }
 
     Rectangle right;
@@ -255,19 +259,22 @@ struct PaintEvent
 #else
     PaintEvent(Rectangle r)
             : rect(r),
-              eye(BothEyes)
+              eye(BothEyes),
+              micros(0)
     {
     }
 
     PaintEvent(Rectangle r, int disparity)
             : rect(r),
-              eye(BothEyes)
+              eye(BothEyes),
+              micros(0)
     {
     }
 
     PaintEvent(Rectangle r, PaintEventEye e)
             : rect(r),
-              eye(e)
+              eye(e),
+              micros(0)
     {
     }
 
@@ -282,6 +289,9 @@ struct PaintEvent
 #endif
     //! If streoscopy is enabled, this property specifies which surface to update.
     PaintEventEye eye;
+
+    //! When GetFrameTime is used, this notes the display timestamp of the resulting Flip
+    long long micros;
 };
 
 //! This structure is used to pass custom events to application's event buffer.

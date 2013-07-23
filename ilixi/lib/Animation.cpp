@@ -22,7 +22,10 @@
  */
 
 #include <lib/Animation.h>
+#include <core/Application.h>
 #include <core/Window.h>
+#include <lib/Util.h>
+
 extern "C"
 {
 #include <direct/clock.h>
@@ -150,7 +153,14 @@ Animation::setCurrentTime(int ms)
     else
         _currentTime = 0;
 
+#if ILIXI_HAS_SURFACEEVENTS
+    long long frameTime = Application::getFrameTime();
+    long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
+    //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
+    _delayLast = frameTime / 1000LL;
+#else
     _delayLast = direct_clock_get_abs_millis();
+#endif
     _lastTime = _delayLast + _delayDuration;
 }
 
@@ -171,7 +181,14 @@ Animation::funck()
     {
         if (_delayTime < _delayDuration)
         {
+#if ILIXI_HAS_SURFACEEVENTS
+            long long frameTime = Application::getFrameTime();
+            long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
+            //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
+            _delayTime = frameTime / 1000LL - _delayLast;
+#else
             _delayTime = direct_clock_get_abs_millis() - _delayLast;
+#endif
             return 1;
         }
 
@@ -179,7 +196,14 @@ Animation::funck()
         {
             if (_currentTime == 0)
                 sigStarted();
+#if ILIXI_HAS_SURFACEEVENTS
+            long long frameTime = Application::getFrameTime();
+            long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
+            //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
+            long stepTime = frameTime / 1000LL - _lastTime;
+#else
             long stepTime = direct_clock_get_abs_millis() - _lastTime;
+#endif
             step(stepTime);
             _currentTime += stepTime;
             _lastTime += stepTime;

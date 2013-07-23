@@ -56,7 +56,8 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
           _updateDiff(0),
           _updateTime(0),
           _updateDisable(0),
-          _syncWithSurfaceEvents(false)
+          _syncWithSurfaceEvents(false),
+          _frameTime(0)
 #else
 __activeWindow(NULL)
 #endif
@@ -332,6 +333,23 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
     }
 }
 
+#if ILIXI_HAS_SURFACEEVENTS
+long long
+Application::getFrameTime()
+{
+    if (__instance)
+        return __instance->_frameTime ? __instance->_frameTime : direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
+    return 0;
+}
+
+void
+Application::setFrameTime(long long micros)
+{
+    if (__instance)
+        __instance->_frameTime = micros;
+}
+#endif
+
 AppWindow*
 Application::appWindow() const
 {
@@ -387,7 +405,7 @@ Application::handleEvents(int32_t timeout, bool forceWait)
     {
         for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         {
-            if (((WindowWidget*) *it)->_updates._updateQueue.size())
+            if (((WindowWidget*) *it)->_updates._updateQueue.valid)
             {
                 wait = false;
                 break;

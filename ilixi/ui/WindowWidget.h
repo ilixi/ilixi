@@ -163,6 +163,38 @@ private:
 
     std::string _layerName;
 
+    class UpdateQueue
+    {
+    public:
+        Rectangle rect;
+
+        bool valid;
+
+        UpdateQueue()
+                : valid(false)
+        {
+        }
+
+        void
+        add(const Rectangle &ext)
+        {
+            if (valid)
+            {
+                rect.unite(ext);
+            } else
+            {
+                rect = ext;
+                valid = true;
+            }
+        }
+
+        void
+        reset()
+        {
+            valid = false;
+        }
+    };
+
     //! Stores window's dirty regions and a region for update.
     struct
     {
@@ -172,9 +204,9 @@ private:
         Rectangle _updateRegion;
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle _updateRegionRight;
-        std::vector<Rectangle> _updateQueueRight;
+        UpdateQueue _updateQueueRight;
 #endif
-        std::vector<Rectangle> _updateQueue;
+        UpdateQueue _updateQueue;
     } _updates;
 
     static IDirectFBSurface* _exclusiveSurface;

@@ -87,9 +87,9 @@ WindowWidget::update()
     {
         pthread_mutex_lock(&_updates._listLock);
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> using frameGeometry.\n");
-        _updates._updateQueue.push_back(frameGeometry());
+        _updates._updateQueue.add(frameGeometry());
 #ifdef ILIXI_STEREO_OUTPUT
-        _updates._updateQueueRight.push_back(frameGeometry());
+        _updates._updateQueueRight.add(frameGeometry());
 #endif
         pthread_mutex_unlock(&_updates._listLock);
         Application::__instance->updateFromWindow();
@@ -104,10 +104,10 @@ WindowWidget::update(const PaintEvent& event)
     {
         pthread_mutex_lock(&_updates._listLock);
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> left %d, %d, %d, %d.\n", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height());
-        _updates._updateQueue.push_back(event.rect);
+        _updates._updateQueue.add(event.rect);
 #ifdef ILIXI_STEREO_OUTPUT
         ILOG_DEBUG(ILX_WINDOWWIDGET, " -> right %d, %d, %d, %d.\n", event.right.x(), event.right.y(), event.right.width(), event.right.height());
-        _updates._updateQueueRight.push_back(event.right);
+        _updates._updateQueueRight.add(event.right);
 #endif
         pthread_mutex_unlock(&_updates._listLock);
         Application::__instance->updateFromWindow();
@@ -151,25 +151,25 @@ WindowWidget::paint(const PaintEvent& event)
                 surface()->clip(evt.rect);
 
                 if (_backgroundFlags & BGFClear)
-                    surface()->clear(evt.rect);
+                surface()->clear(evt.rect);
 
                 if (_backgroundFlags & BGFFill)
-                    compose(evt);
+                compose(evt);
 
                 paintChildren(evt);
 //                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
-                // Right eye
+// Right eye
                 ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
                 evt.eye = PaintEvent::RightEye;
                 surface()->setStereoEye(evt.eye);
                 surface()->clip(evt.right);
 
                 if (_backgroundFlags & BGFClear)
-                    surface()->clear(evt.right);
+                surface()->clear(evt.right);
 
                 if (_backgroundFlags & BGFFill)
-                    compose(evt);
+                compose(evt);
 
                 paintChildren(evt);
                 PlatformManager::instance().renderCursor(AppBase::cursorPosition());
@@ -507,28 +507,21 @@ void
 WindowWidget::updateWindow()
 {
     pthread_mutex_lock(&_updates._listLock);
-    int size = _updates._updateQueue.size();
-    if (size == 0)
+    if (!_updates._updateQueue.valid)
     {
         pthread_mutex_unlock(&_updates._listLock);
         return;
     }
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
 
-    Rectangle updateTemp = _updates._updateQueue[0];
-    if (size > 1)
-        for (int i = 1; i < size; ++i)
-            updateTemp = updateTemp.united(_updates._updateQueue[i]);
+    Rectangle updateTemp = _updates._updateQueue.rect;
 
-    _updates._updateQueue.clear();
+    _updates._updateQueue.reset();
 
 #ifdef ILIXI_STEREO_OUTPUT
-    Rectangle updateTempRight = _updates._updateQueueRight[0];
-    if (size > 1)
-        for (int i = 1; i < size; ++i)
-                updateTempRight = updateTempRight.united(_updates._updateQueueRight[i]);
+    Rectangle updateTempRight = _updates._updateQueueRight.rect;
 
-    _updates._updateQueueRight.clear();
+    _updates._updateQueueRight.reset();
 #endif
     pthread_mutex_unlock(&_updates._listLock);
 
@@ -553,11 +546,26 @@ WindowWidget::updateWindow()
 #endif
 
         sem_post(&_updates._updateReady);
+
         ILOG_DEBUG( ILX_WINDOWWIDGET, " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
+
+        long long micros = 0;
+
+        if (_surface && _surface->dfbSurface())
+        {
+            // _surface->dfbSurface()->GetFrameTime( _surface->dfbSurface(), &micros );
+            ILOG_DEBUG( ILX_WINDOWWIDGET, " -> GetFrameTime returned %lld (%lld advance)\n", micros, micros - direct_clock_get_time(DIRECT_CLOCK_MONOTONIC));
+            Application::setFrameTime(micros);
+        }
+
 #ifdef ILIXI_STEREO_OUTPUT
-        paint(PaintEvent(_updates._updateRegion, _updates._updateRegionRight));
+        PaintEvent p(_updates._updateRegion, _updates._updateRegionRight);
+        p.micros = micros;
+        paint( p );
 #else
-        paint(PaintEvent(_updates._updateRegion, PaintEvent::BothEyes));
+        PaintEvent p(_updates._updateRegion, PaintEvent::BothEyes);
+        p.micros = micros;
+        paint(p);
 #endif
     }
 }

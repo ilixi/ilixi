@@ -39,7 +39,9 @@ public:
 
     enum AnimationState
     {
-        Running, Paused, Stopped
+        Running,
+        Paused,
+        Stopped
     };
 
     /*!
@@ -160,11 +162,11 @@ public:
      */
     sigc::signal<int> sigLoopChanged;
 
-protected:
     //! Sets current time of animation.
     void
     setCurrentTime(int ms = 0);
 
+protected:
     //! Sets animation state.
     virtual void
     setState(AnimationState state);
