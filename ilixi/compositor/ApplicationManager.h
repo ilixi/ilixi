@@ -121,6 +121,15 @@ public:
     instanceByPID(const pid_t pid);
 
     /*!
+     * Returns a process' parent PID.
+     *
+     * @param pid Process ID.
+     * @return Process ID of parent.
+     */
+    pid_t
+    getParentPID(const pid_t pid);
+
+    /*!
      * Returns list of registered applications.
      */
     AppInfoList

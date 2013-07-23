@@ -213,9 +213,10 @@ ApplicationManager::ApplicationManager(ILXCompositor* compositor)
 
     std::string pidFile = PrintF("%silx_compositor.pid", FileSystem::ilxDirectory().c_str());
     FILE* _pidFile = fopen(pidFile.c_str(), "w");
-    if(!_pidFile)
+    if (!_pidFile)
         ILOG_ERROR(ILX_APPLICATIONMANAGER, "Could not open %s for writing!\n", pidFile.c_str());
-    else {
+    else
+    {
         fprintf(_pidFile, "%d\n", getpid());
         fclose(_pidFile);
     }
@@ -309,12 +310,66 @@ ApplicationManager::instanceByInstanceID(unsigned int instanceID)
 AppInstance*
 ApplicationManager::instanceByPID(const pid_t pid)
 {
-    for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
+    int p = pid;
+    do
     {
-        if (((AppInstance*) (*it))->pid() == pid)
-            return ((AppInstance*) (*it));
-    }
+        for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
+        {
+            if (((AppInstance*) (*it))->pid() == p)
+                return ((AppInstance*) (*it));
+        }
+
+        p = getParentPID(p);
+    } while (p != 0);
+
     return NULL;
+}
+
+pid_t
+ApplicationManager::getParentPID(const pid_t pid)
+{
+    std::string stat = PrintF("/proc/%d/stat", pid);
+
+    FILE *f = fopen(stat.c_str(), "r");
+
+    if (!f)
+    {
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to open '%s' (%s)!\n", stat.c_str(), strerror(errno));
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to read parent PID!\n");
+        return 0;
+    }
+
+    pid_t p;
+
+    while (true)
+    {
+        int c = fgetc(f);
+
+        if (c == ')')
+            break;
+
+        if (c == EOF)
+        {
+            ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to parse PID from '%s'!\n", stat.c_str());
+            fclose(f);
+            ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to read parent PID!\n");
+        }
+    }
+
+    fgetc(f);
+    fgetc(f);
+    fgetc(f);
+
+    if (fscanf(f, "%d", &p) != 1)
+    {
+        ILOG_ERROR(ILX_APPLICATIONMANAGER, "Failed to parse PID from '%s'!\n", stat.c_str());
+        fclose(f);
+        ILOG_THROW(ILX_APPLICATIONMANAGER, "Unable to read parent PID!\n");
+    }
+
+    fclose(f);
+
+    return p;
 }
 
 AppInfoList
@@ -698,7 +753,6 @@ ApplicationManager::parseAppDef(const std::string& folder, const std::string& fi
     xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     std::string filePath = folder + "/" + file;
-
 
     XMLReader xml;
     if (xml.loadFile(filePath) == false)
