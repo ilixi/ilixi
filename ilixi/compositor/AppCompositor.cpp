@@ -39,12 +39,14 @@ AppCompositor::AppCompositor(ILXCompositor* compositor, AppInstance* instance, W
           _hScale(1),
           _vScale(1)
 {
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
     setInputMethod(NoInput);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &AppCompositor::updateAppCompositorGeometry));
 }
 
 AppCompositor::~AppCompositor()
 {
+    ILOG_TRACE_W(ILX_APPCOMPOSITOR);
 }
 
 AppInstance*

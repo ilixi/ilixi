@@ -72,7 +72,7 @@ sigchild_handler(int sig, siginfo_t *siginfo, void *context)
         if (siginfo->si_code == CLD_DUMPED || siginfo->si_code == CLD_KILLED)
         {
             AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
-            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p (CLD_KILLED || CLD_DUMPED)\n", siginfo->si_pid, instance);
             if (!instance)
                 return;
 
@@ -83,7 +83,7 @@ sigchild_handler(int sig, siginfo_t *siginfo, void *context)
         } else if (siginfo->si_code == CLD_EXITED)
         {
             AppInstance* instance = __appMan->instanceByPID(siginfo->si_pid);
-            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p\n", siginfo->si_pid, instance);
+            ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> pid: %d instance: %p (CLD_EXITED)\n", siginfo->si_pid, instance);
 
             if (!instance)
                 return;
@@ -310,7 +310,7 @@ ApplicationManager::instanceByInstanceID(unsigned int instanceID)
 AppInstance*
 ApplicationManager::instanceByPID(const pid_t pid)
 {
-    int p = pid;
+    pid_t p = pid;
     do
     {
         for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
@@ -320,6 +320,10 @@ ApplicationManager::instanceByPID(const pid_t pid)
         }
 
         p = getParentPID(p);
+
+        if (p == -1)
+            return NULL;
+
     } while (p != 0);
 
     return NULL;
@@ -329,6 +333,12 @@ pid_t
 ApplicationManager::getParentPID(const pid_t pid)
 {
     std::string stat = PrintF("/proc/%d/stat", pid);
+
+    if (!FileSystem::fileExists(stat))
+    {
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, "%s does not exist.\n", stat.c_str());
+        return -1;
+    }
 
     FILE *f = fopen(stat.c_str(), "r");
 
@@ -482,6 +492,7 @@ ApplicationManager::stopApplication(pid_t pid)
     if (instance)
     {
         pthread_mutex_lock(&_mutex);
+        kill(instance->pid(), SIGKILL);
         for (AppInstanceList::iterator it = _instances.begin(); it != _instances.end(); ++it)
         {
             if (((AppInstance*) *it)->pid() == pid)
@@ -491,8 +502,8 @@ ApplicationManager::stopApplication(pid_t pid)
             }
         }
 
-        kill(instance->pid(), SIGKILL);
         delete instance;
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Application is killed and instance is removed.\n");
         pthread_mutex_unlock(&_mutex);
         return DR_OK;
     } else
