@@ -74,5 +74,11 @@ toHMS(long int secs);
 std::string
 formatSize(uint64_t size);
 
+/*!
+ * Converts time_t to a date string "HH:MM dd.mm.yyyy"
+ */
+std::string
+formatDate(time_t rawtime);
+
 } /* namespace ilixi */
 #endif /* ILIXI_UTIL_H_ */

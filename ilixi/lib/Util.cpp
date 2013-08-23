@@ -94,16 +94,12 @@ PrintF(const char *format, ...)
 std::string
 toHMS(long int secs)
 {
-    std::stringstream ss;
-    ss.fill('0');
-    ss.width(2);
-
     int hour = secs / 3600;
-    if (hour)
-        ss << hour << ":";
     secs = (int) secs % 3600;
-    ss << secs / 60 << ":" << secs % 60;
-    return ss.str();
+    if (hour)
+        return PrintF("%.2d:%.2d:%.2d", secs / 3600, secs / 60, secs %60);
+    else
+        return PrintF("%.2d:%.2d", secs / 60, secs %60);
 }
 
 #define DIM(x) (sizeof(x)/sizeof(*(x)))
@@ -125,6 +121,16 @@ formatSize(uint64_t size)
         ss << size / multiplier << size_suffix[i];
         return ss.str();
     }
+    return ss.str();
+}
+
+std::string
+formatDate(time_t rawtime)
+{
+    std::stringstream ss;
+    struct tm * timeinfo;
+    timeinfo = localtime(&rawtime);
+    ss << timeinfo->tm_hour << ":" << timeinfo->tm_min << " " << timeinfo->tm_mday << "." << timeinfo->tm_mon << "." << timeinfo->tm_year + 1900;
     return ss.str();
 }
 
