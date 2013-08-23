@@ -4,6 +4,7 @@
 #include <ui/Widget.h>
 #include <types/Video.h>
 #include <lib/TweenAnimation.h>
+#include <lib/Timer.h>
 
 namespace ilixi
 {
@@ -53,8 +54,6 @@ private:
     Label* _dur;
     //! Starts/stops playback.
     ToolButton* _play;
-    //! Switches to fullscreen.
-    ToolButton* _fullscreen;
     //! Controls video position.
     Slider* _position;
     //! Controls video volume.
@@ -97,25 +96,45 @@ public:
      *
      * @param path to video file.
      */
-    void
+    bool
     load(const std::string& path);
 
-    sigc::signal<void> sigLoaded;
+    /*!
+     * Returns a string with information about video file.
+     */
+    std::string
+    info() const;
+
+    /*!
+     * Sets whether controls are always shown.
+     *
+     * @param autoHide if true controls will be hidden automatically.
+     */
+    void
+    setAutoHideControls(bool autoHide);
+
+    void
+    setKeepAspectRatio(bool keepAspect);
 
 protected:
     virtual void
     keyDownEvent(const KeyEvent& keyEvent);
 
     virtual void
-    enterEvent(const PointerEvent& event);
-
-    virtual void
-    leaveEvent(const PointerEvent& event);
+    pointerMotionEvent(const PointerEvent& event);
 
     virtual void
     compose(const PaintEvent& event);
 
 private:
+    enum VideoPlayerFlags
+    {
+        None = 0x001,
+        AutoHideControls = 0x002,
+        Looping = 0x004,
+        KeepAspectRatio = 0x008
+    };
+
     //! Video object.
     Video* _video;
     //! Layer sub-surface used for blitting video frames, only available in exclusive mode.
@@ -126,6 +145,10 @@ private:
     IDirectFBSurface* _videoFrame;
     //! Video player controls.
     VideoPlayerControls* _controls;
+    //! Timer used for toggling controls.
+    Timer _timer;
+    //! This property stores various attributes for video player.
+    VideoPlayerFlags _flags;
 
     //! Starts video playback.
     void

@@ -26,7 +26,7 @@ VideoPlayerControls::VideoPlayerControls(VideoPlayer* parent)
     addChild(_box);
 
     _play = new ToolButton("Play");
-    _play->setIcon(StyleHint::Play, Size(24, 24));
+    _play->setIcon(StyleHint::Play, Size(16, 16));
     _play->setToolButtonStyle(ToolButton::IconOnly);
     _play->setDisabled();
     _play->setDrawFrame(false);
@@ -51,14 +51,6 @@ VideoPlayerControls::VideoPlayerControls(VideoPlayer* parent)
     _volume->sigValueChanged.connect(sigc::mem_fun(_owner, &VideoPlayer::setVolume));
     _box->addWidget(_volume);
 
-//    _fullscreen = new ToolButton("FullScreen");
-//    _fullscreen->setIcon(StyleHint::ZoomIn, Size(24, 24));
-//    _fullscreen->setToolButtonStyle(ToolButton::IconOnly);
-//    _fullscreen->setDisabled();
-//    _fullscreen->setDrawFrame(false);
-//    //  _fullscreen->sigClicked.connect(sigc::mem_fun(this, &VideoPlayer::fullscreen));
-//    _box->addWidget(_fullscreen);
-
     _anim.setDuration(500);
     _tween = new Tween(Tween::SINE, Tween::EASE_OUT, 0, 1);
     _anim.sigExec.connect(sigc::mem_fun(this, &VideoPlayerControls::tweenSlot));
@@ -81,17 +73,23 @@ VideoPlayerControls::preferredSize() const
 void
 VideoPlayerControls::show()
 {
-    _anim.stop();
-    _tween->setRange(_box->y(), 0);
-    _anim.start();
+    if (_box->y() == height())
+    {
+        _anim.stop();
+        _tween->setRange(_box->y(), 0);
+        _anim.start();
+    }
 }
 
 void
 VideoPlayerControls::hide()
 {
-    _anim.stop();
-    _tween->setRange(_box->y(), height());
-    _anim.start();
+    if (_box->y() == 0)
+    {
+        _anim.stop();
+        _tween->setRange(_box->y(), height());
+        _anim.start();
+    }
 }
 
 void
@@ -99,8 +97,7 @@ VideoPlayerControls::compose(const PaintEvent& event)
 {
     Painter p(this);
     p.begin(event);
-    p.setBrush(Color(0, 0, 0, 128));
-    p.fillRectangle(0, _box->y(), width(), height(), DSDRAW_BLEND);
+    stylist()->drawHeader(&p, 0, _box->y(), width(), height());
 }
 
 void
@@ -123,13 +120,16 @@ VideoPlayer::VideoPlayer(Widget* parent)
           _video(NULL),
           _videoLSurface(NULL),
           _videoSurface(NULL),
-          _videoFrame(NULL)
+          _videoFrame(NULL),
+          _flags(AutoHideControls)
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
-    setInputMethod((WidgetInputMethod) (KeyPointer | PointerPassthrough));
+    setInputMethod((WidgetInputMethod) (KeyPointerTracking | PointerPassthrough));
     _controls = new VideoPlayerControls(this);
     addChild(_controls);
 
+    _timer.setInterval(1000);
+    _timer.sigExec.connect(sigc::mem_fun(_controls, &VideoPlayerControls::hide));
     sigGeometryUpdated.connect(sigc::mem_fun(this, &VideoPlayer::updateVPGeometry));
 }
 
@@ -155,18 +155,59 @@ VideoPlayer::preferredSize() const
     return _controls->preferredSize();
 }
 
-void
+bool
 VideoPlayer::load(const std::string& path)
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
+    ILOG_DEBUG(ILX_VIDEOPLAYER, " -> path: %s\n", path.c_str());
     delete _video;
     _videoFrame = NULL;
     _video = new Video(path);
-    _video->sigFrameUpdated.connect(sigc::mem_fun(this, &VideoPlayer::updateVideo));
-    _controls->_play->setEnabled();
-    if (_video->hasAudio())
-        _controls->_volume->setVisible(true);
-    _controls->_dur->setText(toHMS(_video->length()));
+    if (_video->status() != DVSTATE_UNKNOWN)
+    {
+        _video->sigFrameUpdated.connect(sigc::mem_fun(this, &VideoPlayer::updateVideo));
+        _controls->_play->setEnabled();
+        if (_video->hasAudio())
+            _controls->_volume->setVisible(true);
+        _controls->_dur->setText(toHMS(_video->length()));
+        return true;
+    } else
+    {
+        delete _video;
+        _video = NULL;
+    }
+    return false;
+}
+
+std::string
+VideoPlayer::info() const
+{
+    if (_video)
+        return _video->toString();
+    return "N/A";
+}
+
+void
+VideoPlayer::setAutoHideControls(bool autoHide)
+{
+    if (autoHide)
+    {
+        _flags = (VideoPlayerFlags) (_flags | AutoHideControls);
+        _controls->hide();
+    } else
+    {
+        _flags = (VideoPlayerFlags) (_flags & ~AutoHideControls);
+        _controls->show();
+    }
+}
+
+void
+VideoPlayer::setKeepAspectRatio(bool keepAspect)
+{
+    if (keepAspect)
+        _flags = (VideoPlayerFlags) (_flags | KeepAspectRatio);
+    else
+        _flags = (VideoPlayerFlags) (_flags & ~KeepAspectRatio);
 }
 
 void
@@ -190,15 +231,15 @@ VideoPlayer::keyDownEvent(const KeyEvent& keyEvent)
 }
 
 void
-VideoPlayer::enterEvent(const PointerEvent& event)
+VideoPlayer::pointerMotionEvent(const PointerEvent& event)
 {
-    _controls->show();
-}
-
-void
-VideoPlayer::leaveEvent(const PointerEvent& event)
-{
-    _controls->hide();
+    if (_flags & AutoHideControls)
+    {
+        _controls->show();
+        if (_timer.running())
+            _timer.stop();
+        _timer.start(2000, 1);
+    }
 }
 
 void
@@ -208,7 +249,14 @@ VideoPlayer::compose(const PaintEvent& event)
         surface()->clear();
     else if (_videoFrame)
     {
-        DFBRectangle r = surfaceGeometry().dfbRect();
+        DFBRectangle r = frameGeometry().dfbRect();
+        if (!(_flags & AutoHideControls))
+            r.h -= _controls->height();
+
+//        if (_flags & KeepAspectRatio)
+//        {
+//        }
+
         surface()->dfbSurface()->GetSubSurface(surface()->dfbSurface(), &r, &_videoSurface);
 
         if (_videoSurface)
@@ -229,10 +277,13 @@ void
 VideoPlayer::playVideo()
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
+    if (!_video)
+        return;
+
     switch (_video->status())
     {
     case DVSTATE_STOP:
-        _controls->_play->setIcon(StyleHint::Pause, Size(24, 24));
+        _controls->_play->setIcon(StyleHint::Pause, Size(16, 16));
         _controls->_play->update();
         _controls->_position->setEnabled();
         _video->play();
@@ -240,7 +291,7 @@ VideoPlayer::playVideo()
 
     case DVSTATE_FINISHED:
         _videoFrame = NULL;
-        _controls->_play->setIcon(StyleHint::Play, Size(24, 24));
+        _controls->_play->setIcon(StyleHint::Play, Size(16, 16));
         _controls->_play->update();
         _controls->_position->setEnabled();
         _video->seek(0);
@@ -248,7 +299,7 @@ VideoPlayer::playVideo()
 
     case DVSTATE_BUFFERING:
     case DVSTATE_PLAY:
-        _controls->_play->setIcon(StyleHint::Play, Size(24, 24));
+        _controls->_play->setIcon(StyleHint::Play, Size(16, 16));
         _controls->_play->update();
         _video->stop();
         break;
@@ -293,10 +344,10 @@ VideoPlayer::updateVideo(IDirectFBSurface* frame)
         _controls->_time->setText(toHMS(_video->position()));
     }
 
-    if (_video->status() == DVSTATE_FINISHED)
+    if (_video->status() != DVSTATE_PLAY)
     {
         _videoFrame = NULL;
-        _controls->_play->setIcon(StyleHint::Play, Size(24, 24));
+        _controls->_play->setIcon(StyleHint::Play, Size(16, 16));
         _controls->_play->update();
     }
 
@@ -313,13 +364,16 @@ VideoPlayer::updateVPGeometry()
 {
     ILOG_TRACE_W(ILX_VIDEOPLAYER);
     Size s1 = _controls->preferredSize();
-    _controls->setGeometry(0, height() - s1.height(), width(), s1.height());
+    _controls->setGeometry(0, height() - s1.height() - 10, width(), s1.height() + 10);
 
     if (PlatformManager::instance().appOptions() & OptExclusive)
     {
         if (_videoLSurface)
         {
-            DFBRectangle r = surfaceGeometry().dfbRect();
+            DFBRectangle r = frameGeometry().dfbRect();
+            if (!(_flags & AutoHideControls))
+                r.h -= _controls->height();
+
             _videoLSurface->MakeSubSurface(_videoLSurface, PlatformManager::instance().getLayerSurface("video"), &r);
         }
 
@@ -328,7 +382,10 @@ VideoPlayer::updateVPGeometry()
             IDirectFBSurface* video = PlatformManager::instance().getLayerSurface("video");
             if (video)
             {
-                DFBRectangle r = surfaceGeometry().dfbRect();
+                DFBRectangle r = frameGeometry().dfbRect();
+                if (!(_flags & AutoHideControls))
+                    r.h -= _controls->height();
+
                 video->GetSubSurface(video, &r, &_videoLSurface);
             } else
             {
