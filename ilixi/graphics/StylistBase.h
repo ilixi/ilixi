@@ -281,6 +281,9 @@ public:
     virtual void
     drawToolButtonFrame(Painter* painter, int x, int y, int w, int h, WidgetState state)=0;
 
+    virtual void
+    drawHeader(Painter* painter, int x, int y, int w, int h)=0;
+
 protected:
     //! This property stores the fonts pack.
     FontPack* _fonts;

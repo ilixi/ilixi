@@ -201,6 +201,9 @@ public:
     virtual void
     drawToolButtonFrame(Painter* painter, int x, int y, int w, int h, WidgetState state);
 
+    virtual void
+    drawHeader(Painter* painter, int x, int y, int w, int h);
+
 protected:
     virtual void
     draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);

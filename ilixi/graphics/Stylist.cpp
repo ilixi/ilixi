@@ -704,6 +704,12 @@ Stylist::drawToolButtonFrame(Painter* p, int x, int y, int w, int h, WidgetState
 }
 
 void
+Stylist::drawHeader(Painter* p, int x, int y, int w, int h)
+{
+    draw9CFrame(p, x, y, w, h, _style->db2.pre, _style->db1.pre, NoCorners);
+}
+
+void
 Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rect, bool vertical, const DFBSurfaceBlittingFlags& flags)
 {
     if (vertical)
