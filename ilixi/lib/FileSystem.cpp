@@ -127,7 +127,7 @@ ilxDirectory()
         if (status != 0)
             ILOG_ERROR(ILX_FILESYSTEM, "Cannot create %s - %d\n", path.c_str(), status);
         else
-            ILOG_ERROR(ILX_FILESYSTEM, "Created %s\n", path.c_str());
+            ILOG_DEBUG(ILX_FILESYSTEM, "Created %s\n", path.c_str());
     }
     return path;
 }
@@ -168,6 +168,7 @@ FILE*
 temporaryFile(const std::string& prefix)
 {
     char buffer[L_tmpnam];
+    // XX ignoring return value of 'char* tmpnam(char*)'
     tmpnam(buffer);
     FILE * pFile;
     pFile = tmpfile();
