@@ -102,6 +102,7 @@ enum Font
 {
     ButtonFont,
     DefaultFont,
+    InfoFont,
     InputFont,
     TitleFont
 };
