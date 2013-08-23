@@ -954,11 +954,14 @@ ILXCompositor::parseSettings()
 void
 ILXCompositor::appVisible()
 {
-    AppInfo* info = _currentApp->appInfo();
-    if (info->appFlags() & APP_NEEDS_CLEAR)
-        appWindow()->setBackgroundClear(true);
-    else
-        appWindow()->setBackgroundClear(false);
+    if (_currentApp)
+    {
+        AppInfo* info = _currentApp->appInfo();
+        if (info->appFlags() & APP_NEEDS_CLEAR)
+            appWindow()->setBackgroundClear(true);
+        else
+            appWindow()->setBackgroundClear(false);
+    }
 }
 
 } /* namespace ilixi */
