@@ -68,6 +68,8 @@ private:
     Font* _inputFont;
     //! Font for rendering title text.
     Font* _titleFont;
+    //! Font for rendering info text.
+    Font* _infoFont;
 
     //! Release fonts.
     void

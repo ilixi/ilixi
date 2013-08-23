@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE FontPack PUBLIC "-//ilixi//DTD Fonts v1//EN" "http://www.ilixi.org/dtd/font_pack.dtd">
+<!DOCTYPE FontPack PUBLIC "-//ilixi//DTD Fonts v2//EN" "http://www.ilixi.org/dtd/font_pack.dtd">
 <FontPack>
 	<ButtonFont>
 		<Name>Sans</Name>
@@ -22,4 +22,9 @@
 		<Size>16</Size>
 		<FontStyle>bold</FontStyle>
 	</TitleFont>
+
+	<InfoFont>
+		<Name>Sans</Name>
+		<Size>12</Size>
+	</InfoFont>
 </FontPack>

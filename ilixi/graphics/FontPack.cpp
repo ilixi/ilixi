@@ -36,7 +36,8 @@ FontPack::FontPack()
         : _buttonFont(NULL),
           _defaultFont(NULL),
           _inputFont(NULL),
-          _titleFont(NULL)
+          _titleFont(NULL),
+          _infoFont(NULL)
 {
 }
 
@@ -56,6 +57,8 @@ FontPack::getFont(StyleHint::Font font) const
         return _titleFont;
     case StyleHint::InputFont:
         return _inputFont;
+    case StyleHint::InfoFont:
+        return _infoFont;
     default:
         return _defaultFont;
     }
@@ -132,6 +135,13 @@ FontPack::parseFonts(const char* fontsFile)
                 _titleFont->dfbFont();
             }
 
+            else if (xmlStrcmp(node->name, (xmlChar*) "InfoFont") == 0)
+            {
+                _infoFont = new Font((char*) fileC, atoi((char*) sizeC));
+                _infoFont->setStyle(fontStyle);
+                _infoFont->dfbFont();
+            }
+
             xmlFree(fileC);
             xmlFree(sizeC);
             node = node->next;
@@ -155,11 +165,13 @@ FontPack::release()
     delete _defaultFont;
     delete _inputFont;
     delete _titleFont;
+    delete _infoFont;
 
     _buttonFont = NULL;
     _defaultFont = NULL;
     _inputFont = NULL;
     _titleFont = NULL;
+    _infoFont = NULL;
 }
 
 std::istream&
@@ -171,6 +183,7 @@ operator>>(std::istream& is, FontPack& obj)
     obj._defaultFont = new Font();
     obj._inputFont = new Font();
     obj._titleFont = new Font();
+    obj._infoFont = new Font();
 
     is >> *obj._buttonFont;
     is.ignore(1);
@@ -180,11 +193,14 @@ operator>>(std::istream& is, FontPack& obj)
     is.ignore(1);
     is >> *obj._titleFont;
     is.ignore(1);
+    is >> *obj._infoFont;
+    is.ignore(1);
 
     *obj._buttonFont->dfbFont();
     *obj._defaultFont->dfbFont();
     *obj._inputFont->dfbFont();
     *obj._titleFont->dfbFont();
+    *obj._infoFont->dfbFont();
 
     return is;
 }
@@ -196,6 +212,7 @@ operator<<(std::ostream& os, const FontPack& obj)
     os << *obj._defaultFont << std::endl;
     os << *obj._inputFont << std::endl;
     os << *obj._titleFont << std::endl;
+    os << *obj._infoFont << std::endl;
 
     return os;
 }
