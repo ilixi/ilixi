@@ -9,8 +9,10 @@
 #define PLAYER_H_
 
 #include <core/Application.h>
-#include <ui/VideoPlayer.h>
+#include <ui/Dialog.h>
 #include <ui/FileBrowser.h>
+#include <ui/ToolBar.h>
+#include <ui/VideoPlayer.h>
 
 namespace ilixi
 {
@@ -26,6 +28,14 @@ public:
 private:
     VideoPlayer* _player;
     FileBrowser* _browser;
+    ToolBarButton* _load;
+    Dialog* _errorDialog;
+
+    void
+    toggleBrowser();
+
+    void
+    loadMovie(const std::string file);
 };
 
 } /* namespace ilixi */

@@ -4,9 +4,4 @@ ilixi_player_LDADD		=	@DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VER
 ilixi_player_CPPFLAGS	= 	-I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
 ilixi_player_CFLAGS		=	$(AM_CFLAGS)
 ilixi_player_SOURCES	= 	Player.h \
-							Player.cpp
-
-miscdatadir 	=	$(ILIXI_DATADIR)/player
-miscdata_DATA 	=	test.avi
-EXTRA_DIST 		= 	$(miscdata_DATA)
-							
+							Player.cpp							
