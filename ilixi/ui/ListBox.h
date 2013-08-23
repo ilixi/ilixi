@@ -163,6 +163,12 @@ public:
     setUseThumbs(bool useThumbs);
 
     /*!
+     * Set spacing for internal layout.
+     */
+    void
+    setSpacing(int spacing);
+
+    /*!
      * This signal is emitted when current item index is changed.
      *
      * Signal will pass old index and new index.

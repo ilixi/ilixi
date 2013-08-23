@@ -254,6 +254,12 @@ ListBox::setUseThumbs(bool useThumbs)
 }
 
 void
+ListBox::setSpacing(int spacing)
+{
+    _layout->setSpacing(spacing);
+}
+
+void
 ListBox::compose(const PaintEvent& event)
 {
 }
