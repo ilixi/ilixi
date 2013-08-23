@@ -43,7 +43,7 @@ class FileBrowserItem : public Widget
 {
     friend class FileBrowser;
 public:
-    FileBrowserItem(const std::string& path, FileBrowser* parent = 0);
+    FileBrowserItem(FileInfo* info, FileBrowser* parent = 0);
 
     virtual
     ~FileBrowserItem();
@@ -71,6 +71,7 @@ private:
     FileBrowser* _owner;
     FileInfo* _info;
     Label* _label;
+    Label* _date;
     Label* _size;
     Icon* _icon;
     RadioButton* _select;
@@ -103,11 +104,18 @@ public:
     void
     setFilter(const std::string& filter);
 
+    /*!
+     * This signal is emitted once a file is selected either by pressing pointer or
+     * by clicking SPACE key.
+     */
+    sigc::signal<void, std::string> sigFileSelected;
+
 protected:
     void
     compose(const PaintEvent& event);
 
 private:
+    bool _modified;
     std::string _filter;
     Label* _path;
     LineInput* _search;

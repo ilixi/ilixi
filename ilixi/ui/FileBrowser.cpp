@@ -22,24 +22,29 @@
  */
 
 #include <ui/FileBrowser.h>
+
+#include <ui/HBoxLayout.h>
 #include <ui/Icon.h>
 #include <ui/Label.h>
 #include <ui/LineInput.h>
 #include <ui/ListBox.h>
 #include <ui/RadioButton.h>
+#include <ui/Spacer.h>
 #include <ui/VBoxLayout.h>
-#include <ui/HBoxLayout.h>
+
 #include <lib/FileSystem.h>
 #include <lib/FileInfo.h>
+
 #include <graphics/Painter.h>
 #include <core/Logger.h>
+
 #include <algorithm>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FILEBRWSRITEM, "ilixi/ui/FileBrowserItem", "FileBrowserItem");
-D_DEBUG_DOMAIN( ILX_FILEBRWSR, "ilixi/ui/FileBrowser", "FileBrowser");
+D_DEBUG_DOMAIN( ILX_FILEBROWSERITEM, "ilixi/ui/FileBrowserItem", "FileBrowserItem");
+D_DEBUG_DOMAIN( ILX_FILEBROWSER, "ilixi/ui/FileBrowser", "FileBrowser");
 
 const std::string audio = ".mp3 .wav";
 const std::string video = ".mp4 .avi";
@@ -55,23 +60,22 @@ itemsSort(FileBrowserItem* a, FileBrowserItem* b)
     return (a->_info->fileName() < b->_info->fileName());
 }
 
-FileBrowserItem::FileBrowserItem(const std::string& path, FileBrowser* parent)
+FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
         : Widget(parent),
           _owner(parent),
-          _info(NULL),
+          _info(info),
           _icon(NULL),
           _select(NULL)
 {
-    ILOG_TRACE_W(ILX_FILEBRWSRITEM);
-    ILOG_DEBUG(ILX_FILEBRWSRITEM, " -> path: %s\n", path.c_str());
+    ILOG_TRACE_W(ILX_FILEBROWSERITEM);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
     _box = new HBoxLayout();
+    _box->setVerticalAlignment(Alignment::Middle);
     addChild(_box);
 
-    _info = new FileInfo(path);
     if (_info->isDir())
-        _icon = new Icon(StyleHint::Right);
+        _icon = new Icon(StyleHint::Folder);
     else if (_info->isFile())
     {
         std::string suffix = _info->suffix();
@@ -88,16 +92,31 @@ FileBrowserItem::FileBrowserItem(const std::string& path, FileBrowser* parent)
     _icon->setSize(32, 32);
     _box->addWidget(_icon);
 
+    VBoxLayout* labelBox = new VBoxLayout();
+    _box->addWidget(labelBox);
+
     _label = new Label(_info->baseName());
     _label->setConstraints(ExpandingConstraint, MinimumConstraint);
     _label->setSingleLine(true);
-    _box->addWidget(_label);
+    _label->setFont(stylist()->defaultFont(StyleHint::ButtonFont));
+    labelBox->addWidget(_label);
 
     if (_info->isFile())
     {
+        HBoxLayout* infoBox = new HBoxLayout();
+        labelBox->addWidget(infoBox);
+
         _size = new Label(formatSize(_info->size()));
+        _size->setFont(stylist()->defaultFont(StyleHint::InfoFont));
         _size->setSingleLine(true);
-        _box->addWidget(_size);
+        infoBox->addWidget(_size);
+
+        infoBox->addWidget(new Spacer(Horizontal));
+
+        _date = new Label(formatDate(_info->lastModified()));
+        _date->setFont(stylist()->defaultFont(StyleHint::InfoFont));
+        _date->setSingleLine(true);
+        infoBox->addWidget(_date);
     }
 
     sigGeometryUpdated.connect(sigc::mem_fun(this, &FileBrowserItem::updateFileBrowserItemGeometry));
@@ -105,7 +124,7 @@ FileBrowserItem::FileBrowserItem(const std::string& path, FileBrowser* parent)
 
 FileBrowserItem::~FileBrowserItem()
 {
-    ILOG_TRACE_W(ILX_FILEBRWSRITEM);
+    ILOG_TRACE_W(ILX_FILEBROWSERITEM);
     delete _info;
 }
 
@@ -123,7 +142,7 @@ FileBrowserItem::compose(const PaintEvent& event)
     if (state() & FocusedState)
         p.setBrush(stylist()->palette()->focus);
     else
-        p.setBrush(stylist()->palette()->_default.base);
+        p.setBrush(stylist()->palette()->_default.baseAlt);
     p.fillRectangle(0, 0, width(), height());
     p.end();
 }
@@ -135,11 +154,12 @@ FileBrowserItem::pointerButtonDownEvent(const PointerEvent& pointerEvent)
     if (_info->isDir())
     {
         s = _info->file();
-        char* buffer = realpath(s.c_str(),NULL);
+        char* buffer = realpath(s.c_str(), NULL);
         std::string s(buffer);
         free(buffer);
         _owner->setPath(s + "/");
-    }
+    } else
+        _owner->sigFileSelected(_info->file());
 }
 
 void
@@ -151,11 +171,12 @@ FileBrowserItem::keyUpEvent(const KeyEvent& keyEvent)
         if (_info->isDir())
         {
             s = _info->file();
-            char* buffer = realpath(s.c_str(),NULL);
+            char* buffer = realpath(s.c_str(), NULL);
             std::string s(buffer);
             free(buffer);
             _owner->setPath(s + "/");
-        }
+        } else
+            _owner->sigFileSelected(_info->file());
     }
 }
 
@@ -174,7 +195,7 @@ FileBrowserItem::focusOutEvent()
 void
 FileBrowserItem::updateFileBrowserItemGeometry()
 {
-    ILOG_TRACE_W(ILX_FILEBRWSRITEM);
+    ILOG_TRACE_W(ILX_FILEBROWSERITEM);
     _box->setGeometry(5, 0, width() - 10, height());
 }
 
@@ -182,14 +203,19 @@ FileBrowserItem::updateFileBrowserItemGeometry()
 
 FileBrowser::FileBrowser(const std::string& path, Widget* parent)
         : Widget(parent),
-          _filter("")
+          _filter(""),
+          _modified(true)
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
     setInputMethod(PointerPassthrough);
     _box = new VBoxLayout();
+    _box->setSpacing(1);
     addChild(_box);
 
     _path = new Label("");
+    _path->setMargin(Margin(10, 10, 5, 5));
+    _path->setSingleLine(true);
+    _path->setFont(stylist()->defaultFont(StyleHint::ButtonFont));
     _box->addWidget(_path);
 
 //    _search = new LineInput("");
@@ -197,6 +223,7 @@ FileBrowser::FileBrowser(const std::string& path, Widget* parent)
 
     _list = new ListBox();
     _list->setConstraints(NoConstraint, ExpandingConstraint);
+    _list->setSpacing(1);
     _box->addWidget(_list);
 
     setPath(path);
@@ -205,29 +232,28 @@ FileBrowser::FileBrowser(const std::string& path, Widget* parent)
 
 FileBrowser::~FileBrowser()
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
 }
 
 Size
 FileBrowser::preferredSize() const
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
     return _box->preferredSize();
 }
 
 void
 FileBrowser::refresh()
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
 }
 
 void
 FileBrowser::setPath(const std::string& path)
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
-    if (path != _path->text())
+    ILOG_TRACE_W(ILX_FILEBROWSER);
+    if (_modified || path != _path->text())
     {
-        printf("PATH: %s\n", path.c_str());
         _path->setText(path);
         std::vector<std::string> files = FileSystem::listDirectory(path);
         std::vector<FileBrowserItem*> items;
@@ -235,7 +261,17 @@ FileBrowser::setPath(const std::string& path)
         {
             if (files[i] == ".")
                 continue;
-            items.push_back(new FileBrowserItem(path + files[i], this));
+
+            FileInfo* info = new FileInfo(path + files[i]);
+            if (info->isDir())
+                items.push_back(new FileBrowserItem(info, this));
+            else if (info->isFile())
+            {
+                if (_filter.empty())
+                    items.push_back(new FileBrowserItem(info, this));
+                else if (_filter.find(info->suffix()) != std::string::npos)
+                    items.push_back(new FileBrowserItem(info, this));
+            }
         }
 
         std::sort(items.begin(), items.end(), itemsSort);
@@ -244,6 +280,7 @@ FileBrowser::setPath(const std::string& path)
         for (int i = 0; i < items.size(); ++i)
             _list->addItem(items[i]);
         items[0]->setFocus();
+        _modified = false;
         update();
     }
 }
@@ -251,22 +288,24 @@ FileBrowser::setPath(const std::string& path)
 void
 FileBrowser::setFilter(const std::string& filter)
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
+    _filter = filter;
+    _modified = true;
+    setPath(_path->text());
 }
 
 void
 FileBrowser::compose(const PaintEvent& event)
 {
-//    Painter p(this);
-//    p.begin(event);
-//    p.setBrush(Color(125, 125, 125));
-//    p.fillRectangle(0, 0, width(), height());
+    Painter p(this);
+    p.begin(event);
+    stylist()->drawHeader(&p, 0, 0, width(), _path->height());
 }
 
 void
 FileBrowser::updateFileBrowserGeometry()
 {
-    ILOG_TRACE_W(ILX_FILEBRWSR);
+    ILOG_TRACE_W(ILX_FILEBROWSER);
     _box->setGeometry(0, 0, width(), height());
 }
 
