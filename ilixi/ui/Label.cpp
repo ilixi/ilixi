@@ -97,7 +97,7 @@ Label::updateTextBaseGeometry()
     if (_layout.singleLine())
     {
         Size s = textExtents();
-        _layout.setBounds(_margin.right(), (height() - s.height() - _margin.vSum()) / 2, width() - _margin.hSum(), s.height());
+        _layout.setBounds(_margin.right(), _margin.top() + (height() - s.height() - _margin.vSum()) / 2, width() - _margin.hSum(), height() - _margin.vSum());
     } else
         _layout.setBounds(_margin.right(), _margin.top(), width() - _margin.hSum(), height() - _margin.vSum());
     _layout.doLayout(font());
