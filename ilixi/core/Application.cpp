@@ -886,6 +886,8 @@ Application::updateFromWindow()
         _update = true;
         _updateDiff = 0;
     }
+#else
+    Engine::instance().wakeUp();
 #endif
 }
 
