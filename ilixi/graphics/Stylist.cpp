@@ -51,8 +51,12 @@ void
 Stylist::drawAppFrame(Painter* p, AppWindow* app)
 {
     if (app->background())
-        p->stretchImage(app->background(), 0, 0, app->width(), app->height());
-    else
+    {
+        if (app->backgroundTiled())
+            p->tileImage(app->background(), 0, 0);
+        else
+            p->stretchImage(app->background(), 0, 0, app->width(), app->height());
+    } else
     {
         p->setBrush(_palette->bg);
         p->fillRectangle(0, 0, app->width(), app->height());

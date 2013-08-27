@@ -193,10 +193,10 @@ Application::exec()
 }
 
 void
-Application::setBackgroundImage(const std::string& imagePath)
+Application::setBackgroundImage(const std::string& imagePath, bool tile)
 {
     if (_appWindow)
-        _appWindow->setBackgroundImage(imagePath);
+        _appWindow->setBackgroundImage(imagePath, tile);
 }
 
 void

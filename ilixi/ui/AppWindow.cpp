@@ -38,6 +38,7 @@ D_DEBUG_DOMAIN(ILX_APPWINDOW, "ilixi/ui/AppWindow", "AppWindow");
 AppWindow::AppWindow(Application* owner)
         : WindowWidget(),
           _backgroundImage(NULL),
+          _backgroundImageTiled(false),
           _toolbar(NULL),
           _toolbarNorth(true),
           _customCompose(false),
@@ -59,6 +60,12 @@ Image*
 AppWindow::background() const
 {
     return (_backgroundImage);
+}
+
+bool
+AppWindow::backgroundTiled() const
+{
+    return _backgroundImageTiled;
 }
 
 int
@@ -96,13 +103,14 @@ AppWindow::toolbar() const
 }
 
 void
-AppWindow::setBackgroundImage(const std::string& imagePath)
+AppWindow::setBackgroundImage(const std::string& imagePath, bool tile)
 {
     if (_backgroundImage)
         delete _backgroundImage;
 
     _backgroundImage = new Image(imagePath);
     _backgroundImage->setSize(size());
+    _backgroundImageTiled = tile;
     setBackgroundFilled(true);
 
     ILOG_DEBUG(ILX_APPWINDOW, "Background is set [%s]\n", imagePath.c_str());

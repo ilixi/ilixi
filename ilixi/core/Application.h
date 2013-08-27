@@ -98,7 +98,7 @@ public:
      * Sets a background image.
      */
     void
-    setBackgroundImage(const std::string& imagePath);
+    setBackgroundImage(const std::string& imagePath, bool tile = false);
 
     /*!
      * Set application window layout.

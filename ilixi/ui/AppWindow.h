@@ -56,6 +56,12 @@ public:
     background() const;
 
     /*!
+     * Returns whether background image is tiled.
+     */
+    bool
+    backgroundTiled() const;
+
+    /*!
      * Returns frame's canvas x-coordinate including the left margin.
      */
     virtual int
@@ -89,7 +95,7 @@ public:
      * Sets a background image.
      */
     void
-    setBackgroundImage(const std::string& imagePath);
+    setBackgroundImage(const std::string& imagePath, bool tile = false);
 
     /*!
      * Adds a toolbar to application.
@@ -123,6 +129,8 @@ protected:
 private:
     //! Background image of application.
     Image* _backgroundImage;
+    //! This property stores whether background image is tiled or not.
+    bool _backgroundImageTiled;
     //! AppWindow toolbar if any.
     ToolBar* _toolbar;
     //! This property stores toolbar position.
