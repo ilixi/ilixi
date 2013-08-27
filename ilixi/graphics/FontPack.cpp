@@ -47,7 +47,7 @@ FontPack::~FontPack()
 }
 
 Font*
-FontPack::getFont(StyleHint::Font font) const
+FontPack::getFont(StyleHint::FontHint font) const
 {
     switch (font)
     {

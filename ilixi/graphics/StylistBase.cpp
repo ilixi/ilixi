@@ -92,7 +92,7 @@ StylistBase::setStyleFromFile(const char* style)
 }
 
 Size
-StylistBase::defaultSize(StyleHint::Size size) const
+StylistBase::defaultSize(StyleHint::SizeHint size) const
 {
     switch (size)
     {
@@ -242,7 +242,7 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 }
 
 Font*
-StylistBase::defaultFont(StyleHint::Font font) const
+StylistBase::defaultFont(StyleHint::FontHint font) const
 {
     return _fonts->getFont(font);
 }

@@ -98,7 +98,7 @@ enum AnimatedStates
     FocusOut
 };
 
-enum Font
+enum FontHint
 {
     ButtonFont,
     DefaultFont,
@@ -203,7 +203,7 @@ enum PackedIcon
     ZoomOut
 };
 
-enum Size
+enum SizeHint
 {
     CheckBox,
     Icon,

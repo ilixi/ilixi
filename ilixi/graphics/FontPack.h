@@ -49,7 +49,7 @@ public:
      * Returns the font for given type.
      */
     Font*
-    getFont(StyleHint::Font font = StyleHint::DefaultFont) const;
+    getFont(StyleHint::FontHint font = StyleHint::DefaultFont) const;
 
     /*!
      * Initialise fonts from an XML file.

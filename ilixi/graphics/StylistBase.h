@@ -93,7 +93,7 @@ public:
      * Returns the default size for given type.
      */
     virtual Size
-    defaultSize(StyleHint::Size size) const;
+    defaultSize(StyleHint::SizeHint size) const;
 
     /*!
      * Returns the default parameter value for given type.
@@ -105,7 +105,7 @@ public:
      * Returns the default font for given type.
      */
     Font*
-    defaultFont(StyleHint::Font font = StyleHint::DefaultFont) const;
+    defaultFont(StyleHint::FontHint font = StyleHint::DefaultFont) const;
 
     /*!
      * Returns the default icon for given type.
