@@ -30,9 +30,9 @@
 namespace ilixi
 {
 
-  class Stacker : public Application
-  {
-  public:
+class Stacker : public Application
+{
+public:
     Stacker(int argc, char* argv[]);
 
     virtual
@@ -50,9 +50,12 @@ namespace ilixi
     void
     lower();
 
-  private:
+private:
     ToolButton* pb1;
-  };
+
+    void
+    initStacker();
+};
 
 } /* namespace ilixi */
 #endif /* STACKER_H_ */
