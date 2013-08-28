@@ -272,6 +272,7 @@ AC_SUBST(ILIXI_DATADIR)
 AC_CONFIG_FILES([ \
         Makefile  \
         apps/calc/Makefile \
+        apps/calc/images/Makefile \
         apps/car/appdefs/Makefile \
         apps/car/ccompositor/images/Makefile \
         apps/car/ccompositor/Makefile \
