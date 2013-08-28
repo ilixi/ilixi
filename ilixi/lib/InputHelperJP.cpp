@@ -1,9 +1,10 @@
 /*
- Copyright 2010-2012 Tarik Sekmen.
+ Copyright 2010-2013 Tarik Sekmen.
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>,
+            Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 
@@ -214,7 +215,7 @@ InputHelperJP::InputHelperJP()
 #if ILIXI_HAVE_LIBWNN
     ILOG_DEBUG(ILX_INPUTHELPERJP, " -> Connecting to wnn for user: %s\n", getlogin());
     _wnn = NULL;
-    _wnn = jl_open(getlogin(), "localhost", "/usr/share/wnn/ja_JP/wnnenvrc", NULL, NULL, 10);
+    _wnn = jl_open(getlogin(), "localhost", "/usr/share/wnn/ja_JP/wnnenvrc", wnnMessage, wnnError, 10);
     if (_wnn == NULL)
         ILOG_THROW(ILX_INPUTHELPERJP, "Could not connect to wnn server!\n");
 #endif

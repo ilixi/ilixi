@@ -1,9 +1,10 @@
 /*
- Copyright 2010-2012 Tarik Sekmen.
+ Copyright 2010-2013 Tarik Sekmen.
 
  All Rights Reserved.
 
- Written by Tarik Sekmen <tarik@ilixi.org>, Andreas Shimokawa <andi@directfb.org>.
+ Written by Tarik Sekmen <tarik@ilixi.org>,
+            Andreas Shimokawa <andi@directfb.org>.
 
  This file is part of ilixi.
 

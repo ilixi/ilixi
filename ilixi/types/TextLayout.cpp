@@ -1,5 +1,5 @@
 /*
- Copyright 2010-2012 Tarik Sekmen.
+ Copyright 2010-2013 Tarik Sekmen.
 
  All Rights Reserved.
 
@@ -152,8 +152,8 @@ TextLayout::cursorPositon(Font* font, int index)
 
             return Point(x, y);
         }
-    } else
-        return Point(x, y);
+    }
+    return Point(x, y);
 }
 
 int
@@ -405,6 +405,7 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     if (_alignment == Center)
         x += _bounds.width() / 2;
 
+    // TODO set clipping here...
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
         surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
     free(out);
