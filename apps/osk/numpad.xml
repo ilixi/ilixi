@@ -8,7 +8,7 @@
     <row id="n123" height="%25">
         <key id="N1" repeatable="yes" special="yes" cycle="yes">
             <symbol states="1, 2" unicode="yes">1BACKSPACE</symbol>
-            <icon>@DATADIR:backspace.png</icon>
+            <icon>@DATADIR:calc/backspace.png</icon>
         </key>
 
         <key id="N2" cycle="yes">
@@ -69,7 +69,7 @@
 
         <key id="Nhash" modifier="yes" cycle="yes">
             <symbol states="1, 2" unicode="yes">#</symbol>
-            <icon>@DATADIR:caps.png</icon>
+            <icon>@DATADIR:osk/caps.png</icon>
             <rollStates>1, 2</rollStates>
         </key>
     </row>

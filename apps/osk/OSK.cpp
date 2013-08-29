@@ -33,11 +33,10 @@ D_DEBUG_DOMAIN( ILX_OSK, "ilixi/osk/ILXOSK", "ILXOSK");
 
 ILXOSK::ILXOSK(int argc, char* argv[])
         : Application(&argc, &argv, OptDaleAuto),
-          _bg(NULL),
           _keyboard(NULL)
 {
     ILOG_TRACE_F(ILX_OSK);
-    _bg = new Image(ILIXI_DATADIR"osk/osk-bg.png");
+    setBackgroundImage(ILIXI_DATADIR"osk/osk-bg.png");
     setMargin(10);
 
     setLayout(new VBoxLayout());
@@ -66,7 +65,6 @@ ILXOSK::ILXOSK(int argc, char* argv[])
 ILXOSK::~ILXOSK()
 {
     ILOG_TRACE_F(ILX_OSK);
-    delete _bg;
 }
 
 void

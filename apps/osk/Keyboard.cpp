@@ -363,7 +363,7 @@ Keyboard::getKey(xmlNodePtr node)
             size_t found = iconStr.find("@DATADIR:");
             if (found != std::string::npos)
             {
-                iconPath = ILIXI_IMAGEDIR;
+                iconPath = ILIXI_DATADIR;
                 iconPath.append(iconStr.substr(found + 9, std::string::npos));
             } else
                 iconPath = iconStr;

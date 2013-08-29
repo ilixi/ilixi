@@ -49,7 +49,6 @@ public:
 #endif
 
 private:
-    Image* _bg;
     OSKHelper* _helper;
     Keyboard* _keyboard;
 };
