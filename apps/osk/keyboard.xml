@@ -231,7 +231,7 @@
 	<row id="rowShift" height="%20">
 	            
         <key id="Shift" modifier="yes">
-            <icon>@DATADIR:caps.png</icon>
+            <icon>@DATADIR:osk/caps.png</icon>
 			<rollStates>1, 2</rollStates>
         </key>
         
@@ -293,7 +293,7 @@
 
         <key id="BackSpace" repeatable="yes" special="yes">
             <symbol states="1, 2, 3, 4, 5" unicode="yes">BACKSPACE</symbol>
-			<icon>@DATADIR:backspace.png</icon>
+			<icon>@DATADIR:osk/backspace.png</icon>
         </key>
         
     </row>
@@ -314,17 +314,17 @@
         
         <key id="Left" special="yes">
             <symbol states="1, 2, 3, 4, 5">CURSOR_LEFT</symbol>
-            <icon>@DATADIR:left_arrow.png</icon>
+            <icon>@DATADIR:osk/left_arrow.png</icon>
         </key>
 		
 		<key id="Space" constraint="extend" repeatable="yes">
             <symbol states="1, 2, 3, 4, 5"> </symbol>
-            <icon>@DATADIR:space.png</icon>
+            <icon>@DATADIR:osk/space.png</icon>
         </key>
 
 		<key id="Right" special="yes">
             <symbol states="1, 2, 3, 4, 5">CURSOR_RIGHT</symbol>
-            <icon>@DATADIR:right_arrow.png</icon>
+            <icon>@DATADIR:osk/right_arrow.png</icon>
         </key>
         
 		<key id="Dot">
@@ -333,7 +333,7 @@
         
 		<key id="Return" special="yes">
             <symbol states="1, 2, 3, 4, 5">RETURN</symbol>
-            <icon>@DATADIR:return.png</icon>
+            <icon>@DATADIR:osk/return.png</icon>
         </key>
         
 	</row>

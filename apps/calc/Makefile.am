@@ -1,5 +1,4 @@
 ## Makefile.am for apps/calc
-SUBDIRS					= 	images
 bin_PROGRAMS 			= 	ilixi_calc
 ilixi_calc_LDADD		=	@DEPS_LIBS@ $(top_builddir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
 ilixi_calc_CPPFLAGS		= 	-I$(top_srcdir)/$(PACKAGE) -I$(top_builddir)/$(PACKAGE) $(AM_CPPFLAGS) @DEPS_CFLAGS@
