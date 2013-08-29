@@ -534,6 +534,7 @@ ApplicationManager::stopAll()
 void
 ApplicationManager::initStartup()
 {
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     parseFolder(ILIXI_DATADIR"apps");
     usleep(10000);
     startApplication("StatusBar");
@@ -552,6 +553,7 @@ ApplicationManager::initStartup()
 void
 ApplicationManager::parseFolder(const std::string& folder)
 {
+    ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     std::vector<std::string> files;
     files = FileSystem::listDirectory(folder);
 

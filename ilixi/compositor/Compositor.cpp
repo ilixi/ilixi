@@ -526,12 +526,15 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_SYSTEM\n");
 
-                    data->instance->setView(new AppView(this, data->instance));
-                    data->instance->view()->setGeometry(_appGeometry);
-                    addWidget(data->instance->view());
-                    data->instance->view()->setZ(0);
-                    data->instance->view()->sendToBack();
-                    data->instance->view()->addWindow(dfbWindow);
+                    if (data->instance->view() == NULL)
+                    {
+                        data->instance->setView(new AppView(this, data->instance));
+                        data->instance->view()->setGeometry(_appGeometry);
+                        addWidget(data->instance->view());
+                        data->instance->view()->setZ(0);
+                        data->instance->view()->sendToBack();
+                    }
+                    data->instance->view()->addWindow(dfbWindow, true, !(appInfo->appFlags() & APP_SURFACE_DONTBLOCK));
                 } else
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_DEFAULT\n");
