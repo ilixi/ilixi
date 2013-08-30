@@ -69,7 +69,7 @@ Calc::Calc(int argc, char* argv[])
     _keyDiv->sigClicked.connect(sigc::bind<std::string>(sigc::mem_fun(_input, &LineInput::append), _keyDiv->text()));
     grid->addWidget(_keyDiv);
     _keyBack = new ToolButton("");
-    _keyBack->setIcon(ILIXI_DATADIR"calc/backspace.png", Size(32, 32));
+    _keyBack->setIcon(ILIXI_DATADIR"osk/backspace.png", Size(32, 32));
     _keyBack->setToolButtonStyle(ToolButton::IconOnly);
     _keyBack->setConstraints(ExpandingConstraint, ExpandingConstraint);
     _keyBack->sigClicked.connect(sigc::bind<int, int>(sigc::mem_fun(_input, &LineInput::clear), -1, 1));
