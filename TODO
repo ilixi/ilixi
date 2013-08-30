@@ -1,6 +1,7 @@
-Pango support
-More widget layouts
-Fixed point maths for transformations 
-IBUS integration?
+More layouts
+More widgets
 Declarative UI
-Widgets: GLWidget, Table, TextArea
+Cairo and Pango support
+Language bindings
+Improvements to compositor API and frame synchronization
+Fix horizontal switcher

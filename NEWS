@@ -1,0 +1,32 @@
+2013-08-30:
+Released ilixi-1.0.0
+
+2013-05-30:
+New themes.
+Thanks to Sonat Deniz.
+
+2013-04-08:
+Added support for NLS.
+
+2013-02-25:
+Added support for character based language input. 
+Thanks to Andreas Shimokawa.
+
+2012-12-06:
+Added phone compositor demo.
+
+2012-11-23:
+Added Platform Manager.
+
+2012-10-23:
+Released ALS demo video.
+
+2012-10-03:
+Added ilixi support to WebKitDFB. 
+
+2012-04-23:
+Released first compositor demo video.
+Thanks to Denis Oliver Kropp.
+
+2012-02-11:
+Moved ilixi repository to git.directfb.org
