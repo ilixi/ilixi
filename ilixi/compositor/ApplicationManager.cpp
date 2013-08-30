@@ -936,8 +936,18 @@ ApplicationManager::searchExec(const char* exec, std::string& execPath)
             }
             dir = strtok(NULL, ":");
         }
-        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> not found: %s\n", exec);
         free(pathCp);
+
+        file = ILIXI_BINDIR;
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, "   -> checking: %s\n", dir);
+        file.append(exec);
+        if (access(file.c_str(), X_OK) == 0)
+        {
+            execPath = file;
+            return true;
+        }
+
+        ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> not found: %s\n", exec);
     }
     return false;
 }
