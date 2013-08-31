@@ -15,5 +15,6 @@ EXTRA_DIST 			= 	COPYING \
 						COPYING.LESSER \
 						README \
 						TODO \
+						ChangeLog \
 						config/m4
 MOSTLYCLEANFILES 	= 	$(DX_CLEANFILES)
