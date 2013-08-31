@@ -1,0 +1,4277 @@
+2013-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Update NEWS and TODO
+
+2013-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Fix for finding executable in installion directory.
+
+2013-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Revert "AppMan: Fix for finding executable in installion directory."
+
+	This reverts commit c79ada636b53097ed52b42de2a93486d4a84d4b2.
+
+2013-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Fix for finding executable in installion directory.
+
+2013-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi_calc: Fix for backspace image.
+
+2013-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Refactoring for OSK anc calculator images.
+
+2013-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Minor fix for SYSTEM applications with multiple windows.
+
+2013-08-29  Sonat Deniz  <sonat@ilixi.org>
+
+	Themes: Add copyright text.
+
+2013-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Fix for application background and numpad images.
+
+2013-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Add calculator images.
+
+2013-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove unused images.
+
+2013-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Update licence text.
+
+2013-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Enums: Rename StyleHint::Font and StyleHint::Size to FontHint and SizeHint respectively.
+
+2013-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi_stacking: Changes for geometry.
+
+2013-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Add background tiling support.
+
+2013-08-23  Zoran Plesivčak  <zplesivcak.work@gmail.com>
+
+	ilixi_pcomp SIGSEGV fix
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Player: Use new file browser and video player.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	VideoPlayer: Better show/hide for controls and minor improvements.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	FileBrowser: Changes for filtering and rendering.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Enums: Add InfoFont.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Wake up main loop if there is window update.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor change for dark palette.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	FontPack: Add InfoFont
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Add drawHeader()
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	FileSystem: Minor change for log messages.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Util: Add formatDate() and minor changes to toHMS()
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Label: Fix for single line label with margins.
+
+2013-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Add setSpacing()
+
+2013-08-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Do not build ilixi_sip without FusionDale.
+
+2013-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Minor fix for getParentPID and debugging.
+
+2013-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Minor fix for UpdateQueue::add
+
+2013-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Update AUTHORS
+
+2013-07-23  Denis Oliver Kropp  <dok@directfb.org>
+
+	Application: Initial getFrameTime support.
+
+2013-07-23  Denis Oliver Kropp  <dok@directfb.org>
+
+	PlatformManager: Fix for renderCursor in stereo mode.
+
+2013-07-23  Denis Oliver Kropp  <dok@directfb.org>
+
+	Compositor: Fix error output strings.
+
+2013-07-23  Denis Oliver Kropp  <dok@directfb.org>
+
+	ApplicationManager: Add getParentPID()
+
+2013-07-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Engine class for managing process wide callbacks, timers. - Application and Service use Engine::cycle in their main loop. - Disable surface event sync. for now.
+
+2013-07-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Service application class.
+
+2013-07-03  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi_sip: Fixes for ContactManager methods and Call log.
+
+2013-07-03  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi_sip: Do not filter number keys if dialpad is not visible.
+
+2013-07-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_calc and ilixi_sip binaries to .gitignore
+
+2013-07-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_sip, a baresip client.
+
+	Following features are not fully implemented:
+	- Contact add/edit/remove
+	- Call log
+	- Settings panel
+
+2013-06-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to images used in car compositor.
+
+2013-06-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor fix for default theme palette.
+
+2013-06-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new icons to default IconPack.
+
+2013-06-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor fixes for themes.
+
+2013-06-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new icons.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Some changes for drawing ScrollArea frames.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	AppWindow: Change for key navigation between toolbar and layout.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	ButtonGroup: Change for key navigation.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	GridView: Changes for drawFrame.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Changes for drawFrame.
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Changes for drawFrame and scrollTo
+
+2013-06-23  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollBar: Changes for key navigation support.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor changes for demo2 and demo4.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Temporary changes for themes.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for OSKInput inside Dialogs (also other WindowWidgets).
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	SpinBox: Increase space around text.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Fixes for scrollbars.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollBar: Added direction support.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Minor changes for drawFrame.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Reset layout, cursor etc. when text is set.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	GridView: Changes for drawFrame and added more methods.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	GridLayout: Minor fix for tile()
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Implement drawGridView and drawListView.
+
+2013-06-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Reset to DSDRAW_NOFX in begin()
+
+2013-06-14  Andreas Shimokawa  <andi@directfb.org>
+
+	android: add missing files
+
+2013-06-14  Andreas Shimokawa  <andi@directfb.org>
+
+	android: commit build system
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Changed image for ilixi_WebKit.
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_calc.
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	PStatus: Use ListBox::setUseThumbs.
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	New pointer image.
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Use sigTextChanged to reinit cursor index.
+
+2013-06-14  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Add setUseThumbs()
+
+2013-06-14  Andreas Shimokawa  <andi@directfb.org>
+
+	android: some ifdefs for the android
+
+2013-06-12  Andreas Shimokawa  <andi@directfb.org>
+
+	build: change config.h to ilixi_config.h
+
+2013-06-12  Andreas Shimokawa  <andi@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-06-12  Andreas Shimokawa  <andi@directfb.org>
+
+	use realpath() instead of canonicalize_file_name() for non-gnu compatibility
+
+2013-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Logger: Print Error and Fatal messages even when logger is disabled.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Monitor and Widgets.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to OSK.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Phone Compositor.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Dialer, Player, Settings, Mixer and Stacking.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Other minor changes to Demo2, Demo4 and Gallery.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Carousel demo.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Car Compositor.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Animations: Changes for custom compose.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Animated Tiles: Reformatting and changes for custom compose.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi_hello: Use core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Changes for core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Notification: Minor change, parent param.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Use core/Application cont.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Window: Use core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Use AppView.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixiGUI: Use core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Timer: Use core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Use core/Application.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Add setBackgroundClear() and remove windowEventManager().
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Move Application to core. - AppWindow is just a WindowWidget owned by Application. - Ensure interface destruction order is correct.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Gallery: Do not set size.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	PHome: Use thumbs.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	GridView: Add setUseThumbs().
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Changes for ScrollBar use.
+
+2013-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollBar: Change for pointer event handling.
+
+2013-06-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Home and Window icons to IconPacks.
+
+2013-06-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Change for ToolBarButton drawing.
+
+2013-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Emit signals after update calls in UI.
+
+2013-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Change for simple motion event compression.
+
+2013-06-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Add drawToolButtonFrame method.
+
+2013-06-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Set neighbour for toolbar.
+
+2013-06-04  Tarik Sekmen  <tarik@directfb.org>
+
+	GridLayout: Changes for removeWidget
+
+2013-06-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Make postUniversalEvent static.
+
+2013-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Formatting.
+
+2013-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Surface: Fix for SubSurface use in SharedSurface parent case.
+
+2013-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove AppBase from core.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for ComboBox icon.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor changes for dark theme image.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	GroupBox: Changes for title layout.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	DirectionalButton: Change default icon size.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	StylistBase: Use 5px offset for buttons.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	SpinBox: Fix for button icon size.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollBar: Fix for button icon size.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new icon pack.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Themes: Fix for slider images in style.xml
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Use new style images for slider.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Button: doLayout if button becomes checkable.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton: Fix text layout size for checkable state.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Fix for pointer grabbing during motion.
+
+2013-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Fix for grabbing in key nav mode.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Some changes for WidgetsDemo.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Changes for new style.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Changes for destruction order and add ToolBar support.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Changes for new style.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	StylistBase: Changes for new style.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new widgets to lib.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: More Debug.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Use new OptDale flags.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Use new OptDale flags.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	GroupBox: Changes for new style structure.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	ComboBox: Changes for new style structure and minor fixes. Still needs more work.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Dialog: Use new StyleHint flags.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Icon: More debug.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	VideoPlayer: Use new OptDale flag.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	TabPanel: Changes for draw and layout methods.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	SpinBox: Use DirectionalButton and changes for preferredSize method.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ToolBar and ToolBarButton widgets.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ScrollBar widget.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add LineSeperator widget.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ButtonGroup widget.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add DirectionalButton widget.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new default theme.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new dark theme.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Use new Dale flags in apps.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add new style hint enums and FusionDale flags.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Use new style structure.
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to style.dtd
+
+2013-05-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Minor changes for readability.
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	CPUMonitor: Fix for cpu values parser.
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Button: Set buttonFlags before update in buttonDownEvent handler.
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Frame: Remove extra operators in preferredSize()
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Clear selection if focus is lost.
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Slider: Remove sigMoved.
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	VBoxLayout: Minor fix for sanitization (thanks Andi).
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager: Minor changes for clear()
+
+2013-05-29  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Do not attach/detach DFBWindow in exclusive mode.
+
+2013-05-28  Andreas Shimokawa  <andi@directfb.org>
+
+	workaround ilixi_carcomp crash during shutdown
+
+2013-05-28  Andreas Shimokawa  <andi@directfb.org>
+
+	workaround ilixi_carcomp crash
+
+2013-05-28  Andreas Shimokawa  <andi@directfb.org>
+
+	disable memory monitor (broken)
+
+2013-05-28  Marek Pikarski  <mass@directfb.org>
+
+	ilixi: just swap order of inherits
+
+2013-05-17  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Moved postUserEvent and minor changes for timers.
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor fixes for carcomp switcher.
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Do not wait in handleEvents if there are callbacks.
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Fix for off-by-one bug.
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Minor fix for runTimers().
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for iconpack image path.
+
+2013-05-15  Tarik Sekmen  <tarik@directfb.org>
+
+	Ensure font caching.
+
+2013-05-07  Andreas Shimokawa  <andi@directfb.org>
+
+	Video: honour forced pixel format for video surfaces also
+
+2013-04-30  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: move call to setlocale.
+
+2013-04-18  Tarik Sekmen  <tarik@directfb.org>
+
+	Use ilxDirectory to create cache and tmp files.
+
+2013-04-18  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Fix for NLS only variable.
+
+2013-04-18  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing config.rpath
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: setLanguage reverts back to original default font pack if related pack is not available.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	GroupBox: Disable setting font for title for now.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Set default stylist font and icon packs using configuration.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Uses new configuration dtd and updates font pack when language is changed.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Install FontPack and IconPack.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Initialise FontPack and IconPack.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	StylistBase: Use FontPack and IconPack.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Remove font and icon related stuff.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Update platform manager configuration for font and icon packs.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Update style dtd and related files for themes.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Install font and icon pack dtds.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Install font and icon packs for dark and default themes.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add icon pack for default theme.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add icon pack for dark theme.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add font packs for default theme.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add font packs for dark theme.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add IconPack to parse default icons.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add FontPack class to parse default fonts.
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add icon_pack.dtd
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Add font_pack.dtd
+
+2013-04-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Make enable-log option yes by default and add GETTEXT_VERSION macro.
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Minor fix for ungrabbing grabbed widgets.
+
+2013-04-10  Andreas Shimokawa  <andi@directfb.org>
+
+	AppBase: Fix for ignoring DWET_UPDATE events.
+
+	- Do not assume event type.
+	- Do not assume PeekEvent returns.
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Fix for end(). (Thanks Andi)
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for Makefiles :)
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Changes for postKeyEvent and postPointerEvent for exclusive mode.
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Minor change.
+
+2013-04-10  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Set locale during initialisation.
+
+2013-04-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ABOUT-NLS
+
+2013-04-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Do not update or repaint if not visible.
+
+2013-04-09  Tarik Sekmen  <tarik@directfb.org>
+
+	GroupBox: Minor change for title size.
+
+2013-04-09  Tarik Sekmen  <tarik@directfb.org>
+
+	RadioButton: SetChecked should inform group.
+
+2013-04-09  Tarik Sekmen  <tarik@directfb.org>
+
+	TextLayout: Do not specify bytes while calculating extents.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	GroupBox: Changes for NLS.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	CheckBox: Minor change for default parameter value in constructor.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	RadioButton: Minor change for default parameter value in constructor.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	TextBase: Derives from I18NBase when NLS is enabled.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton: Minor change for constructor.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Use ilixiConfig and add helpers for NLS.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	SoundDFB: Use ilixiConfig header.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add I18NBase class.
+
+2013-04-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add basic language support (--enable-nls)
+
+2013-04-03  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Add postKeyEvent() and postPointerEvent().
+
+2013-04-03  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Add windowID().
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Add force pixel format for image loading.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing XMLReader headers.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Use XMLReader
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Palette: Use XMLReader
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Use XMLReader
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	AppView: Signal appVisible to compositor if there is no animation too.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	FontCache: Release all entries if app is destroyed.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Release surface if root window is NULL.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: use XMLReader.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	XMLReader: Fix for file string.
+
+2013-04-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Set background flag when AppView is visible (not between transitions).
+
+2013-04-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Car StatusBar: Use StartApp and HideHome for same functionality.
+
+2013-04-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Remove dash and mixer methods.
+
+2013-04-01  Tarik Sekmen  <tarik@directfb.org>
+
+	ComponentData: Remove deprecated compositor methods, should use StartApp.
+
+2013-04-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: use XMLReader class for parsing settings.
+
+2013-04-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Add XMLReader class.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Enums: Fixed comment for OptARGBImages.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Add --ilx:ARGB-images option for loading all images in ARGB pixelformat.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Minor changes for sound effect level.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Frame: Added drawFrame flag.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton: Play "click" sound effect when clicked.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor changes for WindowWidget update methods.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceEventListener: Debug messages.
+
+2013-03-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for AppBase: - Do not fire update_timer each time. - Refactored application state methods. - Added APS_CUSTOM flag so we don't wake up buffer for updates. - Made main loop methods protected.
+
+2013-03-27  Andreas Shimokawa  <andi@directfb.org>
+
+	change version to 1.0.0 (not ready yet)
+
+2013-03-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: By default, use runTimers() to get a timeout.
+
+2013-03-25  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager: Fix for exposed widgets.
+
+2013-03-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for timers. - Multiple timers are run with runTimers(). - Removed sortTimers() method.
+
+2013-03-22  Tarik Sekmen  <tarik@directfb.org>
+
+	AppCompositor: Simply use update() for SWMCF_POSITION case.
+
+2013-03-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Added dirty frame geometry for updates.
+
+2013-03-22  Tarik Sekmen  <tarik@directfb.org>
+
+	AppCompositor: Fix for SWMCF_POSITION case.
+
+2013-03-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Immediately recalc. frame geometry in position setters.
+
+2013-03-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Font: loadFont() should return false if font cannot be loaded.
+
+2013-03-21  Tarik Sekmen  <tarik@directfb.org>
+
+	FontCache: Show warning message if font cannot be loaded.
+
+2013-03-21  Tarik Sekmen  <tarik@directfb.org>
+
+	AppCompositor: Take scaling into account in onWindowConfig.
+
+2013-03-21  Andreas Shimokawa  <andi@directfb.org>
+
+	SurfaceView: do not call  _sourceWindow->GetPosition(), instead use parent()->x() and y()
+
+2013-03-20  Tarik Sekmen  <tarik@directfb.org>
+
+	SoundMixer: Set sound effects volume.
+
+2013-03-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove ilixi_nav
+
+2013-03-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove data/fonts
+
+2013-03-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-03-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Rename bin to apps.
+
+2013-03-20  Andreas Shimokawa  <andi@directfb.org>
+
+	fix calculation of absolute coordinates for mouse events on windows (fixes df_window inside ilixi compositor)
+
+2013-03-20  Andreas Shimokawa  <andi@directfb.org>
+
+	compile fix
+
+2013-03-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Add preferredSize().
+
+2013-03-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixing an undefined var. Oops :)
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add OptExclSoundEffect mode for playback of sound effects via SoundMixer component.
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Play sound effects for Button clicks and Notification in compositor.
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for sound effect playback via PlatformManager.
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Sound class for playing static audio buffers.
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Music: Add setFileName method and API docs.
+
+2013-03-06  Tarik Sekmen  <tarik@directfb.org>
+
+	SoundDFB: Rename header guard.
+
+2013-02-26  Andreas Shimokawa  <andi@directfb.org>
+
+	InputHelperJP: remove unneccessary #define, remove conflicting prototype for freewnn (breaks wnn6 support for now)
+
+2013-02-26  Tarik Sekmen  <tarik@directfb.org>
+
+	osk/helper: fixes for UI and minor changes to helper interface.
+
+2013-02-25  Andreas Shimokawa  <andi@directfb.org>
+
+	InputHelperJP: fix segment resizing for segments with length 1
+
+2013-02-25  Andreas Shimokawa  <andi@directfb.org>
+
+	InputHelper: fix clipping when changing the current segment, make the current segment signed (-1 for undefined)
+
+2013-02-25  Andreas Shimokawa  <andi@directfb.org>
+
+	osk/Helper: pressing space calls InputeHelper::process(), disable enter
+
+2013-02-25  Andreas Shimokawa  <andi@directfb.org>
+
+	InputHelper: fix candidate cycling, fix candidate regeneration on segment resizing
+
+2013-02-25  Andreas Shimokawa  <andi@directfb.org>
+
+	Add experimental and incomplete wnn support for japanese input
+
+	This is not usable yet.
+
+2013-02-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Surface: Fix for non-stereo build.
+
+2013-02-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to ilixi_stacker and ilixi_animations for testing stereoscopy support.
+
+2013-02-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for stereoscopy support for SharedSurfaces.
+
+	(!) Rendering cursor in exclusive mode is not working.
+	(!) SubSurface and IndividualSurfaces is not implemented yet.
+
+2013-02-19  Tarik Sekmen  <tarik@directfb.org>
+
+	BoxLayouts: Cleaner code and implemented HBox->h4w.
+
+2013-02-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Easing: Fix for Circle easing.
+
+2013-02-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix compiler warnings.
+
+2013-02-14  Tarik Sekmen  <tarik@directfb.org>
+
+	AppThumbnail: Fix for application quit button.
+
+2013-02-11  Tarik Sekmen  <tarik@directfb.org>
+
+	AppCompositor: Fix for scaling multiple windows (no mainwindow).
+
+2013-02-11  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: add signal_handler for CLD_EXITED and use processRemoved.
+
+2013-02-09  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Fix DWET_LOSTFOCUS case for OSKInput.
+
+2013-02-08  Tarik Sekmen  <tarik@directfb.org>
+
+	More API documentation...
+
+2013-02-07  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Fix for signal handler. - Disable SaWMan RrocessRemoved callback, instead just use sigchild handler. - Post CET_CRASH event to display notification.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Fix initializer list warnings.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	API doc. continued for widgets.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	TabPanel: API doc. and refactoring.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for consumePointerEvent in container and layout base.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Spacer: API doc.
+
+2013-02-06  Tarik Sekmen  <tarik@directfb.org>
+
+	SpinBox: API doc. and add licence text.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	MemoryMonitor: Documentation and minor changes.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	MemoryMonitor: Fix page fault tracker.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	GridView: API documentation and emit signals.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: API documentation
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Add textExtents()
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	AppView: Use PointerPassthrough for views.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Home app. starts last.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Fix for windowPreEventFilter when there is no focused widget.
+
+2013-02-05  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Fix for focus related window events.
+
+2013-02-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Enable/disable memory manager via xml.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Add a FileBrowser to Player app for testing.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Add FileBrowser widget (initial).
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Add FileInfo.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager: Add debug messages.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Util: Add formatSize helper.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Stylist: Add Music and Movie PackedIcons.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Icon: Set FixedConstraint for x and y.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Label: Center text vertically when in singleLine mode.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Set keyNavChildrenFirst to true by default and emit item state signals.
+
+2013-01-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for Layouts. - Reimplemented clear(). - Moved setKeyNavChildrenFirst to LayoutBase(). - Implement keyNavChildrenFirst for existing layouts.
+
+2013-01-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Add VideoPlayer app for testing.
+
+2013-01-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for Video and VideoPlayer.
+
+2013-01-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for pointer input handling.
+
+2013-01-16  Denis Oliver Kropp  <dok@directfb.org>
+
+	AppBase: Use copy of callbacks list in runCallback() to avoid corruption due to add/remove during processing.
+
+2013-01-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for the DirectFB 1.6.3 fix :)
+
+2013-01-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for DirectFB 1.6.3 build.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Use window flipmode and fsu if not in exclusive mode.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for killing apps using MemoryMonitor.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove log output.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Use bg in DFIFF for theme.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for MemoryMonitor.
+
+2013-01-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-01-10  Tarik Sekmen  <tarik@directfb.org>
+
+	MemoryMonitor: Changes for page fault avg calc.
+
+2013-01-10  Tarik Sekmen  <tarik@directfb.org>
+
+	ApplicationManager: Fix for handleMemoryState.
+
+2013-01-09  Denis Oliver Kropp  <dok@directfb.org>
+
+	update bg with dithered version
+
+2013-01-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove missing palette file setting.
+
+2013-01-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Qt apps.
+
+2013-01-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for DWET_GOTFOCUS and DWET_LOSTFOCUS behaviour.
+
+2013-01-08  Andreas Shimokawa  <andi@directfb.org>
+
+	fix include for C
+
+2013-01-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add MemoryMonitor for ApplicationManager.
+
+2013-01-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Parse settings from xml file.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for application status notifications.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Resize bg image for dark theme.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Add DFIFF images for default theme.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	PHome: Remove icon animation.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	WidgetsDemo: Add two more line inputs.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Gallery: Minor change for image dialog.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove missing palette file from car statusbar.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	InputHelper for OSK (experimental).
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Change the way SHIFT is handled for OSKInput.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Fix for pointer input scaling.
+
+2013-01-07  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Do not block shift.
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	AppBase: set max timeout to 10s and warn on negative or zero timeout
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	PlatformManager: add cursorVisible() and update on motion events only when it returns true
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	Compositor: more surface event sync code
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	Compositor: add experimental manual OSK show (currently via PAUSE button)
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	Settings: disable non-working brightness setting
+
+2013-01-07  Denis Oliver Kropp  <dok@directfb.org>
+
+	AppMan: change startup delay to 100ms, will redesign to avoid sleeps.
+
+2013-01-06  Tarik Sekmen  <tarik@directfb.org>
+
+	AppCompositor: Changes for handling focus with multiple windows.
+
+2013-01-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for faster startup of phone compositor.
+
+2013-01-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Font: Add style to << and >> operators.
+
+2013-01-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix: getModification time should return 0 on failure.
+
+2013-01-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Dialog: Minor fix and more logging.
+
+2013-01-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Create and parse a simpler file once xml is loaded.
+
+2013-01-04  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Flush last motion if there are other window events.
+
+2013-01-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-01-04  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Add missing porterduff setting.
+
+2013-01-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	configure: Add --enable-trace option and remove trace from --enable-debug.
+
+2013-01-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-01-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	theme: convert ui-pack to dfiff again with premultiplied option.
+
+2013-01-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	AppBase: Fix spurious events due to uninitialised 'lastMotion.type'.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Use DFIFF in dark style.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Should not modify style path.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Add Window config.
+
+2013-01-02  Denis Oliver Kropp  <dok@directfb.org>
+
+	utf8: Include <arpa/inet.h>, FIXME: should not depend on htonl for just this case.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Minor fix, where osk is ready before statusbar.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Changes for OSK with multiple windows.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Window: Changes for log.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Add more trace and log for layouts.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Change for doLayout.
+
+2013-01-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Timer: Add restart()
+
+2012-12-28  Tarik Sekmen  <tarik@directfb.org>
+
+	TextLayout: Use wstring/wchar_t.
+
+2012-12-28  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Do not post window events to buffer in exclusive mode, instead pass them to WindowWidget directly.
+
+2012-12-27  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Fixes for cursor and layout positioning.
+
+2012-12-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	SurfaceView: When updating with new surface event synchronisation, still update on compositor highest rate for non-surfaceview based updates.
+
+	This makes transitions fast also in surface event sync mode.
+
+2012-12-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	SurfaceView: Comment out debug print.
+
+2012-12-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	Compositor: Implement new mechanism to reduce compositor frame rate while increasing overall performance with multiple apps running, e.g. in switcher.
+
+	When the new mode is enabled, updates are synchronised to the application with the highest frame rate,
+	dynamically determining which application that is (within one or two frames).
+
+2012-12-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	ILXCompositor::compose: add some debug info message, commented out.
+
+2012-12-26  Denis Oliver Kropp  <dok@directfb.org>
+
+	Animations: Add option '--light' and set background to Fill only.
+
+2012-12-26  Denis Oliver Kropp  <dok@directfb.org>
+
+	GridLayout: Fix a crash.
+
+2012-12-24  Denis Oliver Kropp  <dok@directfb.org>
+
+	Surface: Use DSFLIP_SWAP along with passing the updated region in FlipNew mode.
+
+	This allows the compositor to update its UI faster, reducing amount of blending for example.
+
+2012-12-24  Denis Oliver Kropp  <dok@directfb.org>
+
+	animations: Make non-affine the default launch mode in appdef.
+
+2012-12-24  Denis Oliver Kropp  <dok@directfb.org>
+
+	configure: If DFB_SURFACE_EVENTS is exported, take that instead of checking the version, print result in summary.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	TabPanel: Add support for key navigation.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Application: Set background image for application window.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Do not set brush in begin().
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_dialer for phone compositor.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for cancel button in style definitions.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Relayout soundmixer.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for switcher.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Add append and change clear methods.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Carousel: Set selected item at first update.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	CheckBox: Change horizontal layout constraint.
+
+2012-12-24  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Focus to first widget when shown.
+
+2012-12-23  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Fix for case when getenv returns NULL in searchExec.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Update .gitignore file.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Add example Qt appdef.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Add $ENV_VAR$ option for appdef exec field.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Qt icon for appdefs.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	CarouselSwitcher: Simplify switcher.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	PStatusBar: Add switcher and rearrange menu items.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	PHome: Changes for app buttons.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Changes for key navigation with switcher.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Window: Use application's main window size as base for child windows.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Surface: Do zSort before emitting geometryUpdated signal.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Fix for OSKInput cursor left, right.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Fix for scaled pointer events.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton: Vertically center icon using its height.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Carousel: Fixes for key navigation.
+
+2012-12-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Load image before returning caps.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: Use image capabilities while blitting.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Store image capabilities.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Parse absolute path from appdef.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Fix for shift modifier.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	AppMan: Add check for DWOP_KEEP_SIZE.
+
+2012-12-20  Tarik Sekmen  <tarik@directfb.org>
+
+	GridLayout: Add setKeyNavChildrenFirst().
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for numpad layout.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for OSK target geometry.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove fps related debug output messages.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Use default text color for tab buttons.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Examples: Use PrintF.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	PComp: Show compositor fps.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Remove fps label.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Add GetFPS coma method.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	FPSCalculator: Remove fpsText().
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Util: Add PrintF (thanks Denis).
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	AnimatedTiles: Change pressed signals to clicked.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for default theme definition.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Check for numpad as an argument.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Use different osk appdef for phone and car.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton: Change for icon().
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Button: Change for key input.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for dark theme definitions.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Icon: Add flag to colorize using default text color.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Change circle image used in animation examples.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Style: Changes for packs and scrollbars, sliders and panels.
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-12-19  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Add fallback to BackSystem for hw layer.
+
+2012-12-19  Denis Oliver Kropp  <dok@directfb.org>
+
+	animations/animatedtiles: show fps in upper right corner (red)
+
+2012-12-19  Denis Oliver Kropp  <dok@directfb.org>
+
+	animatedtiles: Add buttons for formations.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Fix for switching when ALT is up.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	CarouselSwitcher: Set background painting flags.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Carousel: Formatting and add showWidget method.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	AppThumbnail: Updates close button position on resize.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Changes for error output.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Set LITE_NO_THEME.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Revert _backgroundFlag BGFClear case.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	CPUMonitor: Parse number of cpu cores from cpuinfo and stat.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: Add --ilx:exclusive option.
+
+2012-12-17  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: Remove title and appOptions.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	PHome: Use GridView for showing list of applications.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Add GridView widget.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	GridLayout: Implement preferredSize() and clear() (initial).
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	ListBox: Use LayoutBase clear() and count().
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	LayoutBase: Add clear method.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Update if layout is modified.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	FontCache: Add ilixi fonts directory to FCConfig.
+
+2012-12-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Fix for OSK slide position.
+
+2012-12-14  Denis Oliver Kropp  <dok@directfb.org>
+
+	OSK: add numpad.xml as an example for new cycle mode
+
+2012-12-14  Denis Oliver Kropp  <dok@directfb.org>
+
+	OSK: Implement numpad support cycling through different characters like on a phone.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager: Minor fix, jump to neighbour unless target has children.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	GridLayout: Add documentation and key navigation support.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed missing files from types/Makefile
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager: Add check for key input handling in selectNeighbour.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	SoundMixer: Fix for component query/listen at startup.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Change bar color in phone statusbar.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove blending from pstatus appdef.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	BarChart: Add ticks.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: remove default blitting and drawing flags.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove old layout stuff.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	CPUMonitor: init. cores to 0.
+
+2012-12-13  Tarik Sekmen  <tarik@directfb.org>
+
+	TextBase: Use precalculated text extents.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Send modifier keys for OSK input.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Add modifier mode for cursor keys.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Add drawing flags to Painter methods.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Query FontCache as less as possible.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	LayoutBase: Fix for removing widgets.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Add CPU monitor to phone statusbar.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Add CPU group to monitor application.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Update authors, readme and todo..
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Install a font for testing fc-cache.
+
+2012-12-12  Tarik Sekmen  <tarik@directfb.org>
+
+	FontCache: Add debug messages.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Use a temporary color for checked TabPanelButtons.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Set window focus to current app when visible.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Send window focus event to OSK when visible.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Change TabPanelButton input method.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for OSK application.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing license text..
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing license text and comment out comboboxes for now.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing license text and connect home, soundmixer and settings apps.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing license text..
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove soundmixer background image.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Set default pushbutton style.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Reorder spinbox buttons.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Use input font for spinbox.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Set theme input and title fonts.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for Cursor visibility in PlatformManager.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to PlatformManager: FlipMode setting.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for PushButton.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Implemented drawing inverted Sliders.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Comment out ComboBox in WidgetsDemo for now.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Set SpinBox key navigation.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Slider for key input mode.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor fix for grabbing via EventManager.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to SpinBox for theme compatibility.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Change for PushButton size enums.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for ToolButton repeatable mode.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Set eventmanager's focus to NULL if widget is disabled.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor changes for lib/Thread.
+
+2012-12-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for key grabbing in compositor mode.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Do not use which for searching execs.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing header.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Set slider range in widgets demo.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Use PlatformManager to set geometry in car compositor.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Use PlatformManager to set compositor geometry.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for OSKInput handling when window focus is lost.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Some fixes for OSK and switcher geometry.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Theme fixes for lineInput.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Set font size using width().
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Add getLayerSize() to PlatformManager.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for dark theme.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Handle GrabEvents and changes for painting/animation in ScrollArea.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Handle Grab events in Slider.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Use default RadioGroup code in LayoutBase.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Handle PointerGrabbing events.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	EventManager now handles GrabbedState.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Add widget GrabbedState.
+
+2012-12-10  Tarik Sekmen  <tarik@directfb.org>
+
+	PlatformManager: fix for releasing layer surfaces.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for menu navigation in phone compositor.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Debugging for ListItem.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add windowCustomEventFilter() to compositor and override default cursor navigation.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add setWindowFocus() to AppCompositor.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for mouse wheel step in exclusive mode.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for drawing scrollbar.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add PointerGrabbing input method enum.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for contains() method.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Reimplement scrollarea using simpler tween animations (not completed).
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Handle window got focus and lost focus events.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add clear() to EventManager.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add absPosition() to widget.
+
+2012-12-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for cursor usage in PlatformManager.
+
+2012-12-08  Denis Oliver Kropp  <dok@directfb.org>
+
+	clear only if no bg image
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Toggle launcher if DIKS_HOME is pressed.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove hardcoded ARGB from Image's surface desc.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Include correct SaWMan header.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add directfb_windows header..
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Use stylist()->drawListBox
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Use stylist()->drawScrollBar
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ScrollBar and ListBox drawing methods to Stylist.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add animated tiles appdef.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Enable compositor only with fusiondale and sawman.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix appdefs for gallery and widgets demos.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add all missing apps. to configure.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add phone apps and resources.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add dark theme to Makefile.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add close image.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add notify image.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Use dark theme in configuration.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for new theme.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add phone compositor and remove old stuff.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Renamed demo3 to widgets.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add dark theme.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add default background image.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add car Makefile.am
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add car statusbar.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add car home.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add car compositor.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add car appdefs.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to default configuration file.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove car specific appdefs from default path.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add compositor application template and related resources to libilixi.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Set background image using PlatformManager upon Application construction.
+
+2012-12-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Add background and layerID getters to PlatformManager.
+
+2012-12-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	animatedtiles: use batchBlitImage()
+
+2012-12-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	animatedtiles: add fps display
+
+2012-12-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	animatedtiles: add example for animations and transitions, press 0, 1, 2
+
+2012-12-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for theme support.
+
+2012-12-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Refactoring for theme support.
+
+2012-12-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	config: default config for single layer platforms
+
+2012-12-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Use StretchBatchBlit for DirectFB version >= 1.6.0 only.
+
+2012-12-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ListBox widget to ilixiGUI.h
+
+2012-12-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Use BatchBlit in stylist where possible.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Use ListBox widget in demo2.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ListBox widget.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	ScrollArea: Do not update geometry if content is not there.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Icon: doLayout if image is changed.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for loading images after path is changed.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to drawIcon (do not colorize unless disabled).
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes for ScrollArea.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	VideoPlayer: Use widget surface if video layer is not available.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Refactor WidgetInputMethod.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Emit sigStateChanged() in EventManager.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Emit sigStateChanged() in Button and Icon.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for isBlendingEnabled().
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for removeWidget method in LayoutBase.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add insertWidget method to HBoxLayout.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add insertWidget method to VBoxLayout.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add sigStateChanged, insertChild and changes to isChild and removeChild.
+
+2012-11-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix image not found error message.
+
+2012-11-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Add setRange.
+
+2012-11-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Change for slider setValue method. - Control if signal is emitted.
+
+2012-11-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Add VideoPlayer widget. - Doesn't work on single layer atm. - Will fix layer issues and looks soon.
+
+2012-11-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Add Video type. - Allows use of DFBVideoProvider for playback of video files, e.g. FFmpeg.
+
+2012-11-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Add license info to PlatformManager.
+
+2012-11-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Add PlatformManager; used for management of layers and other DFB interfaces. - PlatformManager maps hardware layers to logic layers. - Custom logic layers are used by windows and other widgets if needed. - Cursor can be rendered on a custom logic layer. - Default style and palette definitions can be configured for all applications.
+
+2012-11-16  Tarik Sekmen  <tarik@directfb.org>
+
+	This fix is for scaling and positioning of windows for apps with a main window.
+
+2012-11-15  Tarik Sekmen  <tarik@directfb.org>
+
+	Do not add packages to ilixi.pc unless they are used/available.
+
+2012-11-12  Denis Oliver Kropp  <dok@directfb.org>
+
+	pkgconfig: fix ilixi.pc.in
+
+2012-11-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_animations appdef.
+
+2012-11-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing meta-demo.
+
+2012-11-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Add animations example.
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for configure.
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Disable blit description in demo4 for now.
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Simplify attributes in style.dtd
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add dialog example.
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for dialogs with no button layout.
+
+2012-11-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add compile-time checks for compatibility with DirectFB 1.4.x
+
+2012-10-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for dialog widgets.
+
+2012-10-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Allow construction of empty labels.
+
+2012-10-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Handle abnormal termination of child processes.
+
+2012-10-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add rule for cleaning generated files.
+
+2012-10-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ignore rule for generated files.
+
+2012-10-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add gccxml rule for Reflex support.
+
+2012-10-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add "--with-examples" option.
+
+2012-10-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add initial support for Reflex.
+
+2012-10-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Add missing preferredSize() impl.
+
+2012-10-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for fontconfig usage.
+
+2012-10-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix webkit appdefs.
+
+2012-10-19  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Set PorterDuff flag (thanks Denis).
+
+2012-10-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove text layout clipping in stylist.
+
+2012-10-11  Andreas Shimokawa  <andi@directfb.org>
+
+	build: more out-of-tree-build fixes
+
+2012-10-11  Andreas Shimokawa  <andi@directfb.org>
+
+	debian: pacakge ilixi (untested)
+
+2012-10-11  Andreas Shimokawa  <andi@directfb.org>
+
+	build: fixes for out-of-tree builds
+
+2012-10-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-10-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing ilixi_WebKit.appdef
+
+2012-10-10  Denis Oliver Kropp  <dok@directfb.org>
+
+	cursor: reset clip to fix cursor
+
+2012-10-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Error reporting in Image.
+
+2012-10-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add ilixi_WebKit appdef.
+
+2012-10-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Added UniversalEvent.
+
+2012-10-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for sawman header (latest DFB).
+
+2012-10-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Check for FusionDale and FusionSound.
+
+2012-10-06  Tarik Sekmen  <tarik@directfb.org>
+
+	A bit more documentation: - Fix make doxygen-doc - Customisations for API Reference - UML diagram for widget update sequence
+
+2012-10-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix ui-icons file name.
+
+2012-10-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Ignore modifier keys in WindowWidget.
+
+2012-10-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Support for sub surfaces and shared surfaces (stereoscopy is broken).
+
+2012-10-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to subsurface usage and ScrollArea.
+
+2012-10-01  Tarik Sekmen  <tarik@directfb.org>
+
+	Disable window update timer for now.
+
+2012-10-01  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: Fix for drawing selection rectangle.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	LineInput: do not append modifier keys to text layout.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for PointerEvent.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor changes for key and pointer event types.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Formatting for AppDefs.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	KeyEvent: Add keyID.
+
+2012-09-26  Tarik Sekmen  <tarik@directfb.org>
+
+	Add getEventBuffer() and compress motion events.
+
+2012-09-24  Tarik Sekmen  <tarik@directfb.org>
+
+	AppBase: include directfb_util.h
+
+2012-09-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Added image state to prevent multiple access errors.
+
+2012-09-24  Andreas Shimokawa  <andi@directfb.org>
+
+	compile fix: include config.h before using HAVE_FUSIONSOUND
+
+2012-09-21  Denis Oliver Kropp  <dok@directfb.org>
+
+	hotfix crash due to delayed source update events
+
+2012-09-20  Denis Oliver Kropp  <dok@directfb.org>
+
+	Sound: Fix build without FusionSound.
+
+2012-09-20  Denis Oliver Kropp  <dok@directfb.org>
+
+	Window: Use timed updates. Add cursor hiding by setting ILIXI_NO_CURSOR.
+
+2012-09-20  Denis Oliver Kropp  <dok@directfb.org>
+
+	SurfaceView: New frame acknowledge scheme.
+
+2012-09-20  Denis Oliver Kropp  <dok@directfb.org>
+
+	Surface: Use new flipping scheme when ILIXI_NEW_FLIP is set.
+
+2012-09-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Better support for notifications.
+
+2012-09-19  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for syntax error (thanks to Gregory Dymarek).
+
+2012-09-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Add monitor application.
+
+2012-09-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Added following: - Enums for StyleHint::PackedIcon. - GroupBox setTitleIcon().
+
+2012-09-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Check if current application is terminated before toggling launcher.
+
+2012-09-17  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for theme support (icons only). - Style uses a map for icons. - Icons use Palette colors to colorize images.
+
+2012-09-13  Tarik Sekmen  <tarik@directfb.org>
+
+	DaleDFB: Fix for OSK component name.
+
+2012-09-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Notify: Add debug messages and check for component.
+
+2012-09-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Image: Removed access check, instead rely on DFBImageProvider.
+
+2012-09-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Add gears appdef to Makefile.
+
+2012-09-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for Compositor component name.
+
+2012-09-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor and other COMA components now use ComponentData header.
+
+2012-09-11  Tarik Sekmen  <tarik@directfb.org>
+
+	Added "compositor settings" application.
+
+2012-09-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed LineInput inside SpinBox, now uses a TextLayout.
+
+2012-09-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix: Query OSK component once.
+
+2012-09-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for button up events on grabbed widgets.
+
+2012-09-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Added: Set Icon using PackedIcon enum.
+
+2012-09-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Added SpinBox widget.
+
+2012-09-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Initial support for PackedIcons.
+
+2012-09-09  Tarik Sekmen  <tarik@directfb.org>
+
+	Formatting for debug messages.
+
+2012-09-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Reposition pages on home.
+
+2012-09-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Do not add close button if APP_AUTO_START is specified.
+
+2012-09-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Specify APP_VIS_NOTIFY to send a visibility notification when application thumbnail is visible or hidden.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	set initial volume to 1.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	fix for volume icon.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Clear show/hide animProps when transition is completed.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for OSK request and quick app switching in compositor.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed unused source files.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Fix for modifier keys.
+
+2012-09-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for single page on home.
+
+2012-09-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Send wheelStep to client window, was missing.
+
+2012-09-04  Tarik Sekmen  <tarik@directfb.org>
+
+	geom. fix
+
+2012-09-04  Tarik Sekmen  <tarik@directfb.org>
+
+	Added numbered grid for home app.
+
+2012-09-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	Makefile: add 8tracks.appdef
+
+2012-09-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	AppBase: Transform absolute motion events based on min/max values in handleAxisMotion()
+
+	This fixes touch screen support.
+
+2012-09-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-09-04  Denis Oliver Kropp  <dok@directfb.org>
+
+	changed brightness
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for slideTo animation and notification timer.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for mixer layout: centering.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for killApp().
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Use DefaultFont for CheckBox and RadioButton.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Formatting for layouts.
+
+2012-09-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for OSK show/hide.
+
+2012-09-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-09-03  Denis Oliver Kropp  <dok@directfb.org>
+
+	Hide OSK when pressing Enter
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Icon: Disconnect updateImageSize().
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for fpscalculator.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	WakeUp if there is a new update.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed flipCount check.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove Quit button, instead add it to switcher thumbnails.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	ToolButton::IconOnly position fix.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Added Timer::running() method.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Do not use callback for FPSCalculator.
+
+2012-09-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Allow omitted tags in application.dtd
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Back button on statusbar.
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Set debug domain and fix for quick hide/show.
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	RemoteContentArea's height is 50px now.
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for HorizontalSwitcher::removeThumb().
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for horizontal switcher.
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for autostart.
+
+2012-09-02  Tarik Sekmen  <tarik@directfb.org>
+
+	AutoStart apps now receive hidden notification on startup.
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	apps/icons
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	use gears.png
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	add gears, fix googleplus
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	add more icons
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	add google, goog+, twitter and youtube
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	add gears
+
+2012-09-01  Denis Oliver Kropp  <dok@directfb.org>
+
+	add window-surface-policy=videoonly for dashboard
+
+2012-08-31  Andreas Shimokawa  <andi@directfb.org>
+
+	fontconfig: include <fontconfig/fontconfig.h>, remove hardcoded -I/usr/include/fontconfig from Makefile.am
+
+	This is the better hack for now, especially to fix non-trivial build environments
+
+	The root of all evil seems to be in the fontconfig.pc file which seems to be broken(?)
+
+2012-08-31  Andreas Shimokawa  <andi@directfb.org>
+
+	lower the required version for fontconfig to 2.6
+
+2012-08-31  Denis Oliver Kropp  <dok@directfb.org>
+
+	StatusbarComponent: Do not deallocate() as notification flags have CNF_DEALLOC_ARG.
+
+	Fixes double free()'s
+
+2012-08-31  Denis Oliver Kropp  <dok@directfb.org>
+
+	add 8tracks.com appdef
+
+2012-08-31  Denis Oliver Kropp  <dok@directfb.org>
+
+	auto start mixer (to have it as fusion sound master)
+
+2012-08-31  Denis Oliver Kropp  <dok@directfb.org>
+
+	compositor: optimised bg
+
+2012-08-31  Denis Oliver Kropp  <dok@directfb.org>
+
+	bbc.co.uk
+
+2012-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	Add FullScreen option for webapps.
+
+2012-08-30  Denis Oliver Kropp  <dok@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-08-30  Denis Oliver Kropp  <dok@directfb.org>
+
+	keep timeout between 1 and 1000
+
+2012-08-30  Denis Oliver Kropp  <dok@directfb.org>
+
+	use SIGKILL for now
+
+2012-08-30  Tarik Sekmen  <tarik@directfb.org>
+
+	FontCache uses fontconfig now (might need path fix fontconfig.h). + OSK layout + BBC and Facebook appdefs + Default timeout set to 1s
+
+2012-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Added missing symbols to standard OSK layout.
+
+2012-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for cursor position.
+
+2012-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for OSK target.
+
+2012-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Perform OSK animation only if ilixi_osk is ready.
+
+2012-08-29  Tarik Sekmen  <tarik@directfb.org>
+
+	Improvements for AppCompositor madeAvailable, home app buttons and compositor switching.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix missing thiz in SoundDFB.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Music: Wrapper for FusionSound music provider.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes for debugging.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for Stylist (vertical slider).
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	facebook appdef
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Disable notification timer for now.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	More debugging output and fix for auto_start.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Changed timer and update condition for Clock and VolumeMeter.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Added compositor show and hide animated properties. Added APP_AUTO_START.
+
+2012-08-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix: Do not set size for application background image.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Added SoundDFB. Set max timeout to 10000ms.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed catalog, should create build time.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Moved FusionDale interfaces from AppBase to DaleDFB.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for compositor notifications.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Use typedefs int32_t and int64_t for Timers.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for blending and layout in statusbar's remote content area.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Dashboard stuff.
+
+2012-08-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	use -a for penguins
+
+2012-08-27  Denis Oliver Kropp  <dok@directfb.org>
+
+	dashboard
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	List of changes: - Simplify lib/notify code; so Notification component does most of the work. - setenv for WEBKIT_IGNORE_SSL_ERRORS and LITE_WINDOW_DOUBLEBUFFER. - In compositor F11 sends example notification.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Added widgets to soundmixer (not functional).
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to statusbar. - Clock width is increased. - Use strechblit where possible. - Better images.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Added osk/images/Makefile to config
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Follow up theme changes for OSK.
+
+2012-08-27  Tarik Sekmen  <tarik@directfb.org>
+
+	Mostly cosmetic changes for new theme.
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for EventManager::SetOSKWidget().
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	New settings for Compositor animations and fix for Horizontal switcher size.
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for AppFlags.
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to input event consumption, affects focus and OSK behaviour.
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Set tweens' initial value in gallery.
+
+2012-08-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Build fix for sound support.
+
+2012-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	License for VolumeMeter widget :)
+
+2012-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Improved Timer and main loop code (thanks Denis).
+
+2012-08-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Added FusionSound support (--enable-sound).
+
+2012-08-23  Denis Oliver Kropp  <dok@directfb.org>
+
+	disable blending of apps temporarily
+
+2012-08-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Positioning fix for OSK target.
+
+2012-08-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for Sound and Temp buttons on StatusBar.
+
+2012-08-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes and fixes: - Sort application list alphabetically. - Move new application icons to datadir. - Add windowCount() to AppInstance. - Fix for xml catalog. - Public ID for Application DTD.
+
+2012-08-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes to ilixi_demo1. - Source formatting. - Removed second tween animation.
+
+2012-08-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for PushButton text positioning.
+
+2012-08-21  Tarik Sekmen  <tarik@directfb.org>
+
+	Utilise libxml2 catalog support for offline DTD validation. - XML_CATALOG_FILES env. variable is set to ILIXI_DATADIR, if not set by user.
+
+2012-08-20  Tarik Sekmen  <tarik@directfb.org>
+
+	TextLayout improvement.
+
+2012-08-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Some changes for theming and layouts.
+
+2012-08-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for statusbar.
+
+2012-08-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for a more basic Palette.
+
+2012-08-16  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor now uses ilixi_home app. instead of launcher widget.
+
+2012-08-15  Andreas Shimokawa  <andi@directfb.org>
+
+	compile fix
+
+2012-08-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Added ToolButton options (DrawFrame, Repeatable).
+
+2012-08-14  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to configure script for FusionDale support.
+
+2012-08-14  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK: Fix for backspace key symbol.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Further changes for --enable-dale option.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Added appdef for testing OSK input and new theme.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor updates: - OSK integration almost completed. - Animated property control flags for AppView. - Use which before adding applications (Andi).
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Add OptDale to demo3.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for stacker app.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes to statusbar.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Added new configure option: --enable-dale
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Added enabled flag to Tweens.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove OptStatusbar
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove deprecated stacking methods.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Helper methods for widget stacking.
+
+2012-08-13  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to OSK app and OSK-EventManager integration.
+
+2012-08-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Added missing HorizontalScroller.
+
+2012-08-11  Tarik Sekmen  <tarik@directfb.org>
+
+	New horizontal switcher..
+
+2012-08-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for horizontal and vertical box layouts.
+
+2012-08-10  Tarik Sekmen  <tarik@directfb.org>
+
+	OSK application.
+
+2012-08-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Missing in pre: RemoteContentArea and StatusbarButton classes.
+
+2012-08-10  Tarik Sekmen  <tarik@directfb.org>
+
+	New StatusBar and Compositor integration. - home and switcher buttons are now on statusbar. - RPC using CompositorComponent. - SoundComponent is integrated with volume icon. - RemoteContentArea for displaying info. on statusbar, e.g. navigation.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Add missing hidden notification during switching.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Removed deallocate in Coma notifications.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Added notifications support to compositor component.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Added osk component (not working) and optional non-blocking behaviour in compositor.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Logging for StatusBar.
+
+2012-08-08  Tarik Sekmen  <tarik@directfb.org>
+
+	Logging for statusbar component.
+
+2012-08-07  Tarik Sekmen  <tarik@directfb.org>
+
+	ilixi applications now use "directfb.org" coma world.
+
+2012-08-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Added statusbar component for remote content.
+
+2012-08-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Initial commit for keyboard (not working).
+
+2012-08-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for compositor. - LauncherButtons - Animations - Source formatting
+
+2012-08-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing validation file.
+
+2012-08-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing style file.
+
+2012-08-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Application definition file support.
+
+2012-08-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Blitter theme support, ilixi font cache and some new widgets.
+
+2012-08-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Modified licence text and source formatting.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for segfault in compositor (thanks Andi).
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Attached ilixi_mixer to SoundComponent.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	StatusBar: Release SoundComponent on exit.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for crash in compositor due to missing SoundComponent.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing ILOG_TRACE_F().
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Add dummy soundmixer.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for package data.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Compositor: Source formatting and PopUpComponent.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Add FusionDale as a dependency.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	core: Add ComaComponent to Makefile.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Added lib/Notify.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	FusionDale integration.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Added FileSystem utilities.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Window: Source formatting.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Surface: Source formatting and changes to createDFBSurface().
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Animation: Source formatting.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	FPSCalculator: Source formatting.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Timer: Source formatting and fix for funck().
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Event: Ordering.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Font: Added dfbFont().
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	TextLayout: Source formatting and drawTextLayout().
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Source formatting and debug messages.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Added translate() and performed source formatting.
+
+2012-07-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for dialog update.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Timer: Changes to start method.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Added convenience macro for logging widgets and functions.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Widget: Changes for update and setGeometry.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	WindowWidget: Changes for window updates.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Added OptStatusBar option.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for WebKitDFB.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes for ilixi_statusbar.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Added statusbar flag.
+
+2012-07-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for missing callback error and added StatusBar application.
+
+2012-06-29  Denis Oliver Kropp  <dok@directfb.org>
+
+	fix update event queueing, use queue not stack
+
+2012-06-29  Denis Oliver Kropp  <dok@directfb.org>
+
+	hotfix blocking of first app in switcher
+
+2012-06-28  Andreas Shimokawa  <andi@directfb.org>
+
+	do not use triplebuffer for now
+
+2012-06-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Timer: Added notify method for convenience.
+
+2012-06-25  Tarik Sekmen  <tarik@directfb.org>
+
+	Surface: Fix for missing flipping flag.
+
+2012-06-25  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceEventListener: Use stack and don't drop any frames.
+
+2012-06-15  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceEventListener: Fix for attaching and detaching source surfaces.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Fix for flipCount (experiment).
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Fullscreen update option for Compositor (fsu).
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for stereo mode.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for SurfaceView updated region.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	SurfaceView: Send FrameAck only before updating.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Added CompositorButton for convenience.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Logging for Label and TextBase.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for off-by-one in rect.dfbRegion().
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Revert back to using window.event.cx for PointerEvents.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Painter: do not draw empty layouts.
+
+2012-06-12  Tarik Sekmen  <tarik@directfb.org>
+
+	Minor fix for animation start signal and tween's value.
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Added an FPSCalculator to compositor (ilixi_comp fps).
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Added Slider (Not fully implemented).
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Added AnimationSequence.
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Added FPSCalculator utility.
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Use functionoid instead of pointer-to-function with callbacks.
+
+2012-06-10  Tarik Sekmen  <tarik@directfb.org>
+
+	Remove legacy FPS stuff.
+
+2012-06-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Added initial window restacking support to compositor.
+
+2012-06-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Pass button mask to pointer events in exclusive mode.
+
+2012-06-07  Tarik Sekmen  <tarik@directfb.org>
+
+	Ties to a destroyed widget removed from EvenManager.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Painter for clipping in stereo mode.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Added more stuff to ignore.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Added missing source file.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Another fix for first flip in AppView.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes to Carousel related stuff. - Methods for adding CarouselItems directly. - Initial documentation of Carousel and CarouselItem.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Simplified PaintEvents and SurfaceView states.
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Added signals to SurfaceView for more control (Thanks Andi).
+
+2012-06-06  Tarik Sekmen  <tarik@directfb.org>
+
+	Added missing source files for switcher.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Pass command line arguments properly (Thanks Denis).
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Added grid image.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Added carousel switcher to compositor.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Added Carousel demo.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Added Carousel widget.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Play with z on buttons.
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for painter::begin().
+
+2012-06-05  Tarik Sekmen  <tarik@directfb.org>
+
+	Changes for stereo PaintEvents and logging.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Debug messages.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Clip using mapped coordinates.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Added cursor offset in stereo compositing mode.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Ignore CET_ADD event if window is not there.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Changed Z values for compositor items.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Set screen for stereo output.
+
+2012-06-03  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for surface geometry.
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for compile error due to missing macro.
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Added basic Affine2D support to painter.
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Use PaintEvents.
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Use 3D applications instead.
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Initial Affine2D class (need fixed point implementation).
+
+2012-05-31  Tarik Sekmen  <tarik@directfb.org>
+
+	Better support for stereo output. - Added PaintEvent type - Sub-surfaces are positioned using widgets' z values. - Preliminary z ordering code.
+
+2012-05-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Add clear background for df_input.
+
+2012-05-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-05-28  Tarik Sekmen  <tarik@directfb.org>
+
+	simplify pressed signal
+
+2012-05-28  Tarik Sekmen  <tarik@directfb.org>
+
+	Some minor changes for ARGB mode.
+
+2012-05-28  Denis Oliver Kropp  <dok@directfb.org>
+
+	ignore
+
+2012-05-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for SEGFAULT due to font usage in compositor.
+
+2012-05-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Added reference counter to Font.
+
+2012-05-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for pointer inputs, window config events and graceful exit if SaWMan not available.
+
+2012-05-24  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for pointer events, application state and logging.
+
+2012-05-23  Tarik Sekmen  <tarik@directfb.org>
+
+	New switcher icon (thanks to Sonat Deniz).
+
+2012-05-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Added ILIXI_DATADIR.
+
+2012-05-23  Tarik Sekmen  <tarik@directfb.org>
+
+	Fix for configuration defines.
+
+2012-05-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Disable mouse grabbing for app compositors.
+
+2012-05-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Fixes for TAB and cursor key navigation.
+
+2012-05-22  Tarik Sekmen  <tarik@directfb.org>
+
+	Added --enable-stereo for side by side view (experimental).
+
+2012-05-17  Denis Oliver Kropp  <dok@directfb.org>
+
+	revert to BACKVIDEO and use WAITFORSYNC
+
+2012-05-17  Denis Oliver Kropp  <dok@directfb.org>
+
+	use triple buffer for now
+
+2012-05-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Show more images in gallery demo.
+
+2012-05-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Implement TAB key navigation.
+
+2012-05-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add widget id field (temporary).
+
+2012-05-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for application background image.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Block source surface updates when possible.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Remove surfaceview
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Compositor now uses SaWMan.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Set event flags to NONE for focus events.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Disable remove from radio group for now.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Disable widget grab using key for now.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Calculate FPS for application.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add FPS utility from DirectFB-examples.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Types for application management.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add setSize(w,h) for convenience.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for removed widgets receiving events.
+
+2012-05-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add SaWMan as a dependency.
+
+2012-05-08  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for layer buffer mode and cursor bounds.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Use BACKSYSTEM
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add pointer and compositor buttons back.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Do not use blending unnecessarily.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Disable clearing when application is showing.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add clipping to Painter.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Set configuration for layer.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for relative mouse motion
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Remove pixelformat flag from layer config.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed AppButton.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed old compositor stuff.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Changes to compositor/Makefile.am
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Changes to Compositor: - Added AppCompositor for compositing windows which belong to an application. - Added ApplicationManager temporarily for package management. In future we should have a DirectFB based solution.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Compatibility with tween animation.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Compatibility with new BorderBase and TextBase clasess.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Temporary pointer image for use in exclusive mode.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Compatibility with tween animation.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Set opacity using blitting flags.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	A surface view should handle ui events just like any other widget.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Do not stop unless already running.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Use an internal variable for tween animations.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added layer exlusive mode.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for transparent images.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Compatibility with DirectFB event definitions.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for SurfaceDescription and refactor AppOptions.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Avert diamond problem and have proper inheritance using multiple bases.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed virtual base widget.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Refactor source surface.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ilixi now requires DirectFB 1.6.0 at least.
+
+2012-05-07  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added an opacity attribute to widget.
+
+2012-04-26  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	More economical surface event handling :)
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added Frame::BackgroundFlags
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Do not use StretchBlit unless needed.
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added inline methods
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added profiling switch
+
+2012-04-25  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed GrabPointer calls
+
+2012-04-24  Denis Oliver Kropp  <dok@directfb.org>
+
+	Surface: Don't use DSFLIP_FLUSH without QUEUE!
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Disable background image during compositing.
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Debug messages using D_DEBUG_AT and fix for CompositorSurfaceView
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix stacking and navigation
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Add navigation demo
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix out of bounds in arugment parsing (ANDI)
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	QuitButton
+
+2012-04-24  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Application quit button
+
+2012-04-23  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Test app. quit button
+
+2012-04-23  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Bunch of debug messages
+
+2012-04-23  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed maestro makefile
+
+2012-04-23  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Remove maestro and fusion related methods from AppBase. Redesign of WindowWidget and Application. Improvements in EventManager (not finalised).
+
+2012-04-19  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed INSTALL file and fixed paths in compositor.
+
+2012-04-19  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	fixes to compositor, remove some appication icons, added others
+
+2012-04-19  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-04-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Changed buttons in launcher.
+
+2012-04-12  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ilixi: add missing demo4 and stacking
+
+2012-04-12  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ilixi: add missing demo4 and stacking
+
+2012-04-12  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ilixi: add synchronized surface compositor
+
+	Actually a lot more accumulated work is in this commit.
+
+	This checkin was done by Andi, sorry Tarik for the lack of a proper description
+
+2012-04-12  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ilixi: add synchronized surface compositor
+
+	Actually a lot more accumulated work is in this commit.
+
+	This checkin was done by Andi, sorry Tarik for the lack of a proper description
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fixes to caret navigation
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Helpers for layout bounds and fixes to caret navigation
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added Font:setAttributes
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Check if image exists before drawing
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added ScrollTo method
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	DFBSurface geometry cannot change if it is not a subsurface.
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Animation: Added delay before start
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	use DIKS_SPACE and DIKS_OK for button clicks
+
+2012-03-16  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Improvements/fixes to key navigation
+
+2012-03-15  Andreas Shimokawa  <andi@directfb.org>
+
+	readd arrowDown.png
+
+2012-03-15  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Merge branch 'master' of git+ssh://git.directfb.org/git/directfb/libs/ilixi
+
+2012-03-15  Andreas Shimokawa  <andi@directfb.org>
+
+	remove arrowDown.png from the list of files to be installed
+
+2012-03-15  Tarik Sekmen  <tarik@ilixi.org>
+
+	Missing arrowDown image
+
+2012-03-14  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for missing H4W/height values.
+
+2012-03-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Empty LayoutBase has a default size.
+
+2012-03-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added resetClip()
+
+2012-03-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Application background image
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed button layout size
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Added combobox for testing
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Use only palette colors for dialogs
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Removed dependency stuff
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Use content's preferred size
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for clear() - Set Color(0,0,0,0) to before clearing inside rectangle.
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Default parameter value for setChecked()
+
+2012-02-20  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fix for radio button toggle
+
+2012-02-14  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	ComboBox
+
+2012-02-14  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Radio groups
+
+2012-02-14  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	if removed set focused widget to null.
+
+2012-02-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Fixes to application deinitialization order.
+
+2012-02-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	CheckBox horizontal offset
+
+2012-02-13  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	RadioButtons
+
+2012-02-11  Denis Oliver Kropp  <dok@directfb.org>
+
+	App: Initialise state with Hidden.
+
+2012-02-11  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	WebView widget template.
+
+2012-02-11  Tarik Sekmen  <tarik.sekmen@gmail.com>
+
+	Initial commit
