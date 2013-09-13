@@ -17,6 +17,10 @@ endif
 
 endif # end WITH_FUSIONDALE
 
+if WITH_EGL
+SUBDIRS += egl
+endif
+
 #if WITH_REFLEX
 #SUBDIRS += meta-demo
 #endif
