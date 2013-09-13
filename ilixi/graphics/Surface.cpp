@@ -80,8 +80,11 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
     desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT | DSDESC_CAPS);
     desc.width = width;
     desc.height = height;
-    desc.pixelformat = DSPF_ARGB;
-    desc.caps = caps;
+    desc.pixelformat = PlatformManager::instance().forcedPixelFormat();
+    if(_flags & ForceSingleSurface)
+        desc.caps = caps;
+    else
+        desc.caps = (DFBSurfaceCapabilities) (caps | PlatformManager::instance().getWindowSurfaceCaps());
     desc.hints = DSHF_FONT;
     DFBResult ret = PlatformManager::instance().getDFB()->CreateSurface(PlatformManager::instance().getDFB(), &desc, &_dfbSurface);
     if (ret)
@@ -162,6 +165,13 @@ Surface::setGeometry(int x, int y, int width, int height)
             ILOG_ERROR(ILX_SURFACE, "Cannot set geometry: %s\n", DirectFBErrorString(ret));
     } else
         ILOG_ERROR(ILX_SURFACE, "Cannot set geometry without a parent surface!\n");
+}
+
+void
+Surface::setBlittingFlags(DFBSurfaceBlittingFlags flags)
+{
+    if (_dfbSurface)
+        _dfbSurface->SetBlittingFlags(_dfbSurface, flags);
 }
 
 void
@@ -642,6 +652,11 @@ Surface::updateSurface(const PaintEvent& event)
     ILOG_DEBUG(ILX_SURFACE, " -> eye: %s\n", event.eye & PaintEvent::LeftEye ? "Left" : "Right");
     _eye = event.eye;
 #endif
+
+    if (_flags & HasOwnSurface) {
+        Rectangle rect = _owner->mapToSurface(event.rect);
+        clear(rect);
+    }
 }
 
 void

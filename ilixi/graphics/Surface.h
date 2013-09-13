@@ -47,10 +47,11 @@ public:
         ModifiedSize = 0x0004,                                  //!< Widget size is modified.
         ModifiedGeometry = (ModifiedPosition | ModifiedSize),   //!< Widget's geometry is modified.
         DoZSort = 0x0008,                                       //!< Perform z-index sorting of children.
-        HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+        HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface (offscreen) and its surface is not a sub-surface of any parent widget.
         RootSurface = 0x0020,                                   //!< Widget is a WindowWidget and window surface is used directly.
         SubSurface = 0x0040,                                    //!< Widget uses a subsurface.
         SharedSurface = 0x0080,                                 //!< Widget uses window surface directly.
+        ForceSingleSurface = 0x1000,                            //!< Affects offscreen surfaces only. Overrides default platform option.
         DefaultDescription = (InitialiseSurface | ModifiedGeometry | SharedSurface),    //!< Default flags for widgets.
         BlitDescription = (InitialiseSurface | ModifiedGeometry | HasOwnSurface),       //!< Use if widget surface should be blitted onto another widget/surface, e.g. a widget inside a ScrollArea.
         WindowDescription = (InitialiseSurface | ModifiedGeometry | RootSurface)        //!< Use if widget is a WindowWidget, e.g. Application or Dialog.
@@ -207,6 +208,12 @@ public:
      */
     void
     setOpacity(u8 opacity);
+
+    /*!
+     * Sets surface blitting flags.
+     */
+    void
+    setBlittingFlags(DFBSurfaceBlittingFlags flags);
 
 #ifdef ILIXI_STEREO_OUTPUT
     bool

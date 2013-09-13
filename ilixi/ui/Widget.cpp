@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
+D_DEBUG_DOMAIN(ILX_WIDGET, "ilixi/ui/Widget", "Widget");
 
 unsigned int Widget::_idCounter = 0;
 StylistBase* Widget::_stylist = NULL;
@@ -1010,9 +1010,24 @@ Widget::lowerChild(Widget* child)
 void
 Widget::paintChildren(const PaintEvent& event)
 {
+    // TODO Stereo blitting and flipping.
     ILOG_TRACE_W(ILX_WIDGET);
+    Widget* child;
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
-        ((Widget*) *it)->paint(event);
+    {
+        child = ((Widget*) *it);
+        child->paint(event);
+        if (child->_surface->flags() & Surface::HasOwnSurface)
+        {
+            _surface->setBlittingFlags(DSBLIT_BLEND_ALPHACHANNEL);
+            _surface->blit(child->_surface, child->absX(), child->absY());
+        }
+    }
+
+    if (_surface->flags() & Surface::HasOwnSurface) {
+        Rectangle rect = mapToSurface(event.rect);
+        _surface->flip(rect);
+    }
 }
 
 void
@@ -1022,7 +1037,7 @@ Widget::updateFrameGeometry()
     _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
     _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
 
-    ILOG_DEBUG( ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, _frameGeometry.x(), _frameGeometry.y());
+    ILOG_DEBUG(ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, _frameGeometry.x(), _frameGeometry.y());
 
     Surface::SurfaceFlags flags = (Surface::SurfaceFlags) ((_surface->flags() & Surface::ModifiedPosition) | (_surface->flags() & Surface::ModifiedSize));
     _surface->unsetSurfaceFlag(Surface::ModifiedGeometry);

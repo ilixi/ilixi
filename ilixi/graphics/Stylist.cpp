@@ -254,7 +254,10 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
     }
 
     Rectangle r(defaultParameter(StyleHint::LineInputLeft), defaultParameter(StyleHint::LineInputTop), input->width() - defaultParameter(StyleHint::LineInputLR), input->height() - defaultParameter(StyleHint::LineInputTB));
-    p->setClip(input->mapFromSurface(r));
+    if(input->surface()->flags() & Surface::HasOwnSurface)
+        p->setClip(r);
+    else
+        p->setClip(input->mapFromSurface(r));
 
     // selection
     if (!input->selectionRect().isNull())

@@ -1248,7 +1248,10 @@ PlatformManager::setPixelFormat(const char* format)
     }
 
     if (strcasecmp(format, "DEFAULT") == 0)
+    {
+        _pixelFormat = DSPF_ARGB;
         return true;
+    }
 
     int i = 0;
     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> %s\n", format);
