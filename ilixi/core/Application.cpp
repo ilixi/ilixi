@@ -678,10 +678,16 @@ Application::handleAxisMotion(const DFBInputEvent& event)
         }
     } else if (event.flags & DIEF_AXISABS)
     {
+        int newPos;
+        if ((event.flags & DIEF_MIN) && (event.flags & DIEF_MAX))
+            newPos = (event.axisabs - event.min) * __layerSize.w / (event.max - event.min);
+        else
+            newPos = event.axisabs;
+
         if (event.axis == DIAI_X)
-            __cursorNew.x = (event.axisabs - event.min) * __layerSize.w / (event.max - event.min);
+            __cursorNew.x = newPos;
         else if (event.axis == DIAI_Y)
-            __cursorNew.y = (event.axisabs - event.min) * __layerSize.h / (event.max - event.min);
+            __cursorNew.y = newPos;
         else
         {
             we.window.type = DWET_WHEEL;
