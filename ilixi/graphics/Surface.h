@@ -27,6 +27,10 @@
 #include <types/Event.h>
 #include <ilixiConfig.h>
 
+#ifdef ILIXI_HAVE_CAIRO
+#include <cairo-directfb.h>
+#endif
+
 namespace ilixi
 {
 class Widget;
@@ -238,6 +242,24 @@ public:
     flipStereo(const Rectangle& left, const Rectangle& right);
 #endif
 
+#ifdef ILIXI_HAVE_CAIRO
+    /*!
+     * Returns the cairo-directfb surface.
+     *
+     * If cairo-directfb surface does not exist it is created.
+     */
+    cairo_surface_t*
+    cairoSurface();
+
+    /*!
+     * Returns the context of cairo-directfb surface.
+     *
+     * If context does not exist it is created.
+     */
+    cairo_t*
+    cairoContext();
+#endif
+
 protected:
     /*!
      * Creates a new DFB surface which has the same pixel format as window.
@@ -295,6 +317,13 @@ private:
 #endif
     //! This mutex is used for serialising writes to surface by Painter.
     pthread_mutex_t _surfaceLock;
+
+#ifdef ILIXI_HAVE_CAIRO
+    //! Interface to cairo surface.
+    cairo_surface_t* _cairoSurface;
+    //! Interface to _cairoSurface's context.
+    cairo_t* _cairoContext;
+#endif
 
     /*!
      * Release DirectFB surface.
