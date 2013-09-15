@@ -45,6 +45,11 @@ nobase_ilixi_include_HEADERS	+=	Music.h \
 									Sound.h
 endif
 
+if WITH_CAIRO
+libilixi_types_la_SOURCES 		+= 	Gradient.cpp
+nobase_ilixi_include_HEADERS	+=	Gradient.h
+endif
+
 if WITH_NLS
 libilixi_types_la_SOURCES 		+= 	I18NBase.cpp
 nobase_ilixi_include_HEADERS	+=	I18NBase.h
