@@ -27,11 +27,15 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_BRUSH, "ilixi/types/Brush", "Brush");
+D_DEBUG_DOMAIN(ILX_BRUSH, "ilixi/types/Brush", "Brush");
 
 Brush::Brush()
         : _modified(true),
           _color(1, 1, 1)
+#ifdef ILIXI_HAVE_CAIRO
+          ,_mode(SolidColorMode),
+          _gradient()
+#endif
 {
     ILOG_TRACE(ILX_BRUSH);
 }
@@ -39,6 +43,10 @@ Brush::Brush()
 Brush::Brush(const Brush& brush)
         : _modified(true),
           _color(brush._color)
+#ifdef ILIXI_HAVE_CAIRO
+          ,_mode(brush.mode()),
+          _gradient(brush.gradient())
+#endif
 {
     ILOG_TRACE(ILX_BRUSH);
 }
@@ -46,6 +54,10 @@ Brush::Brush(const Brush& brush)
 Brush::Brush(const Color& color)
         : _modified(true),
           _color(color)
+#ifdef ILIXI_HAVE_CAIRO
+          ,_mode(SolidColorMode),
+          _gradient()
+#endif
 {
     ILOG_TRACE(ILX_BRUSH);
 }
@@ -75,6 +87,10 @@ Brush::operator=(const Brush &brush)
     {
         _color = brush._color;
         _modified = true;
+#ifdef ILIXI_HAVE_CAIRO
+        _mode = brush.mode();
+        _gradient = brush.gradient();
+#endif
     }
     return *this;
 }
@@ -84,8 +100,7 @@ Brush::applyBrush(IDirectFBSurface* surface)
 {
     if (_modified)
     {
-        DFBResult ret = surface->SetColor(surface, _color.red(), _color.green(),
-                                          _color.blue(), _color.alpha());
+        DFBResult ret = surface->SetColor(surface, _color.red(), _color.green(), _color.blue(), _color.alpha());
         if (ret)
         {
             ILOG_ERROR(ILX_BRUSH, "Error while applying brush: %x", ret);
@@ -95,5 +110,56 @@ Brush::applyBrush(IDirectFBSurface* surface)
     }
     return true;
 }
+
+#ifdef ILIXI_HAVE_CAIRO
+Brush::BrushMode
+Brush::mode() const
+{
+    return _mode;
+}
+
+Gradient
+Brush::gradient() const
+{
+    return _gradient;
+}
+
+void
+Brush::setBrushMode(BrushMode mode)
+{
+    _mode = mode;
+    _modified = true;
+}
+
+void
+Brush::setGradient(const Gradient& gradient)
+{
+    _gradient = gradient;
+    _mode = GradientMode;
+    _modified = true;
+}
+
+bool
+Brush::applyBrush(cairo_t* context)
+{
+    // TODO add error checking
+    switch (_mode)
+    {
+    case GradientMode:
+        if (_gradient.type() != Gradient::None)
+            cairo_set_source(context, _gradient.cairoGradient());
+        break;
+    case SolidColorMode:
+        cairo_set_source_rgba(context, _color.red(), _color.green(), _color.blue(), _color.alpha());
+        break;
+    case TextureMode:
+        break;
+    default:
+        break;
+    }
+    _modified = false;
+    return true;
+}
+#endif
 
 } /* namespace ilixi */
