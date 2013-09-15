@@ -88,6 +88,7 @@ if test "$enable_stereoscopy" = "yes"; then
 fi
 
 AC_ARG_ENABLE([egl], [AS_HELP_STRING([--enable-egl], [enable DFBEGL support @<:@default=no@:>@])], [], [enable_egl=no])
+AC_ARG_ENABLE([cairo], [AS_HELP_STRING([--enable-cairo], [enable cairo support @<:@default=no@:>@])], [], [enable_cairo=no])
 AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
 AC_ARG_ENABLE([fusionsound], AS_HELP_STRING([--enable-fusionsound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_fusionsound=no])
 AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor and application manager features @<:@default=no@:>@])], [], [enable_sawman=no])
@@ -124,11 +125,13 @@ SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 FONTCONFIG_REQ_VERSION=2.6.0
 DFBEGL_REQ_VERSION=7.10
+CAIRO_REQ_VERSION=1.10.2
 
 REQ_PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
 EGL_DEP="egl >= $DFBEGL_REQ_VERSION"
+CAIRO_DEP="cairo-directfb >= $CAIRO_REQ_VERSION"
 FUSIONDALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
 FUSIONSOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
 SAWMAN_DEP="sawman >= $SAWMAN_REQ_VERSION"
@@ -152,7 +155,20 @@ AS_IF([test "x$enable_egl" = "xyes"],
 		])		
     ]
 )
-            
+
+AS_IF([test "x$enable_cairo" = "xyes"], [
+	PKG_CHECK_MODULES([Cairo], [$CAIRO_DEP], 
+		[				
+			REQ_PACKAGES="$REQ_PACKAGES $CAIRO_DEP"
+			AC_DEFINE([HAVE_CAIRO], [1], [Enable Cairo support])
+		], 
+		[
+			enable_cairo=no 
+			AC_MSG_WARN([*** Cairo not found -- Building without Cairo support.])
+		]
+	)], []
+)
+
 AS_IF([test "x$enable_fusiondale" = "xyes"], [
 	PKG_CHECK_MODULES([FusionDale], [$FUSIONDALE_DEP], 
 		[				
@@ -288,6 +304,7 @@ AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
 AM_CONDITIONAL([WITH_EGL], [test "$enable_egl" = "yes"])
+AM_CONDITIONAL([WITH_CAIRO], [test "$enable_cairo" = "yes"])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -367,6 +384,7 @@ AC_MSG_RESULT([
    Debug enabled            : $enable_debug
    Trace enabled            : $enable_trace
    EGL support              : $enable_egl
+   Cairo support            : $enable_cairo
    Stereoscopy support      : $enable_stereoscopy  
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
