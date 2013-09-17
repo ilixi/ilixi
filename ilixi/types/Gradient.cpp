@@ -75,13 +75,13 @@ Gradient::type() const
 void
 Gradient::addStop(const Color& color, double offset)
 {
-    cairo_pattern_add_color_stop_rgba(_pattern, offset, color.red(), color.green(), color.blue(), color.alpha());
+    cairo_pattern_add_color_stop_rgba(_pattern, offset, color.red() / 255.0, color.green() / 255.0, color.blue() / 255.0, color.alpha() / 255.0);
 }
 
 void
 Gradient::addStop(double r, double g, double b, double a, double offset)
 {
-    cairo_pattern_add_color_stop_rgba(_pattern, offset, r, g, b, a);
+    cairo_pattern_add_color_stop_rgba(_pattern, offset, r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
 void

@@ -94,7 +94,7 @@ namespace ilixi
      * \code
      * RadialGradient g(50, 50, 10, 50, 50, 100);
      * g.addStop(Color(0, 0, 0), 0.0);
-     * g.addStop(Color(0, 1, 0), 1);
+     * g.addStop(Color(0, 255, 0), 1);
      * \endcode
      *
      * @param color Color to use at the stop.
@@ -105,10 +105,10 @@ namespace ilixi
 
     /*!
      * Add a new color stop to gradient at given offset.
-     * @param red value [0-1].
-     * @param green value [0-1].
-     * @param blue value [0-1].
-     * @param alpha value [0-1].
+     * @param red value [0-255].
+     * @param green value [0-255].
+     * @param blue value [0-255].
+     * @param alpha value [0-255].
      * @param offset Position of stop on gradient [0-1].
      */
     void
