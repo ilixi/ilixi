@@ -70,8 +70,8 @@ CairoClock::compose(const PaintEvent& event)
     pen2.setLineCapStyle(Pen::RoundCap);
 
     LinearGradient border(x, y, diameter, diameter);
-    border.addStop(Color(10, 10, 10), 0);
-    border.addStop(Color(0, 0, 0), 1);
+    border.addStop(Color(128, 128, 128), 0);
+    border.addStop(Color(10, 10, 10), 1);
     Brush brush1;
     brush1.setGradient(border);
 
