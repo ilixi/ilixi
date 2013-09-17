@@ -21,6 +21,10 @@ if WITH_EGL
 SUBDIRS += egl
 endif
 
+if WITH_CAIRO
+SUBDIRS += cairo
+endif
+
 #if WITH_REFLEX
 #SUBDIRS += meta-demo
 #endif
