@@ -42,6 +42,7 @@ namespace ilixi
 class Brush
 {
     friend class Painter; // applyBrush()
+    friend class CairoPainter; // applyBrush()
 public:
     /*!
      * Creates an opaque white brush.

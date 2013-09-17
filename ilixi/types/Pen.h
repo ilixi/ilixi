@@ -42,6 +42,7 @@ namespace ilixi
 class Pen
 {
     friend class Painter; // applyPen()
+    friend class CairoPainter; // applyBrush()
 public:
     /*!
      * Creates an opaque black pen.

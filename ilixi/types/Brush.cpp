@@ -150,7 +150,7 @@ Brush::applyBrush(cairo_t* context)
             cairo_set_source(context, _gradient.cairoGradient());
         break;
     case SolidColorMode:
-        cairo_set_source_rgba(context, _color.red(), _color.green(), _color.blue(), _color.alpha());
+        cairo_set_source_rgba(context, _color.red() / 255.0, _color.green() / 255.0, _color.blue() / 255.0, _color.alpha() / 255.0);
         break;
     case TextureMode:
         break;

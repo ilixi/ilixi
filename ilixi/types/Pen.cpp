@@ -249,7 +249,7 @@ Pen::applyPen(cairo_t* context)
     if (_mode == GradientMode && _gradient.type() != Gradient::None)
         cairo_set_source(context, _gradient.cairoGradient());
     else
-        cairo_set_source_rgba(context, _color.red(), _color.green(), _color.blue(), _color.alpha());
+        cairo_set_source_rgba(context, _color.red() / 255.0, _color.green() / 255.0, _color.blue() / 255.0, _color.alpha() / 255.0);
 
     cairo_set_line_width(context, _lineWidth);
     cairo_set_line_join(context, (cairo_line_join_t) _lineJoinStyle);
