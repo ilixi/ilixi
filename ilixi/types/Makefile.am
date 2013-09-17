@@ -46,8 +46,12 @@ nobase_ilixi_include_HEADERS	+=	Music.h \
 endif
 
 if WITH_CAIRO
-libilixi_types_la_SOURCES 		+= 	Gradient.cpp
-nobase_ilixi_include_HEADERS	+=	Gradient.h
+libilixi_types_la_SOURCES 		+= 	Gradient.cpp \
+									LinearGradient.cpp \
+									RadialGradient.cpp
+nobase_ilixi_include_HEADERS	+=	Gradient.h \
+									LinearGradient.h \
+									RadialGradient.h
 endif
 
 if WITH_NLS
