@@ -693,9 +693,15 @@ Surface::release()
 
 #ifdef ILIXI_HAVE_CAIRO
     if (_cairoContext)
+    {
         cairo_destroy(_cairoContext);
+        _cairoContext = NULL;
+    }
     if (_cairoSurface)
+    {
         cairo_surface_destroy(_cairoSurface);
+        _cairoSurface = NULL;
+    }
 #endif
 
 #ifdef ILIXI_STEREO_OUTPUT
