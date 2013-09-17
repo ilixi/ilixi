@@ -23,6 +23,11 @@ nobase_ilixi_include_HEADERS 	= 	FontPack.h \
                   					StylistBase.h \
                   					Surface.h
 
+if WITH_CAIRO
+libilixi_graphics_la_SOURCES 	+= 	CairoPainter.cpp
+nobase_ilixi_include_HEADERS 	+= 	CairoPainter.h
+endif
+
 if WITH_REFLEX
 GRAPHICS_REFLEX					= 	Painter_rflx.cpp \
                   					Palette_rflx.cpp \

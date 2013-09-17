@@ -35,7 +35,7 @@ namespace ilixi
 {
 class TextLayout;
 
-//! Draws primitive shapes and renders text.
+//! Draws primitive shapes and renders text using pure DirectFB methods.
 /*!
  * Painter paints on a widget's surface using its pen and brush. It is also used
  * for drawing text.
@@ -57,8 +57,6 @@ class Painter
 public:
     /*!
      * Constructor creates a new painter instance for the given widget.
-     * Upon creation default pen and font are applied to cairo and pango layouts
-     * respectively.
      *
      * @param widget Painter will work on this widget's surface.
      * @param clipRect Clipping is applied to this rectangle.
@@ -112,6 +110,7 @@ public:
      * @param y1 Y coordinate of start point.
      * @param x2 X coordinate of end point.
      * @param y2 Y coordinate of end point.
+     * @param flags
      */
     void
     drawLine(double x1, double y1, double x2, double y2, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
@@ -121,6 +120,7 @@ public:
      *
      * @param p1 Start point.
      * @param p2 End point.
+     * @param flags
      */
     void
     drawLine(const Point& p1, const Point& p2, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
@@ -129,6 +129,7 @@ public:
      * Draws a line inside the bounding rectangle using Pen.
      *
      * @param rect Bounding rectangle.
+     * @param flags
      */
     void
     drawLine(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
@@ -141,6 +142,7 @@ public:
      * @param y X coordinate of bounding rectangle.
      * @param width Width of bounding rectangle.
      * @param height Height of bounding rectangle.
+     * @param flags
      */
     void
     drawRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
