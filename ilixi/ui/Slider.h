@@ -34,6 +34,16 @@ class Slider : public Widget
 {
     friend class Stylist;
 public:
+
+    /*!
+     * This enum specifies slider's update policy.
+     */
+    enum UpdateMode
+    {
+        UponRelease,    //!< sigValueChanged is emitted once pointer is released.
+        Continuous      //!< sigValueChanged is emitted whenever slider moves.
+    };
+
     /*!
      * Constructor creates a horizontal slider.
      * Sets min=0, max=100, step=1, pageStep=10.
@@ -70,6 +80,9 @@ public:
     float
     range() const;
 
+    UpdateMode
+    updateMode() const;
+
     /*!
      * Returns slider's value.
      */
@@ -83,7 +96,7 @@ public:
      * Sets slider's value.
      */
     void
-    setValue(float value, bool signal = true);
+    setValue(float value, bool forceSignal = true);
 
     /*!
      * Sets slider's minimum and maximum limits.
@@ -117,6 +130,9 @@ public:
 
     void
     setOrientation(Orientation orientation);
+
+    void
+    setUpdateMode(UpdateMode updateMode);
 
     /*!
      * This signal is emitted when pointer button is pressed over slider.
@@ -152,6 +168,8 @@ protected:
     float _range;
     //! This flag specifies whether slider is inverted.
     bool _inverted;
+    //! This flag specifies slider's update policy.
+    UpdateMode _updateMode;
 
     virtual void
     compose(const PaintEvent& event);
