@@ -682,6 +682,11 @@ Surface::updateSurface(const PaintEvent& event)
     if (_flags & HasOwnSurface) {
         Rectangle rect = _owner->mapToSurface(event.rect);
         clear(rect);
+        if (PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING)
+        {
+            flip(rect);
+            clear(rect);
+        }
     }
 }
 
