@@ -150,7 +150,7 @@ EGLWidget::compose(const PaintEvent& event)
     ILOG_TRACE_W(ILX_GLWIDGET);
 
     if(!_eglSurface) {
-        EGLint windowsAttr[] = { EGL_RENDER_BUFFER, EGL_BACK_BUFFER, EGL_NONE };
+        EGLint windowsAttr[] = { EGL_RENDER_BUFFER, ((PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING) && !(surface()->flags() & Surface::ForceSingleSurface)) ? EGL_BACK_BUFFER : EGL_SINGLE_BUFFER, EGL_NONE };
 
         _eglSurface = eglCreateWindowSurface(sharedEGLDisplay(), sharedEGLConfig(surface()->dfbSurface()), (EGLNativeWindowType) surface()->dfbSurface(), windowsAttr);
         if (_eglSurface == EGL_NO_SURFACE )
@@ -166,7 +166,11 @@ EGLWidget::compose(const PaintEvent& event)
     }
 
     renderGL();
+
     eglSwapBuffers(sharedEGLDisplay(), _eglSurface);
+
+    if ((PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING) && !(surface()->flags() & Surface::ForceSingleSurface))
+        eglCopyBuffers(sharedEGLDisplay(), _eglSurface, (EGLNativePixmapType) surface()->dfbSurface());
 }
 
 void
