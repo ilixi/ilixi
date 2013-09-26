@@ -60,6 +60,7 @@ VideoPlayerControls::VideoPlayerControls(VideoPlayer* parent)
     _box->addWidget(_time);
 
     _position = new Slider();
+    _position->setUpdateMode(Slider::UponRelease);
     _position->setDisabled();
     _position->sigValueChanged.connect(sigc::mem_fun(_owner, &VideoPlayer::seekVideo));
     _box->addWidget(_position);
