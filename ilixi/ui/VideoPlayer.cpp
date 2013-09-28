@@ -34,8 +34,8 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_VIDEOPLAYER, "ilixi/ui/VideoPlayer", "VideoPlayer");
-D_DEBUG_DOMAIN( ILX_VIDEOPLAYERCTRL, "ilixi/ui/VideoPlayerControls", "VideoPlayerControls");
+D_DEBUG_DOMAIN(ILX_VIDEOPLAYER, "ilixi/ui/VideoPlayer", "VideoPlayer");
+D_DEBUG_DOMAIN(ILX_VIDEOPLAYERCTRL, "ilixi/ui/VideoPlayerControls", "VideoPlayerControls");
 
 VideoPlayerControls::VideoPlayerControls(VideoPlayer* parent)
         : Widget(parent),
@@ -274,12 +274,24 @@ VideoPlayer::compose(const PaintEvent& event)
     else if (_videoFrame)
     {
         DFBRectangle r = frameGeometry().dfbRect();
+
         if (!(_flags & AutoHideControls))
             r.h -= _controls->height();
 
-//        if (_flags & KeepAspectRatio)
-//        {
-//        }
+        if (_flags & KeepAspectRatio)
+        {
+            int h = r.w / _video->aspect();
+            r.y += (r.h - h) / 2.0;
+            if (h < r.h)
+            {
+                Painter p(this);
+                p.begin(event);
+                p.fillRectangle(0, 0, width(), r.h);
+                p.fillRectangle(0, r.y + r.h, width(), height() - (r.y + r.h));
+                p.end();
+            }
+            r.h = h;
+        }
 
         surface()->dfbSurface()->GetSubSurface(surface()->dfbSurface(), &r, &_videoSurface);
 
