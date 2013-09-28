@@ -75,6 +75,7 @@ private:
     Label* _size;
     Icon* _icon;
     RadioButton* _select;
+    bool _alternateRow;
     HBoxLayout* _box;
 
     void
@@ -98,11 +99,17 @@ public:
     void
     refresh();
 
+    bool
+    showHidden() const;
+
     void
     setPath(const std::string& path);
 
     void
     setFilter(const std::string& filter);
+
+    void
+    setShowHidden(bool showHidden);
 
     /*!
      * This signal is emitted once a file is selected either by pressing pointer or
@@ -115,6 +122,7 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    bool _showHidden;
     bool _modified;
     std::string _filter;
     Label* _path;
