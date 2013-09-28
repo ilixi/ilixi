@@ -29,10 +29,14 @@ private:
     VideoPlayer* _player;
     FileBrowser* _browser;
     ToolBarButton* _load;
+    ToolBarButton* _keepAspect;
     Dialog* _errorDialog;
 
     void
     toggleBrowser();
+
+    void
+    toggleKeepAspect();
 
     void
     loadMovie(const std::string file);
