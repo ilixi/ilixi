@@ -146,7 +146,12 @@ Video::aspect() const
 {
     ILOG_TRACE_F(ILX_VIDEO);
     if (_provider && (_streamDesc.caps & DVSCAPS_VIDEO))
-        return _streamDesc.video.aspect;
+    {
+        if (_streamDesc.video.aspect)
+            return _streamDesc.video.aspect;
+        else
+            return _surfaceDesc.width / (_surfaceDesc.height + .0);
+    }
     return 0;
 }
 
