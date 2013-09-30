@@ -29,7 +29,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FILEINFO, "ilixi/lib/FileInfo", "FileInfo");
+D_DEBUG_DOMAIN(ILX_FILEINFO, "ilixi/lib/FileInfo", "FileInfo");
 
 FileInfo::FileInfo()
         : _ready(false),
@@ -254,7 +254,7 @@ FileInfo::suffix() const
             return std::string("");
         if (pos == 0)
             return std::string("");
-        return s.substr(pos, s.size() - pos);
+        return s.substr(pos + 1, s.size() - pos - 1);
     }
     return std::string("");
 }
@@ -264,12 +264,28 @@ FileInfo::symLinkTarget() const
 {
     if (_ready && isSymLink())
     {
-        char* buffer = realpath(_file.c_str(),NULL);
+        char* buffer = realpath(_file.c_str(), NULL);
         std::string s(buffer);
         free(buffer);
         return s;
     }
     return std::string("");
+}
+
+StyleHint::PackedIcon
+FileInfo::packedIcon() const
+{
+    if (isDir())
+        return StyleHint::Folder;
+
+    std::string type = FileSystem::getMimeType(suffix());
+    if (type.find("audio") != std::string::npos)
+        return StyleHint::Music;
+    else if (type.find("video") != std::string::npos)
+        return StyleHint::Movie;
+    else if (type.find("image") != std::string::npos)
+        return StyleHint::Picture;
+    return StyleHint::File;
 }
 
 } /* namespace ilixi */
