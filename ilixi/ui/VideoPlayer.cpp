@@ -193,7 +193,11 @@ VideoPlayer::load(const std::string& path)
         _controls->_play->setEnabled();
         if (_video->hasAudio())
             _controls->_volume->setVisible(true);
+        _controls->_time->setText(toHMS(_video->position()));
         _controls->_dur->setText(toHMS(_video->length()));
+        _controls->_position->setRange(0, _video->length() / 100);
+        _controls->_position->setValue(0, false);
+        playVideo();
         return true;
     } else
     {
