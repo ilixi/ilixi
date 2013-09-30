@@ -46,10 +46,6 @@ namespace ilixi
 D_DEBUG_DOMAIN(ILX_FILEBROWSERITEM, "ilixi/ui/FileBrowserItem", "FileBrowserItem");
 D_DEBUG_DOMAIN(ILX_FILEBROWSER, "ilixi/ui/FileBrowser", "FileBrowser");
 
-const std::string audio = ".mp3 .wav";
-const std::string video = ".mp4 .avi";
-const std::string image = ".bmp .png .jpg";
-
 bool
 itemsSort(FileBrowserItem* a, FileBrowserItem* b)
 {
@@ -76,21 +72,7 @@ FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
     _box->setSpacing(10);
     addChild(_box);
 
-    if (_info->isDir())
-        _icon = new Icon(StyleHint::Folder);
-    else if (_info->isFile())
-    {
-        std::string suffix = _info->suffix();
-        if (audio.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Music);
-        else if (video.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Movie);
-        else if (image.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Picture);
-        else
-            _icon = new Icon(StyleHint::File);
-    } else
-        _icon = new Icon(StyleHint::Clock);
+    _icon = new Icon(_info->packedIcon());
     _icon->setSize(32, 32);
     _box->addWidget(_icon);
 
@@ -285,7 +267,7 @@ FileBrowser::setPath(const std::string& path)
             {
                 if (_filter.empty())
                     items.push_back(new FileBrowserItem(info, this));
-                else if (_filter.find(info->suffix()) != std::string::npos)
+                else if (!info->suffix().empty() && (_filter.find(info->suffix()) != std::string::npos))
                     items.push_back(new FileBrowserItem(info, this));
             }
         }
