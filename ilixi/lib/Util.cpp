@@ -94,10 +94,10 @@ PrintF(const char *format, ...)
 std::string
 toHMS(long int secs)
 {
-    int hour = secs / 3600;
+    int hour = secs / 3600.0;
     secs = (int) secs % 3600;
     if (hour)
-        return PrintF("%.2d:%.2d:%.2d", secs / 3600, secs / 60, secs %60);
+        return PrintF("%.2d:%.2d:%.2d", hour, secs / 60, secs %60);
     else
         return PrintF("%.2d:%.2d", secs / 60, secs %60);
 }
