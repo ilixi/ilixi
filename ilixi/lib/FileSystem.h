@@ -77,6 +77,9 @@ temporaryFile(const std::string& prefix);
 void
 closeFile(FILE* handle);
 
+const std::string
+getMimeType(const std::string& extension);
+
 }
 
 } /* namespace ilixi */

@@ -29,12 +29,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <iostream>
+#include <fstream>
 #include <core/Logger.h>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FILESYSTEM, "ilixi/lib/FileSystem", "FileSystem");
+D_DEBUG_DOMAIN(ILX_FILESYSTEM, "ilixi/lib/FileSystem", "FileSystem");
 
 namespace FileSystem
 {
@@ -179,6 +181,26 @@ void
 closeFile(FILE* handle)
 {
     fclose(handle);
+}
+
+const std::string
+getMimeType(const std::string& extension)
+{
+    if (extension.empty())
+        return "";
+    std::ifstream types("/etc/mime.types");
+    std::string line;
+    while (getline(types, line))
+    {
+        if (line[0] == '#')
+            continue;
+
+        size_t pos = line.find("\t");
+        if ((pos != std::string::npos) && (line.find(extension, pos) != std::string::npos))
+            return line.substr(0, pos);
+    }
+    types.close();
+    return "";
 }
 
 } /* namespace FileSystem */
