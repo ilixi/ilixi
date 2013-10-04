@@ -44,7 +44,7 @@ IconPack::~IconPack()
 }
 
 Image*
-IconPack::getIcon(std::string name)
+IconPack::getIcon(const std::string& name)
 {
     ILOG_TRACE(ILX_ICONPACK);
     ILOG_DEBUG(ILX_ICONPACK, " -> name: %s\n", name.c_str());
