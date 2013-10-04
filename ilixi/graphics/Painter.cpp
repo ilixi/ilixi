@@ -720,7 +720,7 @@ Painter::textExtents(const std::string& text, int bytes)
 void
 Painter::applyBrush()
 {
-    if (!(_state & BrushActive))
+    if (!(_state & BrushActive) || _brush._modified)
     {
         _brush.applyBrush(dfbSurface);
         _state = (PainterFlags) (_state | BrushActive);
@@ -741,7 +741,7 @@ Painter::applyFont()
 void
 Painter::applyPen()
 {
-    if (_state & BrushActive)
+    if ((_state & BrushActive) || _pen._modified)
     {
         _pen.applyPen(dfbSurface);
         _state = (PainterFlags) (_state & ~BrushActive);
