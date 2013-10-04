@@ -46,6 +46,7 @@ apps/demo2/ilixi_demo2
 apps/demo4/ilixi_demo4
 apps/egl/ilixi_egl
 apps/gallery/ilixi_gallery
+apps/gestures/ilixi_gestures
 apps/home/ilixi_home
 apps/monitor/ilixi_monitor
 apps/osk/ilixi_osk

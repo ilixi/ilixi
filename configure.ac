@@ -326,6 +326,7 @@ AC_CONFIG_FILES([ \
         apps/egl/Makefile \
         apps/gallery/images/Makefile \
         apps/gallery/Makefile \
+        apps/gestures/Makefile \
         apps/Makefile \
         apps/monitor/Makefile \
         apps/osk/images/Makefile \
