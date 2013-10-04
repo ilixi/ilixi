@@ -10,6 +10,7 @@ libilixi_lib_la_SOURCES = 	Animation.cpp \
 							FileInfo.cpp \
 							FileSystem.cpp \
 							FPSCalculator.cpp \
+							Gesture.cpp \
 							InputHelper.cpp \
 							InputHelperJP.cpp \
 							Thread.cpp \
@@ -27,6 +28,7 @@ ilixi_include_HEADERS	=	Animation.h \
 							FileInfo.h \
 							FileSystem.h \
 							FPSCalculator.h \
+							Gesture.h \
 							InputHelper.h \
 							InputHelperJP.h \
 							Thread.h \
