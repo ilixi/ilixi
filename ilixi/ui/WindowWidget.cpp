@@ -24,6 +24,7 @@
 
 #include <ui/WindowWidget.h>
 #include <core/Application.h>
+#include <core/EventFilter.h>
 #include <core/Logger.h>
 #include <core/PlatformManager.h>
 
@@ -235,6 +236,9 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
     {
+        if (_eventFilter && _eventFilter->pointerEventConsumer(pointerEvent))
+            return true;
+
         if (_children.size())
         {
             for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
