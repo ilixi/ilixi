@@ -2,11 +2,10 @@
 <!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
 <app>
 	<name>Gears</name>
-	<author>Andreas Shimokawa</author>
-	<licence>MIT</licence>
+	<author>Tarik Sekmen</author>
+	<licence>LGPL</licence>
 	<category>Default</category>
 	<version>1.0</version>
 	<icon>@DATADIR:gears.png</icon>
-	<exec>dfbtest_old_gl2</exec>
-	<args>--dfb:force-windowed,window-surface-policy=videoonly</args>
+	<exec>ilixi_egl</exec>
 </app>
