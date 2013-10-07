@@ -22,8 +22,11 @@
  */
 
 #include "GLDemo.h"
-#include "GLTri.h"
+
+#include <ui/Frame.h>
 #include <ui/HBoxLayout.h>
+#include <ui/VBoxLayout.h>
+#include <graphics/Painter.h>
 
 namespace ilixi
 {
@@ -31,12 +34,49 @@ namespace ilixi
 GLDemo::GLDemo(int argc, char* argv[])
         : Application(&argc, &argv)
 {
-    setLayout(new HBoxLayout());
-    addWidget(new GLTri());
+    appWindow()->setCustomCompose(true);
+    setLayout(new VBoxLayout());
+
+    _glesExample = new GLTri();
+    _glesExample->setConstraints(ExpandingConstraint, ExpandingConstraint);
+    addWidget(_glesExample);
+
+    Frame* controls = new Frame();
+    controls->setConstraints(ExpandingConstraint, MinimumConstraint);
+    addWidget(controls);
+    controls->setLayout(new HBoxLayout());
+
+    _xSlider = new Slider();
+    controls->addWidget(_xSlider);
+    _xSlider->setRange(0, 360);
+    _xSlider->sigValueChanged.connect(sigc::mem_fun(_glesExample, &GLTri::setX));
+
+    _ySlider = new Slider();
+    controls->addWidget(_ySlider);
+    _ySlider->setRange(0, 360);
+    _ySlider->sigValueChanged.connect(sigc::mem_fun(_glesExample, &GLTri::setY));
+
+    _fps = new FPSCalculator();
 }
 
 GLDemo::~GLDemo()
 {
+}
+
+void
+GLDemo::compose(const ilixi::PaintEvent& event)
+{
+    Painter p(appWindow());
+    p.begin(event);
+    p.fillRectangle(0, 0, width(), height());
+    p.setBrush(Color("6FAF53"));
+
+    _fps->funck();
+    std::string text = PrintF("FPS: %.1f", _fps->fps());
+
+    Size s = appWindow()->stylist()->defaultFont()->extents(text);
+    p.drawText(text, width() - s.width() - 10, 10);
+    p.end();
 }
 
 } /* namespace ilixi */

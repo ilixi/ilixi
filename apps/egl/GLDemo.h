@@ -25,6 +25,9 @@
 #define GLDEMO_H_
 
 #include <core/Application.h>
+#include <ui/Slider.h>
+#include <lib/FPSCalculator.h>
+#include "GLTri.h"
 
 namespace ilixi
 {
@@ -36,6 +39,16 @@ public:
 
     virtual
     ~GLDemo();
+
+protected:
+    void
+    compose(const ilixi::PaintEvent& event);
+
+private:
+    GLTri* _glesExample;
+    Slider* _xSlider;
+    Slider* _ySlider;
+    FPSCalculator* _fps;
 };
 
 } /* namespace ilixi */

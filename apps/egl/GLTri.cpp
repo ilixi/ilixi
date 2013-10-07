@@ -22,20 +22,51 @@
  */
 
 #include "GLTri.h"
-#include "es2tri.h"
+#include "es2gears.h"
 
 namespace ilixi
 {
 
 GLTri::GLTri(Widget* parent)
-        : EGLWidget(parent)
+        : EGLWidget(parent),
+          _idleTime(direct_clock_get_millis())
 {
     setInputMethod(KeyInput);
     setFocus();
+    _timer.sigExec.connect(sigc::mem_fun(this, &GLTri::timerSlot));
+    _timer.start(10);
 }
 
 GLTri::~GLTri()
 {
+}
+
+void
+GLTri::rotateX(int amount)
+{
+    view_rot[1] += amount;
+    update();
+}
+
+void
+GLTri::rotateY(int amount)
+{
+    view_rot[0] += amount;
+    update();
+}
+
+void
+GLTri::setX(int value)
+{
+    view_rot[1] = value;
+    update();
+}
+
+void
+GLTri::setY(int value)
+{
+    view_rot[0] = value;
+    update();
 }
 
 void
@@ -45,23 +76,19 @@ GLTri::keyDownEvent(const KeyEvent& event)
     {
     case DIKS_SMALL_A:
     case DIKS_CAPITAL_A:
-        view_roty += 5.0;
-        update();
+        rotateX(5);
         break;
     case DIKS_SMALL_D:
     case DIKS_CAPITAL_D:
-        view_roty -= 5.0;
-        update();
+        rotateX(-5);
         break;
     case DIKS_SMALL_W:
     case DIKS_CAPITAL_W:
-        view_rotx += 5.0;
-        update();
+        rotateY(5);
         break;
     case DIKS_SMALL_S:
     case DIKS_CAPITAL_S:
-        view_rotx -= 5.0;
-        update();
+        rotateY(-5);
         break;
     default:
         break;
@@ -69,15 +96,32 @@ GLTri::keyDownEvent(const KeyEvent& event)
 }
 
 void
+GLTri::timerSlot()
+{
+    long long diff;
+    long long now = direct_clock_get_millis();
+
+    diff = now - _idleTime;
+    if (diff >= 1000)
+        _idleTime = now;
+
+    gears_idle(diff);
+    update();
+}
+
+void
 GLTri::renderGL()
 {
-    draw();
+    gears_draw();
 }
 
 void
 GLTri::initialiseGL()
 {
-    create_shaders();
+    gears_init();
+    gears_reshape(width(), height());
+    view_rot[1] = 0;
+    view_rot[0] = 0;
 }
 
 } /* namespace ilixi */

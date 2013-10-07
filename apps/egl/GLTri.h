@@ -25,6 +25,7 @@
 #define GLTRI_H_
 
 #include <ui/EGLWidget.h>
+#include <lib/Timer.h>
 
 namespace ilixi
 {
@@ -37,6 +38,18 @@ public:
     virtual
     ~GLTri();
 
+    void
+    rotateX(int amount);
+
+    void
+    rotateY(int amount);
+
+    void
+    setX(int value);
+
+    void
+    setY(int value);
+
 protected:
     virtual void
     keyDownEvent(const KeyEvent& event);
@@ -45,6 +58,12 @@ protected:
     renderGL();
 
 private:
+    long long _idleTime;
+    Timer _timer;
+
+    void
+    timerSlot();
+
     virtual void
     initialiseGL();
 };
