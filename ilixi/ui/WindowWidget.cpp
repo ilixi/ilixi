@@ -52,11 +52,11 @@ WindowWidget::WindowWidget(Widget* parent)
     setMargins(5, 5, 5, 5);
     setNeighbours(this, this, this, this);
 
-    if (PlatformManager::instance().appOptions() & OptExclusive)
-    {
-        if (Application::activeWindow())
-            ILOG_THROW( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
-    } else
+//    if (PlatformManager::instance().appOptions() & OptExclusive)
+//    {
+//        if (Application::activeWindow())
+//            ILOG_THROW( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
+//    } else
         _window = new Window();
 
     _eventManager = new EventManager(this);
@@ -230,6 +230,12 @@ WindowWidget::setBackgroundClear(bool clear)
         _backgroundFlags &= ~BGFClear;
 }
 
+void
+WindowWidget::setLayerName(const std::string& layerName)
+{
+    _layerName = layerName;
+}
+
 bool
 WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
@@ -263,6 +269,7 @@ WindowWidget::showWindow()
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (!Application::activeWindow() && (PlatformManager::instance().appOptions() & OptExclusive))
     {
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> Using exclusive layer surface\n");
         _exclusiveSurface = PlatformManager::instance().getLayerSurface(_layerName);
         if (_exclusiveSurface == NULL)
             ILOG_THROW(ILX_WINDOWWIDGET, "Couldn't get layer surface!\n");
@@ -274,15 +281,17 @@ WindowWidget::showWindow()
         setRootWindow(this);
     } else // DIALOGS
     {
+        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> Creating child window\n");
         if (_window->_dfbWindow)
             return;
 
-        if (_window->initDFBWindow(preferredSize()))
+        if (_window->initDFBWindow(preferredSize(), _layerName))
         {
             Application::addWindow(this);
             setSize(_window->windowSize());
             setRootWindow(this);
-        }
+        } else
+            ILOG_FATAL(ILX_WINDOWWIDGET, "Could not create child window!\n");
     }
 
     setVisible(true);

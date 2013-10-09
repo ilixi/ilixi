@@ -104,6 +104,9 @@ public:
     void
     setBackgroundClear(bool clear);
 
+    void
+    setLayerName(const std::string& layerName);
+
     virtual bool
     consumePointerEvent(const PointerEvent& pointerEvent);
 
