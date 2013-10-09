@@ -105,7 +105,7 @@ Window::hideWindow()
 }
 
 bool
-Window::initDFBWindow(const Size& size)
+Window::initDFBWindow(const Size& size, const std::string layerName)
 {
     ILOG_TRACE_F(ILX_WINDOW);
     if (!PlatformManager::instance().getDFB())
@@ -128,7 +128,7 @@ Window::initDFBWindow(const Size& size)
 #endif
 
     DFBDisplayLayerConfig conf;
-    ret = PlatformManager::instance().getLayer()->GetConfiguration(PlatformManager::instance().getLayer(), &conf);
+    ret = PlatformManager::instance().getLayer()->GetConfiguration(PlatformManager::instance().getLayer("ui"), &conf);
     if (ret != DFB_OK)
     {
         ILOG_ERROR( ILX_WINDOW, "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
@@ -147,7 +147,7 @@ Window::initDFBWindow(const Size& size)
     } else // other windows
     {
         Size appSize = Application::appSize();
-        ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising...\n");
+        ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising on layer %s...\n", layerName.c_str());
         int w = size.width();
         int h = size.height();
         if (w > (appSize.width() - 20))
@@ -168,7 +168,7 @@ Window::initDFBWindow(const Size& size)
         ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     }
 
-    ret = PlatformManager::instance().getLayer("ui")->CreateWindow(PlatformManager::instance().getLayer("ui"), &desc, &_dfbWindow);
+    ret = PlatformManager::instance().getLayer(layerName)->CreateWindow(PlatformManager::instance().getLayer(layerName), &desc, &_dfbWindow);
     if (ret != DFB_OK)
     {
         ILOG_ERROR( ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));

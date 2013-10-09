@@ -97,7 +97,7 @@ protected:
      * Creates a DFBWindow and acquires an interface to its surface.
      */
     bool
-    initDFBWindow(const Size& size);
+    initDFBWindow(const Size& size, const std::string layerName = "ui");
 
     /*!
      * Release DirectFB window interfaces.
