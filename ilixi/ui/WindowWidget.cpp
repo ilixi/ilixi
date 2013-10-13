@@ -32,15 +32,15 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_WINDOWWIDGET, "ilixi/ui/WindowWidget", "WindowWidget");
-
-IDirectFBSurface* WindowWidget::_exclusiveSurface = NULL;
+D_DEBUG_DOMAIN( ILX_WINDOWWIDGET_EVENTS, "ilixi/ui/WindowWidget/Events", "WindowWidget Events");
+D_DEBUG_DOMAIN( ILX_WINDOWWIDGET_UPDATES, "ilixi/ui/WindowWidget/Updates", "WindowWidget Updates");
 
 WindowWidget::WindowWidget(Widget* parent)
         : Frame(parent),
           _backgroundFlags(BGFFill | BGFClear),
           _window(NULL),
           _eventManager(NULL),
-          _layerName("ui")
+          _modality(WindowModal)
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
@@ -52,12 +52,7 @@ WindowWidget::WindowWidget(Widget* parent)
     setMargins(5, 5, 5, 5);
     setNeighbours(this, this, this, this);
 
-//    if (PlatformManager::instance().appOptions() & OptExclusive)
-//    {
-//        if (Application::activeWindow())
-//            ILOG_THROW( ILX_WINDOWWIDGET, "Error cannot have multiple windows in exclusive mode!\n");
-//    } else
-        _window = new Window();
+    _window = new Window();
 
     _eventManager = new EventManager(this);
     setRootWindow(this);
@@ -84,11 +79,11 @@ WindowWidget::backgroundFilled() const
 void
 WindowWidget::update()
 {
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_UPDATES);
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> using frameGeometry.\n");
+        ILOG_DEBUG(ILX_WINDOWWIDGET_UPDATES, " -> using frameGeometry.\n");
         _updates._updateQueue.add(frameGeometry());
 #ifdef ILIXI_STEREO_OUTPUT
         _updates._updateQueueRight.add(frameGeometry());
@@ -101,14 +96,14 @@ WindowWidget::update()
 void
 WindowWidget::update(const PaintEvent& event)
 {
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_UPDATES);
     if (!(_state & InvisibleState))
     {
         pthread_mutex_lock(&_updates._listLock);
-        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> left %d, %d, %d, %d.\n", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height());
+        ILOG_DEBUG(ILX_WINDOWWIDGET_UPDATES, " -> left %d, %d, %d, %d.\n", event.rect.x(), event.rect.y(), event.rect.width(), event.rect.height());
         _updates._updateQueue.add(event.rect);
 #ifdef ILIXI_STEREO_OUTPUT
-        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> right %d, %d, %d, %d.\n", event.right.x(), event.right.y(), event.right.width(), event.right.height());
+        ILOG_DEBUG(ILX_WINDOWWIDGET_UPDATES, " -> right %d, %d, %d, %d.\n", event.right.x(), event.right.y(), event.right.width(), event.right.height());
         _updates._updateQueueRight.add(event.right);
 #endif
         pthread_mutex_unlock(&_updates._listLock);
@@ -126,7 +121,7 @@ WindowWidget::doLayout()
 void
 WindowWidget::paint(const PaintEvent& event)
 {
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_UPDATES);
     if (visible())
     {
         int ready;
@@ -147,7 +142,7 @@ WindowWidget::paint(const PaintEvent& event)
 
 #ifdef ILIXI_STEREO_OUTPUT
                 // Left eye
-                ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Left eye\n");
+                ILOG_DEBUG(ILX_WINDOWWIDGET_UPDATES, "  -> Left eye\n");
                 evt.eye = PaintEvent::LeftEye;
                 surface()->setStereoEye(evt.eye);
                 surface()->clip(evt.rect);
@@ -159,10 +154,9 @@ WindowWidget::paint(const PaintEvent& event)
                 compose(evt);
 
                 paintChildren(evt);
-//                PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
 // Right eye
-                ILOG_DEBUG(ILX_WINDOWWIDGET, "  -> Right eye\n");
+                ILOG_DEBUG(ILX_WINDOWWIDGET_UPDATES, "  -> Right eye\n");
                 evt.eye = PaintEvent::RightEye;
                 surface()->setStereoEye(evt.eye);
                 surface()->clip(evt.right);
@@ -174,6 +168,7 @@ WindowWidget::paint(const PaintEvent& event)
                 compose(evt);
 
                 paintChildren(evt);
+                // FIXME render cursor for stereo.
                 PlatformManager::instance().renderCursor(AppBase::cursorPosition());
 
                 surface()->flipStereo(evt.rect, evt.right);
@@ -186,8 +181,6 @@ WindowWidget::paint(const PaintEvent& event)
                     compose(evt);
 
                 paintChildren(evt);
-
-                PlatformManager::instance().renderCursor(Application::cursorPosition());
 
                 surface()->flip(evt.rect);
 #endif
@@ -233,31 +226,51 @@ WindowWidget::setBackgroundClear(bool clear)
 void
 WindowWidget::setLayerName(const std::string& layerName)
 {
-    _layerName = layerName;
+    _window->_layerName = layerName;
+}
+
+WindowWidget::Modality
+WindowWidget::modality() const
+{
+    return _modality;
+}
+
+void
+WindowWidget::setModality(Modality modality)
+{
+    _modality = modality;
 }
 
 bool
 WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
-    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true)))
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_EVENTS);
+    PointerEvent event = pointerEvent;
+    if (PlatformManager::instance().appOptions() & OptExclusive)
     {
-        if (_eventFilter && _eventFilter->pointerEventConsumer(pointerEvent))
+        Point p = _window->windowPosition();
+        event.x -= p.x();
+        event.y -= p.y();
+    }
+
+    if (visible() && (_rootWindow->_eventManager->grabbedWidget() == this || _frameGeometry.contains(event.x, event.y, true)))
+    {
+        if (_eventFilter && _eventFilter->pointerEventConsumer(event))
             return true;
 
         if (_children.size())
         {
             for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-                if (((Widget*) *it)->consumePointerEvent(pointerEvent))
+                if (((Widget*) *it)->consumePointerEvent(event))
                     return true;
         }
 
-        _eventManager->setExposedWidget(NULL, pointerEvent);
+        _eventManager->setExposedWidget(NULL, event);
 
-        if (pointerEvent.eventType == PointerButtonDown)
+        if (event.eventType == PointerButtonDown)
         {
             _eventManager->setFocusedWidget(NULL);
-            pointerButtonDownEvent(pointerEvent);
+            pointerButtonDownEvent(event);
         }
     }
     return false;
@@ -267,32 +280,16 @@ void
 WindowWidget::showWindow()
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
-    if (!Application::activeWindow() && (PlatformManager::instance().appOptions() & OptExclusive))
-    {
-        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> Using exclusive layer surface\n");
-        _exclusiveSurface = PlatformManager::instance().getLayerSurface(_layerName);
-        if (_exclusiveSurface == NULL)
-            ILOG_THROW(ILX_WINDOWWIDGET, "Couldn't get layer surface!\n");
-        int w, h;
-        _exclusiveSurface->GetSize(_exclusiveSurface, &w, &h);
+    if (_window->_dfbWindow)
+        return;
 
+    if (_window->initDFBWindow(preferredSize()))
+    {
         Application::addWindow(this);
-        setSize(Size(w, h));
+        setSize(_window->windowSize());
         setRootWindow(this);
-    } else // DIALOGS
-    {
-        ILOG_DEBUG(ILX_WINDOWWIDGET, " -> Creating child window\n");
-        if (_window->_dfbWindow)
-            return;
-
-        if (_window->initDFBWindow(preferredSize(), _layerName))
-        {
-            Application::addWindow(this);
-            setSize(_window->windowSize());
-            setRootWindow(this);
-        } else
-            ILOG_FATAL(ILX_WINDOWWIDGET, "Could not create child window!\n");
-    }
+    } else
+        ILOG_FATAL(ILX_WINDOWWIDGET, "Could not create window!\n");
 
     setVisible(true);
 
@@ -301,16 +298,6 @@ WindowWidget::showWindow()
 
     update(PaintEvent(Rectangle(0, 0, width(), height()), PaintEvent::BothEyes));
     updateWindow();
-
-#ifdef ILIXI_REDRAW_HACK
-    update(PaintEvent(Rectangle(0, 0, width(), height()),
-                    PaintEvent::BothEyes));
-    updateWindow();
-
-    update(PaintEvent(Rectangle(0, 0, width(), height()),
-                    PaintEvent::BothEyes));
-    updateWindow();
-#endif
 
     if (!(PlatformManager::instance().appOptions() & OptExclusive))
         _window->showWindow();
@@ -333,23 +320,44 @@ WindowWidget::closeWindow()
 
     setRootWindow(NULL);
 
-    if (!(PlatformManager::instance().appOptions() & OptExclusive))
-        _window->releaseDFBWindow();
+    if (_window->dfbSurface() && (PlatformManager::instance().appOptions() & OptExclusive))
+    {
+        printf("Clearing...");
+        _window->dfbSurface()->SetDrawingFlags(_window->dfbSurface(), DSDRAW_NOFX);
+        _window->dfbSurface()->Clear(_window->dfbSurface(), 0, 0, 0, 0);
+        _window->dfbSurface()->Flip(_window->dfbSurface(), NULL, DSFLIP_NONE);
+        _window->dfbSurface()->Clear(_window->dfbSurface(), 0, 0, 0, 0);
+    }
+    _window->releaseDFBWindow();
 }
 
 DFBWindowID
 WindowWidget::windowID() const
 {
-    if (_window)
-        return _window->windowID();
-    return 0;
+    return _window->windowID();
 }
 
 bool
 WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 {
-//    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_EVENTS);
     // handle all other events...
+    bool exclusive = (PlatformManager::instance().appOptions() & OptExclusive);
+    if (exclusive)
+    {
+        if (!_window->windowRectangle().contains(event.x, event.y))
+        {
+            if (_eventManager->focusedWidget() && !(_eventManager->focusedWidget()->inputMethod() & OSKInput))
+                _eventManager->setFocusedWidget(NULL);
+            if (_eventManager->exposedWidget())
+                _eventManager->setExposedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
+            if (_eventManager->grabbedWidget())
+                _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
+            return false;
+        }
+    } else if (event.window_id != _window->windowID())
+        return false;
+
     Widget* target = this;
     Widget* grabbed = _eventManager->grabbedWidget();
     if (grabbed && grabbed->acceptsPointerInput())
@@ -526,7 +534,7 @@ WindowWidget::updateWindow()
         pthread_mutex_unlock(&_updates._listLock);
         return;
     }
-    ILOG_TRACE_W(ILX_WINDOWWIDGET);
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_UPDATES);
 
     Rectangle updateTemp = _updates._updateQueue.rect;
 
@@ -553,7 +561,7 @@ WindowWidget::updateWindow()
             _updates._updateRegionRight = updateTempRight;
         }
 #else
-        if (PlatformManager::instance().useFSU(_layerName))
+        if (PlatformManager::instance().useFSU(_window->_layerName))
             _updates._updateRegion = frameGeometry();
         else
             _updates._updateRegion = updateTemp;
@@ -561,14 +569,14 @@ WindowWidget::updateWindow()
 
         sem_post(&_updates._updateReady);
 
-        ILOG_DEBUG( ILX_WINDOWWIDGET, " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
+        ILOG_DEBUG( ILX_WINDOWWIDGET_UPDATES, " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
 
         long long micros = 0;
 
         if (_surface && _surface->dfbSurface())
         {
             // _surface->dfbSurface()->GetFrameTime( _surface->dfbSurface(), &micros );
-            ILOG_DEBUG( ILX_WINDOWWIDGET, " -> GetFrameTime returned %lld (%lld advance)\n", micros, micros - direct_clock_get_time(DIRECT_CLOCK_MONOTONIC));
+            ILOG_DEBUG( ILX_WINDOWWIDGET_UPDATES, " -> GetFrameTime returned %lld (%lld advance)\n", micros, micros - direct_clock_get_time(DIRECT_CLOCK_MONOTONIC));
             Application::setFrameTime(micros);
         }
 
@@ -587,9 +595,7 @@ WindowWidget::updateWindow()
 IDirectFBSurface*
 WindowWidget::windowSurface()
 {
-    if ((PlatformManager::instance().appOptions() & OptExclusive))
-        return _exclusiveSurface;
-    else if (_window)
+    if (_window)
         return _window->dfbSurface();
     return NULL;
 }
@@ -597,7 +603,7 @@ WindowWidget::windowSurface()
 std::string
 WindowWidget::layerName() const
 {
-    return _layerName;
+    return _window->_layerName;
 }
 
 } /* namespace ilixi */
