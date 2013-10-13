@@ -40,6 +40,7 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/core/Application", "Application");
 D_DEBUG_DOMAIN( ILX_APPLICATION_TIMER, "ilixi/core/Application/Timers", "Application Timers");
 D_DEBUG_DOMAIN( ILX_APPLICATION_UPDATES, "ilixi/core/Application/Updates", "Application Updates");
+D_DEBUG_DOMAIN( ILX_APPLICATION_EVENTS, "ilixi/core/Application/Events", "Application Events");
 
 Application* Application::__instance = NULL;
 
@@ -92,9 +93,9 @@ __activeWindow(NULL)
     _update_timer->setRepeats(1);
 #endif
 
-    Size s = PlatformManager::instance().getLayerSize("ui");
-    __layerSize.w = s.width() - 1;
-    __layerSize.h = s.height() - 1;
+    Size s = PlatformManager::instance().getScreenSize();
+    __screenSize.w = s.width() - 1;
+    __screenSize.h = s.height() - 1;
 
     setStylist(new Stylist());
 
@@ -266,7 +267,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
         event_1.flags = (DFBInputEventFlags) (DIEF_AXISABS | DIEF_FOLLOW);
         event_1.axis = DIAI_X;
         event_1.axisabs = x;
-        event_1.max = __layerSize.w;
+        event_1.max = __screenSize.w;
         event_1.min = 0;
         Engine::instance().postEvent(DFB_EVENT(&event_1) );
 
@@ -276,7 +277,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
         event_2.flags = DIEF_AXISABS;
         event_2.axis = DIAI_Y;
         event_2.axisabs = y;
-        event_2.max = __layerSize.h;
+        event_2.max = __screenSize.h;
         event_2.min = 0;
         event_2.button = (DFBInputDeviceButtonIdentifier) button;
         event_2.buttons = (DFBInputDeviceButtonMask) buttonMask;
@@ -309,7 +310,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
             event_3.flags = DIEF_AXISABS;
             event_3.axis = DIAI_Z;
             event_3.axisabs = step;
-            event_3.max = __layerSize.h;
+            event_3.max = __screenSize.h;
             event_3.min = 0;
             event_3.button = (DFBInputDeviceButtonIdentifier) button;
             event_3.buttons = (DFBInputDeviceButtonMask) buttonMask;
@@ -394,7 +395,7 @@ Application::windowPreEventFilter(const DFBWindowEvent& event)
 void
 Application::handleEvents(int32_t timeout, bool forceWait)
 {
-    ILOG_TRACE_F(ILX_APPLICATION);
+    ILOG_TRACE_F(ILX_APPLICATION_EVENTS);
 
     bool wait = true;
 #if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
@@ -463,10 +464,10 @@ Application::handleEvents(int32_t timeout, bool forceWait)
                 else if (lastMotion.type == DWET_NONE)
                 {
                     if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
-                        activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
+                        handleWindowEvents((const DFBWindowEvent&) lastMotion);
                     lastMotion.type = DWET_NONE;
                     if (!windowPreEventFilter((const DFBWindowEvent&) event.window))
-                        activeWindow()->handleWindowEvent((const DFBWindowEvent&) event.window);
+                        handleWindowEvents((const DFBWindowEvent&) event.window);
                 }
             }
             break;
@@ -478,7 +479,7 @@ Application::handleEvents(int32_t timeout, bool forceWait)
         case DFEC_UNIVERSAL:
             {
                 UniversalEvent* uEvent = (UniversalEvent*) &event;
-                ILOG_DEBUG(ILX_APPLICATION, " -> target: %p\n", uEvent->target);
+                ILOG_DEBUG(ILX_APPLICATION_EVENTS, " -> target: %p\n", uEvent->target);
                 if (uEvent->target)
                     uEvent->target->universalEvent(uEvent);
             }
@@ -496,8 +497,8 @@ Application::handleEvents(int32_t timeout, bool forceWait)
 
     if (lastMotion.type != 0)
         if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
-            activeWindow()->handleWindowEvent((const DFBWindowEvent&) lastMotion);
-    ILOG_DEBUG(ILX_APPLICATION, " -> end handle events \n");
+            handleWindowEvents((const DFBWindowEvent&) lastMotion);
+    ILOG_DEBUG(ILX_APPLICATION_EVENTS, " -> end handle events \n");
 }
 
 void
@@ -519,6 +520,15 @@ Application::updateWindows()
 #endif
 
         pthread_mutex_unlock(&__windowMutex);
+    }
+
+    if ((PlatformManager::instance().appOptions() & OptExclusive)) {
+        static DFBPoint preCursor = __cursorNew;
+        if ((preCursor.x != __cursorNew.x) || (preCursor.y != __cursorNew.y))
+        {
+            PlatformManager::instance().renderCursor(Application::cursorPosition());
+            preCursor = __cursorNew;
+        }
     }
     ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> finished updating windows.\n");
 }
@@ -614,6 +624,31 @@ Application::cursorPosition()
 }
 
 void
+Application::handleWindowEvents(const DFBWindowEvent& event)
+{
+    ILOG_TRACE_F(ILX_APPLICATION);
+    pthread_mutex_lock(&__windowMutex);
+    if (__activeWindow && __activeWindow->_modality & WindowWidget::WindowModal) {
+        ILOG_DEBUG(ILX_APPLICATION, " -> Modal active window: %p\n", __activeWindow);
+        __activeWindow->handleWindowEvent(event);
+    }
+    else
+    {
+        ILOG_DEBUG(ILX_APPLICATION, " -> Non modal active window: %p\n", __activeWindow);
+        //TODO use reverse iterator.
+        WindowList::reverse_iterator it = __windowList.rbegin();
+        while (it != __windowList.rend())
+        {
+            if(((WindowWidget*) *it)->handleWindowEvent(event))
+                break;
+            ++it;
+        }
+        ILOG_DEBUG(ILX_APPLICATION, " -> Non modal loop ends\n");
+    }
+    pthread_mutex_unlock(&__windowMutex);
+}
+
+void
 Application::handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type)
 {
     DFBEvent we;
@@ -630,8 +665,14 @@ Application::handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType 
     we.window.button = event.button;
     we.window.buttons = event.buttons;
 
+    we.window.x = __cursorNew.x;
+    we.window.y = __cursorNew.y;
+
+    we.window.cx = __cursorNew.x;
+    we.window.cy = __cursorNew.y;
+
     if (!windowPreEventFilter((const DFBWindowEvent&) we))
-        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
+        handleWindowEvents((const DFBWindowEvent&) we);
 }
 
 void
@@ -651,7 +692,7 @@ Application::handleButtonInputEvent(const DFBInputEvent& event, DFBWindowEventTy
     we.window.buttons = event.buttons;
 
     if (!windowPreEventFilter((const DFBWindowEvent&) we))
-        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
+        handleWindowEvents((const DFBWindowEvent&) we);
 }
 
 void
@@ -680,7 +721,7 @@ Application::handleAxisMotion(const DFBInputEvent& event)
     {
         int newPos;
         if ((event.flags & DIEF_MIN) && (event.flags & DIEF_MAX))
-            newPos = (event.axisabs - event.min) * __layerSize.w / (event.max - event.min);
+            newPos = (event.axisabs - event.min) * __screenSize.w / (event.max - event.min);
         else
             newPos = event.axisabs;
 
@@ -697,13 +738,13 @@ Application::handleAxisMotion(const DFBInputEvent& event)
 
     if (__cursorNew.x < 0)
         __cursorNew.x = 0;
-    else if (__cursorNew.x > __layerSize.w - 1)
-        __cursorNew.x = __layerSize.w - 1;
+    else if (__cursorNew.x > __screenSize.w - 1)
+        __cursorNew.x = __screenSize.w - 1;
 
     if (__cursorNew.y < 0)
         __cursorNew.y = 0;
-    else if (__cursorNew.y > __layerSize.h - 1)
-        __cursorNew.y = __layerSize.h - 1;
+    else if (__cursorNew.y > __screenSize.h - 1)
+        __cursorNew.y = __screenSize.h - 1;
 
     if (we.window.type == DWET_MOTION && PlatformManager::instance().cursorVisible())
     {
@@ -726,7 +767,7 @@ Application::handleAxisMotion(const DFBInputEvent& event)
     we.window.buttons = event.buttons;
 
     if (!windowPreEventFilter((const DFBWindowEvent&) we))
-        activeWindow()->handleWindowEvent((const DFBWindowEvent&) we);
+        handleWindowEvents((const DFBWindowEvent&) we);
 }
 
 void
@@ -734,11 +775,13 @@ Application::setActiveWindow(WindowWidget* window)
 {
     if (__instance)
     {
+        ILOG_TRACE_F(ILX_APPLICATION);
         pthread_mutex_lock(&__instance->__windowMutex);
 
         if (__instance->__activeWindow)
         {
-            detachDFBWindow(__instance->__activeWindow->_window);
+            if (window->_modality & WindowWidget::WindowModal)
+                detachDFBWindow(__instance->__activeWindow->_window);
             __instance->__activeWindow->_eventManager->setGrabbedWidget(NULL);
             __instance->__activeWindow->_eventManager->setExposedWidget(NULL);
         }
@@ -747,7 +790,7 @@ Application::setActiveWindow(WindowWidget* window)
         attachDFBWindow(__instance->__activeWindow->_window);
 
         pthread_mutex_unlock(&__instance->__windowMutex);
-        ILOG_DEBUG(ILX_APPLICATION, "WindowWidget %p is now active.\n", window);
+        ILOG_DEBUG(ILX_APPLICATION, "WindowWidget %p is now active.\n", __instance->__activeWindow);
     }
 }
 
@@ -756,6 +799,7 @@ Application::addWindow(WindowWidget* window)
 {
     if (__instance && window)
     {
+        ILOG_TRACE_F(ILX_APPLICATION);
         pthread_mutex_lock(&__instance->__windowMutex);
 
         WindowList::iterator it = std::find(__instance->__windowList.begin(), __instance->__windowList.end(), window);
@@ -779,22 +823,30 @@ Application::removeWindow(WindowWidget* window)
 {
     if (__instance && window)
     {
+        ILOG_TRACE_F(ILX_APPLICATION);
         pthread_mutex_lock(&__instance->__windowMutex);
 
         for (WindowList::iterator it = __instance->__windowList.begin(); it != __instance->__windowList.end(); ++it)
         {
             if (window == *it)
             {
-                __instance->__windowList.erase(it);
+                it = __instance->__windowList.erase(it);
 
+                if (__instance->__activeWindow == window)
+                {
+                    if (__instance->__windowList.size())
+                        setActiveWindow(__instance->__windowList.back());
+                    else
+                        __instance->__activeWindow = NULL;
+                    ILOG_DEBUG(ILX_APPLICATION, " -> WindowWidget %p is now active.\n", __instance->__activeWindow);
+                }
+                ILOG_DEBUG(ILX_APPLICATION, " -> WindowWidget %p is removed.\n", window);
                 pthread_mutex_unlock(&__instance->__windowMutex);
-                ILOG_DEBUG(ILX_APPLICATION, "WindowWidget %p is removed.\n", window);
-                __instance->setActiveWindow(__instance->__windowList.back());
                 return true;
             }
         }
         pthread_mutex_unlock(&__instance->__windowMutex);
-        ILOG_DEBUG( ILX_APPLICATION, "Cannot remove WindowWidget, %p not found!\n", window);
+        ILOG_WARNING( ILX_APPLICATION, "Cannot remove WindowWidget, %p not found!\n", window);
     }
     return false;
 }
@@ -804,11 +856,12 @@ Application::attachDFBWindow(Window* window)
 {
     if (window && !(PlatformManager::instance().appOptions() & OptExclusive))
     {
+        ILOG_TRACE_F(ILX_APPLICATION);
         DFBResult ret;
 
         if (!window->_dfbWindow)
         {
-            ILOG_WARNING( ILX_APPLICATION, "Window::_dfbWindow is NULL\n");
+            ILOG_WARNING( ILX_APPLICATION, " -> Window::_dfbWindow is NULL\n");
             return;
         }
 
@@ -820,7 +873,7 @@ Application::attachDFBWindow(Window* window)
 
         ret = Engine::instance().resetBuffer();
 
-        ILOG_DEBUG(ILX_APPLICATION, "Window %p is attached.\n", window);
+        ILOG_DEBUG(ILX_APPLICATION, " -> Window %p is attached.\n", window);
     }
 }
 
@@ -829,6 +882,7 @@ Application::detachDFBWindow(Window* window)
 {
     if (window && !(PlatformManager::instance().appOptions() & OptExclusive))
     {
+        ILOG_TRACE_F(ILX_APPLICATION);
         DFBResult ret;
 
         if (!window->_dfbWindow)
@@ -841,7 +895,7 @@ Application::detachDFBWindow(Window* window)
 
         ret = Engine::instance().resetBuffer();
 
-        ILOG_DEBUG(ILX_APPLICATION, "Window %p is detached.\n", window);
+        ILOG_DEBUG(ILX_APPLICATION, " -> Window %p is detached.\n", window);
     }
 }
 
