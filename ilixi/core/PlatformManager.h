@@ -30,8 +30,7 @@
 #include <libxml/tree.h>
 #include <map>
 #include <types/Enums.h>
-#include <types/Point.h>
-#include <types/Size.h>
+#include <types/Rectangle.h>
 #ifdef ILIXI_HAVE_FUSIONSOUND
 #include <types/Sound.h>
 #endif
@@ -95,6 +94,9 @@ public:
      */
     Size
     getLayerSize(const std::string& name = "ui") const;
+
+    Size
+    getScreenSize() const;
 
     /*!
      * Returns application options.
@@ -182,6 +184,9 @@ public:
     void
     setSoundEffectLevel(float level);
 
+    Rectangle
+    getLayerRectangle(const std::string& layerName);
+
 #ifdef ILIXI_HAVE_NLS
     bool
     addI18N(I18NBase* tb);
@@ -212,6 +217,7 @@ private:
         bool fsu;                           // FullScreenUpdates
         LayerFlipMode flipMode;             // Controls surface flip behaviour
         IDirectFBDisplayLayer* layer;
+        Rectangle rect;
     };
 
     struct LogicLayer
