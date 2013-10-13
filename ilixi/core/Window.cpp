@@ -31,10 +31,11 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_WINDOW, "ilixi/core/Window", "Window");
+D_DEBUG_DOMAIN(ILX_WINDOW, "ilixi/core/Window", "Window");
 
 Window::Window()
-        : _dfbWindow(NULL),
+        : _layerName("ui"),
+          _dfbWindow(NULL),
           _windowSurface(NULL)
 {
     ILOG_TRACE_F(ILX_WINDOW);
@@ -74,10 +75,27 @@ Window::windowSize() const
 Point
 Window::windowPosition() const
 {
+    ILOG_TRACE_F(ILX_WINDOW);
     int x = 0, y = 0;
     if (_dfbWindow)
         _dfbWindow->GetPosition(_dfbWindow, &x, &y);
+
+    // FIXME an X11 fix for invis windows?
+    if ((PlatformManager::instance().appOptions() & OptExclusive) && _layerName != "ui")
+        y = 0;
+
+    Point p = PlatformManager::instance().getLayerRectangle(_layerName).topLeft();
+    x += p.x();
+    y += p.y();
+
+    ILOG_DEBUG(ILX_WINDOW, " -> TopLeft(%d, %d)\n", x, y);
     return Point(x, y);
+}
+
+Rectangle
+Window::windowRectangle() const
+{
+    return Rectangle(windowPosition(), windowSize());
 }
 
 void
@@ -105,7 +123,7 @@ Window::hideWindow()
 }
 
 bool
-Window::initDFBWindow(const Size& size, const std::string layerName)
+Window::initDFBWindow(const Size& size)
 {
     ILOG_TRACE_F(ILX_WINDOW);
     if (!PlatformManager::instance().getDFB())
@@ -128,16 +146,16 @@ Window::initDFBWindow(const Size& size, const std::string layerName)
 #endif
 
     DFBDisplayLayerConfig conf;
-    ret = PlatformManager::instance().getLayer()->GetConfiguration(PlatformManager::instance().getLayer("ui"), &conf);
+    ret = PlatformManager::instance().getLayer(_layerName)->GetConfiguration(PlatformManager::instance().getLayer(_layerName), &conf);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR( ILX_WINDOW, "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_WINDOW, "Error while getting primary layer configuration (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
 
     if (!Application::activeWindow())
     {
-        ILOG_DEBUG(ILX_WINDOW, " -> Main window is initialising...\n");
+        ILOG_DEBUG(ILX_WINDOW, " -> Main window is initialising on layer %s...\n", _layerName.c_str());
         desc.posx = 0;
         desc.posy = 0;
         desc.width = conf.width;
@@ -146,41 +164,58 @@ Window::initDFBWindow(const Size& size, const std::string layerName)
         ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     } else // other windows
     {
-        Size appSize = Application::appSize();
-        ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising on layer %s...\n", layerName.c_str());
-        int w = size.width();
-        int h = size.height();
-        if (w > (appSize.width() - 20))
-            w = appSize.width() - 20;
+        ILOG_DEBUG(ILX_WINDOW, " -> Child window is initialising on layer %s...\n", _layerName.c_str());
 
-        if (h > (appSize.height() - 20))
-            h = appSize.height() - 20;
+        if (!(PlatformManager::instance().appOptions() & OptExclusive))
+        {
+            Size appSize = Application::appSize();
+            int w = size.width();
+            int h = size.height();
 
-        int x = (appSize.width() - w) / 2.0;
-        int y = (appSize.height() - h) / 2.0;
+            if (w > (conf.width - 20))
+                w = conf.width - 20;
 
-        desc.posx = x;
-        desc.posy = y;
-        desc.width = w;
-        desc.height = h;
+            if (h > (conf.height - 20))
+                h = conf.height - 20;
+
+            desc.posx = (conf.width - w) / 2.0;
+            desc.posy = (conf.height - h) / 2.0;
+
+            desc.width = w;
+            desc.height = h;
+        } else
+        {
+            desc.posx = 0;
+            desc.posx = 0;
+            desc.width = size.width();
+            desc.height = size.height();
+        }
+
         desc.stacking = DWSC_UPPER;
-
         ILOG_DEBUG(ILX_WINDOW, " -> Rect(%d, %d, %d, %d)\n", desc.posx, desc.posy, desc.width, desc.height);
     }
 
-    ret = PlatformManager::instance().getLayer(layerName)->CreateWindow(PlatformManager::instance().getLayer(layerName), &desc, &_dfbWindow);
+    IDirectFBDisplayLayer* layer;
+    ret = PlatformManager::instance().getDFB()->GetDisplayLayer(PlatformManager::instance().getDFB(), DLID_PRIMARY, &layer);
+    if (ret != DFB_OK)
+        ILOG_ERROR(ILX_WINDOW, "Error while getting primary display layer! (%s)!\n", DirectFBErrorString(ret));
+
+    ret = layer->CreateWindow(layer, &desc, &_dfbWindow);
     if (ret != DFB_OK)
     {
-        ILOG_ERROR( ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
         return false;
     }
 
-    ret = _dfbWindow->GetSurface(_dfbWindow, &_windowSurface);
-    if (ret != DFB_OK)
+    if (!(PlatformManager::instance().appOptions() & OptExclusive))
     {
-        ILOG_ERROR( ILX_WINDOW, "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
-        return false;
-    }
+        if (_dfbWindow->GetSurface(_dfbWindow, &_windowSurface) != DFB_OK)
+        {
+            ILOG_ERROR(ILX_WINDOW, "Unable to acquire surface from application window. (%s)!\n", DirectFBErrorString(ret));
+            return false;
+        }
+    } else
+        _windowSurface = PlatformManager::instance().getLayerSurface(_layerName);
 
 #ifdef ILIXI_STEREO_OUTPUT
     _dfbWindow->SetStereoDepth(_dfbWindow, 0);
@@ -198,7 +233,8 @@ Window::releaseDFBWindow()
     {
         ILOG_DEBUG(ILX_WINDOW, " -> Releasing DirectFB window %p...\n", _dfbWindow);
 
-        _windowSurface->Release(_windowSurface);
+        if (_layerName != "ui")
+            _windowSurface->Release(_windowSurface);
         _dfbWindow->Close(_dfbWindow);
         _dfbWindow->Destroy(_dfbWindow);
         _dfbWindow->Release(_dfbWindow);
