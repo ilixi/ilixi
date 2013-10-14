@@ -286,7 +286,7 @@ private:
     //! Old and new cursor positions.
     DFBPoint __cursorOld, __cursorNew;
     //! Max. available screen dimension.
-    DFBDimension __layerSize;
+    DFBDimension __screenSize;
 
     typedef std::list<WindowWidget*> WindowList;
     //! Application wide list of windows.
@@ -335,6 +335,9 @@ private:
      */
     static DFBPoint
     cursorPosition();
+
+    void
+    handleWindowEvents(const DFBWindowEvent& event);
 
     void
     handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type);

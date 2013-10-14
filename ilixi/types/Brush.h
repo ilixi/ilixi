@@ -24,7 +24,12 @@
 #ifndef ILIXI_BRUSH_H_
 #define ILIXI_BRUSH_H_
 
+#include <ilixiConfig.h>
 #include <types/Color.h>
+
+#ifdef ILIXI_HAVE_CAIRO
+#include <types/Gradient.h>
+#endif
 
 namespace ilixi
 {
@@ -37,6 +42,7 @@ namespace ilixi
 class Brush
 {
     friend class Painter; // applyBrush()
+    friend class CairoPainter; // applyBrush()
 public:
     /*!
      * Creates an opaque white brush.
@@ -76,11 +82,75 @@ public:
     Brush&
     operator=(const Brush &brush);
 
+#ifdef ILIXI_HAVE_CAIRO
+    /*!
+     * Available brush modes.
+     */
+    enum BrushMode
+    {
+        None,             //!< Shapes are not filled.
+        SolidColorMode,   //!< Shapes are filled using a solid color.
+        GradientMode,     //!< Shapes are filled using a gradient
+        TextureMode       //!< Shapes are filled using a texture (Not yet implemented!)
+    };
+
+    /*!
+     * Returns brush mode. Default is SolidColorMode.
+     */
+    BrushMode
+    mode() const;
+
+    /*!
+     * Returns current gradient.
+     *
+     * \sa Gradient::type()
+     */
+    Gradient
+    gradient() const;
+
+    /*!
+     * Sets the brush's mode.
+     * If there is no gradient available for the brush, mode falls back to SolidColor.
+     *
+     * @param mode Brush mode.
+     */
+    void
+    setBrushMode(BrushMode mode);
+
+    /*!
+     * The given gradient is assigned to the brush's current gradient.
+     * Reference to previous gradient (cairo_pattern_t) is decremented by 1 internally.
+     *
+     * \code
+     * Brush b;
+     * RadialGradient rGrad(50, 50, 10, 50, 50, 100);
+     * rGrad->addStop(Color(0, 0, 0), 0.0);
+     * rGrad->addStop(Color(0, 1, 0), 1);
+     * b.setGradient(rGrad);
+     * \endcode
+     *
+     * @param gradient
+     */
+    void
+    setGradient(const Gradient& gradient);
+#endif
+
 private:
     //! Flag is set to true if pen is modified.
     bool _modified;
     //! This property holds current brush color.
     Color _color;
+
+#ifdef ILIXI_HAVE_CAIRO
+    //! This property holds current brush mode.
+    BrushMode _mode;
+    //! This property holds gradient used by the brush.
+    Gradient _gradient;
+
+    //! Applies the brush to the cairo context.
+    bool
+    applyBrush(cairo_t* context);
+#endif
 
     //! Applies brush to surface.
     bool

@@ -360,7 +360,7 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 
     _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
 
-    _renderedSource = false;
+    _renderedSource = !visible();
     _flipCount = event.flip_count;
     sigSourceUpdated();
 

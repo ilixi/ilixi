@@ -43,7 +43,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_APPMIXER, "ilixi/Mixer", "SoundMixer");
+D_DEBUG_DOMAIN(ILX_APPMIXER, "ilixi/Mixer", "SoundMixer");
 
 void
 volumeListener(void* ctx, void* arg)
@@ -79,8 +79,10 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
 
     _masterVolume = new Slider();
     _masterVolume->setRange(0, 1);
-    _masterVolume->setValue(1);
+    _masterVolume->setValue(SoundDFB::getMasterVolume());
     _masterVolume->setStep(0.1);
+    _masterVolume->setPageStep(0.2);
+    _masterVolume->setUpdateMode(Slider::UponRelease);
     _masterVolume->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeMasterVolume));
     volGrid->addWidget(_masterVolume, 1, 0, 0, 2);
 
@@ -94,6 +96,8 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     _effectsVolume->setRange(0, 1);
     _effectsVolume->setValue(1);
     _effectsVolume->setStep(0.1);
+    _effectsVolume->setPageStep(0.2);
+    _effectsVolume->setUpdateMode(Slider::UponRelease);
     _effectsVolume->sigValueChanged.connect(sigc::mem_fun(this, &ILXSoundMixer::changeEffectsVolume));
     volGrid->addWidget(_effectsVolume, 3, 0, 0, 2);
 
@@ -176,9 +180,19 @@ ILXSoundMixer::~ILXSoundMixer()
 void
 ILXSoundMixer::mute()
 {
-    _masterVolume->setValue(0);
     if (_soundComponent)
         DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute, NULL);
+    else
+    {
+        static double volume = SoundDFB::getMasterVolume();
+        if (SoundDFB::getMasterVolume() == 0)
+            _masterVolume->setValue(volume);
+        else
+        {
+            volume = SoundDFB::getMasterVolume();
+            _masterVolume->setValue(0);
+        }
+    }
 }
 
 void
@@ -193,25 +207,21 @@ ILXSoundMixer::playTestSound()
 void
 ILXSoundMixer::changeMasterVolume(float volume)
 {
-    if (_masterVolume->hasFocus())
+    if (_soundComponent)
     {
-        if (_soundComponent)
-        {
-            void *ptr;
-            DaleDFB::comaGetLocal(sizeof(float), &ptr);
-            float* vol = (float*) ptr;
-            *vol = volume;
-            DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
-        } else
-            SoundDFB::setMasterVolume(volume);
-    }
+        void *ptr;
+        DaleDFB::comaGetLocal(sizeof(float), &ptr);
+        float* vol = (float*) ptr;
+        *vol = volume;
+        DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
+    } else
+        SoundDFB::setMasterVolume(volume);
 }
 
 void
 ILXSoundMixer::changeEffectsVolume(float volume)
 {
-    if (_effectsVolume->hasFocus())
-        PlatformManager::instance().setSoundEffectLevel(volume);
+    PlatformManager::instance().setSoundEffectLevel(volume);
 }
 
 } /* namespace ilixi */

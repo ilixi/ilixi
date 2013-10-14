@@ -27,6 +27,10 @@
 #include <types/Event.h>
 #include <ilixiConfig.h>
 
+#ifdef ILIXI_HAVE_CAIRO
+#include <cairo-directfb.h>
+#endif
+
 namespace ilixi
 {
 class Widget;
@@ -47,10 +51,11 @@ public:
         ModifiedSize = 0x0004,                                  //!< Widget size is modified.
         ModifiedGeometry = (ModifiedPosition | ModifiedSize),   //!< Widget's geometry is modified.
         DoZSort = 0x0008,                                       //!< Perform z-index sorting of children.
-        HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface and its surface is not a sub-surface of any parent widget.
+        HasOwnSurface = 0x0010,                                 //!< Widget has an independent surface (offscreen) and its surface is not a sub-surface of any parent widget.
         RootSurface = 0x0020,                                   //!< Widget is a WindowWidget and window surface is used directly.
         SubSurface = 0x0040,                                    //!< Widget uses a subsurface.
         SharedSurface = 0x0080,                                 //!< Widget uses window surface directly.
+        ForceSingleSurface = 0x1000,                            //!< Affects offscreen surfaces only. Overrides default platform option.
         DefaultDescription = (InitialiseSurface | ModifiedGeometry | SharedSurface),    //!< Default flags for widgets.
         BlitDescription = (InitialiseSurface | ModifiedGeometry | HasOwnSurface),       //!< Use if widget surface should be blitted onto another widget/surface, e.g. a widget inside a ScrollArea.
         WindowDescription = (InitialiseSurface | ModifiedGeometry | RootSurface)        //!< Use if widget is a WindowWidget, e.g. Application or Dialog.
@@ -208,6 +213,12 @@ public:
     void
     setOpacity(u8 opacity);
 
+    /*!
+     * Sets surface blitting flags.
+     */
+    void
+    setBlittingFlags(DFBSurfaceBlittingFlags flags);
+
 #ifdef ILIXI_STEREO_OUTPUT
     bool
     createDFBSubSurfaceStereo(const Rectangle& geometry, IDirectFBSurface* parent, int zIndex);
@@ -229,6 +240,24 @@ public:
 
     void
     flipStereo(const Rectangle& left, const Rectangle& right);
+#endif
+
+#ifdef ILIXI_HAVE_CAIRO
+    /*!
+     * Returns the cairo-directfb surface.
+     *
+     * If cairo-directfb surface does not exist it is created.
+     */
+    cairo_surface_t*
+    cairoSurface();
+
+    /*!
+     * Returns the context of cairo-directfb surface.
+     *
+     * If context does not exist it is created.
+     */
+    cairo_t*
+    cairoContext();
 #endif
 
 protected:
@@ -288,6 +317,13 @@ private:
 #endif
     //! This mutex is used for serialising writes to surface by Painter.
     pthread_mutex_t _surfaceLock;
+
+#ifdef ILIXI_HAVE_CAIRO
+    //! Interface to cairo surface.
+    cairo_surface_t* _cairoSurface;
+    //! Interface to _cairoSurface's context.
+    cairo_t* _cairoContext;
+#endif
 
     /*!
      * Release DirectFB surface.

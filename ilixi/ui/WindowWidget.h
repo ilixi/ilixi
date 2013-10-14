@@ -43,6 +43,15 @@ class WindowWidget : public Frame
     friend class EventManager;
 public:
     /*!
+     * This enum specifies window modality.
+     */
+    enum Modality
+    {
+        None,       //!< A window which is not modal and non-blocking.
+        WindowModal //!< A modal window which blocks event delivery to other windows.
+    };
+
+    /*!
      * Constructor.
      */
     WindowWidget(Widget* parent = 0);
@@ -107,17 +116,6 @@ public:
     virtual bool
     consumePointerEvent(const PointerEvent& pointerEvent);
 
-protected:
-    enum BackgroundFlags
-    {
-        BGFNone = 0x000,
-        BGFClear = 0x001,
-        BGFFill = 0x002
-    };
-
-    //! This flag specifies whether frame fills its background.
-    char _backgroundFlags;
-
     /*!
      * Makes this widget and its window visible.
      */
@@ -129,6 +127,39 @@ protected:
      */
     void
     closeWindow();
+
+    /*!
+     * Sets which layer window is using.
+     *
+     * @param layerName a logical layer name.
+     */
+    void
+    setLayerName(const std::string& layerName);
+
+    /*!
+     * Returns window modality.
+     */
+    Modality
+    modality() const;
+
+    /*!
+     * Sets window modality.
+     */
+    void
+    setModality(Modality modality);
+
+protected:
+    enum BackgroundFlags
+    {
+        BGFNone = 0x000,
+        BGFClear = 0x001,
+        BGFFill = 0x002
+    };
+
+    //! This flag specifies whether frame fills its background.
+    char _backgroundFlags;
+    //! This flag specifies window modality.
+    Modality _modality;
 
     /*!
      * Returns the unique DirectFB window ID.
@@ -154,6 +185,7 @@ protected:
     sigc::signal<void> sigAbort;
 
 private:
+
     //! This property stores the managed window.
     Window* _window;
     //! This property stores the event manager for this window.
@@ -161,8 +193,6 @@ private:
      * The event manager is owned by AppBase once this window is attached to it.
      */
     EventManager* _eventManager;
-
-    std::string _layerName;
 
     class UpdateQueue
     {
@@ -209,8 +239,6 @@ private:
 #endif
         UpdateQueue _updateQueue;
     } _updates;
-
-    static IDirectFBSurface* _exclusiveSurface;
 
     /*!
      * Creates a united rectangle from a list of dirty regions and

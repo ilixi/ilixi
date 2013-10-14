@@ -49,7 +49,7 @@ public:
      * If name is found returns icon as a sub-image, else returns NOIMAGE image.
      */
     Image*
-    getIcon(std::string name);
+    getIcon(const std::string& name);
 
     /*!
      * Initialise icons from an XML file.

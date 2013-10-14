@@ -35,9 +35,10 @@
 
 namespace ilixi
 {
+class EventFilter;
 class EventManager;
-class WindowWidget;
 class Window;
+class WindowWidget;
 
 //! Base class for all GUI objects.
 /*!
@@ -774,6 +775,18 @@ public:
     eventManager() const;
 
     /*!
+     * Sets event filter.
+     */
+    void
+    setEventFilter(EventFilter* filter);
+
+    /*!
+     * Returns event filter if any.
+     */
+    EventFilter*
+    eventFilter() const;
+
+    /*!
      * Returns true if widget is a child.
      */
     bool
@@ -1045,6 +1058,9 @@ private:
     WidgetResizeConstraint _xResizeConstraint;
     //! This property defines widget's behaviour inside a layout. Default is NoConstraint.
     WidgetResizeConstraint _yResizeConstraint;
+
+    //! Stores event filter if any.
+    EventFilter* _eventFilter;
 
     /*!
      * This property holds the widget's minimum allowed size that is specified by the user.

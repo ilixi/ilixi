@@ -43,12 +43,8 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FILEBROWSERITEM, "ilixi/ui/FileBrowserItem", "FileBrowserItem");
-D_DEBUG_DOMAIN( ILX_FILEBROWSER, "ilixi/ui/FileBrowser", "FileBrowser");
-
-const std::string audio = ".mp3 .wav";
-const std::string video = ".mp4 .avi";
-const std::string image = ".bmp .png .jpg";
+D_DEBUG_DOMAIN(ILX_FILEBROWSERITEM, "ilixi/ui/FileBrowserItem", "FileBrowserItem");
+D_DEBUG_DOMAIN(ILX_FILEBROWSER, "ilixi/ui/FileBrowser", "FileBrowser");
 
 bool
 itemsSort(FileBrowserItem* a, FileBrowserItem* b)
@@ -65,30 +61,18 @@ FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
           _owner(parent),
           _info(info),
           _icon(NULL),
-          _select(NULL)
+          _select(NULL),
+          _alternateRow(false)
 {
     ILOG_TRACE_W(ILX_FILEBROWSERITEM);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
     _box = new HBoxLayout();
     _box->setVerticalAlignment(Alignment::Middle);
+    _box->setSpacing(10);
     addChild(_box);
 
-    if (_info->isDir())
-        _icon = new Icon(StyleHint::Folder);
-    else if (_info->isFile())
-    {
-        std::string suffix = _info->suffix();
-        if (audio.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Music);
-        else if (video.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Movie);
-        else if (image.find(suffix) != std::string::npos)
-            _icon = new Icon(StyleHint::Picture);
-        else
-            _icon = new Icon(StyleHint::File);
-    } else
-        _icon = new Icon(StyleHint::Clock);
+    _icon = new Icon(_info->packedIcon());
     _icon->setSize(32, 32);
     _box->addWidget(_icon);
 
@@ -131,7 +115,10 @@ FileBrowserItem::~FileBrowserItem()
 Size
 FileBrowserItem::preferredSize() const
 {
-    return _box->preferredSize();
+    Size s = _box->preferredSize();
+    int h = std::max(s.height(), stylist()->defaultFont(StyleHint::ButtonFont)->extents("X").height() + stylist()->defaultFont(StyleHint::InfoFont)->extents("X").height() + 5);
+    s.setHeight(h);
+    return s;
 }
 
 void
@@ -141,8 +128,10 @@ FileBrowserItem::compose(const PaintEvent& event)
     p.begin(event);
     if (state() & FocusedState)
         p.setBrush(stylist()->palette()->focus);
-    else
+    else if (_alternateRow)
         p.setBrush(stylist()->palette()->_default.baseAlt);
+    else
+        p.setBrush(stylist()->palette()->_default.base);
     p.fillRectangle(0, 0, width(), height());
     p.end();
 }
@@ -203,6 +192,7 @@ FileBrowserItem::updateFileBrowserItemGeometry()
 
 FileBrowser::FileBrowser(const std::string& path, Widget* parent)
         : Widget(parent),
+          _showHidden(false),
           _filter(""),
           _modified(true)
 {
@@ -248,6 +238,12 @@ FileBrowser::refresh()
     ILOG_TRACE_W(ILX_FILEBROWSER);
 }
 
+bool
+FileBrowser::showHidden() const
+{
+    return _showHidden;
+}
+
 void
 FileBrowser::setPath(const std::string& path)
 {
@@ -261,6 +257,8 @@ FileBrowser::setPath(const std::string& path)
         {
             if (files[i] == ".")
                 continue;
+            else if (!_showHidden && (files[i].length() > 2) && (files[i][0] == '.'))
+                continue;
 
             FileInfo* info = new FileInfo(path + files[i]);
             if (info->isDir())
@@ -269,7 +267,7 @@ FileBrowser::setPath(const std::string& path)
             {
                 if (_filter.empty())
                     items.push_back(new FileBrowserItem(info, this));
-                else if (_filter.find(info->suffix()) != std::string::npos)
+                else if (!info->suffix().empty() && (_filter.find(info->suffix()) != std::string::npos))
                     items.push_back(new FileBrowserItem(info, this));
             }
         }
@@ -278,7 +276,11 @@ FileBrowser::setPath(const std::string& path)
 
         _list->clear();
         for (int i = 0; i < items.size(); ++i)
+        {
+            if (i % 2 == 0)
+                items[i]->_alternateRow = true;
             _list->addItem(items[i]);
+        }
         items[0]->setFocus();
         _modified = false;
         update();
@@ -292,6 +294,12 @@ FileBrowser::setFilter(const std::string& filter)
     _filter = filter;
     _modified = true;
     setPath(_path->text());
+}
+
+void
+FileBrowser::setShowHidden(bool showHidden)
+{
+    _showHidden = showHidden;
 }
 
 void

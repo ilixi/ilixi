@@ -48,16 +48,24 @@ Surface::Surface(Widget* owner)
           _flags((SurfaceFlags) DefaultDescription),
           _rightSurface(NULL),
           _eye(PaintEvent::LeftEye)
+#ifdef ILIXI_HAVE_CAIRO
+          ,_cairoSurface(NULL),
+          _cairoContext(NULL)
+#endif
 {
     pthread_mutex_init(&_surfaceLock, NULL);
     ILOG_TRACE(ILX_SURFACE);
 }
 #else
 Surface::Surface(Widget* owner)
-: _owner(owner),
-_dfbSurface(NULL),
-_parentSurface(NULL),
-_flags((SurfaceFlags) DefaultDescription)
+        : _owner(owner),
+          _dfbSurface(NULL),
+          _parentSurface(NULL),
+          _flags((SurfaceFlags) DefaultDescription)
+#ifdef ILIXI_HAVE_CAIRO
+          ,_cairoSurface(NULL),
+          _cairoContext(NULL)
+#endif
 {
     pthread_mutex_init(&_surfaceLock, NULL);
     ILOG_TRACE(ILX_SURFACE);
@@ -80,8 +88,11 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
     desc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT | DSDESC_CAPS);
     desc.width = width;
     desc.height = height;
-    desc.pixelformat = DSPF_ARGB;
-    desc.caps = caps;
+    desc.pixelformat = PlatformManager::instance().forcedPixelFormat();
+    if(_flags & ForceSingleSurface)
+        desc.caps = caps;
+    else
+        desc.caps = (DFBSurfaceCapabilities) (caps | PlatformManager::instance().getWindowSurfaceCaps());
     desc.hints = DSHF_FONT;
     DFBResult ret = PlatformManager::instance().getDFB()->CreateSurface(PlatformManager::instance().getDFB(), &desc, &_dfbSurface);
     if (ret)
@@ -162,6 +173,13 @@ Surface::setGeometry(int x, int y, int width, int height)
             ILOG_ERROR(ILX_SURFACE, "Cannot set geometry: %s\n", DirectFBErrorString(ret));
     } else
         ILOG_ERROR(ILX_SURFACE, "Cannot set geometry without a parent surface!\n");
+}
+
+void
+Surface::setBlittingFlags(DFBSurfaceBlittingFlags flags)
+{
+    if (_dfbSurface)
+        _dfbSurface->SetBlittingFlags(_dfbSurface, flags);
 }
 
 void
@@ -530,6 +548,24 @@ Surface::flipStereo(const Rectangle& left, const Rectangle& right)
 
 #endif
 
+#ifdef ILIXI_HAVE_CAIRO
+cairo_surface_t*
+Surface::cairoSurface()
+{
+    if (!_cairoSurface)
+        _cairoSurface = cairo_directfb_surface_create(PlatformManager::instance().getDFB(), _dfbSurface);
+    return _cairoSurface;
+}
+
+cairo_t*
+Surface::cairoContext()
+{
+    if (!_cairoContext)
+        _cairoContext = cairo_create(cairoSurface());
+    return _cairoContext;
+}
+#endif
+
 Surface::SurfaceFlags
 Surface::flags() const
 {
@@ -642,6 +678,16 @@ Surface::updateSurface(const PaintEvent& event)
     ILOG_DEBUG(ILX_SURFACE, " -> eye: %s\n", event.eye & PaintEvent::LeftEye ? "Left" : "Right");
     _eye = event.eye;
 #endif
+
+    if (_flags & HasOwnSurface) {
+        Rectangle rect = _owner->mapToSurface(event.rect);
+        clear(rect);
+        if (PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING)
+        {
+            flip(rect);
+            clear(rect);
+        }
+    }
 }
 
 void
@@ -649,6 +695,20 @@ Surface::release()
 {
     ILOG_TRACE(ILX_SURFACE);
     lock();
+
+#ifdef ILIXI_HAVE_CAIRO
+    if (_cairoContext)
+    {
+        cairo_destroy(_cairoContext);
+        _cairoContext = NULL;
+    }
+    if (_cairoSurface)
+    {
+        cairo_surface_destroy(_cairoSurface);
+        _cairoSurface = NULL;
+    }
+#endif
+
 #ifdef ILIXI_STEREO_OUTPUT
     if (_rightSurface)
     {
@@ -656,6 +716,7 @@ Surface::release()
         _rightSurface = NULL;
     }
 #endif
+
     if (_dfbSurface)
     {
         _dfbSurface->Release(_dfbSurface);

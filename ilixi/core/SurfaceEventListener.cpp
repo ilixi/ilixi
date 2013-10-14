@@ -81,6 +81,7 @@ SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
         {
             ILOG_DEBUG(ILX_SURFACELISTENER_UPDATES, " -> SURFEVT: receive id %d flip count %d\n", event.surface_id, event.flip_count);
             _queue.push(event);
+            _cb.start();
 
             Application::__instance->accountSurfaceEvent(event, _lastTime);
 
@@ -103,7 +104,7 @@ SurfaceEventListener::funck()
         if (onSourceUpdate(_queue.front()))
             _queue.pop();
     }
-    return true;
+    return !_queue.empty();
 }
 
 } /* namespace ilixi */

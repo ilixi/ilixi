@@ -5,7 +5,11 @@
     <!ATTLIST DFBLayer  id CDATA #REQUIRED
                         fsu (on|off) #REQUIRED 
                         flipMode (none|onSync|waitForSync|new) #REQUIRED 
-                        bufferMode (unknown|frontOnly|backVideo|backSystem|triple|windows) #REQUIRED >    
+                        bufferMode (unknown|frontOnly|backVideo|backSystem|triple|windows) #REQUIRED 
+                        x CDATA "0"
+                        y CDATA "0"
+                        w CDATA "0"
+                        h CDATA "0">
    
 <!ELEMENT LogicLayers (Layer+) >
     <!ELEMENT Layer EMPTY >

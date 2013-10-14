@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE app PUBLIC "-//ilixi//DTD AppDef v1//EN" "http://www.ilixi.org/dtd/application.dtd">
+<app>
+	<name>Gestures demo</name>
+	<author>Tarik Sekmen</author>
+	<licence>LGPL</licence>
+	<category>Default</category>
+	<version>1.0</version>
+	<icon>@DATADIR:gesture.png</icon>
+	<exec>ilixi_gestures</exec>
+</app>

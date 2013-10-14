@@ -24,8 +24,7 @@
 #ifndef ILIXI_WINDOW_H_
 #define ILIXI_WINDOW_H_
 
-#include <types/Size.h>
-#include <types/Point.h>
+#include <types/Rectangle.h>
 
 namespace ilixi
 {
@@ -76,6 +75,12 @@ public:
     windowPosition() const;
 
     /*!
+     * Returns the bounding rectangle of window on screen.
+     */
+    Rectangle
+    windowRectangle() const;
+
+    /*!
      *  Makes the window visible and starts input event thread.
      */
     void
@@ -92,7 +97,8 @@ protected:
     IDirectFBWindow* _dfbWindow;
     //! This property stores an interface to window's surface.
     IDirectFBSurface* _windowSurface;
-
+    //! Stores a logical layer name for window.
+    std::string _layerName;
     /*!
      * Creates a DFBWindow and acquires an interface to its surface.
      */

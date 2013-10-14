@@ -22,6 +22,7 @@
  */
 
 #include <algorithm>
+#include <core/EventFilter.h>
 #include <core/Logger.h>
 #include <core/Window.h>
 #include <ui/Widget.h>
@@ -30,7 +31,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_WIDGET, "ilixi/ui/Widget", "Widget");
+D_DEBUG_DOMAIN(ILX_WIDGET, "ilixi/ui/Widget", "Widget");
 
 unsigned int Widget::_idCounter = 0;
 StylistBase* Widget::_stylist = NULL;
@@ -46,7 +47,8 @@ Widget::Widget(Widget* parent)
           _rootWindow(NULL),
           _preSelectedWidget(NULL),
           _xResizeConstraint(NoConstraint),
-          _yResizeConstraint(NoConstraint)
+          _yResizeConstraint(NoConstraint),
+          _eventFilter(NULL)
 {
     _neighbours[0] = NULL;
     _neighbours[1] = NULL;
@@ -68,7 +70,8 @@ Widget::Widget(const Widget& widget)
           _rootWindow(widget._rootWindow),
           _preSelectedWidget(widget._preSelectedWidget),
           _xResizeConstraint(widget._xResizeConstraint),
-          _yResizeConstraint(widget._yResizeConstraint)
+          _yResizeConstraint(widget._yResizeConstraint),
+          _eventFilter(NULL)
 {
     _id = _idCounter++;
     _z = 0;
@@ -759,7 +762,9 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
     {
         if (_inputMethod & PointerInput)
         {
-            if (_rootWindow->_eventManager->grabbedWidget() != this && (_inputMethod & PointerGrabbing) && ((pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion)))
+            if (_eventFilter && _eventFilter->pointerEventConsumer(pointerEvent))
+                return true;
+            else if (_rootWindow->_eventManager->grabbedWidget() != this && (_inputMethod & PointerGrabbing) && ((pointerEvent.buttonMask & ButtonMaskLeft) && (pointerEvent.eventType == PointerMotion)))
                 _rootWindow->_eventManager->setGrabbedWidget(this, pointerEvent);
             else if ((_inputMethod & PointerGrabbing) && (pointerEvent.eventType == PointerWheel))
             {
@@ -797,6 +802,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
             return true;
         } else if ((_inputMethod & PointerPassthrough) && _children.size())
         {
+            if (_eventFilter && _eventFilter->pointerEventConsumer(pointerEvent))
+                return true;
             for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
                 if (((Widget*) *it)->consumePointerEvent(pointerEvent))
                     return true;
@@ -810,6 +817,8 @@ Widget::consumeKeyEvent(const KeyEvent& keyEvent)
 {
     if (_inputMethod & KeyInput)
     {
+        if (_eventFilter && _eventFilter->keyEventConsumer(keyEvent))
+            return true;
         if (keyEvent.eventType == KeyUpEvent)
             keyUpEvent(keyEvent);
         else
@@ -848,6 +857,18 @@ Widget::eventManager() const
     if (_rootWindow)
         return _rootWindow->_eventManager;
     return NULL;
+}
+
+void
+Widget::setEventFilter(EventFilter* filter)
+{
+    _eventFilter = filter;
+}
+
+EventFilter*
+Widget::eventFilter() const
+{
+    return _eventFilter;
 }
 
 bool
@@ -1010,9 +1031,24 @@ Widget::lowerChild(Widget* child)
 void
 Widget::paintChildren(const PaintEvent& event)
 {
+    // TODO Stereo blitting and flipping.
     ILOG_TRACE_W(ILX_WIDGET);
+    Widget* child;
     for (WidgetListIterator it = _children.begin(); it != _children.end(); ++it)
-        ((Widget*) *it)->paint(event);
+    {
+        child = ((Widget*) *it);
+        child->paint(event);
+        if (child->_surface->flags() & Surface::HasOwnSurface)
+        {
+            _surface->setBlittingFlags(DSBLIT_BLEND_ALPHACHANNEL);
+            _surface->blit(child->_surface, child->absX(), child->absY());
+        }
+    }
+
+    if (_surface->flags() & Surface::HasOwnSurface) {
+        Rectangle rect = mapToSurface(event.rect);
+        _surface->flip(rect);
+    }
 }
 
 void
@@ -1022,7 +1058,7 @@ Widget::updateFrameGeometry()
     _frameGeometry.setX(_parent ? _surfaceGeometry.x() + _parent->_frameGeometry.x() : _surfaceGeometry.x());
     _frameGeometry.setY(_parent ? _surfaceGeometry.y() + _parent->_frameGeometry.y() : _surfaceGeometry.y());
 
-    ILOG_DEBUG( ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, _frameGeometry.x(), _frameGeometry.y());
+    ILOG_DEBUG(ILX_WIDGET, "Widget %d updateFrameGeometry( %d, %d)\n", _id, _frameGeometry.x(), _frameGeometry.y());
 
     Surface::SurfaceFlags flags = (Surface::SurfaceFlags) ((_surface->flags() & Surface::ModifiedPosition) | (_surface->flags() & Surface::ModifiedSize));
     _surface->unsetSurfaceFlag(Surface::ModifiedGeometry);

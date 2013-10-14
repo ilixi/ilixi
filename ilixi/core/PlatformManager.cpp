@@ -139,6 +139,17 @@ PlatformManager::getLayerSize(const std::string& name) const
     return Size(0, 0);
 }
 
+Size
+PlatformManager::getScreenSize() const
+{
+    int w, h;
+    IDirectFBScreen* screen;
+    getLayer()->GetScreen(getLayer(), &screen);
+    screen->GetSize(screen, &w, &h);
+    screen->Release(screen);
+    return Size(w, h);
+}
+
 AppOptions
 PlatformManager::appOptions() const
 {
@@ -246,7 +257,7 @@ void
 PlatformManager::renderCursor(const DFBPoint& point)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
-    if ((_options & OptExclusive) && _cursorImage)
+    if (_cursorImage)
     {
         if (_cursorTarget)
         {
@@ -256,9 +267,11 @@ PlatformManager::renderCursor(const DFBPoint& point)
 #endif
             _cursorTarget->SetBlittingFlags(_cursorTarget, DSBLIT_BLEND_ALPHACHANNEL);
             _cursorTarget->Blit(_cursorTarget, _cursorImage, NULL, point.x, point.y);
-            ILOG_DEBUG(ILX_PLATFORMMANAGER_TRACE, " -> %d, %d\n", point.x, point.y);
         } else
+        {
             _cursorLayer->SetScreenPosition(_cursorLayer, point.x, point.y);
+            getLayerSurface("cursor")->Flip(getLayerSurface("cursor"), 0, DSFLIP_NONE);
+        }
     }
 }
 
@@ -300,6 +313,26 @@ PlatformManager::setSoundEffectLevel(float level)
     }
 #endif // ILIXI_HAVE_FUSIONDALE
 #endif
+}
+
+Rectangle
+PlatformManager::getLayerRectangle(const std::string& name)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    LogicLayerMap::const_iterator it = _layerMap.find(name);
+    if (it != _layerMap.end())
+    {
+        HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
+        if (itHW != _hwLayerMap.end())
+        {
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]t: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+            return itHW->second.rect;
+        }
+        ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find hw layer for logic layer %s!\n", name.c_str());
+        return Rectangle();
+    }
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
+    return Rectangle();
 }
 
 #ifdef ILIXI_HAVE_NLS
@@ -620,6 +653,10 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
         xmlChar* fsuC = xmlGetProp(node, (xmlChar*) "fsu");
         xmlChar* flipModeC = xmlGetProp(node, (xmlChar*) "flipMode");
         xmlChar* bufferModeC = xmlGetProp(node, (xmlChar*) "bufferMode");
+        xmlChar* xC = xmlGetProp(node, (xmlChar*) "x");
+        xmlChar* yC = xmlGetProp(node, (xmlChar*) "y");
+        xmlChar* wC = xmlGetProp(node, (xmlChar*) "w");
+        xmlChar* hC = xmlGetProp(node, (xmlChar*) "h");
 
         unsigned int id = atoi((char*) idC);
 
@@ -638,6 +675,7 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                 info.fsu = true;
             info.flipMode = FlipNone;
             info.layer = layer;
+            info.rect = Rectangle(atoi((char*) xC), atoi((char*) yC), atoi((char*) wC), atoi((char*) hC));
 
             std::pair<HardwareLayerMap::iterator, bool> ret = _hwLayerMap.insert(std::pair<unsigned int, HardwareLayer>(id, info));
             if (ret.second == false)
@@ -701,6 +739,13 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                 config.options = DLOP_NONE;
 #endif
 
+                if (!info.rect.isNull())
+                {
+                    config.flags = (DFBDisplayLayerConfigFlags)  (config.flags | DLCONF_WIDTH | DLCONF_HEIGHT);
+                    config.width = info.rect.width();
+                    config.height = info.rect.height();
+                }
+
                 res = layer->SetConfiguration(layer, &config);
                 if (res != DFB_OK)
                 {
@@ -721,9 +766,14 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
 
                 } else
                     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
+                layer->SetScreenPosition(layer, info.rect.x(), info.rect.y());
             }
         }
 
+        xmlFree(xC);
+        xmlFree(yC);
+        xmlFree(wC);
+        xmlFree(hC);
         xmlFree(idC);
         xmlFree(fsuC);
         xmlFree(flipModeC);
@@ -763,7 +813,7 @@ PlatformManager::setLogicLayers(xmlNodePtr node)
                 ret.first->second.surface->Clear(ret.first->second.surface, 0, 0, 0, 0);
                 ret.first->second.surface->Flip(ret.first->second.surface, NULL, DSFLIP_NONE);
             }
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Added logic layer [%s] \n", (char*)nameC);
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Added logic layer [%s] on hw layer [%d]\n", (char*)nameC, it->first);
         }
 
         xmlFree(refC);
@@ -1248,7 +1298,10 @@ PlatformManager::setPixelFormat(const char* format)
     }
 
     if (strcasecmp(format, "DEFAULT") == 0)
+    {
+        _pixelFormat = DSPF_ARGB;
         return true;
+    }
 
     int i = 0;
     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> %s\n", format);

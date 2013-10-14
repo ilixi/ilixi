@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_SLIDER, "ilixi/ui/Slider", "Slider");
+D_DEBUG_DOMAIN(ILX_SLIDER, "ilixi/ui/Slider", "Slider");
 
 Slider::Slider(Widget* parent)
         : Widget(parent),
@@ -38,7 +38,8 @@ Slider::Slider(Widget* parent)
           _step(1),
           _pageStep(10),
           _orientation(Horizontal),
-          _inverted(false)
+          _inverted(false),
+          _updateMode(Continuous)
 {
     _range = _maximum - _minimum;
     setInputMethod((WidgetInputMethod) (KeyPointerTracking | PointerGrabbing));
@@ -102,6 +103,12 @@ Slider::range() const
     return _range;
 }
 
+Slider::UpdateMode
+Slider::updateMode() const
+{
+    return _updateMode;
+}
+
 float
 Slider::value() const
 {
@@ -109,7 +116,7 @@ Slider::value() const
 }
 
 void
-Slider::setValue(float value, bool signal)
+Slider::setValue(float value, bool forceSignal)
 {
     if (value != _value)
     {
@@ -122,7 +129,7 @@ Slider::setValue(float value, bool signal)
 
         updateIndicatorPosition();
         update();
-        if (signal)
+        if (forceSignal || _updateMode == Continuous)
             sigValueChanged(_value);
         ILOG_DEBUG(ILX_SLIDER, "Value: %f\n", _value);
     }
@@ -219,6 +226,12 @@ Slider::setOrientation(Orientation orientation)
 }
 
 void
+Slider::setUpdateMode(UpdateMode updateMode)
+{
+    _updateMode = updateMode;
+}
+
+void
 Slider::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_SLIDER);
@@ -283,6 +296,8 @@ void
 Slider::pointerButtonUpEvent(const PointerEvent& pointerEvent)
 {
     update();
+    if (_updateMode == UponRelease)
+        sigValueChanged(_value);
     sigReleased();
 }
 
@@ -296,7 +311,6 @@ Slider::pointerMotionEvent(const PointerEvent& pointerEvent)
 void
 Slider::pointerWheelEvent(const PointerEvent& event)
 {
-//    setValue(_value - event.wheelStep * _pageStep);
     if (_orientation == Vertical)
     {
         if (_inverted)
@@ -342,14 +356,14 @@ Slider::setValueUsingPoint(const Point& p)
             cursor = width() - p.x() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth);
         else
             cursor = p.x() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth);
-        setValue((_range * cursor / (width() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth))) + _minimum);
+        setValue((_range * cursor / (width() - stylist()->defaultParameter(StyleHint::SliderIndicatorWidth))) + _minimum, false);
     } else
     {
         if (_inverted)
             cursor = p.y() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight);
         else
             cursor = height() - p.y() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight);
-        setValue((_range * cursor / (height() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight))) + _minimum);
+        setValue((_range * cursor / (height() - stylist()->defaultParameter(StyleHint::SliderIndicatorHeight))) + _minimum, false);
     }
 }
 

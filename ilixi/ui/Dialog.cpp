@@ -79,16 +79,16 @@ void
 Dialog::accept()
 {
     ILOG_TRACE_W(ILX_DIALOG);
-    sigAccepted();
     finish(1);
+    sigAccepted();
 }
 
 void
 Dialog::reject()
 {
     ILOG_TRACE_W(ILX_DIALOG);
-    sigRejected();
     finish(0);
+    sigRejected();
 }
 
 void
@@ -96,8 +96,8 @@ Dialog::finish(int result)
 {
     ILOG_TRACE_W(ILX_DIALOG);
     _result = result;
-    sigFinished(_result);
     closeWindow();
+    sigFinished(_result);
 }
 
 int

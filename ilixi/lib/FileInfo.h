@@ -26,6 +26,7 @@
 
 #include <sys/stat.h>
 #include <string>
+#include <types/Enums.h>
 
 namespace ilixi
 {
@@ -198,6 +199,12 @@ public:
      */
     std::string
     symLinkTarget() const;
+
+    /*!
+     * Returns a PackedIcon type for given file using mime_types stored in system.
+     */
+    StyleHint::PackedIcon
+    packedIcon() const;
 
 private:
     //! This flag is set to true if file exists and can stat.

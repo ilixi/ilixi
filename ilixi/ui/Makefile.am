@@ -85,6 +85,11 @@ if WITH_SURFACE_EVENTS
 libilixi_ui_la_SOURCES 	+= 	SurfaceView.cpp
 ilixi_include_HEADERS 	+= 	SurfaceView.h
 endif
+
+if WITH_EGL
+libilixi_ui_la_SOURCES 	+= 	EGLWidget.cpp
+ilixi_include_HEADERS 	+= 	EGLWidget.h
+endif
 							
 if WITH_REFLEX
 UI_REFLEX				= 	Application_rflx.cpp \

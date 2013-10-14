@@ -10,6 +10,7 @@ miscdata_DATA 	=	8tracks.png \
 					facebook.png \
 					fire.png \
 					gallery.png \
+					gesture.png \
 					gears.png \
 					google.png \
 					googlemaps.png \

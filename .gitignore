@@ -35,6 +35,7 @@ ilixi/ilixiConfig.h
 ilixi_settings.xml
 data/ilixi_catalog.xml
 
+apps/cairo/ilixi_cairo
 apps/calc/ilixi_calc
 apps/car/ccompositor/ilixi_carcomp
 apps/car/home/ilixi_carhome
@@ -42,10 +43,10 @@ apps/car/statusbar/ilixi_carstatus
 apps/carousel/ilixi_carousel
 apps/compositor/ilixi_comp
 apps/demo2/ilixi_demo2
-apps/demo3/ilixi_demo3
 apps/demo4/ilixi_demo4
-apps/gallery/ilixi_demo1
+apps/egl/ilixi_egl
 apps/gallery/ilixi_gallery
+apps/gestures/ilixi_gestures
 apps/home/ilixi_home
 apps/monitor/ilixi_monitor
 apps/osk/ilixi_osk

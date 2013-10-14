@@ -87,6 +87,8 @@ if test "$enable_stereoscopy" = "yes"; then
 	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereoscopy output])
 fi
 
+AC_ARG_ENABLE([egl], [AS_HELP_STRING([--enable-egl], [enable DFBEGL support @<:@default=no@:>@])], [], [enable_egl=no])
+AC_ARG_ENABLE([cairo], [AS_HELP_STRING([--enable-cairo], [enable cairo support @<:@default=no@:>@])], [], [enable_cairo=no])
 AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
 AC_ARG_ENABLE([fusionsound], AS_HELP_STRING([--enable-fusionsound], [enable FusionSound support @<:@default=no@:>@]), [], [enable_fusionsound=no])
 AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor and application manager features @<:@default=no@:>@])], [], [enable_sawman=no])
@@ -122,14 +124,51 @@ FUSIONSOUND_REQ_VERSION=1.6.0
 SIGC_REQ_VERSION=2.2.4.2
 LIBXML_REQ_VERSION=2.7.7
 FONTCONFIG_REQ_VERSION=2.6.0
+DFBEGL_REQ_VERSION=7.10
+CAIRO_REQ_VERSION=1.10.2
 
 REQ_PACKAGES="directfb >= $DIRECTFB_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION fontconfig >= $FONTCONFIG_REQ_VERSION"
 
 AC_MSG_NOTICE([checking dependencies...])
+EGL_DEP="egl >= $DFBEGL_REQ_VERSION"
+CAIRO_DEP="cairo-directfb >= $CAIRO_REQ_VERSION"
 FUSIONDALE_DEP="fusiondale >= $FUSIONDALE_REQ_VERSION"
 FUSIONSOUND_DEP="fusionsound >= $FUSIONSOUND_REQ_VERSION"
 SAWMAN_DEP="sawman >= $SAWMAN_REQ_VERSION"
-            
+
+AS_IF([test "x$enable_egl" = "xyes"], 
+    [
+    	PKG_CHECK_MODULES([dfbegl], [dfbegl >= 1.7.0], 
+		[
+			PKG_CHECK_MODULES([egl], [$EGL_DEP], 
+			[
+			    REQ_PACKAGES="$REQ_PACKAGES $EGL_DEP"
+				AC_DEFINE([HAVE_EGL], [1], [Enable EGL support])
+				enable_egl=yes
+			],
+			[
+			    AC_MSG_WARN([*** DirectFB EGL library not found -- Building without EGL support.])
+			])
+		],
+		[
+		    AC_MSG_WARN([*** dfbegl not found -- Building without EGL support.])
+		])		
+    ]
+)
+
+AS_IF([test "x$enable_cairo" = "xyes"], [
+	PKG_CHECK_MODULES([Cairo], [$CAIRO_DEP], 
+		[				
+			REQ_PACKAGES="$REQ_PACKAGES $CAIRO_DEP"
+			AC_DEFINE([HAVE_CAIRO], [1], [Enable Cairo support])
+		], 
+		[
+			enable_cairo=no 
+			AC_MSG_WARN([*** Cairo not found -- Building without Cairo support.])
+		]
+	)], []
+)
+
 AS_IF([test "x$enable_fusiondale" = "xyes"], [
 	PKG_CHECK_MODULES([FusionDale], [$FUSIONDALE_DEP], 
 		[				
@@ -239,7 +278,7 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 ######################################################################
 # Output
 ######################################################################
-DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN"
+DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN  -lGLESv2"
 CXXFLAGS="$CFLAGS"
 
 with_surface_events=no
@@ -250,7 +289,6 @@ else
         with_surface_events=yes
     fi
 fi
-
 
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
@@ -265,12 +303,15 @@ AM_CONDITIONAL([WITH_WNN], [test x$enable_wnn = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
+AM_CONDITIONAL([WITH_EGL], [test "$enable_egl" = "yes"])
+AM_CONDITIONAL([WITH_CAIRO], [test "$enable_cairo" = "yes"])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
 
 AC_CONFIG_FILES([ \
         Makefile  \
+        apps/cairo/Makefile \
         apps/calc/Makefile \
         apps/car/appdefs/Makefile \
         apps/car/ccompositor/images/Makefile \
@@ -282,8 +323,10 @@ AC_CONFIG_FILES([ \
         apps/carousel/Makefile \
         apps/demo2/Makefile \
         apps/demo4/Makefile \
+        apps/egl/Makefile \
         apps/gallery/images/Makefile \
         apps/gallery/Makefile \
+        apps/gestures/Makefile \
         apps/Makefile \
         apps/monitor/Makefile \
         apps/osk/images/Makefile \
@@ -338,10 +381,12 @@ AC_MSG_RESULT([
    CFLAGS                   : $CFLAGS
    LDFLAGS                  : $LDFLAGS
    DEPS_CFLAGS              : $DEPS_CFLAGS
-   DEPS_LIBS                : $DEPS_LIBS
+   DEPS_LIBS                : $DEPS_LIBS   
    Log level                : $LOGGER_LEVEL
    Debug enabled            : $enable_debug
    Trace enabled            : $enable_trace
+   EGL support              : $enable_egl
+   Cairo support            : $enable_cairo
    Stereoscopy support      : $enable_stereoscopy  
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
