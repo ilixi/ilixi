@@ -186,10 +186,13 @@ EventManager::setOSKWidget(Widget* widget)
     else if (widget->inputMethod() & OSKInput)
     {
 #if ILIXI_HAVE_FUSIONDALE
-        Rectangle r = widget->frameGeometry();
-        Point p = _creator->_window->windowPosition();
-        r.translate(p.x(), p.y());
-        DaleDFB::showOSK(r);
+        if (_creator->_window)
+        {
+            Rectangle r = widget->frameGeometry();
+            Point p = _creator->_window->windowPosition();
+            r.translate(p.x(), p.y());
+            DaleDFB::showOSK(r);
+        }
 #endif
         _oskWidget = widget;
         return true;
