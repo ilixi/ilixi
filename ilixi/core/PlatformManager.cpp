@@ -744,6 +744,7 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
                     config.flags = (DFBDisplayLayerConfigFlags)  (config.flags | DLCONF_WIDTH | DLCONF_HEIGHT);
                     config.width = info.rect.width();
                     config.height = info.rect.height();
+                    ILOG_DEBUG(ILX_PLATFORMMANAGER, "Set config.width=%d and config.height=%d on layer [%d]\n", info.rect.width(), info.rect.height(), id);
                 }
 
                 res = layer->SetConfiguration(layer, &config);
@@ -766,7 +767,11 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
 
                 } else
                     ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
-                layer->SetScreenPosition(layer, info.rect.x(), info.rect.y());
+                res = layer->SetScreenPosition(layer, info.rect.x(), info.rect.y());
+                if (res != DFB_OK)
+                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set screen position to %d, %d on layer [%d] - %s\n", info.rect.x(), info.rect.y(), id, DirectFBErrorString(res));
+                else
+                    ILOG_DEBUG(ILX_PLATFORMMANAGER, "Set screen position to %d, %d on layer [%d]\n", info.rect.x(), info.rect.y(), id);
             }
         }
 
