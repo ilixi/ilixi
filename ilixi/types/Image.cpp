@@ -272,6 +272,7 @@ Image::loadImage()
     if (ret != DFB_OK)
     {
         invalidateSurface();
+        provider->Release(provider);
         ILOG_ERROR( ILX_IMAGE, "Cannot create surface for %s - %s\n", _imagePath.c_str(), DirectFBErrorString(ret));
         _state = (ImageFlags) (_state | NotAvailable);
         return false;
@@ -281,6 +282,7 @@ Image::loadImage()
         if (ret != DFB_OK)
         {
             invalidateSurface();
+            provider->Release(provider);
             ILOG_ERROR(ILX_IMAGE, "Cannot render image to surface! %s\n", DirectFBErrorString(ret));
             _state = (ImageFlags) (_state | NotAvailable);
             return false;
