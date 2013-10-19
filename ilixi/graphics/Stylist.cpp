@@ -732,15 +732,19 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
             blitRects[0] = rect.l.dfbRect();
             blitRects[1] = rect.r.dfbRect();
 
-            DFBPoint blitPoints[2];
+            DFBRectangle blitPoints[2];
 
             blitPoints[0].x = x;
             blitPoints[0].y = y;
+            blitPoints[0].w = rect.l.width();
+            blitPoints[0].h = h;
 
-            blitPoints[1].x = x;
-            blitPoints[1].y = y + h - rect.r.height();
+            blitPoints[1].x = x + w - rect.r.width();
+            blitPoints[1].y = y;
+            blitPoints[1].w = rect.r.width();
+            blitPoints[1].h = h;
 
-            p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+            p->batchStretchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
             p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
         }
     } else
