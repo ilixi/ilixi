@@ -277,13 +277,13 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
 }
 
 void
-WindowWidget::showWindow()
+WindowWidget::showWindow(const Point& position)
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     if (_window->_dfbWindow)
         return;
 
-    if (_window->initDFBWindow(preferredSize()))
+    if (_window->initDFBWindow(position, preferredSize()))
     {
         Application::addWindow(this);
         setSize(_window->windowSize());

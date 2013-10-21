@@ -41,6 +41,7 @@ class WindowWidget : public Frame
     friend class Surface;
     friend class Widget;
     friend class EventManager;
+    friend class DragHelper;
 public:
     /*!
      * This enum specifies window modality.
@@ -120,7 +121,7 @@ public:
      * Makes this widget and its window visible.
      */
     void
-    showWindow();
+    showWindow(const Point& position = Point());
 
     /*!
      * Sets visibility to false and releases window and surface resources of all children.
@@ -176,7 +177,7 @@ protected:
      * @param event parsed by DirectFB interfaces.
      * @return True if event is consumed.
      */
-    bool
+    virtual bool
     handleWindowEvent(const DFBWindowEvent& event);
 
     /*!
