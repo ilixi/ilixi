@@ -1045,7 +1045,7 @@ Widget::paintChildren(const PaintEvent& event)
         }
     }
 
-    if (_surface->flags() & Surface::HasOwnSurface) {
+    if ((_surface->flags() & Surface::HasOwnSurface) && !(_surface->flags() & Surface::DisableAutoFlip)) {
         Rectangle rect = mapToSurface(event.rect);
         _surface->flip(rect);
     }
