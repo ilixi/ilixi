@@ -136,6 +136,8 @@ struct PointerEvent
             : eventType(PointerMotion),
               x(0),
               y(0),
+              absX(0),
+              absY(0),
               wheelStep(0),
               button(ButtonLast),
               buttonMask(ButtonMaskNone),
@@ -148,6 +150,8 @@ struct PointerEvent
             : eventType(type),
               x(event.x),
               y(event.y),
+              absX(event.cx),
+              absY(event.cy),
               wheelStep(event.step),
               button((PointerButton) event.button),
               buttonMask((PointerButtonMask) event.buttons),
@@ -172,6 +176,8 @@ struct PointerEvent
             : eventType(other.eventType),
               x(other.x),
               y(other.y),
+              absX(other.absX),
+              absY(other.absY),
               wheelStep(other.wheelStep),
               button(other.button),
               buttonMask(other.buttonMask),
@@ -182,10 +188,14 @@ struct PointerEvent
 
     //! Type of event.
     PointerEventType eventType;
-    //! Cursor X position.
+    //! Cursor X position inside window.
     int x;
-    //! Cursor Y position.
+    //! Cursor Y position inside window.
     int y;
+    //! Absolute cursor X position.
+    int absX;
+    //! Absolute cursor Y position.
+    int absY;
     //! Wheel step {-1, 1}.
     int wheelStep;
     //! Button being pressed or released.
