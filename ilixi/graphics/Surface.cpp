@@ -566,6 +566,12 @@ Surface::cairoContext()
 }
 #endif
 
+std::string
+Surface::layerName() const
+{
+    return _owner->_rootWindow->layerName();
+}
+
 Surface::SurfaceFlags
 Surface::flags() const
 {

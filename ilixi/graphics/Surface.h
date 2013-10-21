@@ -261,6 +261,12 @@ public:
     cairoContext();
 #endif
 
+    /*!
+     * Returns logical layer name where surface resides.
+     */
+    std::string
+    layerName() const;
+
 protected:
     /*!
      * Creates a new DFB surface which has the same pixel format as window.
