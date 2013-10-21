@@ -129,6 +129,7 @@ EGLWidget::EGLWidget(Widget* parent)
     surface()->unsetSurfaceFlag(Surface::SharedSurface);
     surface()->setSurfaceFlag(Surface::HasOwnSurface);
     surface()->setSurfaceFlag(Surface::ForceSingleSurface);
+    surface()->setSurfaceFlag(Surface::DisableAutoFlip);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &EGLWidget::resizeGL));
 }
 
