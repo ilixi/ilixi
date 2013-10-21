@@ -61,6 +61,12 @@ Window::dfbSurface() const
     return _windowSurface;
 }
 
+IDirectFBWindow*
+Window::dfbWindow() const
+{
+    return _dfbWindow;
+}
+
 Size
 Window::windowSize() const
 {
@@ -122,8 +128,16 @@ Window::hideWindow()
     ILOG_DEBUG(ILX_WINDOW, " -> Window %p is hidden.\n", this);
 }
 
+void
+Window::moveTo(int x, int y)
+{
+    if (!_dfbWindow)
+        return;
+    _dfbWindow->MoveTo(_dfbWindow, x, y);
+}
+
 bool
-Window::initDFBWindow(const Size& size)
+Window::initDFBWindow(const Point& position, const Size& size)
 {
     ILOG_TRACE_F(ILX_WINDOW);
     if (!PlatformManager::instance().getDFB())
@@ -168,21 +182,30 @@ Window::initDFBWindow(const Size& size)
 
         if (!(PlatformManager::instance().appOptions() & OptExclusive))
         {
-            Size appSize = Application::appSize();
-            int w = size.width();
-            int h = size.height();
+            if (position.isNull())
+            {
+                Size appSize = Application::appSize();
+                int w = size.width();
+                int h = size.height();
 
-            if (w > (conf.width - 20))
-                w = conf.width - 20;
+                if (w > (conf.width - 20))
+                    w = conf.width - 20;
 
-            if (h > (conf.height - 20))
-                h = conf.height - 20;
+                if (h > (conf.height - 20))
+                    h = conf.height - 20;
 
-            desc.posx = (conf.width - w) / 2.0;
-            desc.posy = (conf.height - h) / 2.0;
+                desc.posx = (conf.width - w) / 2.0;
+                desc.posy = (conf.height - h) / 2.0;
 
-            desc.width = w;
-            desc.height = h;
+                desc.width = w;
+                desc.height = h;
+            } else
+            {
+                desc.posx = position.x();
+                desc.posy = position.y();
+                desc.width = size.width();
+                desc.height = size.height();
+            }
         } else
         {
             desc.posx = 0;

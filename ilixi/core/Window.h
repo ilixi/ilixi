@@ -57,10 +57,16 @@ public:
     windowID() const;
 
     /*!
-     * Returns DirectFB window interface.
+     * Returns DirectFB surface interface for window.
      */
     IDirectFBSurface*
     dfbSurface() const;
+
+    /*!
+     * Returns DirectFB window interface
+     */
+    IDirectFBWindow*
+    dfbWindow() const;
 
     /*!
      * Returns the size of window.
@@ -92,6 +98,12 @@ public:
     void
     hideWindow();
 
+    /*!
+     * Moves the window to specified coordinates.
+     */
+    void
+    moveTo(int x, int y);
+
 protected:
     //! This property stores an interface to DirectFB window.
     IDirectFBWindow* _dfbWindow;
@@ -103,7 +115,7 @@ protected:
      * Creates a DFBWindow and acquires an interface to its surface.
      */
     bool
-    initDFBWindow(const Size& size);
+    initDFBWindow(const Point& position, const Size& size);
 
     /*!
      * Release DirectFB window interfaces.
