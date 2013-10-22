@@ -38,12 +38,12 @@ Window::Window()
           _dfbWindow(NULL),
           _windowSurface(NULL)
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
 }
 
 Window::~Window()
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     releaseDFBWindow();
 }
 
@@ -70,7 +70,7 @@ Window::dfbWindow() const
 Size
 Window::windowSize() const
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     int w = 0, h = 0;
     if (_dfbWindow)
         _dfbWindow->GetSize(_dfbWindow, &w, &h);
@@ -81,7 +81,7 @@ Window::windowSize() const
 Point
 Window::windowPosition() const
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     int x = 0, y = 0;
     if (_dfbWindow)
         _dfbWindow->GetPosition(_dfbWindow, &x, &y);
@@ -107,7 +107,7 @@ Window::windowRectangle() const
 void
 Window::showWindow()
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     if (!_dfbWindow)
         return;
 
@@ -119,7 +119,7 @@ Window::showWindow()
 void
 Window::hideWindow()
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     if (!_dfbWindow)
         return;
 
@@ -139,7 +139,7 @@ Window::moveTo(int x, int y)
 bool
 Window::initDFBWindow(const Point& position, const Size& size)
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     if (!PlatformManager::instance().getDFB())
     {
         ILOG_FATAL(ILX_WINDOW, "DirectFB interface is not initialised!\n");
@@ -251,12 +251,12 @@ Window::initDFBWindow(const Point& position, const Size& size)
 void
 Window::releaseDFBWindow()
 {
-    ILOG_TRACE_F(ILX_WINDOW);
+    ILOG_TRACE(ILX_WINDOW);
     if (_dfbWindow)
     {
         ILOG_DEBUG(ILX_WINDOW, " -> Releasing DirectFB window %p...\n", _dfbWindow);
 
-        if (_layerName != "ui")
+        if (!(PlatformManager::instance().appOptions() & OptExclusive))
             _windowSurface->Release(_windowSurface);
         _dfbWindow->Close(_dfbWindow);
         _dfbWindow->Destroy(_dfbWindow);
