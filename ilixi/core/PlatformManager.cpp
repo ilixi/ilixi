@@ -269,8 +269,7 @@ PlatformManager::renderCursor(const DFBPoint& point)
             _cursorTarget->Blit(_cursorTarget, _cursorImage, NULL, point.x, point.y);
         } else
         {
-            _cursorLayer->SetScreenPosition(_cursorLayer, point.x, point.y);
-            getLayerSurface("cursor")->Flip(getLayerSurface("cursor"), 0, DSFLIP_NONE);
+            setLayerPosition("cursor", Point(point.x, point.y));
         }
     }
 }
@@ -325,7 +324,7 @@ PlatformManager::getLayerRectangle(const std::string& name)
         HardwareLayerMap::const_iterator itHW = _hwLayerMap.find(it->second.id);
         if (itHW != _hwLayerMap.end())
         {
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]t: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
             return itHW->second.rect;
         }
         ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find hw layer for logic layer %s!\n", name.c_str());
@@ -333,6 +332,68 @@ PlatformManager::getLayerRectangle(const std::string& name)
     }
     ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
     return Rectangle();
+}
+
+bool
+PlatformManager::setLayerRectangle(const std::string& name, const Rectangle& rect)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    LogicLayerMap::const_iterator it = _layerMap.find(name);
+    if (it != _layerMap.end())
+    {
+        HardwareLayerMap::iterator itHW = _hwLayerMap.find(it->second.id);
+        if (itHW != _hwLayerMap.end())
+        {
+            itHW->second.rect = rect;
+            DFBResult ret = itHW->second.layer->SetScreenRectangle(itHW->second.layer, itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+            if (ret != DFB_OK)
+            {
+                ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set layer rectangle for logic layer %s! - %s\n", name.c_str(), DirectFBErrorString(ret));
+                return false;
+            } else
+            {
+                it->second.surface->Flip(it->second.surface, 0, DSFLIP_NONE);
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+                return true;
+            }
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+            return false;
+        }
+        ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find hw layer for logic layer %s!\n", name.c_str());
+        return false;
+    }
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
+    return false;
+}
+
+bool
+PlatformManager::setLayerPosition(const std::string& name, const Point& point)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    LogicLayerMap::const_iterator it = _layerMap.find(name);
+    if (it != _layerMap.end())
+    {
+        HardwareLayerMap::iterator itHW = _hwLayerMap.find(it->second.id);
+        if (itHW != _hwLayerMap.end())
+        {
+            itHW->second.rect.setTopLeft(point);
+            DFBResult ret = itHW->second.layer->SetScreenPosition(itHW->second.layer, itHW->second.rect.x(), itHW->second.rect.y());
+            if (ret != DFB_OK)
+            {
+                ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set layer position for logic layer %s! - %s\n", name.c_str(), DirectFBErrorString(ret));
+                return false;
+            } else
+            {
+                it->second.surface->Flip(it->second.surface, 0, DSFLIP_NONE);
+                ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> layer[%s]: %d, %d, %d, %d\n", name.c_str(), itHW->second.rect.x(), itHW->second.rect.y(), itHW->second.rect.width(), itHW->second.rect.height());
+                return true;
+            }
+        }
+        ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find hw layer for logic layer %s!\n", name.c_str());
+        return false;
+    }
+    ILOG_ERROR(ILX_PLATFORMMANAGER, " -> Cannot find logic layer %s\n", name.c_str());
+    return false;
 }
 
 #ifdef ILIXI_HAVE_NLS

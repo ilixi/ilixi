@@ -187,6 +187,12 @@ public:
     Rectangle
     getLayerRectangle(const std::string& layerName);
 
+    bool
+    setLayerRectangle(const std::string& layerName, const Rectangle& rect);
+
+    bool
+    setLayerPosition(const std::string& layerName, const Point& point);
+
 #ifdef ILIXI_HAVE_NLS
     bool
     addI18N(I18NBase* tb);
