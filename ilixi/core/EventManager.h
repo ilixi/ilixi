@@ -85,7 +85,7 @@ public:
      * @return true if successful.
      */
     bool
-    setExposedWidget(Widget* widget, const PointerEvent& pointerEvent = PointerEvent());
+    setExposedWidget(Widget* widget, const PointerEvent& pointerEvent = PointerEvent(), bool dragging = false);
 
     /*!
      * Sets widgets focused flag and executes focusInEvent/focusOutEvent methods of widgets.

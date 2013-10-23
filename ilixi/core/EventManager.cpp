@@ -74,7 +74,7 @@ EventManager::oskWidget() const
 }
 
 bool
-EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
+EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent, bool dragging)
 {
     ILOG_TRACE_F(ILX_EVENTMANAGER);
     ILOG_DEBUG(ILX_EVENTMANAGER, " -> widget: %p\n", widget);
@@ -88,6 +88,8 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state & ~PressedState);
         _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
         _exposedWidget->leaveEvent(pointerEvent);
+        if (dragging)
+            _exposedWidget->dragLeaveEvent(pointerEvent);
     }
 
     _exposedWidget = widget;
@@ -96,6 +98,8 @@ EventManager::setExposedWidget(Widget* widget, const PointerEvent& pointerEvent)
         _exposedWidget->_state = (WidgetState) (_exposedWidget->_state | ExposedState);
         _exposedWidget->sigStateChanged(_exposedWidget, _exposedWidget->_state);
         _exposedWidget->enterEvent(pointerEvent);
+        if (dragging)
+            _exposedWidget->dragEnterEvent(pointerEvent);
     }
 
     return true;
