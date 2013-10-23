@@ -813,6 +813,33 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
 }
 
 bool
+Widget::consumeDragEvent(const PointerEvent& pointerEvent)
+{
+    if (visible() && enabled() && _frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
+    {
+        if (_inputMethod & AcceptsDrop)
+        {
+            if (pointerEvent.eventType == PointerButtonUp)
+                dropEvent(pointerEvent);
+            else if (pointerEvent.eventType == PointerMotion)
+            {
+                if (_inputMethod & PointerTracking)
+                    dragMotionEvent(pointerEvent);
+                if (_rootWindow->_eventManager->exposedWidget() != this)
+                    _rootWindow->_eventManager->setExposedWidget(this, pointerEvent, true);
+            }
+            return true;
+        } else if (_children.size())
+        {
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+                if (((Widget*) *it)->consumeDragEvent(pointerEvent))
+                    return true;
+        }
+    }
+    return false;
+}
+
+bool
 Widget::consumeKeyEvent(const KeyEvent& keyEvent)
 {
     if (_inputMethod & KeyInput)
@@ -1133,6 +1160,26 @@ Widget::universalEvent(const UniversalEvent* event)
     ILOG_TRACE_W(ILX_WIDGET);
     ILOG_DEBUG(ILX_WIDGET, " -> Type = %u\n", event->type);
     ILOG_DEBUG(ILX_WIDGET, " -> Data = %p\n", event->data);
+}
+
+void
+Widget::dragEnterEvent(const PointerEvent& pointerEvent)
+{
+}
+
+void
+Widget::dragLeaveEvent(const PointerEvent& pointerEvent)
+{
+}
+
+void
+Widget::dragMotionEvent(const PointerEvent& pointerEvent)
+{
+}
+
+void
+Widget::dropEvent(const PointerEvent& pointerEvent)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

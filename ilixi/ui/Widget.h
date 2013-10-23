@@ -738,6 +738,15 @@ public:
     consumePointerEvent(const PointerEvent& pointerEvent);
 
     /*!
+     * Consumes a drag event and calls event handling method.
+     *
+     * @param pointerEvent
+     * @return True if event is consumed, false otherwise.
+     */
+    virtual bool
+    consumeDragEvent(const PointerEvent& pointerEvent);
+
+    /*!
      * Calls appropriate key event handler method and returns true.
      *
      * @param keyEvent Reference to key event.
@@ -1034,6 +1043,18 @@ protected:
      */
     virtual void
     universalEvent(const UniversalEvent* event);
+
+    virtual void
+    dragEnterEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    dragLeaveEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    dragMotionEvent(const PointerEvent& pointerEvent);
+
+    virtual void
+    dropEvent(const PointerEvent& pointerEvent);
 
 private:
     //! This property stores the widget's unique id.
