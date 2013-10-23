@@ -280,6 +280,9 @@ private:
     //! AppBase instance.
     static Application* __instance;
 
+    //! Dragging flag.
+    bool _dragging;
+
     AppWindow* _appWindow;
     //! Application state.
     AppFlags __flags;
@@ -339,6 +342,9 @@ private:
     void
     handleWindowEvents(const DFBWindowEvent& event);
 
+    static void
+    handleDragEvents(const DFBWindowEvent& event);
+
     void
     handleKeyInputEvent(const DFBInputEvent& event, DFBWindowEventType type);
 
@@ -381,6 +387,9 @@ private:
     static void
     detachDFBWindow(Window* window);
 
+    static void
+    setDragging(bool dragging);
+
 #if ILIXI_HAS_SURFACEEVENTS
     void
     accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime);
@@ -395,6 +404,7 @@ private:
     disableSurfaceEventSync(long long micros);
 #endif // end ILIXI_HAS_SURFACEEVENTS
     friend class AppWindow;
+    friend class DragHelper;            // set _dragging
     friend class ILXCompositor;
     friend class PlatformManager;
     friend class SurfaceEventListener;  // accountSurfaceEvent

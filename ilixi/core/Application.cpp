@@ -45,7 +45,8 @@ D_DEBUG_DOMAIN( ILX_APPLICATION_EVENTS, "ilixi/core/Application/Events", "Applic
 Application* Application::__instance = NULL;
 
 Application::Application(int* argc, char*** argv, AppOptions opts)
-        : _appWindow(NULL),
+        : _dragging(false),
+          _appWindow(NULL),
           __flags(APS_HIDDEN),
 #if ILIXI_HAS_SURFACEEVENTS
           __activeWindow(NULL),
@@ -628,24 +629,46 @@ Application::handleWindowEvents(const DFBWindowEvent& event)
 {
     ILOG_TRACE_F(ILX_APPLICATION);
     pthread_mutex_lock(&__windowMutex);
-    if (__activeWindow && __activeWindow->_modality & WindowWidget::WindowModal) {
+    if (__activeWindow && (__activeWindow->_modality & WindowWidget::WindowModal))
+    {
         ILOG_DEBUG(ILX_APPLICATION, " -> Modal active window: %p\n", __activeWindow);
         __activeWindow->handleWindowEvent(event);
     }
     else
     {
         ILOG_DEBUG(ILX_APPLICATION, " -> Non modal active window: %p\n", __activeWindow);
-        //TODO use reverse iterator.
         WindowList::reverse_iterator it = __windowList.rbegin();
         while (it != __windowList.rend())
         {
-            if(((WindowWidget*) *it)->handleWindowEvent(event))
+            if(((WindowWidget*) *it)->handleWindowEvent(event, _dragging))
                 break;
             ++it;
         }
         ILOG_DEBUG(ILX_APPLICATION, " -> Non modal loop ends\n");
     }
     pthread_mutex_unlock(&__windowMutex);
+}
+
+void
+Application::handleDragEvents(const DFBWindowEvent& event)
+{
+    ILOG_TRACE_F(ILX_APPLICATION);
+    pthread_mutex_lock(&__instance->__windowMutex);
+    WindowWidget* w;
+    WindowList::reverse_iterator it = __instance->__windowList.rbegin();
+    while (it != __instance->__windowList.rend())
+    {
+        w = ((WindowWidget*) *it);
+        if (w->_dragWindow)
+        {
+            ++it;
+            continue;
+        }
+        if (w->handleWindowEvent(event, __instance->_dragging))
+            break;
+        ++it;
+    }
+    pthread_mutex_unlock(&__instance->__windowMutex);
 }
 
 void
@@ -897,6 +920,12 @@ Application::detachDFBWindow(Window* window)
 
         ILOG_DEBUG(ILX_APPLICATION, " -> Window %p is detached.\n", window);
     }
+}
+
+void
+Application::setDragging(bool dragging)
+{
+    __instance->_dragging = dragging;
 }
 
 #if ILIXI_HAS_SURFACEEVENTS
