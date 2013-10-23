@@ -40,7 +40,8 @@ WindowWidget::WindowWidget(Widget* parent)
           _backgroundFlags(BGFFill | BGFClear),
           _window(NULL),
           _eventManager(NULL),
-          _modality(WindowModal)
+          _modality(WindowModal),
+          _dragWindow(false)
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET);
     setVisible(false);
@@ -276,6 +277,43 @@ WindowWidget::consumePointerEvent(const PointerEvent& pointerEvent)
     return false;
 }
 
+bool
+WindowWidget::consumeDragEvent(const PointerEvent& pointerEvent)
+{
+    ILOG_TRACE_W(ILX_WINDOWWIDGET_EVENTS);
+    PointerEvent event = pointerEvent;
+    if (PlatformManager::instance().appOptions() & OptExclusive)
+    {
+        Point p = _window->windowPosition();
+        event.x -= p.x();
+        event.y -= p.y();
+    }
+
+    if (visible() && enabled() && _frameGeometry.contains(event.x, event.y, true))
+    {
+        if (_inputMethod & AcceptsDrop)
+        {
+            if (pointerEvent.eventType == PointerButtonUp)
+                dropEvent(event);
+            else if (pointerEvent.eventType == PointerMotion)
+            {
+                if (_inputMethod & PointerTracking)
+                    dragMotionEvent(pointerEvent);
+                if (_rootWindow->_eventManager->exposedWidget() != this)
+                    _rootWindow->_eventManager->setExposedWidget(this, event, true);
+            }
+            return true;
+        } else if (_children.size())
+        {
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+                if (((Widget*) *it)->consumeDragEvent(event))
+                    return true;
+            _eventManager->setExposedWidget(NULL, event, true);
+        }
+    }
+    return false;
+}
+
 void
 WindowWidget::showWindow(const Point& position)
 {
@@ -322,7 +360,6 @@ WindowWidget::closeWindow()
 
     if (_window->dfbSurface() && (PlatformManager::instance().appOptions() & OptExclusive))
     {
-        printf("Clearing...");
         _window->dfbSurface()->SetDrawingFlags(_window->dfbSurface(), DSDRAW_NOFX);
         _window->dfbSurface()->Clear(_window->dfbSurface(), 0, 0, 0, 0);
         _window->dfbSurface()->Flip(_window->dfbSurface(), NULL, DSFLIP_NONE);
@@ -338,9 +375,11 @@ WindowWidget::windowID() const
 }
 
 bool
-WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
+WindowWidget::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
 {
     ILOG_TRACE_W(ILX_WINDOWWIDGET_EVENTS);
+    ILOG_DEBUG(ILX_WINDOWWIDGET_EVENTS, " -> event at %d, %d\n", event.x, event.y);
+
     // handle all other events...
     bool exclusive = (PlatformManager::instance().appOptions() & OptExclusive);
     if (exclusive)
@@ -355,7 +394,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
                 _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
             return false;
         }
-    } else if (event.window_id != _window->windowID())
+    } else if (!dragging && event.window_id != _window->windowID())
         return false;
 
     Widget* target = this;
@@ -390,18 +429,26 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
 
     case DWET_BUTTONUP:
         _eventManager->setGrabbedWidget(NULL, PointerEvent(PointerMotion, event.x, event.y));
+        if (dragging)
+            return consumeDragEvent(PointerEvent(PointerButtonUp, event));
         return target->consumePointerEvent(PointerEvent(PointerButtonUp, event));
 
     case DWET_BUTTONDOWN:
         return target->consumePointerEvent(PointerEvent(PointerButtonDown, event));
 
     case DWET_MOTION:
+        if (dragging)
+            return consumeDragEvent(PointerEvent(PointerMotion, event));
         return target->consumePointerEvent(PointerEvent(PointerMotion, event));
 
     case DWET_WHEEL:
+        if (dragging)
+            return false;
         return target->consumePointerEvent(PointerEvent(PointerWheel, event));
 
     case DWET_KEYUP:
+        if (dragging)
+            return false;
         switch (event.key_symbol)
         {
 //        case DIKS_SHIFT:
@@ -424,6 +471,8 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event)
         return false;
 
     case DWET_KEYDOWN:
+        if (dragging)
+            return false;
         switch (event.key_symbol)
         {
 //        case DIKS_SHIFT:

@@ -117,6 +117,9 @@ public:
     virtual bool
     consumePointerEvent(const PointerEvent& pointerEvent);
 
+    virtual bool
+    consumeDragEvent(const PointerEvent& pointerEvent);
+
     /*!
      * Makes this widget and its window visible.
      */
@@ -161,6 +164,7 @@ protected:
     char _backgroundFlags;
     //! This flag specifies window modality.
     Modality _modality;
+    bool _dragWindow;
 
     /*!
      * Returns the unique DirectFB window ID.
@@ -178,7 +182,7 @@ protected:
      * @return True if event is consumed.
      */
     virtual bool
-    handleWindowEvent(const DFBWindowEvent& event);
+    handleWindowEvent(const DFBWindowEvent& event, bool dragging = false);
 
     /*!
      * This signal is emitted when window is aborted/closed.
