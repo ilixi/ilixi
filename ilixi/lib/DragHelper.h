@@ -41,6 +41,18 @@ namespace ilixi
 class DragHelper : public WindowWidget
 {
 public:
+    enum DragOperation
+    {
+        DragOperationNone = 0,
+        DragOperationCopy = 1,
+        DragOperationLink = 2,
+        DragOperationGeneric = 4,
+        DragOperationPrivate = 8,
+        DragOperationMove = 16,
+        DragOperationDelete = 32,
+        DragOperationEvery = UINT_MAX
+    };
+
     DragHelper(Widget* owner);
 
     virtual
@@ -54,6 +66,9 @@ public:
 
     const Point&
     hotspot() const;
+
+    static DragOperation
+    dragOperation();
 
     void
     setData(void* data);
@@ -74,6 +89,9 @@ public:
     void
     startDrag(int x, int y);
 
+    static void
+    setDragOperation(DragOperation operation);
+
     /*!
      * This signal is emitted when DragHelper is dropped.
      */
@@ -88,6 +106,8 @@ private:
     void* _data;
     IDirectFBSurface* _surface;
     Point _hotSpot;
+    DragOperation _operation;
+    static DragHelper* __instance;
 
     void
     compose(const PaintEvent& event);

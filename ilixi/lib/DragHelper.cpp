@@ -32,16 +32,19 @@ namespace ilixi
 
 D_DEBUG_DOMAIN(ILX_DRAGHELPER, "ilixi/lib/DragHelper", "DragHelper");
 
+DragHelper* DragHelper::__instance = NULL;
+
 DragHelper::DragHelper(Widget* owner)
         : WindowWidget(),
           _owner(owner),
           _data(NULL),
           _surface(NULL),
-          _hotSpot(0, 0)
+          _hotSpot(0, 0),
+          _operation(DragOperationNone)
 {
     ILOG_TRACE_W(ILX_DRAGHELPER);
+    __instance = this;
     _dragWindow = true;
-//    setModality(None);
     if (PlatformManager::instance().appOptions() & OptExclusive)
         setLayerName("DragHelper");
     else
@@ -51,6 +54,7 @@ DragHelper::DragHelper(Widget* owner)
 DragHelper::~DragHelper()
 {
     ILOG_TRACE_W(ILX_DRAGHELPER);
+    __instance = NULL;
     releaseDragHelper();
 }
 
@@ -80,6 +84,14 @@ DragHelper::hotspot() const
 {
     ILOG_TRACE_W(ILX_DRAGHELPER);
     return _hotSpot;
+}
+
+DragHelper::DragOperation
+DragHelper::dragOperation()
+{
+    if (__instance)
+        return __instance->_operation;
+    return DragOperationNone;
 }
 
 void
@@ -182,6 +194,13 @@ DragHelper::startDrag(int x, int y)
     _window->dfbWindow()->GrabPointer(_window->dfbWindow());
 }
 
+void
+DragHelper::setDragOperation(DragOperation operation)
+{
+    if (__instance)
+        __instance->_operation = operation;
+}
+
 bool
 DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
 {
@@ -196,10 +215,8 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
     {
     case DWET_BUTTONUP:
         ILOG_DEBUG(ILX_DRAGHELPER, " -> Drag end at x, y: (%d, %d) - cx, cy: (%d, %d)\n", event.x, event.y, event.cx, event.cy);
+        Application::handleDragEvents(dragEvent);
         Application::setDragging(false);
-        dragEvent.type = DWET_BUTTONUP;
-        dragEvent.button = event.button;
-        dragEvent.buttons = event.buttons;
         sigDragEnded(Point(event.cx, event.cy));
         delete this;
         break;
@@ -207,8 +224,6 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
     case DWET_MOTION:
         if (event.buttons & DIBM_LEFT)
         {
-            dragEvent.type = DWET_MOTION;
-            dragEvent.button = event.button;
             dragEvent.buttons = (DFBInputDeviceButtonMask) 0;
 
             if (PlatformManager::instance().appOptions() & OptExclusive)
@@ -219,6 +234,7 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
                 moveTo(event.x, event.y);
                 _window->moveTo(event.cx - width() / 2, event.cy - height() / 2);
             }
+            Application::handleDragEvents(dragEvent);
         }
         break;
 
@@ -226,8 +242,7 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
         break;
     }
 
-    Application::handleDragEvents(dragEvent);
-    return false;
+    return true;
 }
 
 void
