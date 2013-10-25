@@ -823,10 +823,10 @@ Widget::consumeDragEvent(const PointerEvent& pointerEvent)
                 dropEvent(pointerEvent);
             else if (pointerEvent.eventType == PointerMotion)
             {
-                if (_inputMethod & PointerTracking)
-                    dragMotionEvent(pointerEvent);
                 if (_rootWindow->_eventManager->exposedWidget() != this)
                     _rootWindow->_eventManager->setExposedWidget(this, pointerEvent, true);
+                if (_inputMethod & PointerTracking)
+                    dragMotionEvent(pointerEvent);
             }
             return true;
         } else if (_children.size())
