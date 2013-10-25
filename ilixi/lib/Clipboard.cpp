@@ -96,11 +96,15 @@ std::string
 Clipboard::text()
 {
     ILOG_TRACE_F(ILX_CLIPBOARD);
-    std::string txt = "";
     refreshClipboard();
-    if (_mimeType == "text/plain")
-        txt = (const char*) _data;
-    return txt;
+    if (_size)
+    {
+        char txt[_size +1];
+        snprintf(txt, _size + 1, "%s", (char*) _data);
+        D_DEBUG_AT(ILX_CLIPBOARD, " -> text: %s\n", txt);
+        return txt;
+    }
+    return "";
 }
 
 void
