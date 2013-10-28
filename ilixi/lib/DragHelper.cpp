@@ -46,7 +46,7 @@ DragHelper::DragHelper(Widget* owner)
     __instance = this;
     _dragWindow = true;
     if (PlatformManager::instance().appOptions() & OptExclusive)
-        setLayerName("DragHelper");
+        setLayerName("cursor");
     else
         setLayerName(owner->surface()->layerName());
 }
@@ -189,7 +189,7 @@ DragHelper::startDrag(int x, int y)
     setVisible(true);
     Size s = preferredSize();
     if (PlatformManager::instance().appOptions() & OptExclusive)
-        PlatformManager::instance().setLayerRectangle("DragHelper", Rectangle(x - s.width() / 2, y - s.height() / 2, s.width(), s.height()));
+        PlatformManager::instance().setLayerRectangle("cursor", Rectangle(x - s.width() / 2, y - s.height() / 2, s.width(), s.height()));
     showWindow(Point(x - s.width() / 2, y - s.height() / 2));
     _window->dfbWindow()->GrabPointer(_window->dfbWindow());
 }
@@ -219,6 +219,10 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
         Application::setDragging(false);
         sigDragEnded(Point(event.cx, event.cy));
         delete this;
+        DFBPoint p;
+        p.x = event.cx;
+        p.y = event.cy;
+        PlatformManager::instance().renderCursor(p, false);
         break;
 
     case DWET_MOTION:
@@ -227,11 +231,10 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
             dragEvent.buttons = (DFBInputDeviceButtonMask) 0;
 
             if (PlatformManager::instance().appOptions() & OptExclusive)
-                PlatformManager::instance().setLayerPosition("DragHelper", Point(event.cx - width() / 2, event.cy - height() / 2));
+                PlatformManager::instance().setLayerPosition("cursor", Point(event.cx - width() / 2, event.cy - height() / 2));
             else
             {
                 ILOG_DEBUG(ILX_DRAGHELPER, " -> Dragging to x, y: (%d, %d) - cx, cy: (%d, %d)\n", event.x, event.y, event.cx, event.cy);
-                moveTo(event.x, event.y);
                 _window->moveTo(event.cx - width() / 2, event.cy - height() / 2);
             }
             Application::handleDragEvents(dragEvent);
@@ -251,6 +254,7 @@ DragHelper::compose(const PaintEvent& event)
     ILOG_TRACE_W(ILX_DRAGHELPER);
     if (_surface)
         surface()->blit(_surface, 0, 0);
+    surface()->blit(PlatformManager::instance().getCursorImage(), width() / 2, height() / 2);
 }
 
 void
