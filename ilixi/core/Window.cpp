@@ -224,6 +224,7 @@ Window::initDFBWindow(const Point& position, const Size& size)
         ILOG_ERROR(ILX_WINDOW, "Error while getting primary display layer! (%s)!\n", DirectFBErrorString(ret));
 
     ret = layer->CreateWindow(layer, &desc, &_dfbWindow);
+    layer->Release(layer);
     if (ret != DFB_OK)
     {
         ILOG_ERROR(ILX_WINDOW, "Error while creating DirectFB window! (%s)!\n", DirectFBErrorString(ret));
