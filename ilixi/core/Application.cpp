@@ -527,7 +527,7 @@ Application::updateWindows()
         static DFBPoint preCursor = __cursorNew;
         if ((preCursor.x != __cursorNew.x) || (preCursor.y != __cursorNew.y))
         {
-            PlatformManager::instance().renderCursor(Application::cursorPosition());
+            PlatformManager::instance().renderCursor(Application::cursorPosition(), _dragging);
             preCursor = __cursorNew;
         }
     }

@@ -254,7 +254,7 @@ PlatformManager::forcedPixelFormat() const
 }
 
 void
-PlatformManager::renderCursor(const DFBPoint& point)
+PlatformManager::renderCursor(const DFBPoint& point, bool dragging)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER_TRACE);
     if (_cursorImage)
@@ -269,9 +269,31 @@ PlatformManager::renderCursor(const DFBPoint& point)
             _cursorTarget->Blit(_cursorTarget, _cursorImage, NULL, point.x, point.y);
         } else
         {
-            setLayerPosition("cursor", Point(point.x, point.y));
+            static bool needCursorImageBlit = false;
+            if (!dragging)
+            {
+                setLayerPosition("cursor", Point(point.x, point.y));
+                if (needCursorImageBlit)
+                {
+                    needCursorImageBlit = false;
+                    IDirectFBSurface* surface = getLayerSurface("cursor");
+                    if (surface)
+                    {
+                        surface->Blit(surface, _cursorImage, NULL, 0, 0);
+                        surface->Flip(surface, NULL, DSFLIP_NONE);
+                    }
+                }
+            }
+            else
+                needCursorImageBlit = true;
         }
     }
+}
+
+IDirectFBSurface*
+PlatformManager::getCursorImage() const
+{
+    return _cursorImage;
 }
 
 void

@@ -168,7 +168,13 @@ public:
      * Render cursor using given position.
      */
     void
-    renderCursor(const DFBPoint& point);
+    renderCursor(const DFBPoint& point, bool dragging);
+
+    /*!
+     * Returns cursor image if any.
+     */
+    IDirectFBSurface*
+    getCursorImage() const;
 
     /*!
      * Plays a sound from SoundMap.
