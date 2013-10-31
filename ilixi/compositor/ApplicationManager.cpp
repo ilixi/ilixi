@@ -638,6 +638,9 @@ ApplicationManager::windowAdded(SaWManWindowInfo *info)
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
+    if (process.pid == getpid())
+        return DR_OK;
+
     AppInstance* instance = instanceByPID(process.pid);
     if (!instance)
         return DR_FAILURE;
@@ -689,6 +692,9 @@ ApplicationManager::windowRemoved(SaWManWindowInfo *info)
 
     ILOG_DEBUG(ILX_APPLICATIONMANAGER, " -> Process [%d] Window [%lu]\n", process.pid, info->handle);
 
+    if (process.pid == getpid())
+        return DR_OK;
+
     AppInstance* instance = instanceByPID(process.pid);
     if (instance)
     {
@@ -708,6 +714,9 @@ ApplicationManager::windowReconfig(SaWManWindowReconfig *reconfig)
 
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, reconfig->handle, &process);
+
+    if (process.pid == getpid())
+        return DR_OK;
 
     SaWManWindowInfo winInfo;
     _manager->GetWindowInfo(_manager, reconfig->handle, &winInfo);
@@ -735,6 +744,9 @@ ApplicationManager::windowRestack(SaWManWindowHandle handle, SaWManWindowHandle 
 {
     SaWManProcess process;
     _manager->GetProcessInfo(_manager, handle, &process);
+
+    if (process.pid == getpid())
+        return DR_OK;
 
     SaWManWindowInfo winInfo;
     _manager->GetWindowInfo(_manager, handle, &winInfo);
