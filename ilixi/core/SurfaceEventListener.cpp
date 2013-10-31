@@ -29,7 +29,7 @@
 
 namespace ilixi
 {
-D_DEBUG_DOMAIN( ILX_SURFACELISTENER_UPDATES, "ilixi/ui/SurfaceListener/Updates", "SurfaceEventListener");
+D_DEBUG_DOMAIN(ILX_SURFACELISTENER_UPDATES, "ilixi/core/SurfaceEventListener", "SurfaceEventListener");
 
 SurfaceEventListener::SurfaceEventListener()
         : _surfaceID(0),
@@ -69,6 +69,12 @@ SurfaceEventListener::detachSourceSurface()
     Engine::instance().removeSurfaceEventListener(this);
 }
 
+void
+SurfaceEventListener::startSurfaceEventListener()
+{
+    _cb.start();
+}
+
 bool
 SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
 {
@@ -79,11 +85,9 @@ SurfaceEventListener::consumeSurfaceEvent(const DFBSurfaceEvent& event)
             onSourceDestroyed(event);
         else if (event.type == DSEVT_UPDATE)
         {
-            ILOG_DEBUG(ILX_SURFACELISTENER_UPDATES, " -> SURFEVT: receive id %d flip count %d\n", event.surface_id, event.flip_count);
             _queue.push(event);
+            ILOG_DEBUG(ILX_SURFACELISTENER_UPDATES, " -> surface id: %d -- flip count: %d -- queue.size: %d\n", event.surface_id, event.flip_count, _queue.size());
             _cb.start();
-
-            Application::__instance->accountSurfaceEvent(event, _lastTime);
 
             _lastTime = event.time_stamp;
         }
@@ -97,14 +101,17 @@ SurfaceEventListener::funck()
 {
     if (!_queue.empty())
     {
-        // FIXME: avoid queueing up too much
+        // FIXME: avoid queuing up too much
         while (_queue.size() > 2)
             _queue.pop();
 
         if (onSourceUpdate(_queue.front()))
+        {
             _queue.pop();
+            return true;
+        }
     }
-    return !_queue.empty();
+    return false;
 }
 
 } /* namespace ilixi */

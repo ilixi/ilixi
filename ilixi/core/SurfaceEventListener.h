@@ -95,6 +95,9 @@ protected:
     virtual void
     onSourceDestroyed(const DFBSurfaceEvent& event) = 0;
 
+    void
+    startSurfaceEventListener();
+
 private:
     //! Callback for stack.
     Callback _cb;
