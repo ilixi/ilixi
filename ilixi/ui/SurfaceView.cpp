@@ -51,7 +51,7 @@ SurfaceView::SurfaceView(Widget* parent)
 #ifdef ILIXI_STEREO_OUTPUT
     _sourceStereo = false;
 #endif
-    _renderedSource = true;
+    _updateFlipCount = false;
 }
 
 SurfaceView::~SurfaceView()
@@ -210,6 +210,7 @@ SurfaceView::paint(const PaintEvent& event)
 {
     if (visible())
     {
+        startSurfaceEventListener();
         PaintEvent evt(this, event);
         if (evt.isValid())
         {
@@ -240,15 +241,13 @@ SurfaceView::compose(const PaintEvent& event)
 void
 SurfaceView::renderSource(const PaintEvent& event)
 {
-    _renderedSource = true;
-
     if (_sourceSurface && (_svState & SV_READY))
     {
         ILOG_TRACE_W(ILX_SURFACEVIEW);
 
         DFBSurfaceID surface_id;
         _sourceSurface->GetID(_sourceSurface, &surface_id);
-        //D_INFO_LINE_MSG( "SURFEVT: renderSource id %d flip count %d", surface_id, _flipCount );
+        ILOG_DEBUG(ILX_SURFACEVIEW, " -> id %d -- flip count %d\n", surface_id, _flipCount );
 
 #ifdef ILIXI_STEREO_OUTPUT
         if (_sourceStereo)
@@ -311,6 +310,8 @@ SurfaceView::renderSource(const PaintEvent& event)
             }
             dfbSurface->StretchBlit(dfbSurface, _sourceSurface, NULL, &rect);
         }
+        _updateFlipCount = true;
+        sigSourceUpdated();
     }
 }
 
@@ -319,20 +320,25 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 {
     ILOG_TRACE_W(ILX_SURFACEVIEW);
 
-    if (!_renderedSource)
-        return false;
-
     if (!(_svState & SV_READY))
     {
         sigSourceReady();
         _svState = (SurfaceViewFlags) (_svState | SV_READY);
+        _updateFlipCount = true;
+        ILOG_DEBUG(ILX_SURFACEVIEW, " -> Set SV_READY\n");
+    }
+
+    if (_updateFlipCount)
+    {
+        _updateFlipCount = false;
+        _flipCount = event.flip_count;
+        ILOG_DEBUG(ILX_SURFACEVIEW, " -> _updateFlipCount to %d\n", _flipCount);
     }
 
     if (visible())
     {
         Rectangle lRect = mapFromSurface(Rectangle(event.update.x1 / hScale(), event.update.y1 / vScale(), (event.update.x2 - event.update.x1) / hScale() + 1, (event.update.y2 - event.update.y1) / vScale() + 1));
 
-        Application::__instance->_updateFromSurfaceView = true;
 #ifdef ILIXI_STEREO_OUTPUT
         Rectangle rRect = mapFromSurface(
                 Rectangle(event.update_right.x1 / hScale(), event.update_right.y1 / vScale(),
@@ -343,28 +349,20 @@ SurfaceView::onSourceUpdate(const DFBSurfaceEvent& event)
 #else
         update(PaintEvent(lRect));
 #endif
-        Application::__instance->_updateFromSurfaceView = false;
-    } //else if (!(_svState & SV_SHOULD_BLOCK))
-
-    DFBSurfaceID surface_id;
-    _sourceSurface->GetID(_sourceSurface, &surface_id);
-    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, "onSourceUpdate()\n");
-    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> SURFEVT: acknowledge id %d flip count %d\n", surface_id, event.flip_count);
-    ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> id %d\n", surface_id);
-    if (surface_id == Application::__instance->_updateID)
+        _sourceSurface->FrameAck(_sourceSurface, _flipCount);
+        ILOG_DEBUG(ILX_SURFACEVIEW, " -> FrameAck for frame %d\n", _flipCount);
+        return true;
+    }
+    else if (!(_svState & SV_SHOULD_BLOCK))
     {
-        ILOG_DEBUG(ILX_SURFACEVIEW_UPDATES, " -> update for %d\n", Application::__instance->_updateID);
-        Application::__instance->_update = true;
-        Application::__instance->_update_timer->restart();
+        _updateFlipCount = true;
+        ILOG_DEBUG(ILX_SURFACEVIEW, " -> FrameAck for frame %d\n", _flipCount);
+        _sourceSurface->FrameAck(_sourceSurface, _flipCount);
+        sigSourceUpdated();
+        return true;
     }
 
-    _sourceSurface->FrameAck(_sourceSurface, event.flip_count);
-
-    _renderedSource = !visible();
-    _flipCount = event.flip_count;
-    sigSourceUpdated();
-
-    return true;
+    return false;
 }
 
 void
