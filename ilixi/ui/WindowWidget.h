@@ -190,7 +190,6 @@ protected:
     sigc::signal<void> sigAbort;
 
 private:
-
     //! This property stores the managed window.
     Window* _window;
     //! This property stores the event manager for this window.

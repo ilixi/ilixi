@@ -90,7 +90,6 @@ WindowWidget::update()
         _updates._updateQueueRight.add(frameGeometry());
 #endif
         pthread_mutex_unlock(&_updates._listLock);
-        Application::__instance->updateFromWindow();
     }
 }
 
@@ -108,7 +107,6 @@ WindowWidget::update(const PaintEvent& event)
         _updates._updateQueueRight.add(event.right);
 #endif
         pthread_mutex_unlock(&_updates._listLock);
-        Application::__instance->updateFromWindow();
     }
 }
 
@@ -624,7 +622,7 @@ WindowWidget::updateWindow()
 
         if (_surface && _surface->dfbSurface())
         {
-            // _surface->dfbSurface()->GetFrameTime( _surface->dfbSurface(), &micros );
+            _surface->dfbSurface()->GetFrameTime( _surface->dfbSurface(), &micros );
             ILOG_DEBUG( ILX_WINDOWWIDGET_UPDATES, " -> GetFrameTime returned %lld (%lld advance)\n", micros, micros - direct_clock_get_time(DIRECT_CLOCK_MONOTONIC));
             Application::setFrameTime(micros);
         }
