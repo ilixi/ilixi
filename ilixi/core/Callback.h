@@ -78,6 +78,8 @@ public:
 private:
     //! Managed.
     Functionoid* _funck;
+    //! This flag specifies whether callback is actively running.
+    bool _running;
 };
 }
 

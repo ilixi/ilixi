@@ -31,7 +31,8 @@ namespace ilixi
 {
 
 Callback::Callback(Functionoid* funck)
-        : _funck(funck)
+        : _funck(funck),
+          _running(false)
 {
 }
 
@@ -43,6 +44,8 @@ Callback::~Callback()
 void
 Callback::start()
 {
+    if (_running)
+        return;
     Engine::instance().addCallback(this);
 }
 
