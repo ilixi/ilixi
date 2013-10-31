@@ -68,8 +68,8 @@ ILXCompositor::ILXCompositor(int argc, char* argv[])
 
     setMargin(0);
 
+    appWindow()->setBackgroundFilled(false);
     appWindow()->setBackgroundClear(false);
-    _syncWithSurfaceEvents = true;
 
     _fps = new FPSCalculator();
 
@@ -140,8 +140,6 @@ ILXCompositor::showInstance(AppInstance* instance)
     else
         _compComp->signalBack(false);
     _currentApp->view()->setWindowFocus();
-
-    disableSurfaceEventSync(500000);
 }
 
 void
@@ -176,8 +174,6 @@ ILXCompositor::toggleSwitcher(bool show)
         if (_currentApp)
             _currentApp->view()->setWindowFocus();
     }
-
-    disableSurfaceEventSync(500000);
 }
 
 void
@@ -262,8 +258,6 @@ ILXCompositor::toggleOSK(bool show)
             }
         }
     }
-
-    disableSurfaceEventSync(500000);
 }
 
 void
