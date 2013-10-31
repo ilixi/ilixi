@@ -153,13 +153,11 @@ public:
     void
     postPointerEvent(PointerEventType type, PointerButton button, PointerButtonMask buttonMask, int x, int y, int cx, int cy, int step);
 
-#if ILIXI_HAS_SURFACEEVENTS
     static long long
     getFrameTime();
 
     static void
     setFrameTime(long long micros);
-#endif
 
     /*!
      * This signal is emitted after application window is painted and visible.
@@ -299,28 +297,9 @@ private:
     //! Serialises access to window list.
     pthread_mutex_t __windowMutex;
 
-#if ILIXI_HAS_SURFACEEVENTS
-    // Surface event sync. stuff
-    Timer* _update_timer;
-
-    DFBSurfaceID _updateID;
-
-    bool _update;
-
-    bool _updateFromSurfaceView;
-
-    bool _syncWithSurfaceEvents;
-
-    unsigned int _updateFlipCount;
-
-    long long _updateDiff;
-
-    long long _updateTime;
-
-    long long _updateDisable;
-
+    //! Frame time set during window update
     long long _frameTime;
-#endif // end ILIXI_HAS_SURFACEEVENTS
+
     /*!
      * Returns active window.
      */
@@ -390,19 +369,6 @@ private:
     static void
     setDragging(bool dragging);
 
-#if ILIXI_HAS_SURFACEEVENTS
-    void
-    accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime);
-
-    void
-    updateTimeout();
-
-    void
-    updateFromWindow();
-
-    void
-    disableSurfaceEventSync(long long micros);
-#endif // end ILIXI_HAS_SURFACEEVENTS
     friend class AppWindow;
     friend class DragHelper;            // set _dragging
     friend class ILXCompositor;

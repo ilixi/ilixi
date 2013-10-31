@@ -36,7 +36,6 @@
 namespace ilixi
 {
 
-#define ILX_COMPOSITOR_SYNC 0
 D_DEBUG_DOMAIN( ILX_APPLICATION, "ilixi/core/Application", "Application");
 D_DEBUG_DOMAIN( ILX_APPLICATION_TIMER, "ilixi/core/Application/Timers", "Application Timers");
 D_DEBUG_DOMAIN( ILX_APPLICATION_UPDATES, "ilixi/core/Application/Updates", "Application Updates");
@@ -48,21 +47,8 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
         : _dragging(false),
           _appWindow(NULL),
           __flags(APS_HIDDEN),
-#if ILIXI_HAS_SURFACEEVENTS
           __activeWindow(NULL),
-          _update(false),
-          _updateFromSurfaceView(false),
-          _update_timer(NULL),
-          _updateID(0),
-          _updateFlipCount(0),
-          _updateDiff(0),
-          _updateTime(0),
-          _updateDisable(0),
-          _syncWithSurfaceEvents(false),
           _frameTime(0)
-#else
-__activeWindow(NULL)
-#endif
 {
     ILOG_TRACE_F(ILX_APPLICATION);
 
@@ -86,13 +72,6 @@ __activeWindow(NULL)
 
     PlatformManager::instance().initialize(argc, argv, opts);
     Engine::instance().initialise();
-
-#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
-    _update_timer = new Timer();
-    _update_timer->sigExec.connect(sigc::mem_fun(this, &Application::updateTimeout));
-    _update_timer->setInterval(1000);
-    _update_timer->setRepeats(1);
-#endif
 
     Size s = PlatformManager::instance().getScreenSize();
     __screenSize.w = s.width() - 1;
@@ -335,7 +314,6 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
     }
 }
 
-#if ILIXI_HAS_SURFACEEVENTS
 long long
 Application::getFrameTime()
 {
@@ -350,7 +328,6 @@ Application::setFrameTime(long long micros)
     if (__instance)
         __instance->_frameTime = micros;
 }
-#endif
 
 AppWindow*
 Application::appWindow() const
@@ -399,11 +376,7 @@ Application::handleEvents(int32_t timeout, bool forceWait)
     ILOG_TRACE_F(ILX_APPLICATION_EVENTS);
 
     bool wait = true;
-#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
-    if (!forceWait && (!_syncWithSurfaceEvents || _update))
-#else
     if (!forceWait)
-#endif
     {
         for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
         {
@@ -506,19 +479,12 @@ void
 Application::updateWindows()
 {
     ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
-#if ILIXI_HAS_SURFACEEVENTS && ILX_COMPOSITOR_SYNC
-    if ((!_syncWithSurfaceEvents || _update) && !(PlatformManager::instance().appOptions() & OptNoUpdates))
-#endif
     if (!(PlatformManager::instance().appOptions() & OptNoUpdates))
     {
         pthread_mutex_lock(&__windowMutex);
 
         for (WindowList::iterator it = __windowList.begin(); it != __windowList.end(); ++it)
             ((WindowWidget*) *it)->updateWindow();
-
-#if ILIXI_HAS_SURFACEEVENTS
-        _update = false;
-#endif
 
         pthread_mutex_unlock(&__windowMutex);
     }
@@ -927,68 +893,5 @@ Application::setDragging(bool dragging)
 {
     __instance->_dragging = dragging;
 }
-
-#if ILIXI_HAS_SURFACEEVENTS
-void
-Application::accountSurfaceEvent(const DFBSurfaceEvent& event, long long lastTime)
-{
-    ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
-#if ILX_COMPOSITOR_SYNC
-    if (event.surface_id != _updateID || event.flip_count != _updateFlipCount)
-    {
-        long long diff = event.time_stamp - lastTime;
-
-        ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> account surface id %d, updateID %d, flip_count %u, updateFlipCount %u\n", event.surface_id, _updateID, event.flip_count, _updateFlipCount);
-        ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> diff %lld, updateDiff %lld, time %lld, updateTime %lld\n", diff, _updateDiff, event.time_stamp, _updateTime);
-
-        if (_updateDiff == 0 || (diff - _updateDiff < -7000) || event.surface_id == _updateID || 2 * diff < (event.time_stamp - _updateTime))
-        {
-            _updateDiff = diff;
-            _updateID = event.surface_id;
-            _updateFlipCount = event.flip_count;
-            _updateTime = event.time_stamp;
-        }
-    }
-#endif
-}
-
-void
-Application::updateTimeout()
-{
-    ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
-#if ILX_COMPOSITOR_SYNC
-    _update = true;
-    _updateDiff = 0;
-#endif
-}
-
-void
-Application::updateFromWindow()
-{
-    ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
-#if ILX_COMPOSITOR_SYNC
-    long long current_time = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
-    ILOG_DEBUG(ILX_APPLICATION_UPDATES, " -> time %16lld   disable %16lld\n", current_time, _updateDisable);
-
-    if (!_updateFromSurfaceView || current_time < _updateDisable)
-    {
-        _update = true;
-        _updateDiff = 0;
-    }
-#else
-    Engine::instance().wakeUp();
-#endif
-}
-
-void
-Application::disableSurfaceEventSync(long long micros)
-{
-    ILOG_TRACE_F(ILX_APPLICATION_UPDATES);
-#if ILX_COMPOSITOR_SYNC
-    _updateDisable = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC) + micros;
-    ILOG_DEBUG(ILX_APPLICATION_UPDATES, " ->   disable %16lld\n", _updateDisable);
-#endif
-}
-#endif
 
 } /* namespace ilixi */
