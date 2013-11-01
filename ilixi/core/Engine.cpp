@@ -289,20 +289,34 @@ Engine::runTimers()
     int32_t timeout = 100;
 
     pthread_mutex_lock(&__timerMutex);
+    ILOG_DEBUG(ILX_ENGINE_LOOP, "  -> Number of timers %zu\n", _timers.size());
     if (_timers.size())
     {
         int64_t now = direct_clock_get_millis();
         int64_t expiry = _timers.front()->expiry();
 
+        ILOG_DEBUG(ILX_ENGINE_LOOP, "  -> Timers front %p, expiry %lld, now %lld (%lld ahead)\n", _timers.front(), expiry, now, expiry - now);
+
         if (expiry <= now)
         {
-            if (!_timers.front()->funck())
+            ILOG_DEBUG(ILX_ENGINE_LOOP, "  -> Timer calling %p\n", _timers.front());
+            if (!_timers.front()->funck()) {
+                ILOG_DEBUG(ILX_ENGINE_LOOP, "  -> Timer %p returned false\n", _timers.front());
                 _timers.pop_front();
+            }
+            else
+                ILOG_DEBUG(ILX_ENGINE_LOOP, "  -> Timer %p returned true\n", _timers.front());
 
             _timers.sort(timerSort);
 
-            if (_timers.size())
+
+            if (_timers.size()) {
+                now    = direct_clock_get_millis();
+                expiry = _timers.front()->expiry();
+
+                ILOG_DEBUG(ILX_ENGINE_LOOP, "  --> Timers front %p, expiry %lld, now %lld (%lld ahead)\n", _timers.front(), expiry, now, expiry - now);
                 timeout = _timers.front()->expiry() - now;
+            }
         } else
             timeout = expiry - now;
     }
@@ -312,7 +326,7 @@ Engine::runTimers()
     else if (timeout > 10000)
         timeout = 10000;
 
-    ILOG_DEBUG(ILX_ENGINE_LOOP, " -> desired timeout %d.%d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
+    ILOG_DEBUG(ILX_ENGINE_LOOP, " -> desired timeout %d.%03d seconds\n", (int) (timeout / 1000), (int)(timeout % 1000));
     return timeout;
 }
 
