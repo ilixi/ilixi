@@ -133,6 +133,7 @@ Engine::addCallback(Callback* cb)
         CallbackList::iterator it = std::find(__callbacks.begin(), __callbacks.end(), cb);
         if (cb == *it)
         {
+        	cb->_running = true;
             pthread_mutex_unlock(&__cbMutex);
             ILOG_DEBUG(ILX_ENGINE, "Callback %p already added!\n", cb);
             return false;
@@ -158,6 +159,7 @@ Engine::removeCallback(Callback* cb)
         {
             if (cb == *it)
             {
+            	cb->_running = false;
                 __callbacks.erase(it);
                 pthread_mutex_unlock(&__cbMutex);
                 ILOG_DEBUG(ILX_ENGINE, "Callback %p is removed.\n", cb);
@@ -392,7 +394,7 @@ Engine::getNextEvent(DFBEvent* event)
 void
 Engine::waitForEvents(int32_t timeout)
 {
-    ILOG_TRACE(ILX_ENGINE);
+	ILOG_TRACE(ILX_ENGINE_LOOP);
     DFBEvent event;
 
     if (timeout < 1)
@@ -400,6 +402,7 @@ Engine::waitForEvents(int32_t timeout)
     else if (timeout && Engine::instance().numCallbacks())
     {
         // do not wait
+    	ILOG_DEBUG(ILX_ENGINE_LOOP, " -> we have %d callbacks!\n", Engine::instance().numCallbacks());
     } else
     {
         // discard window update event in buffer.
