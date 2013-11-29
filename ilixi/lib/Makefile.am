@@ -48,7 +48,7 @@ libilixi_lib_la_SOURCES 	+= 	Notify.cpp
 ilixi_include_HEADERS		+=	Notify.h
 endif
 
-if WITH_REFLEX
-nodist_libilixi_lib_la_SOURCES 	= UIBuilder.cpp
-ilixi_include_HEADERS		+=	UIBuilder.h
-endif
+#if WITH_REFLEX
+#nodist_libilixi_lib_la_SOURCES 	= UIBuilder.cpp
+#ilixi_include_HEADERS			+=	UIBuilder.h
+#endif
