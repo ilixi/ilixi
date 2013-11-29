@@ -97,6 +97,9 @@ AC_ARG_ENABLE([wnn], [AS_HELP_STRING([--enable-wnn], [enable experimental suppor
 AC_ARG_ENABLE([nls], [AS_HELP_STRING([--enable-nls], [enable Native Language Support via message catalogs @<:@default=no@:>@])], [], [enable_nls=no])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
+
+AC_ARG_WITH([csharp], [AC_HELP_STRING([--with-csharp], [enable CSharp bindings @<:@default=no@:>@])], [], [with_csharp=no])
+
 ######################################################################
 # Dependencies
 ######################################################################
@@ -110,6 +113,7 @@ AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AX_PKG_SWIG(1.3.21)
 
 AC_CHECK_HEADERS_ONCE([stdlib.h stdarg.h stdio.h time.h unistd.h spawn.h])
 AC_HEADER_STDBOOL
@@ -261,6 +265,66 @@ PKG_CHECK_MODULES(DEPS, $REQ_PACKAGES)
 AC_SUBST(REQ_PACKAGES)
 
 ######################################################################
+# Swig wrappers
+######################################################################
+WRAPPERS=
+AC_SUBST(WRAPPERS)
+if test -z "$SWIG" ; then
+	with_csharp=no
+fi
+
+# CSharp
+csc_note=
+if test no != "$with_csharp" ; then
+	AC_MSG_CHECKING([CSharp compiler])
+	AC_ARG_VAR(CSC, [CSharp compiler command])
+	if test -n "$CSC" ; then
+		AC_PATH_PROGS(CSC, ["$CSC"], [])
+	fi
+	
+	if test -z "$CSC" ; then
+    	AC_PATH_PROGS(CSC, [cli-csc mono-csc], [])
+    	if test -z "$CSC" ; then
+			AC_PATH_PROGS(CSC, [mcs], [])
+			if test -n "$CSC" ; then
+				AC_MSG_CHECKING([whether $CSC is from GNU Mono])
+				if (exec >&5 2>&5; $CSC --version </dev/null;exit $?) ; then
+	  				AC_MSG_RESULT(yes)
+				else
+	  				AC_MSG_RESULT(no)
+	  				CSC=
+				fi
+      		fi
+    	fi
+    	
+		if test -z "$CSC" ; then
+      		AC_PATH_PROGS(CSC, [dmcs smcs gmcs cscc], [])
+    	fi
+    	
+    	if test -z "$CSC" ; then
+      		AC_PATH_PROGS(CSC, [csc], [])
+      		if test -n "$CSC" ; then
+				AC_MSG_CHECKING([whether $CSC is for CSharp])
+				if $CSC -version 2>/dev/null|grep chicken > /dev/null ; then
+	  				AC_MSG_RESULT(no)
+	  				CSC=
+				else
+	  				AC_MSG_RESULT(yes)
+				fi
+      		fi
+    	fi		  				
+    fi
+    
+    if test -z "$CSC" ; then
+    	with_csharp=no
+    	csc_note="- CSharp compiler not found!"
+    else
+    	WRAPPERS="$WRAPPERS csharp"
+		csc_note="(CSC: $CSC)"
+	fi
+fi
+
+######################################################################
 # DOXYGEN SUPPORT
 ######################################################################
 DX_DOXYGEN_FEATURE(ON)
@@ -305,6 +369,8 @@ AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
 AM_CONDITIONAL([WITH_EGL], [test "$enable_egl" = "yes"])
 AM_CONDITIONAL([WITH_CAIRO], [test "$enable_cairo" = "yes"])
+
+AM_CONDITIONAL([WITH_CSHARP], [test "$with_csharp" = "yes"])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
 AC_SUBST(ILIXI_DATADIR)
@@ -367,6 +433,8 @@ AC_CONFIG_FILES([ \
         ilixi/Makefile \
         ilixi/types/Makefile \
         ilixi/ui/Makefile \
+        swig/Makefile \
+        swig/csharp/Makefile \
 ])
 AC_OUTPUT
 
@@ -396,6 +464,7 @@ AC_MSG_RESULT([
    Wnn support              : $enable_wnn
    NLS support              : $enable_nls
    Examples                 : $with_examples
+   CSharp bindings          : $with_csharp $csc_note
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.

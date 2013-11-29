@@ -6,11 +6,11 @@ pkgconfigdir 		= 	$(libdir)/pkgconfig
 pkgconfig_DATA 		= 	$(PACKAGE).pc
 ACLOCAL_AMFLAGS 	= 	${ACLOCAL_FLAGS} -I config/m4
 AUTOMAKE_OPTIONS	= 	subdir-objects
-SUBDIRS				= 	$(PACKAGE) data apps 
+SUBDIRS				= 	$(PACKAGE) data apps swig
 if WITH_EXAMPLES
 SUBDIRS				+=	examples
 endif
-DIST_SUBDIRS		= 	$(PACKAGE) data apps doc examples
+DIST_SUBDIRS		= 	$(PACKAGE) data apps doc examples swig
 EXTRA_DIST 			= 	COPYING \
 						COPYING.LESSER \
 						README \
