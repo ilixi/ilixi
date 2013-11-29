@@ -82,11 +82,11 @@ enum WidgetResizePolicy
 enum WidgetResizeConstraint
 {
     FixedConstraint = 0x00,                                             //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
-    MinimumConstraint = GrowPolicy,                                     //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
-    MaximumConstraint = ShrinkPolicy,                                   //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
-    NoConstraint = (GrowPolicy | ShrinkPolicy),                         //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
-    MinimumExpandingConstraint = (GrowPolicy | ExpandPolicy),           //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
-    ExpandingConstraint = (GrowPolicy | ExpandPolicy | ShrinkPolicy),   //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
+    MinimumConstraint = 0x01,                                     		//!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
+    MaximumConstraint = 0x02,                                   		//!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
+    NoConstraint = 0x03,                         						//!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
+    MinimumExpandingConstraint = 0x05,           						//!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
+    ExpandingConstraint = 0x07,   										//!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
     IgnoredConstraint = 0xFF                                            //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
