@@ -23,19 +23,18 @@ typedef void (SWIGSTDCALL *DelegateNotify)(void);
 
 %cs_callback(DelegateNotify, DelegateNotify)
 
-%template(ButtonVoidSignal) sigc::signal<void>;
-%template(ButtonVoidBoolSignal) sigc::signal<void, bool>;
-
 %pragma(csharp) moduleimports=%{
 public delegate void DelegateNotify();
 %}
 
-%extend sigc::signal<void> {
-  void connect(ilixi::Button *button, DelegateNotify cb)
+%template(ButtonVoidSignal) sigc::signal<void>;
+%template(ButtonVoidBoolSignal) sigc::signal<void, bool>;
+
+%extend ilixi::Button {
+  void connectClick(DelegateNotify cb)
   {
-    button->sigClicked.connect(sigc::ptr_fun(cb));
+    $self->sigClicked.connect(sigc::ptr_fun(cb));
   }
 }
-
 
 %include <ui/Button.h>
