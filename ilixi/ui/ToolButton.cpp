@@ -27,7 +27,8 @@
 #include <core/Logger.h>
 
 #ifdef ANDROID_NDK
-extern "C" {
+extern "C"
+{
 #include <compat/pthread_cancel.h>
 }
 #endif
@@ -164,8 +165,7 @@ ToolButton::preferredSize() const
             {
                 // IconBelowText or IconAboveText
                 w += std::max(imgW, s.width());
-                h += imgH //+ s.height()
-                + stylist()->defaultParameter(StyleHint::ButtonOffset);
+                h += imgH + s.height() + stylist()->defaultParameter(StyleHint::ButtonOffset);
                 return Size(w, h);
             }
         } else if (imgW)
@@ -327,6 +327,7 @@ ToolButton::updateTextBaseGeometry()
     int iconH = 0;
     int wUsed = drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
     int x = drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonLeft) : 0;
+    int yTop = drawFrame() ? stylist()->defaultParameter(StyleHint::ToolButtonTop) : 0;
 
     if (checkable())
     {
@@ -371,20 +372,18 @@ ToolButton::updateTextBaseGeometry()
 
     } else if (_toolButtonStyle == IconBelowText)
     {
-        _layout.setBounds(x, stylist()->defaultParameter(StyleHint::ToolButtonTop), width() - wUsed, textHeight);
+        _layout.setBounds(x, yTop, width() - wUsed, textHeight);
         if (iconW)
-            _icon->moveTo((width() - iconW) / 2, stylist()->defaultParameter(StyleHint::ToolButtonTop) + textHeight + 1 + stylist()->defaultParameter(StyleHint::ButtonOffset));
+            _icon->moveTo((width() - iconW) / 2, yTop + textHeight + 1 + stylist()->defaultParameter(StyleHint::ButtonOffset));
     } else //  IconAboveText
     {
-        int y = stylist()->defaultParameter(StyleHint::ToolButtonTop);
-
         if (iconW)
         {
-            _icon->moveTo((width() - iconW) / 2, y + 1);
-            y += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset) + 1;
+            _icon->moveTo((width() - iconW) / 2, yTop + 1);
+            yTop += iconH + stylist()->defaultParameter(StyleHint::ButtonOffset) + 1;
         }
 
-        _layout.setBounds(x, y, width() - wUsed, textHeight);
+        _layout.setBounds(x, yTop, width() - wUsed, textHeight);
     }
     _layout.doLayout(font());
 }
