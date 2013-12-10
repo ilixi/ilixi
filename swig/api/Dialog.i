@@ -34,4 +34,11 @@ typedef void (SWIGSTDCALL *DelegateNotify)(void);
   }
 }
 
+%extend ilixi::Dialog {
+  void connectReject(DelegateNotify cb)
+  {
+    $self->sigRejected.connect(sigc::ptr_fun(cb));
+  }
+}
+
 %include <ui/Dialog.h>
