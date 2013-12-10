@@ -66,7 +66,7 @@ WindowWidget::~WindowWidget()
     sem_destroy(&_updates._updateReady);
     sem_destroy(&_updates._paintReady);
 
-    Application::removeWindow(this);
+    closeWindow();
     delete _eventManager;
     delete _window;
 }
