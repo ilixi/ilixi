@@ -255,7 +255,7 @@ Window::releaseDFBWindow()
     ILOG_TRACE(ILX_WINDOW);
     if (_dfbWindow)
     {
-        ILOG_DEBUG(ILX_WINDOW, " -> Releasing DirectFB window %p...\n", _dfbWindow);
+        ILOG_DEBUG(ILX_WINDOW, " -> Releasing DirectFB window interface %p...\n", _dfbWindow);
 
         if (!(PlatformManager::instance().appOptions() & OptExclusive))
             _windowSurface->Release(_windowSurface);
@@ -264,7 +264,7 @@ Window::releaseDFBWindow()
         _dfbWindow->Release(_dfbWindow);
         _dfbWindow = NULL;
 
-        ILOG_INFO(ILX_WINDOW, "DirectFB window interface is released.\n");
+        ILOG_INFO(ILX_WINDOW, " -> Window %p released DirectFB interface.\n", this);
     }
 }
 
