@@ -1,6 +1,7 @@
 SWIG_SOURCES 	= 	../api/Application.i \
 					../api/Button.i \
 					../api/CheckBox.i \
+					../api/ComboBox.i \
 					../api/ContainerBase.i \
 					../api/Dialog.i \
 					../api/Enums.i \
@@ -10,6 +11,7 @@ SWIG_SOURCES 	= 	../api/Application.i \
 					../api/HBoxLayout.i \
 					../api/Label.i \
 					../api/LayoutBase.i \
+					../api/LineInput.i \
 					../api/Margin.i \
 					../api/PushButton.i \
 					../api/RadioButton.i \
@@ -26,6 +28,7 @@ SWIG_SOURCES 	= 	../api/Application.i \
 GEN_SOURCES		= 	./gen/ilixi_Application.cpp \
 					./gen/ilixi_Button.cpp \
 					./gen/ilixi_CheckBox.cpp \
+					./gen/ilixi_ComboBox.cpp \
 					./gen/ilixi_ContainerBase.cpp \
 					./gen/ilixi_Dialog.cpp \
 					./gen/ilixi_Enums.cpp \
@@ -35,6 +38,7 @@ GEN_SOURCES		= 	./gen/ilixi_Application.cpp \
 					./gen/ilixi_HBoxLayout.cpp \
 					./gen/ilixi_Label.cpp \
 					./gen/ilixi_LayoutBase.cpp \
+					./gen/ilixi_LineInput.cpp \
 					./gen/ilixi_Margin.cpp \
 					./gen/ilixi_PushButton.cpp \
 					./gen/ilixi_RadioButton.cpp \
