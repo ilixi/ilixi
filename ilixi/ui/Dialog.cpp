@@ -40,6 +40,7 @@ Dialog::Dialog(const std::string& title, ButtonOption option, Widget* parent)
 {
     ILOG_TRACE_W(ILX_DIALOG);
     setTitle(title);
+    ILOG_DEBUG(ILX_DIALOG, " -> title: %s\n", _title.c_str());
     setButtonLayoutOption(option);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Dialog::updateButtonLayoutGeometry));
     sigAbort.connect(sigc::mem_fun(this, &Dialog::reject));
@@ -48,7 +49,7 @@ Dialog::Dialog(const std::string& title, ButtonOption option, Widget* parent)
 Dialog::~Dialog()
 {
     ILOG_TRACE_W(ILX_DIALOG);
-    closeWindow();
+    ILOG_DEBUG(ILX_DIALOG, " -> title: %s\n", _title.c_str());
 }
 
 int
@@ -205,6 +206,7 @@ void
 Dialog::setTitle(const std::string& title)
 {
     ILOG_TRACE_W(ILX_DIALOG);
+    ILOG_DEBUG(ILX_DIALOG, " -> %s\n", title.c_str());
     if (_title != title)
     {
         _title = title;
@@ -256,6 +258,7 @@ Dialog::updateButtonLayoutGeometry()
     _buttonLayout->moveTo(stylist()->defaultParameter(StyleHint::DialogLeft), height() - (buttonLayoutSize.height() + stylist()->defaultParameter(StyleHint::DialogBottom)));
 
     _buttonLayout->setSize(width() - stylist()->defaultParameter(StyleHint::DialogLR), buttonLayoutSize.height());
+    _buttonLayout->tile();
 }
 
 } /* namespace ilixi */
