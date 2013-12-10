@@ -19,3 +19,10 @@ using namespace ilixi;
     $self->setFont(font);
   }
 }
+
+%extend ilixi::Label {
+  void setText(std::string text)
+  {
+    $self->setText(text);
+  }
+}
