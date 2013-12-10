@@ -41,7 +41,7 @@ Font::Font()
           _key(0)
 {
     ILOG_TRACE(ILX_FONT);
-    ILOG_DEBUG(ILX_FONT, " -> name: %s, size: %d\n", _name.c_str(), _size);
+    ILOG_DEBUG(ILX_FONT, " -> name: %s, size: %d (default)\n", _name.c_str(), _size);
 }
 
 Font::Font(const std::string& name, int size)
@@ -224,6 +224,7 @@ Font::setStyle(Style style)
 Font&
 Font::operator=(const Font& font)
 {
+    ILOG_TRACE(ILX_FONT);
     if (this != &font)
     {
         _name = font._name;
@@ -231,8 +232,9 @@ Font::operator=(const Font& font)
         _attr = font._attr;
         if (font._font)
         {
-            _font = font._font;
-            _font->AddRef(_font);
+            ILOG_DEBUG(ILX_FONT, " -> %s\n", toString().c_str());
+            release();
+            _key = FontCache::Instance()->getEntry(_name, _size, _attr, &_font);
             _modified = false;
         } else
             _modified = true;
@@ -263,10 +265,10 @@ Font::toString() const
 bool
 Font::applyFont(IDirectFBSurface* surface)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return false;
 
-    ILOG_TRACE(ILX_FONT);
     ILOG_DEBUG(ILX_FONT, " -> Font: %p key: %u\n", _font, _key);
     DFBResult ret = surface->SetFont(surface, _font);
     if (ret)
@@ -281,10 +283,10 @@ Font::applyFont(IDirectFBSurface* surface)
 bool
 Font::loadFont()
 {
+    ILOG_TRACE(ILX_FONT);
     if (_modified)
     {
         release();
-        ILOG_TRACE(ILX_FONT);
         _key = FontCache::Instance()->getEntry(_name, _size, _attr, &_font);
         ILOG_DEBUG(ILX_FONT, " -> Font: %p key: %u\n", _font, _key);
         _modified = false;
@@ -299,6 +301,7 @@ Font::release()
 {
     if (_font && _key)
     {
+        ILOG_TRACE(ILX_FONT);
         FontCache::Instance()->releaseEntry(_key);
         _font = NULL;
         _key = 0;
