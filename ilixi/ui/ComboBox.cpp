@@ -39,21 +39,12 @@ D_DEBUG_DOMAIN( ILX_COMBOBOX, "ilixi/ui/ComboBox", "ComboBox");
 
 ComboBox::ComboBox(const std::string& title, Widget* parent)
         : Widget(parent),
-          TextBase(title, this)
+          TextBase("", this),
+          _dialogTitle(title)
 {
     ILOG_TRACE_W(ILX_COMBOBOX);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
-
-    _vlayout = new VBoxLayout();
-
-    _scrollArea = new ScrollArea();
-    _scrollArea->setContent(_vlayout);
-
-    _dialog = new Dialog(title, Dialog::CancelButtonOption);
-    _dialog->setLayout(new VBoxLayout());
-    _dialog->addWidget(_scrollArea);
-    _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
 
     _down = new Icon(StyleHint::Down);
     addChild(_down);
@@ -61,30 +52,28 @@ ComboBox::ComboBox(const std::string& title, Widget* parent)
 
 ComboBox::ComboBox(const std::string& title, const StringList& items, Widget* parent)
         : Widget(parent),
-          TextBase("", parent)
+          TextBase("", parent),
+          _dialogTitle(title)
 {
     ILOG_TRACE_W(ILX_COMBOBOX);
-    setText(title);
     setInputMethod(KeyPointer);
     setConstraints(MinimumConstraint, FixedConstraint);
 
-    _dialog = new Dialog(title, Dialog::CancelButtonOption);
-    _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
-
-    addItems(items);
-    setSelected(_selectedIndex);
     _down = new Icon(StyleHint::Down);
     addChild(_down);
+
+    addItems(items);
 }
 
 ComboBox::~ComboBox()
 {
-    delete _dialog;
+    ILOG_TRACE_W(ILX_COMBOBOX);
 }
 
 Size
 ComboBox::preferredSize() const
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     Size s = textExtents();
     return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + s.height(), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB));
 }
@@ -98,60 +87,62 @@ ComboBox::selectedIndex() const
 std::string
 ComboBox::selectedItem() const
 {
-    return _items.at(_selectedIndex)->text();
+    if (_items.size())
+        return _items.at(_selectedIndex);
+    return "";
 }
 
 std::string
 ComboBox::item(unsigned int index) const
 {
     if (index < _items.size())
-        return _items.at(index)->text();
+        return _items.at(index);
     return "";
 }
 
 void
 ComboBox::addItem(const std::string& item)
 {
-    _selectedIndex = _items.size();
-    setText(item);
-    RadioButton* rb = new RadioButton(item);
-    rb->toggleChecked();
-    rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish), _selectedIndex));
-
-    _items.push_back(rb);
-    _vlayout->addWidget(rb);
+    ILOG_TRACE_W(ILX_COMBOBOX);
+    if (text().empty())
+    {
+        setText(item);
+        _selectedIndex = _items.size();
+    }
+    _items.push_back(item);
 }
 
 void
 ComboBox::addItems(const StringList& items)
 {
-    _selectedIndex = _items.size();
+    ILOG_TRACE_W(ILX_COMBOBOX);
     for (StringList::const_iterator it = items.begin(); it != items.end(); ++it)
     {
-        RadioButton* rb = new RadioButton(*it);
+        if (text().empty())
+        {
+            setText(*it);
+            _selectedIndex = _items.size();
+        }
 
-        rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish), _items.size()));
-
-        _items.push_back(rb);
-        _vlayout->addWidget(_items.back());
+        _items.push_back(*it);
     }
-    setText(_items.at(_selectedIndex)->text());
 }
 
 void
 ComboBox::setSelected(unsigned int index)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     if (index < _items.size())
     {
         _selectedIndex = index;
-        _items[index]->toggleChecked();
-        setText(_items.at(_selectedIndex)->text());
+        setText(_items.at(_selectedIndex));
     }
 }
 
 void
 ComboBox::keyUpEvent(const KeyEvent& keyEvent)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     if (keyEvent.keySymbol == DIKS_CURSOR_UP)
         setSelected(_selectedIndex - 1);
     else if (keyEvent.keySymbol == DIKS_CURSOR_DOWN)
@@ -161,9 +152,29 @@ ComboBox::keyUpEvent(const KeyEvent& keyEvent)
 void
 ComboBox::pointerButtonUpEvent(const PointerEvent& mouseEvent)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     if (_items.size())
     {
         update();
+
+        _dialog = new Dialog(_dialogTitle, Dialog::CancelButtonOption);
+        _dialog->setLayout(new VBoxLayout());
+        _vlayout = new VBoxLayout();
+        ScrollArea* scrollArea = new ScrollArea();
+        scrollArea->setContent(_vlayout);
+        _dialog->addWidget(scrollArea);
+        _dialog->sigRejected.connect(sigc::mem_fun(this, &ComboBox::releaseDialog));
+
+        int i = 0;
+        for (StringVector::const_iterator it = _items.begin(); it != _items.end(); ++it, ++i)
+        {
+            RadioButton* rb = new RadioButton(*it);
+            if (i == _selectedIndex)
+                rb->setChecked();
+            rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &ComboBox::updateSelected), i));
+            _vlayout->addWidget(rb);
+        }
+
         _dialog->execute();
     }
 }
@@ -171,6 +182,7 @@ ComboBox::pointerButtonUpEvent(const PointerEvent& mouseEvent)
 void
 ComboBox::pointerWheelEvent(const PointerEvent& event)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     if (event.wheelStep < 0)
         setSelected(_selectedIndex + 1);
     else
@@ -180,12 +192,14 @@ ComboBox::pointerWheelEvent(const PointerEvent& event)
 void
 ComboBox::focusInEvent()
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     update();
 }
 
 void
 ComboBox::focusOutEvent()
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     update();
 }
 
@@ -201,16 +215,22 @@ ComboBox::compose(const PaintEvent& event)
 void
 ComboBox::updateSelected(int index)
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     if (index != _selectedIndex)
     {
         _selectedIndex = index;
         setText(item(_selectedIndex));
+        if (_dialog)
+            _dialog->finish(0);
+        releaseDialog();
+        sigItemChanged(_selectedIndex);
     }
 }
 
 void
 ComboBox::updateTextBaseGeometry()
 {
+    ILOG_TRACE_W(ILX_COMBOBOX);
     int x = stylist()->defaultParameter(StyleHint::LineInputLeft);
     int y = stylist()->defaultParameter(StyleHint::LineInputTop);
     int iconOffset = (height() - 16) / 2;
@@ -218,6 +238,13 @@ ComboBox::updateTextBaseGeometry()
 
     _layout.setBounds(x, y, width() - x - height(), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     _layout.doLayout(font());
+}
+
+void
+ComboBox::releaseDialog()
+{
+    if (_dialog)
+        delete _dialog;
 }
 
 Font*

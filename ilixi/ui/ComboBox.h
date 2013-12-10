@@ -69,6 +69,8 @@ public:
     void
     setSelected(unsigned int index);
 
+    sigc::signal<void, unsigned int> sigItemChanged;
+
 protected:
     virtual void
     keyUpEvent(const KeyEvent& keyEvent);
@@ -96,19 +98,22 @@ protected:
 
 private:
     Dialog* _dialog;
-    ScrollArea* _scrollArea;
     VBoxLayout* _vlayout;
     Icon* _down;
+    std::string _dialogTitle;
 
     unsigned int _selectedIndex;
-
-    std::vector<RadioButton*> _items;
+    typedef std::vector<std::string> StringVector;
+     StringVector _items;
 
     void
     updateSelected(int index);
 
     virtual void
     updateTextBaseGeometry();
+
+    void
+    releaseDialog();
 
     virtual Font*
     defaultFont() const;
