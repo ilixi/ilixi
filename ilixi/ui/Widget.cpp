@@ -922,7 +922,7 @@ Widget::addChild(Widget* child)
     WidgetListIterator it = std::find(_children.begin(), _children.end(), child);
     if (child == *it)
     {
-        ILOG_WARNING(ILX_WIDGET, "Widget %p is already a child.", child);
+        ILOG_WARNING(ILX_WIDGET, "Widget %p is already a child.\n", child);
         return false;
     }
 
