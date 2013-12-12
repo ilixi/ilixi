@@ -79,14 +79,15 @@ RadioButton::setGroup(RadioGroup* group)
 void
 RadioButton::setChecked(bool checked)
 {
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
     if (checked)
     {
         _buttonFlag = (ButtonFlags) (_buttonFlag | Checked);
-        sigCheckChanged(true);
+        sigCheckChanged(checked);
     } else
     {
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~Checked);
-        sigCheckChanged(false);
+        sigCheckChanged(checked);
     }
     update();
 }
@@ -94,18 +95,14 @@ RadioButton::setChecked(bool checked)
 void
 RadioButton::toggleChecked()
 {
-    if (!checked())
-    {
-        setChecked();
-        sigCheckChanged(true);
-    }
-    update();
+    setChecked(!checked());
 }
 
 void
 RadioButton::informGroup(bool checked)
 {
-    if (_group)
+    ILOG_TRACE_W(ILX_RADIOBUTTON);
+    if (_group && checked)
         _group->select(this);
 }
 
