@@ -15,10 +15,12 @@ SWIG_SOURCES 	= 	../api/Application.i \
 					../api/Margin.i \
 					../api/PushButton.i \
 					../api/RadioButton.i \
+					../api/Rectangle.i \
 					../api/sigc_signal.i \
 					../api/Size.i \
 					../api/Spacer.i \
 					../api/SpinBox.i \
+					../api/TabPanel.i \
 					../api/TextBase.i \
 					../api/ToolButton.i \
 					../api/VBoxLayout.i \
@@ -42,10 +44,12 @@ GEN_SOURCES		= 	./gen/ilixi_Application.cpp \
 					./gen/ilixi_Margin.cpp \
 					./gen/ilixi_PushButton.cpp \
 					./gen/ilixi_RadioButton.cpp \
+					./gen/ilixi_Rectangle.cpp \
 					./gen/ilixi_sigc_signal.cpp \
 					./gen/ilixi_Size.cpp \
 					./gen/ilixi_Spacer.cpp \
 					./gen/ilixi_SpinBox.cpp \
+					./gen/ilixi_TabPanel.cpp \
 					./gen/ilixi_TextBase.cpp \
 					./gen/ilixi_ToolButton.cpp \
 					./gen/ilixi_VBoxLayout.cpp \
