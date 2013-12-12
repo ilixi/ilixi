@@ -185,10 +185,11 @@ GridLayout::preferredSize() const
 
     int w = 0;
     for (int i = 0; i < _cols; ++i)
-        w += cols[i] + spacing();
+        w += std::max(cols[i], (int) _colWidths[i]) + spacing();
+
     int h = 0;
     for (int i = 0; i < _rows; ++i)
-        h += rows[i] + spacing();
+        h += std::max(rows[i], (int) _rowHeights[i]) + spacing();
 
     ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Size: %d, %d\n", w, h);
 
@@ -537,7 +538,7 @@ GridLayout::tile()
                     if (spaceReq > cd[c].value)
                     {
                         cd[c].value = spaceReq;
-                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
                     }
                 } else
                 {
@@ -545,12 +546,12 @@ GridLayout::tile()
                     if (!(widget->xConstraint() & ShrinkPolicy) && cd[c].value < spaceReq)
                     {
                         cd[c].value = spaceReq;
-                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d value is updated to %d on cell [%d, %d]\n", c, spaceReq, r, c);
                     }
 
                     if (!(cd[c].constraint & GrowPolicy) && (widget->xConstraint() & GrowPolicy))
                     {
-                        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Column %d acquires GrowPolicy on cell [%d, %d]\n", c, r, c);
+                        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Column %d acquires GrowPolicy on cell [%d, %d]\n", c, r, c);
                         cd[c].constraint = cd[c].constraint | GrowPolicy;
                     }
 
@@ -571,7 +572,7 @@ GridLayout::tile()
                 }
             }
         }
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Col[%d] value: %d, min: %d, max: %d, cons: %d\n", c, cd[c].value, cd[c].min, cd[c].max, cd[c].constraint);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Col[%d] value: %d, min: %d, max: %d, cons: %d\n", c, cd[c].value, cd[c].min, cd[c].max, cd[c].constraint);
         if (cd[c].active)
             cActive++;
     }
@@ -738,7 +739,7 @@ GridLayout::tile()
                 }
             }
         }
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Row[%d] h: %d constraint: %d\n", r, rd[r].value, rd[r].constraint);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Row[%d] h: %d constraint: %d\n", r, rd[r].value, rd[r].constraint);
         if (rd[r].active)
             rActive++;
     }
@@ -910,7 +911,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
     ILOG_TRACE_W(ILX_GRIDLAYOUT);
     availableSpace -= ((nActive - 1) * spacing());
     int lineAverage = availableSpace / nActive;
-    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count: %d\t availableSpace: %d\t average: %d\n", nActive, availableSpace, lineAverage);
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count: %d\t availableSpace: %d\t average: %d\n", nActive, availableSpace, lineAverage);
     LineDataVector ldCopy = ld;
 //***********************************************************
 //                    FixedConstraint
@@ -937,7 +938,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@fixed: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count@fixed: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
 // TODO: Error in max-min size.
@@ -961,7 +962,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@Max: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count@Max: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
 //***********************************************************
@@ -983,7 +984,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@Min: %lu\t spaceUsed=%d\t availableSpace: %d\t average: %d\n", ldCopy.size(), spaceUsed, availableSpace, lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count@Min: %lu\t spaceUsed=%d\t availableSpace: %d\t average: %d\n", ldCopy.size(), spaceUsed, availableSpace, lineAverage);
     }
 
 //***********************************************************
@@ -1005,7 +1006,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@MiC: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count@MiC: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
 //***********************************************************
@@ -1027,7 +1028,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
         availableSpace -= spaceUsed;
         if (ldCopy.size())
             lineAverage = availableSpace / ldCopy.size();
-        ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Count@MaC: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
+        ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Count@MaC: %lu\t availableSpace: %d\t average: %d\n", ldCopy.size(), availableSpace, lineAverage);
     }
 
 //***********************************************************
@@ -1047,11 +1048,11 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
                 {
                     expandSpace += lineAverage - ((LineData) *it).min;
                     // FIXME ((LineData) *it).value = ((LineData) *it).min;
-                    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Additional space found: %d, min: %d\n", lineAverage - ((LineData) *it).min, ((LineData) *it).min);
+                    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Additional space found: %d, min: %d\n", lineAverage - ((LineData ) *it).min, ((LineData ) *it).min);
                 } else if (lineAverage > ((LineData) *it).value)
                 {
                     expandSpace += lineAverage - ((LineData) *it).value;
-                    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> Additional space found: %d, value: %d\n", lineAverage - ((LineData) *it).value, ((LineData) *it).value);
+                    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> Additional space found: %d, value: %d\n", lineAverage - ((LineData ) *it).value, ((LineData ) *it).value);
                 }
             }
             ++it;
@@ -1068,7 +1069,7 @@ GridLayout::arrangeLine(LineDataVector& ld, int availableSpace, int nActive, int
 //***********************************************************
     int artifact = availableSpace - lineAverage * ldCopy.size();
     int pos = 0;
-    ILOG_DEBUG( ILX_GRIDLAYOUT, " -> available: %d, average: %d, artifact: %d\n", availableSpace, lineAverage, artifact);
+    ILOG_DEBUG(ILX_GRIDLAYOUT, " -> available: %d, average: %d, artifact: %d\n", availableSpace, lineAverage, artifact);
 
     for (unsigned int i = 0; i < ld.size(); i++)
     {
