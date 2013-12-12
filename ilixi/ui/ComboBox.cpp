@@ -40,11 +40,12 @@ D_DEBUG_DOMAIN( ILX_COMBOBOX, "ilixi/ui/ComboBox", "ComboBox");
 ComboBox::ComboBox(const std::string& title, Widget* parent)
         : Widget(parent),
           TextBase("", this),
-          _dialogTitle(title)
+          _dialogTitle(title),
+          _selectedIndex(0)
 {
     ILOG_TRACE_W(ILX_COMBOBOX);
     setInputMethod(KeyPointer);
-    setConstraints(MinimumConstraint, FixedConstraint);
+    setConstraints(ExpandingConstraint, FixedConstraint);
 
     _down = new Icon(StyleHint::Down);
     addChild(_down);
@@ -57,7 +58,7 @@ ComboBox::ComboBox(const std::string& title, const StringList& items, Widget* pa
 {
     ILOG_TRACE_W(ILX_COMBOBOX);
     setInputMethod(KeyPointer);
-    setConstraints(MinimumConstraint, FixedConstraint);
+    setConstraints(ExpandingConstraint, FixedConstraint);
 
     _down = new Icon(StyleHint::Down);
     addChild(_down);
@@ -136,6 +137,19 @@ ComboBox::setSelected(unsigned int index)
     {
         _selectedIndex = index;
         setText(_items.at(_selectedIndex));
+        sigItemChanged(_selectedIndex);
+        sigSelectionChanged();
+    }
+}
+
+void
+ComboBox::setSelectedItem(const std::string& item)
+{
+    int i = 0;
+    for (StringVector::const_iterator it = _items.begin(); it != _items.end(); ++it, ++i)
+    {
+        if (*it == item)
+            setSelected(i);
     }
 }
 
@@ -156,26 +170,7 @@ ComboBox::pointerButtonUpEvent(const PointerEvent& mouseEvent)
     if (_items.size())
     {
         update();
-
-        _dialog = new Dialog(_dialogTitle, Dialog::CancelButtonOption);
-        _dialog->setLayout(new VBoxLayout());
-        _vlayout = new VBoxLayout();
-        ScrollArea* scrollArea = new ScrollArea();
-        scrollArea->setContent(_vlayout);
-        _dialog->addWidget(scrollArea);
-        _dialog->sigRejected.connect(sigc::mem_fun(this, &ComboBox::releaseDialog));
-
-        int i = 0;
-        for (StringVector::const_iterator it = _items.begin(); it != _items.end(); ++it, ++i)
-        {
-            RadioButton* rb = new RadioButton(*it);
-            if (i == _selectedIndex)
-                rb->setChecked();
-            rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &ComboBox::updateSelected), i));
-            _vlayout->addWidget(rb);
-        }
-
-        _dialog->execute();
+        initDialog();
     }
 }
 
@@ -224,6 +219,7 @@ ComboBox::updateSelected(int index)
             _dialog->finish(0);
         releaseDialog();
         sigItemChanged(_selectedIndex);
+        sigSelectionChanged();
     }
 }
 
@@ -238,6 +234,31 @@ ComboBox::updateTextBaseGeometry()
 
     _layout.setBounds(x, y, width() - x - height(), height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     _layout.doLayout(font());
+}
+
+void
+ComboBox::initDialog()
+{
+    ILOG_TRACE_W(ILX_COMBOBOX);
+    _dialog = new Dialog(_dialogTitle, Dialog::CancelButtonOption);
+    _dialog->setLayout(new VBoxLayout());
+    _vlayout = new VBoxLayout();
+    ScrollArea* scrollArea = new ScrollArea();
+    scrollArea->setContent(_vlayout);
+    _dialog->addWidget(scrollArea);
+    _dialog->sigRejected.connect(sigc::mem_fun(this, &ComboBox::releaseDialog));
+
+    int i = 0;
+    for (StringVector::const_iterator it = _items.begin(); it != _items.end(); ++it, ++i)
+    {
+        RadioButton* rb = new RadioButton(*it);
+        _vlayout->addWidget(rb);
+        if (i == _selectedIndex)
+            rb->setChecked();
+        rb->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this, &ComboBox::updateSelected), i));
+    }
+
+    _dialog->execute();
 }
 
 void

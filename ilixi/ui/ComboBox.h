@@ -69,7 +69,11 @@ public:
     void
     setSelected(unsigned int index);
 
+    void
+    setSelectedItem(const std::string& item);
+
     sigc::signal<void, unsigned int> sigItemChanged;
+    sigc::signal<void> sigSelectionChanged;
 
 protected:
     virtual void
@@ -97,20 +101,23 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    std::string _dialogTitle;
+    unsigned int _selectedIndex;
+
     Dialog* _dialog;
     VBoxLayout* _vlayout;
     Icon* _down;
-    std::string _dialogTitle;
-
-    unsigned int _selectedIndex;
     typedef std::vector<std::string> StringVector;
-     StringVector _items;
+    StringVector _items;
 
     void
     updateSelected(int index);
 
     virtual void
     updateTextBaseGeometry();
+
+    void
+    initDialog();
 
     void
     releaseDialog();
