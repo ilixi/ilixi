@@ -319,7 +319,13 @@ WindowWidget::showWindow(const Point& position)
     if (_window->_dfbWindow)
         return;
 
-    if (_window->initDFBWindow(position, preferredSize()))
+    Size s = preferredSize();
+    if (s.width() < minWidth())
+        s.setWidth(minWidth());
+    if (s.height() < minHeight())
+        s.setHeight(minHeight());
+
+    if (_window->initDFBWindow(position, s))
     {
         Application::addWindow(this);
         setSize(_window->windowSize());
