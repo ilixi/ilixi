@@ -4,6 +4,8 @@
 %import(module="ilixi_TextBase") <ui/TextBase.h>
 %import(module="ilixi_sigc_signal") <sigc++/signal.h>
 
+%include "std_string.i"
+
 %runtime %{
 #include <sigc++/signal.h>
 #include <ilixiGUI.h> 
