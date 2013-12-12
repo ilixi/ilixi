@@ -352,7 +352,7 @@ TabPanel::updateChildrenFrameGeometry()
 void
 TabPanel::paintChildren(const PaintEvent& event)
 {
-    for (unsigned int i = 0; i < _tabs.size(); i++)
+    for (int i = _tabs.size() - 1; i >= 0; --i)
     {
         if (i == _currentIndex)
             _tabs[i].widget->paint(event);
