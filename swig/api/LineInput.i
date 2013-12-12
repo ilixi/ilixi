@@ -1,5 +1,7 @@
 %module ilixi_LineInput
 
+%import(module="ilixi_Margin") <types/Margin.h>
+%import(module="ilixi_Rectangle") <types/Rectangle.h>
 %import(module="ilixi_Widget") <ui/Widget.h>
 %import(module="ilixi_TextBase") <ui/TextBase.h>
 %import(module="ilixi_sigc_signal") <sigc++/signal.h>
