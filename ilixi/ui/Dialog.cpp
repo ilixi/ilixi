@@ -150,10 +150,16 @@ Dialog::setButtonLayoutOption(ButtonOption option)
         button->setPushButtonStyle(OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
-    } else if (option == CancelButtonOption)
+    } else if (option == CancelButtonOption || option == CloseButtonOption)
     {
-        button = new PushButton("Cancel");
-        button->setPushButtonStyle(CANCEL);
+        if (option == CancelButtonOption)
+        {
+            button = new PushButton("Cancel");
+            button->setPushButtonStyle(CANCEL);
+        } else
+        {
+            button = new PushButton("Close");
+        }
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
     } else if (option == OKCancelButtonOption)

@@ -40,6 +40,7 @@ public:
     enum ButtonOption
     {
         NoButtonOption,         //!< No buttons.
+        CloseButtonOption,      //!< Close button for reject().
         OKButtonOption,         //!< OK button for accept().
         CancelButtonOption,     //!< Cancel button for reject().
         OKCancelButtonOption,   //! OK and Cancel buttons for accept() and reject() respectively.
