@@ -23,17 +23,22 @@
 
 #include <types/RadioGroup.h>
 #include <ui/RadioButton.h>
+#include <core/Logger.h>
 
 namespace ilixi
 {
 
+D_DEBUG_DOMAIN(ILX_RADIOGROUP, "ilixi/types/RadioGroup", "RadioGroup");
+
 RadioGroup::RadioGroup()
-        : _selected(0)
+        : _selected(NULL)
 {
+    ILOG_TRACE(ILX_RADIOGROUP);
 }
 
 RadioGroup::~RadioGroup()
 {
+    ILOG_TRACE(ILX_RADIOGROUP);
 }
 
 RadioButton*
@@ -45,17 +50,21 @@ RadioGroup::selected() const
 void
 RadioGroup::add(RadioButton* radio)
 {
+    ILOG_TRACE(ILX_RADIOGROUP);
+    if (!radio)
+        return;
+    radio->setGroup(this);
     if (!_selected)
     {
         _selected = radio;
         _selected->setChecked(true);
     }
-    radio->setGroup(this);
 }
 
 void
 RadioGroup::remove(RadioButton* radio)
 {
+    ILOG_TRACE(ILX_RADIOGROUP);
     if (_selected == radio)
         _selected = NULL;
     radio->setGroup(NULL);
@@ -64,7 +73,8 @@ RadioGroup::remove(RadioButton* radio)
 void
 RadioGroup::select(RadioButton* radio)
 {
-    if (_selected && _selected != radio)
+    ILOG_TRACE(ILX_RADIOGROUP);
+    if (_selected && radio && _selected != radio)
     {
         _selected->setChecked(false);
         _selected = radio;
@@ -74,6 +84,7 @@ RadioGroup::select(RadioButton* radio)
 void
 RadioGroup::clear()
 {
+    ILOG_TRACE(ILX_RADIOGROUP);
     _selected = NULL;
 }
 
