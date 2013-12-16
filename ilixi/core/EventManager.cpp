@@ -22,6 +22,7 @@
  */
 
 #include <core/EventManager.h>
+#include <ui/LineInput.h>
 #include <ui/Widget.h>
 #include <ui/WindowWidget.h>
 #include <core/Logger.h>
@@ -175,6 +176,7 @@ EventManager::setGrabbedWidget(Widget* widget, const PointerEvent& pointerEvent)
 bool
 EventManager::setOSKWidget(Widget* widget)
 {
+    ILOG_TRACE_F(ILX_EVENTMANAGER);
     if (widget == _oskWidget)
         return false;
 
@@ -192,10 +194,16 @@ EventManager::setOSKWidget(Widget* widget)
 #if ILIXI_HAVE_FUSIONDALE
         if (_creator->_window)
         {
+            // TODO Use TextInputBase
+            LineInput* textInput = dynamic_cast<LineInput*>(widget);
+            if (!textInput)
+                return false;
+
             Rectangle r = widget->frameGeometry();
             Point p = _creator->_window->windowPosition();
             r.translate(p.x(), p.y());
-            DaleDFB::showOSK(r);
+            if (DaleDFB::showOSK(r, textInput->inputMode()) != DFB_OK)
+                ILOG_ERROR(ILX_EVENTMANAGER, "Cannot show OSK!\n");
         }
 #endif
         _oskWidget = widget;
