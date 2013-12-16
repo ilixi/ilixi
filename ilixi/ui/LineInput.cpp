@@ -35,6 +35,7 @@ D_DEBUG_DOMAIN( ILX_LINEINPUT, "ilixi/ui/LineInput", "LineInput");
 LineInput::LineInput(const std::string& text, Widget* parent)
         : Widget(parent),
           TextBase("", this),
+          _inputMode(AlphanumericInput),
           _lineInputFlags(DrawFrame),
           _cursorOn(false),
           _selecting(false),
@@ -184,6 +185,18 @@ LineInput::append(const std::string& text)
     updateCursorPosition();
     updateSelectionRect();
     update();
+}
+
+TextInputMode
+LineInput::inputMode() const
+{
+    return _inputMode;
+}
+
+void
+LineInput::setInputMode(TextInputMode inputMode)
+{
+    _inputMode = inputMode;
 }
 
 void

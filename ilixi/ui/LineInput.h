@@ -125,6 +125,12 @@ public:
     void
     append(const std::string& text);
 
+    TextInputMode
+    inputMode() const;
+
+    void
+    setInputMode(TextInputMode inputMode);
+
     /*!
      * This signal is emitted once cursor is moved.
      * First param is old position, second is new position.
@@ -146,16 +152,15 @@ public:
 private:
     enum LineInputFlags
     {
-        DrawFrame = 0x001, //!< This flag controls whether line input draws frame.
-        ReadOnly = 0x002, //!< Text can not be edited.
-        Password = 0x004, //!< Asterisks are displayed instead of characters.
-        PasswordEdit = 0x008, //!< Display characters as entered, otherwise display asterisks.
-        NoText = 0x010,  //!< Text is not displayed at all.
-        Numeric = 0x100, //!< Only accepts numbers.
-        Alphabetic = 0x200, //!< Only accepts letters.
-        AlphaNumeric = 0x300 //!< Accept characters and numbers.
+        DrawFrame = 0x001,      //!< This flag controls whether line input draws frame.
+        ReadOnly = 0x002,       //!< Text can not be edited.
+        Password = 0x004,       //!< Asterisks are displayed instead of characters.
+        PasswordEdit = 0x008,   //!< Display characters as entered, otherwise display asterisks.
+        NoText = 0x010,         //!< Text is not displayed at all.
     };
 
+    //! This property stores text input mode.
+    TextInputMode _inputMode;
     //! This flag controls whether line input draws frame.
     LineInputFlags _lineInputFlags;
     //! Cursor display flag.
