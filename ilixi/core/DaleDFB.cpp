@@ -105,7 +105,7 @@ DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method, void*
 }
 
 DFBResult
-DaleDFB::showOSK(const Rectangle& rect)
+DaleDFB::showOSK(const Rectangle& rect, TextInputMode mode)
 {
     ILOG_TRACE_F(ILX_DALEDFB);
 
@@ -114,7 +114,7 @@ DaleDFB::showOSK(const Rectangle& rect)
 
     OSKRequest request;
     request.inputRect = rect.dfbRect();
-    request.mode = 0;
+    request.mode = mode;
     request.process = getpid();
 
     void *ptr;

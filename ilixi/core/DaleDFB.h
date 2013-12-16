@@ -31,6 +31,7 @@ extern "C"
 }
 #include <lib/Notify.h>
 #include <types/Rectangle.h>
+#include <types/Enums.h>
 #include <list>
 namespace ilixi
 {
@@ -76,7 +77,7 @@ public:
      * Shows on-screen-keyboard.
      */
     static DFBResult
-    showOSK(const Rectangle& rect);
+    showOSK(const Rectangle& rect, TextInputMode mode = AlphanumericInput);
 
     /*!
      * Hides on-screen-keyboard.
