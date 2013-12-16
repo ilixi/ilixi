@@ -167,7 +167,7 @@ void
 ComboBox::pointerButtonUpEvent(const PointerEvent& mouseEvent)
 {
     ILOG_TRACE_W(ILX_COMBOBOX);
-    if (_items.size())
+    if (_items.size() && (state() & PressedState))
     {
         update();
         initDialog();
