@@ -54,4 +54,10 @@ GEN_SOURCES		= 	./gen/ilixi_Application.cpp \
 					./gen/ilixi_ToolButton.cpp \
 					./gen/ilixi_VBoxLayout.cpp \
 					./gen/ilixi_Widget.cpp \
-					./gen/ilixi_WindowWidget.cpp							
+					./gen/ilixi_WindowWidget.cpp
+					
+
+#if WITH_COMPOSITOR
+#SWIG_SOURCES 	+= 	../api/Notify.i
+#GEN_SOURCES		+=	./gen/ilixi_Notify.cpp
+#endif
