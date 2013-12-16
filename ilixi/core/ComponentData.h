@@ -40,9 +40,10 @@ namespace OSK
 //! This enum is used to specify the layout for OSK application.
 typedef enum
 {
-    Standard,   //!< This layout has letters, numbers and symbols. It is the default one.
-    Numeric,    //!< This layout has numbers only.
-    URL         //!< This layout has letters, numbers and symbols for valid URLs.
+    Standard,       //!< This layout has letters, numbers and symbols. It is the default one.
+    AlphaOnly,      //!< This layout has alphabetic characters only.
+    NumericOnly,    //!< This layout has numeric characters only.
+    URL             //!< This layout has letters, numbers and symbols for valid URLs.
 } OSKLayoutMode;
 
 //! This structure is used for making a request to OSK component by client applications.
@@ -60,6 +61,14 @@ typedef enum
     HideOSK,    //!< Hide OSK for client application, if showing.
     ConsumeKey  //!< Used by OSK application to send pressed key.
 } OSKMethodID;
+
+//! This enum specifies the COMA notifications for OSK component.
+typedef enum
+{
+    SwitchLayout = 0,  //!< Change OSK layout
+    OSKNumNotifications
+} OSKNotificationID;
+
 #ifdef __cplusplus
 } /* namespace OSK */
 #endif
