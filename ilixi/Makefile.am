@@ -11,11 +11,9 @@ lib@PACKAGE@_@ILIXI_VERSION@_la_LIBADD 		= 	@DEPS_LIBS@ \
                        							types/libilixi_types.la \
                        							ui/libilixi_ui.la
                        							
-if WITH_FUSIONDALE
-if WITH_SAWMAN
+if WITH_COMPOSITOR
 SUBDIRS 									+= 	compositor
 lib@PACKAGE@_@ILIXI_VERSION@_la_LIBADD 		+= 	compositor/libilixi_compositor.la
-endif
 endif                       							
                        							
 lib@PACKAGE@_@ILIXI_VERSION@_la_SOURCES 	= 
