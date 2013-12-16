@@ -87,6 +87,7 @@ if test "$enable_stereoscopy" = "yes"; then
 	AC_DEFINE([STEREO_OUTPUT], [], [Enable side by side stereoscopy output])
 fi
 
+AC_ARG_ENABLE([compositor], [AS_HELP_STRING([--enable-compositor], [enable compositor support @<:@default=no@:>@])], [enable_fusiondale=yes enable_sawman=yes], [enable_compositor=no])
 AC_ARG_ENABLE([egl], [AS_HELP_STRING([--enable-egl], [enable DFBEGL support @<:@default=no@:>@])], [], [enable_egl=no])
 AC_ARG_ENABLE([cairo], [AS_HELP_STRING([--enable-cairo], [enable cairo support @<:@default=no@:>@])], [], [enable_cairo=no])
 AC_ARG_ENABLE([fusiondale], AS_HELP_STRING([--enable-fusiondale], [enable FusionDale support @<:@default=no@:>@]), [], [enable_fusiondale=no])
@@ -95,6 +96,7 @@ AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor an
 AC_ARG_ENABLE([reflex], [AS_HELP_STRING([--enable-reflex], [enable experimental support for Reflex @<:@default=no@:>@])], [], [enable_reflex=no])
 AC_ARG_ENABLE([wnn], [AS_HELP_STRING([--enable-wnn], [enable experimental support for Wnn @<:@default=no@:>@])], [], [enable_wnn=no])
 AC_ARG_ENABLE([nls], [AS_HELP_STRING([--enable-nls], [enable Native Language Support via message catalogs @<:@default=no@:>@])], [], [enable_nls=no])
+AC_ARG_WITH([demos], [AS_HELP_STRING([--with-demos], [build demo applications @<:@default=yes@:>@])], [], [with_demos=yes])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
 
@@ -358,12 +360,14 @@ AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
+AM_CONDITIONAL([WITH_COMPOSITOR], [test x$enable_compositor = xyes && test x$enable_fusiondale = xyes && test x$enable_sawman = xyes])
 AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_fusiondale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AM_CONDITIONAL([WITH_SAWMAN], [test x$enable_sawman = xyes])
 AM_CONDITIONAL([WITH_REFLEX], [test x$enable_reflex = xyes])
 AM_CONDITIONAL([WITH_NLS], [test x$enable_nls = xyes])
 AM_CONDITIONAL([WITH_WNN], [test x$enable_wnn = xyes])
+AM_CONDITIONAL([WITH_DEMOS], [test x$with_demos = xyes])
 AM_CONDITIONAL([WITH_EXAMPLES], [test x$with_examples = xyes])
 AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
@@ -449,13 +453,13 @@ AC_MSG_RESULT([
    CFLAGS                   : $CFLAGS
    LDFLAGS                  : $LDFLAGS
    DEPS_CFLAGS              : $DEPS_CFLAGS
-   DEPS_LIBS                : $DEPS_LIBS   
+   DEPS_LIBS                : $DEPS_LIBS
+
    Log level                : $LOGGER_LEVEL
    Debug enabled            : $enable_debug
    Trace enabled            : $enable_trace
-   EGL support              : $enable_egl
-   Cairo support            : $enable_cairo
-   Stereoscopy support      : $enable_stereoscopy  
+
+   Compositor support       : $enable_compositor
    Surface event support    : $with_surface_events
    FusionDale support       : $enable_fusiondale
    FusionSound support      : $enable_fusionsound
@@ -463,8 +467,13 @@ AC_MSG_RESULT([
    Reflex support           : $enable_reflex
    Wnn support              : $enable_wnn
    NLS support              : $enable_nls
-   Examples                 : $with_examples
+   Stereoscopy support      : $enable_stereoscopy   
+   EGL support              : $enable_egl
+   Cairo support            : $enable_cairo   
    CSharp bindings          : $with_csharp $csc_note
+      
+   Examples                 : $with_examples
+   Demos                    : $with_demos  
 
 Type \`make' to build ilixi. 
 Type \`make install' to install ilixi.
