@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!DOCTYPE keyboard PUBLIC "-//ilixi//DTD keyboard v1//EN" "http://www.ilixi.org/dtd/keyboard.dtd">
+
+<keyboard>
+	<row id="row1" height="%20">
+		<key id="N1">
+			<symbol states="1">1</symbol>
+		</key>
+
+		<key id="N2">
+			<symbol states="1">2</symbol>
+		</key>
+
+		<key id="N3">
+			<symbol states="1">3</symbol>
+		</key>
+
+	</row>
+
+	<row id="row2" height="%20">
+		<key id="N4">
+			<symbol states="1">4</symbol>
+		</key>
+
+		<key id="N5">
+			<symbol states="1">5</symbol>
+		</key>
+
+		<key id="N6">
+			<symbol states="1">6</symbol>
+		</key>
+	</row>
+
+	<row id="row3" height="%20">
+		<key id="N7">
+			<symbol states="1">7</symbol>
+		</key>
+
+		<key id="N8">
+			<symbol states="1">8</symbol>
+		</key>
+
+		<key id="N9">
+			<symbol states="1">9</symbol>
+		</key>
+	</row>
+
+	<row id="row4" height="%20">
+		<key id="Dot">
+			<symbol states="1">.</symbol>
+		</key>
+
+		<key id="N0">
+			<symbol states="1">0</symbol>
+		</key>
+
+		<key id="BackSpace" repeatable="yes" special="yes">
+			<symbol states="1" unicode="yes">BACKSPACE</symbol>
+			<icon>@DATADIR:osk/backspace.png</icon>
+		</key>
+
+	</row>
+
+	<row id="row5" height="%20">
+		<key id="Left" special="yes">
+			<symbol states="1">CURSOR_LEFT</symbol>
+			<icon>@DATADIR:osk/left_arrow.png</icon>
+		</key>
+
+
+		<key id="Right" special="yes">
+			<symbol states="1">CURSOR_RIGHT</symbol>
+			<icon>@DATADIR:osk/right_arrow.png</icon>
+		</key>
+
+		<key id="Return" special="yes">
+			<symbol states="1">RETURN</symbol>
+			<icon>@DATADIR:osk/return.png</icon>
+		</key>
+
+	</row>
+
+</keyboard>

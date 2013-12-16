@@ -48,9 +48,15 @@ public:
     windowPreEventFilter(const DFBWindowEvent &event);
 #endif
 
+    void
+    parseArgs(const char *args);
+
 private:
     OSKHelper* _helper;
     Keyboard* _keyboard;
+
+    virtual void
+    handleUserEvent(const DFBUserEvent& event);
 };
 
 #endif /* OSK_H_ */

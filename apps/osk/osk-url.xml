@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<!DOCTYPE keyboard PUBLIC "-//ilixi//DTD keyboard v1//EN" "http://www.ilixi.org/dtd/keyboard.dtd">
+
+<keyboard>
+	<row id="numbers" height="%20">
+		<key id="N1">
+			<symbol states="1, 2, 3">1</symbol>
+		</key>
+
+		<key id="N2">
+			<symbol states="1, 2, 3">2</symbol>
+		</key>
+
+		<key id="N3">
+			<symbol states="1, 2, 3">3</symbol>
+		</key>
+
+		<key id="N4">
+			<symbol states="1, 2, 3">4</symbol>
+		</key>
+
+		<key id="N5">
+			<symbol states="1, 2, 3">5</symbol>
+		</key>
+
+		<key id="N6">
+			<symbol states="1, 2, 3">6</symbol>
+		</key>
+
+		<key id="N7">
+			<symbol states="1, 2, 3">7</symbol>
+		</key>
+
+		<key id="N8">
+			<symbol states="1, 2, 3">8</symbol>
+		</key>
+
+		<key id="N9">
+			<symbol states="1, 2, 3">9</symbol>
+		</key>
+
+		<key id="N0">
+			<symbol states="1, 2, 3">0</symbol>
+		</key>
+	</row>
+
+	<row id="rowQ" height="%20">
+		<key id="q">
+			<symbol states="1">q</symbol>
+			<symbol states="2">Q</symbol>
+			<symbol states="3">@</symbol>
+		</key>
+
+		<key id="w">
+			<symbol states="1">w</symbol>
+			<symbol states="2">W</symbol>
+			<symbol states="3">#</symbol>
+		</key>
+
+		<key id="e">
+			<symbol states="1">e</symbol>
+			<symbol states="2">E</symbol>
+			<symbol states="3">%</symbol>
+		</key>
+
+		<key id="r">
+			<symbol states="1">r</symbol>
+			<symbol states="2">R</symbol>
+			<symbol states="3">&amp;</symbol>
+		</key>
+
+		<key id="t">
+			<symbol states="1">t</symbol>
+			<symbol states="2">T</symbol>
+			<symbol states="3">*</symbol>
+		</key>
+
+		<key id="y">
+			<symbol states="1">y</symbol>
+			<symbol states="2">Y</symbol>
+			<symbol states="3">/</symbol>
+		</key>
+
+		<key id="u">
+			<symbol states="1">u</symbol>
+			<symbol states="2">U</symbol>
+			<symbol states="3">-</symbol>
+		</key>
+
+		<key id="i">
+			<symbol states="1">i</symbol>
+			<symbol states="2">I</symbol>
+			<symbol states="3">+</symbol>
+		</key>
+
+		<key id="o">
+			<symbol states="1">o</symbol>
+			<symbol states="2">O</symbol>
+			<symbol states="3">(</symbol>
+		</key>
+
+		<key id="p">
+			<symbol states="1">p</symbol>
+			<symbol states="2">P</symbol>
+			<symbol states="3">)</symbol>
+		</key>
+
+	</row>
+
+	<row id="rowA" gap="10" height="%20">
+
+		<key id="a">
+			<symbol states="1">a</symbol>
+			<symbol states="2">A</symbol>
+			<symbol states="3">$</symbol>
+		</key>
+
+		<key id="s">
+			<symbol states="1">s</symbol>
+			<symbol states="2">S</symbol>
+			<symbol states="3">?</symbol>
+		</key>
+
+		<key id="d">
+			<symbol states="1">d</symbol>
+			<symbol states="2">D</symbol>
+			<symbol states="3">!</symbol>
+		</key>
+
+		<key id="f">
+			<symbol states="1">f</symbol>
+			<symbol states="2">F</symbol>
+			<symbol states="3">"</symbol>
+		</key>
+
+		<key id="g">
+			<symbol states="1">g</symbol>
+			<symbol states="2">G</symbol>
+			<symbol states="3">'</symbol>
+		</key>
+
+		<key id="h">
+			<symbol states="1">h</symbol>
+			<symbol states="2">H</symbol>
+			<symbol states="3">:</symbol>
+		</key>
+
+		<key id="j">
+			<symbol states="1">j</symbol>
+			<symbol states="2">J</symbol>
+			<symbol states="3">;</symbol>
+		</key>
+
+		<key id="k">
+			<symbol states="1">k</symbol>
+			<symbol states="2">K</symbol>
+			<symbol states="3">,</symbol>
+		</key>
+
+		<key id="l">
+			<symbol states="1">l</symbol>
+			<symbol states="2">L</symbol>
+			<symbol states="3">\</symbol>
+		</key>
+
+	</row>
+
+	<row id="rowShift" height="%20">
+
+		<key id="Shift" modifier="yes">
+			<icon>@DATADIR:osk/caps.png</icon>
+			<rollStates>1, 2</rollStates>
+		</key>
+
+		<key id="z">
+			<symbol states="1">z</symbol>
+			<symbol states="2">Z</symbol>
+			<symbol states="3">[</symbol>
+		</key>
+
+		<key id="x">
+			<symbol states="1">x</symbol>
+			<symbol states="2">X</symbol>
+			<symbol states="3">]</symbol>
+		</key>
+
+		<key id="c">
+			<symbol states="1">c</symbol>
+			<symbol states="2">C</symbol>
+			<symbol states="3">{</symbol>
+		</key>
+
+		<key id="v">
+			<symbol states="1">v</symbol>
+			<symbol states="2">V</symbol>
+			<symbol states="3">}</symbol>
+		</key>
+
+		<key id="b">
+			<symbol states="1">b</symbol>
+			<symbol states="2">B</symbol>
+			<symbol states="3">.net</symbol>
+		</key>
+
+		<key id="n">
+			<symbol states="1">n</symbol>
+			<symbol states="2">N</symbol>
+			<symbol states="3">.org</symbol>
+		</key>
+
+		<key id="m">
+			<symbol states="1">m</symbol>
+			<symbol states="2">M</symbol>
+			<symbol states="3">.</symbol>
+		</key>
+
+		<key id="BackSpace" repeatable="yes" special="yes">
+			<symbol states="1, 2, 3" unicode="yes">BACKSPACE</symbol>
+			<icon>@DATADIR:osk/backspace.png</icon>
+		</key>
+
+	</row>
+
+	<row id="Bottom" height="%20">
+		<key id="Helper" helper="yes">
+			<symbol states="1, 2, 3">JP</symbol>
+		</key>
+
+		<key id="ABC" sticky="yes">
+			<symbol states="1">abc</symbol>
+			<symbol states="2">ABC</symbol>
+			<symbol states="3">SYM</symbol>
+			<rollStates>1, 2, 3</rollStates>
+		</key>
+		
+		<key id="WWW">
+			<symbol states="1, 2, 3">www.</symbol>
+		</key>
+		
+		<key id="Left" special="yes">
+			<symbol states="1, 2, 3">CURSOR_LEFT</symbol>
+			<icon>@DATADIR:osk/left_arrow.png</icon>
+		</key>
+
+		<key id="Space" constraint="extend" repeatable="yes">
+			<symbol states="1, 2, 3"> </symbol>
+			<icon>@DATADIR:osk/space.png</icon>
+		</key>
+
+		<key id="Right" special="yes">
+			<symbol states="1, 2, 3">CURSOR_RIGHT</symbol>
+			<icon>@DATADIR:osk/right_arrow.png</icon>
+		</key>
+
+		<key id="DotCom">
+			<symbol states="1, 2, 3">.com</symbol>
+		</key>
+
+		<key id="Return" special="yes">
+			<symbol states="1, 2, 3">RETURN</symbol>
+			<icon>@DATADIR:osk/return.png</icon>
+		</key>
+
+	</row>
+
+</keyboard>

@@ -18,6 +18,10 @@ ilixi_osk_SOURCES	= 	Helper.cpp \
 						utf8-decoder.cpp
 						
 miscdatadir 	=	$(ILIXI_DATADIR)/osk
-miscdata_DATA 	=	keyboard.xml keyboard.dtd numpad.xml
+miscdata_DATA 	=	osk-alpha.xml \
+					osk-numeric.xml \
+					osk-numpad.xml \
+					osk-standard.xml \
+					osk-url.xml 
 EXTRA_DIST 		= 	$(miscdata_DATA)
 						

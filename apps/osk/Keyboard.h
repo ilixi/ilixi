@@ -28,6 +28,7 @@
 #include <types/Font.h>
 #include <lib/Timer.h>
 #include <libxml/tree.h>
+#include <core/ComponentData.h>
 #include <core/DaleDFB.h>
 #include "Helper.h"
 
@@ -49,7 +50,7 @@ public:
     setSymbolState(unsigned char state);
 
     bool
-    parseLayoutFile(const char* file);
+    parseLayoutFile(const std::string& file);
 
     void
     forwardKeyData(const uint32_t& ucs32, unsigned int modifiers = 0);
@@ -66,6 +67,9 @@ public:
     bool
     handleKeyPress(uint32_t symbol);
 
+    void
+    switchLayout(OSK::OSKLayoutMode mode);
+
 protected:
     void
     compose(const PaintEvent& event);
@@ -75,6 +79,8 @@ private:
     OSKHelper* _helper;
     //! This font is shared by all keys.
     Font* _buttonFont;
+    //! This stores current layout file.
+    std::string _layoutFile;
     //! Compositor's osk component.
     IComaComponent* _oskComponent;
     //! This stores rows for ease of access.

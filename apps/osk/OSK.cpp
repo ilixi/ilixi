@@ -45,18 +45,8 @@ ILXOSK::ILXOSK(int argc, char* argv[])
     addWidget(_helper);
 
     _keyboard = new Keyboard(_helper);
-
-    bool numpad = false;
     for (int i = 1; i < argc; i++)
-    {
-        if (strcmp(argv[i], "numpad") == 0)
-            numpad = true;
-    }
-
-    if (numpad)
-        _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/numpad.xml");
-    else
-        _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/keyboard.xml");
+        parseArgs(argv[i]);
     addWidget(_keyboard);
 
     _helper->sigSubmit.connect(sigc::mem_fun(this, &ILXOSK::forwardString));
@@ -70,7 +60,7 @@ ILXOSK::~ILXOSK()
 void
 ILXOSK::forwardString(const std::string& str)
 {
-    std::vector<uint32_t> ucs32;
+    std::vector < uint32_t > ucs32;
     decode((uint8_t*) str.c_str(), ucs32);
     _keyboard->forwardKeyData(ucs32, 0, true);
 }
@@ -81,7 +71,7 @@ ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 {
     switch (event.type)
     {
-    case DWET_KEYDOWN:
+        case DWET_KEYDOWN:
         if ((event.modifiers & DIMM_CONTROL) && (event.key_symbol == DIKS_SPACE))
         {
             _keyboard->toggleHelper();
@@ -94,18 +84,58 @@ ILXOSK::windowPreEventFilter(const DFBWindowEvent &event)
 
         return _keyboard->handleKeyPress(event.key_symbol);
 
-    case DWET_KEYUP:
+        case DWET_KEYUP:
         if (_helper->visible() && event.key_symbol == DIKS_SHIFT)
-            _helper->setResizeMode(false);
+        _helper->setResizeMode(false);
         return true;
 
-    default:
+        default:
         break;
     }
 
     return false;
 }
 #endif
+
+void
+ILXOSK::parseArgs(const char *args)
+{
+    char* arg = strdup(args);
+    char* value;
+    char* next;
+    bool hasLayout = false;
+
+    while (arg && arg[0])
+    {
+        printf("%s \n", arg);
+        if ((next = strchr(arg, ',')) != NULL)
+            *next++ = '\0';
+
+        if ((value = strchr(arg, '=')) != NULL)
+            *value++ = '\0';
+
+        if (strcmp(arg, "layout") == 0)
+            hasLayout = _keyboard->parseLayoutFile(PrintF("%sosk/%s", ILIXI_DATADIR, value).c_str());
+
+        arg = next;
+    }
+
+    free(arg);
+
+    if (!hasLayout)
+        _keyboard->parseLayoutFile(ILIXI_DATADIR"osk/osk-standard.xml");
+}
+
+void
+ILXOSK::handleUserEvent(const DFBUserEvent& event)
+{
+    if (event.clazz == DFEC_USER && event.type == 8)
+    {
+        OSK::OSKLayoutMode* mode = (OSK::OSKLayoutMode*) event.data;
+        _keyboard->switchLayout(*mode);
+        delete mode;
+    }
+}
 
 int
 main(int argc, char* argv[])

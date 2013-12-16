@@ -23,7 +23,7 @@
 
 #include "Keyboard.h"
 #include <ui/Label.h>
-#include <core/ComponentData.h>
+#include <core/Engine.h>
 #include <core/Logger.h>
 #include <libxml/parser.h>
 
@@ -31,6 +31,20 @@ namespace ilixi
 {
 
 D_DEBUG_DOMAIN( ILX_KEYBOARD, "ilixi/osk/Keyboard", "Keyboard");
+
+void
+switchLayoutListener(void* ctx, void* arg)
+{
+    ILOG_TRACE_F(ILX_KEYBOARD);
+    Keyboard* keyboard = (Keyboard*) ctx;
+//    OSK::OSKLayoutMode mode = *((OSK::OSKLayoutMode*) arg);
+//    keyboard->switchLayout(mode);
+
+    OSK::OSKLayoutMode* mode = new OSK::OSKLayoutMode;
+    *mode = *((OSK::OSKLayoutMode*) arg);
+
+    Engine::instance().postUserEvent(8, mode);
+}
 
 Keyboard::Keyboard(OSKHelper* helper, Widget* parent)
         : Widget(parent),
@@ -46,6 +60,9 @@ Keyboard::Keyboard(OSKHelper* helper, Widget* parent)
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Keyboard::updateKeyboardGeometry));
 
     DaleDFB::comaGetComponent("OSK", &_oskComponent);
+
+    if (_oskComponent)
+        _oskComponent->Listen(_oskComponent, OSK::SwitchLayout, switchLayoutListener, this);
 
     _cycleTimer.sigExec.connect(sigc::mem_fun(this, &Keyboard::handleCycleTimer));
 }
@@ -78,10 +95,13 @@ Keyboard::setSymbolState(unsigned char state)
 }
 
 bool
-Keyboard::parseLayoutFile(const char* file)
+Keyboard::parseLayoutFile(const std::string& file)
 {
     ILOG_TRACE_W(ILX_KEYBOARD);
-    ILOG_DEBUG(ILX_KEYBOARD, " -> Parsing layout file: %s\n", file);
+    ILOG_DEBUG(ILX_KEYBOARD, " -> Parsing layout file: %s\n", file.c_str());
+    if(_layoutFile == file)
+        return true;
+
     xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
 
@@ -92,12 +112,12 @@ Keyboard::parseLayoutFile(const char* file)
         return false;
     }
 
-    doc = xmlCtxtReadFile(ctxt, file, NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
+    doc = xmlCtxtReadFile(ctxt, file.c_str(), NULL, XML_PARSE_DTDATTR | XML_PARSE_NOENT | XML_PARSE_DTDVALID | XML_PARSE_NOBLANKS);
 
     if (doc == NULL)
     {
         xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_KEYBOARD, "Failed to parse layout: %s\n", file);
+        ILOG_ERROR(ILX_KEYBOARD, "Failed to parse layout: %s\n", file.c_str());
         return false;
     }
 
@@ -105,7 +125,7 @@ Keyboard::parseLayoutFile(const char* file)
     {
         xmlFreeDoc(doc);
         xmlFreeParserCtxt(ctxt);
-        ILOG_ERROR(ILX_KEYBOARD, "Failed to validate layout: %s\n", file);
+        ILOG_ERROR(ILX_KEYBOARD, "Failed to validate layout: %s\n", file.c_str());
         return false;
     }
 
@@ -128,8 +148,10 @@ Keyboard::parseLayoutFile(const char* file)
 
     xmlFreeDoc(doc);
     xmlFreeParserCtxt(ctxt);
-    ILOG_INFO(ILX_KEYBOARD, "Parsed layout file: %s\n", file);
+    ILOG_INFO(ILX_KEYBOARD, "Parsed layout file: %s\n", file.c_str());
     setSymbolState(1);
+    updateKeyboardGeometry();
+    _layoutFile = file;
     return true;
 }
 
@@ -192,7 +214,7 @@ Keyboard::setModifier(Key* modifier)
     if (_cycleKey)
     {
         /* send cursor right to remove selection and continue with next letter */
-        std::vector<uint32_t> c;
+        std::vector < uint32_t > c;
         c.push_back(DIKS_CURSOR_RIGHT);
         forwardKeyData(c, DIMM_SHIFT);
 
@@ -209,7 +231,7 @@ Keyboard::setModifier(Key* modifier)
 void
 Keyboard::handleCycleKey(Key* key)
 {
-    std::vector<uint32_t> ucs32 = key->_symbols[key->_keyState].ucs32;
+    std::vector < uint32_t > ucs32 = key->_symbols[key->_keyState].ucs32;
 
     if (_cycleKey && _cycleKey == key)
     {
@@ -234,7 +256,7 @@ Keyboard::handleCycleKey(Key* key)
         if (_cycleKey)
         {
             /* send cursor right to remove selection and continue with next letter */
-            std::vector<uint32_t> c;
+            std::vector < uint32_t > c;
             c.push_back(DIKS_CURSOR_RIGHT);
             forwardKeyData(c, DIMM_SHIFT);
         }
@@ -244,16 +266,16 @@ Keyboard::handleCycleKey(Key* key)
     }
 
     /* send new character replacing the old selection (if any) */
-    std::vector<uint32_t> c;
+    std::vector < uint32_t > c;
     c.push_back(_cycleCharacter);
-    forwardKeyData(c);
+    forwardKeyData (c);
 
     _cycleTimer.stop();
 
     if (!(key->_keyMode & Key::Special))
     {
         /* send shift left to make new selection */
-        std::vector<uint32_t> c2;
+        std::vector < uint32_t > c2;
         c2.push_back(DIKS_CURSOR_LEFT);
         forwardKeyData(c2, DIMM_SHIFT);
 
@@ -284,6 +306,34 @@ Keyboard::handleKeyPress(uint32_t symbol)
 }
 
 void
+Keyboard::switchLayout(OSK::OSKLayoutMode mode)
+{
+    ILOG_TRACE_W(ILX_KEYBOARD);
+    switch (mode)
+    {
+    case OSK::AlphaOnly:
+        ILOG_DEBUG(ILX_KEYBOARD, " -> AlphaOnly mode\n");
+        parseLayoutFile(ILIXI_DATADIR"osk/osk-alpha.xml");
+        break;
+
+    case OSK::NumericOnly:
+        ILOG_DEBUG(ILX_KEYBOARD, " -> NumericOnly mode\n");
+        parseLayoutFile(ILIXI_DATADIR"osk/osk-numeric.xml");
+        break;
+
+    case OSK::URL:
+        ILOG_DEBUG(ILX_KEYBOARD, " -> URL mode\n");
+        parseLayoutFile(ILIXI_DATADIR"osk/osk-url.xml");
+        break;
+
+    default:
+        ILOG_DEBUG(ILX_KEYBOARD, " -> Standard mode\n");
+        parseLayoutFile(ILIXI_DATADIR"osk/osk-standard.xml");
+        break;
+    }
+}
+
+void
 Keyboard::compose(const PaintEvent& event)
 {
 }
@@ -309,7 +359,7 @@ Keyboard::getKey(xmlNodePtr node)
     xmlChar* special = xmlGetProp(node, (xmlChar*) "special");
     xmlChar* cycle = xmlGetProp(node, (xmlChar*) "cycle");
 
-    ILOG_DEBUG(ILX_KEYBOARD, "Key: %s\n", (char*) id);
+    ILOG_DEBUG(ILX_KEYBOARD, "Key: %s\n", (char* ) id);
 
     Key* key = new Key((char*) id, this);
 
@@ -405,7 +455,7 @@ Keyboard::getRow(xmlNodePtr node)
         row->setKeyHeight(atoi((char*) h));
     }
 
-    ILOG_DEBUG( ILX_KEYBOARD, "Row: %s Gap: %u Height: %d\n", (char*) id, row->gap(), row->keyHeight());
+    ILOG_DEBUG(ILX_KEYBOARD, "Row: %s Gap: %u Height: %d\n", (char* ) id, row->gap(), row->keyHeight());
 
     xmlFree(id);
     xmlFree(gap);
@@ -424,6 +474,7 @@ Keyboard::getRow(xmlNodePtr node)
 void
 Keyboard::release()
 {
+    ILOG_TRACE_W(ILX_KEYBOARD);
     for (unsigned int i = 0; i < _rows.size(); ++i)
         removeChild(_rows[i]);
     _rows.clear();
@@ -465,7 +516,7 @@ Keyboard::handleCycleTimer()
     if (_cycleKey)
     {
         /* send cursor right to remove selection and continue with next letter */
-        std::vector<uint32_t> c;
+        std::vector < uint32_t > c;
         c.push_back(DIKS_CURSOR_RIGHT);
         forwardKeyData(c, DIMM_SHIFT);
 
