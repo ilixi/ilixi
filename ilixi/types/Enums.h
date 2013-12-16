@@ -370,6 +370,14 @@ enum PushButtonStyle
     CANCEL
 };
 
+enum TextInputMode
+{
+    AlphanumericInput,
+    AlphabeticInput,
+    NumericInput,
+    URLInput
+};
+
 }
 
 #endif /* ILIXI_ENUMS_H_ */
