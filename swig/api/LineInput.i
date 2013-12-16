@@ -4,6 +4,7 @@
 %import(module="ilixi_Rectangle") <types/Rectangle.h>
 %import(module="ilixi_Widget") <ui/Widget.h>
 %import(module="ilixi_TextBase") <ui/TextBase.h>
+%import(module="ilixi_Enums") <types/Enums.h>
 %import(module="ilixi_sigc_signal") <sigc++/signal.h>
 
 %include "std_string.i"
@@ -48,7 +49,7 @@ typedef void (SWIGSTDCALL *DelegateNotify)(void);
 %extend ilixi::LineInput {
   std::string getText()
   {
-    $self->text();
+    return $self->text();
   }
 }
 
