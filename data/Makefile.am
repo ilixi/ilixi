@@ -1,5 +1,10 @@
 ## Makefile.am for data
-SUBDIRS			= 	apps images sounds themes
+SUBDIRS			= 	images sounds themes
+
+if WITH_COMPOSITOR
+SUBDIRS			+=	apps
+endif
+
 miscdatadir 	=	$(ILIXI_DATADIR)
 miscdata_DATA 	=	application.dtd \
 					compositor.dtd \
@@ -7,6 +12,7 @@ miscdata_DATA 	=	application.dtd \
 					configuration.dtd \
 					font_pack.dtd \
 					icon_pack.dtd \
+					keyboard.dtd \
 					palette.dtd \
 					style.dtd \
 					ilixi_catalog.xml \
