@@ -784,8 +784,8 @@ Widget::consumePointerEvent(const PointerEvent& pointerEvent)
                 pointerButtonDownEvent(pointerEvent);
             } else if (pointerEvent.eventType == PointerButtonUp)
             {
-                _state = (WidgetState) (_state & ~PressedState);
                 pointerButtonUpEvent(pointerEvent);
+                _state = (WidgetState) (_state & ~PressedState);
                 if (_state & GrabbedState)
                     _rootWindow->_eventManager->setGrabbedWidget(NULL, pointerEvent);
             } else if (pointerEvent.eventType == PointerWheel)
