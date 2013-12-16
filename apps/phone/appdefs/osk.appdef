@@ -8,7 +8,7 @@
 	<version>1.0</version>
 	<icon></icon>
 	<exec>ilixi_osk</exec>
-	<args>numpad</args>
+	<args>layout=numpad.xml</args>
 	<flags>APP_OSK, APP_SYSTEM, APP_AUTO_START</flags>
 	<deps>DEP_MOUSE</deps>
 </app>
