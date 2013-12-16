@@ -219,16 +219,16 @@ ILXCompositor::getSwitcherGeometry() const
 }
 
 void
-ILXCompositor::showOSK(DFBRectangle rect, pid_t process)
+ILXCompositor::showOSK(OSK::OSKRequest request)
 {
     ILOG_TRACE_F(ILX_COMPOSITOR);
-    ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", process);
-    if (rect.y + rect.h > _appGeometry.bottom() - _oskGeometry.height())
-        _oskTargetRect.setRectangle(rect.x, rect.y + rect.h - (_appGeometry.bottom() - _oskGeometry.height()), rect.w, rect.h);
+    ILOG_DEBUG(ILX_COMPOSITOR, " -> process: %d\n", request.client);
+    if (request.inputRect.y + request.inputRect.h > _appGeometry.bottom() - _oskGeometry.height())
+        _oskTargetRect.setRectangle(request.inputRect.x, request.inputRect.y + request.inputRect.h - (_appGeometry.bottom() - _oskGeometry.height()), request.inputRect.w, request.inputRect.h);
     else
-        _oskTargetRect.setRectangle(rect.x, 0, rect.w, rect.h);
+        _oskTargetRect.setRectangle(request.inputRect.x, 0, request.inputRect.w, request.inputRect.h);
 
-    _oskTargetPID = process;
+    _oskTargetPID = request.client;
     if (!_osk)
         _appMan->startApplication("OnScreenKeyboard");
     else
@@ -509,12 +509,15 @@ ILXCompositor::handleUserEvent(const DFBUserEvent& event)
                 {
                     ILOG_DEBUG(ILX_COMPOSITOR, " -> APP_HOME\n");
 
-                    _home = data->instance;
-                    _home->setView(new AppView(this, _home));
-                    data->instance->view()->setGeometry(_appGeometry);
-                    addWidget(_home->view());
-                    _home->view()->setZ(0);
-                    _home->view()->sendToBack();
+                    if (data->instance->view() == NULL)
+                    {
+                        _home = data->instance;
+                        _home->setView(new AppView(this, _home));
+                        data->instance->view()->setGeometry(_appGeometry);
+                        addWidget(_home->view());
+                        _home->view()->setZ(0);
+                        _home->view()->sendToBack();
+                    }
                     _home->view()->addWindow(dfbWindow);
                 } else if (appInfo->appFlags() & APP_SYSTEM)
                 {
@@ -694,20 +697,6 @@ ILXCompositor::windowPreEventFilter(const DFBWindowEvent& event)
                 toggleLauncher(false); // show current application
             else
                 toggleLauncher(true); // show launcher
-            return true;
-
-        case DIKS_PAUSE:
-            if (_osk && _osk->view()->visible())
-                toggleOSK(false); // show current application
-            else if (_currentApp)
-            {
-                if (1 || !_osk)
-                {
-                    DFBRectangle rect = { 0, 0, 800, 30 };
-                    showOSK(rect, _currentApp->pid());
-                } else
-                    toggleOSK(true); // show osk
-            }
             return true;
 
         case DIKS_TAB:

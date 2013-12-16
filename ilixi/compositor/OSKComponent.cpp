@@ -23,7 +23,6 @@
 
 #include <compositor/OSKComponent.h>
 #include <compositor/Compositor.h>
-#include <core/ComponentData.h>
 #include <core/Logger.h>
 
 namespace ilixi
@@ -32,10 +31,12 @@ namespace ilixi
 D_DEBUG_DOMAIN( ILX_OSKCOMP, "ilixi/Coma/OSKComponent", "OSKComponent");
 
 OSKComponent::OSKComponent(ILXCompositor* compositor)
-        : ComaComponent("OSK"),
+        : ComaComponent("OSK", OSK::OSKNumNotifications),
           _compositor(compositor)
 {
+    ILOG_TRACE(ILX_OSKCOMP);
     init();
+    createNotification(OSK::SwitchLayout, NULL);
 }
 
 OSKComponent::~OSKComponent()
@@ -45,6 +46,7 @@ OSKComponent::~OSKComponent()
 DirectResult
 OSKComponent::comaMethod(ComaMethodID method, void *arg)
 {
+    ILOG_TRACE(ILX_OSKCOMP);
     DirectResult ret = DR_OK;
 
     switch (method)
@@ -61,17 +63,25 @@ OSKComponent::comaMethod(ComaMethodID method, void *arg)
             } else
             {
                 request = *((OSK::OSKRequest*) arg);
-                ILOG_DEBUG(ILX_OSKCOMP, "ShowOSK\n");
+                ILOG_DEBUG(ILX_OSKCOMP, " -> ShowOSK\n");
                 ILOG_DEBUG(ILX_OSKCOMP, " -> Mode (%d)\n", request.mode);
                 ILOG_DEBUG(ILX_OSKCOMP, " -> Rectangle (%d, %d, %d, %d)\n", request.inputRect.x, request.inputRect.y, request.inputRect.w, request.inputRect.h);
                 ILOG_DEBUG(ILX_OSKCOMP, " -> PID (%d) \n", request.client);
             }
-            _compositor->showOSK(request.inputRect, request.client);
+
+            ILOG_DEBUG(ILX_OSKCOMP, " -> send notification\n");
+            OSK::OSKLayoutMode* layout;
+            allocate(sizeof(OSK::OSKLayoutMode), (void**) &layout);
+            *layout = request.mode;
+            notify(OSK::SwitchLayout, layout);
+            ILOG_DEBUG(ILX_OSKCOMP, " -> send notification 2\n");
+
+            _compositor->showOSK(request);
         }
         break;
 
     case OSK::HideOSK:
-        ILOG_DEBUG(ILX_OSKCOMP, "HideOSK\n");
+        ILOG_DEBUG(ILX_OSKCOMP, " -> HideOSK\n");
         _compositor->toggleOSK(false);
         break;
     case OSK::ConsumeKey:

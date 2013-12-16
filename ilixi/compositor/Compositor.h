@@ -140,7 +140,7 @@ protected:
      * Shows OSK and centers given rect at top.
      */
     void
-    showOSK(DFBRectangle rect, pid_t process);
+    showOSK(OSK::OSKRequest request);
 
     /*!
      * Sends given key to current application instance.
