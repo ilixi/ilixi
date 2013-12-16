@@ -43,7 +43,7 @@ ilixi_include_HEADERS	=	Animation.h \
 							Util.h \
 							XMLReader.h
 
-if WITH_FUSIONDALE
+if WITH_COMPOSITOR
 libilixi_lib_la_SOURCES 	+= 	Notify.cpp
 ilixi_include_HEADERS		+=	Notify.h
 endif
