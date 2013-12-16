@@ -80,8 +80,8 @@ void
 Dialog::accept()
 {
     ILOG_TRACE_W(ILX_DIALOG);
-    finish(1);
     sigAccepted();
+    finish(1);
 }
 
 void
