@@ -182,7 +182,8 @@ AS_IF([test "x$enable_fusiondale" = "xyes"], [
 			AC_DEFINE([HAVE_FUSIONDALE], [1], [Enable FusionDale support])
 		], 
 		[
-			enable_fusiondale=no 
+			enable_fusiondale=no
+			enable_compositor=no 
 			AC_MSG_WARN([*** FusionDale packages not found -- Building without FusionDale support.])
 		]
 	)], []
@@ -209,7 +210,8 @@ AS_IF([test "x$enable_sawman" = "xyes"],
             AC_DEFINE([HAVE_SAWMAN], [1], [Enable SaWMan support])
         ],
         [
-            with_sawman=no
+            enable_sawman=no
+            enable_compositor=no
             AC_MSG_WARN([*** SaWMan not found -- Building without SaWMan support.])
         ])
     ]
@@ -353,6 +355,8 @@ if test -n "$DFB_SURFACE_EVENTS"; then
 else
     if $PKG_CONFIG --atleast-version=1.6.0 directfb; then
         with_surface_events=yes
+    else
+        enable_compositor=no
     fi
 fi
 
@@ -360,7 +364,7 @@ AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])
 
-AM_CONDITIONAL([WITH_COMPOSITOR], [test x$enable_compositor = xyes && test x$enable_fusiondale = xyes && test x$enable_sawman = xyes])
+AM_CONDITIONAL([WITH_COMPOSITOR], [test x$enable_compositor = xyes])
 AM_CONDITIONAL([WITH_FUSIONDALE], [test x$enable_fusiondale = xyes])
 AM_CONDITIONAL([WITH_FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AM_CONDITIONAL([WITH_SAWMAN], [test x$enable_sawman = xyes])
@@ -469,7 +473,7 @@ AC_MSG_RESULT([
    NLS support              : $enable_nls
    Stereoscopy support      : $enable_stereoscopy   
    EGL support              : $enable_egl
-   Cairo support            : $enable_cairo   
+   Cairo painter            : $enable_cairo
    CSharp bindings          : $with_csharp $csc_note
       
    Examples                 : $with_examples
