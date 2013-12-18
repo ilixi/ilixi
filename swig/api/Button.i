@@ -46,4 +46,11 @@ public delegate void DelegateNotify();
   }
 }
 
+%extend ilixi::Button {
+  std::string getText()
+  {
+    return $self->text();
+  }
+}
+
 %include <ui/Button.h>
