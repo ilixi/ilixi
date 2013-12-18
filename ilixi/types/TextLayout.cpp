@@ -404,6 +404,8 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     x += _bounds.x();
     if (_alignment == Center)
         x += _bounds.width() / 2;
+    else if (_alignment == Right)
+        x += _bounds.width();
 
     // TODO set clipping here...
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
