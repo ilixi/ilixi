@@ -10,5 +10,5 @@
 #include <ilixiGUI.h>
 using namespace ilixi;
 %}
-
+  
 %include <ui/ToolButton.h>

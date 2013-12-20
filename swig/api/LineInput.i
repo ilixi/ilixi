@@ -6,6 +6,7 @@
 %import(module="ilixi_TextBase") <ui/TextBase.h>
 %import(module="ilixi_Enums") <types/Enums.h>
 %import(module="ilixi_sigc_signal") <sigc++/signal.h>
+%import(module="ilixi_Size") <types/Size.h>
 
 %include "std_string.i"
 

@@ -9,4 +9,5 @@
 #include <ilixiGUI.h>
 using namespace ilixi;
 %}
+
 %include <ui/CheckBox.h>
