@@ -8,4 +8,6 @@
 using namespace ilixi;
 %}
 
+%include "csgcfix.i"
+
 %include <ui/Widget.h>

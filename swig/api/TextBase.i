@@ -7,4 +7,6 @@
 using namespace ilixi;
 %}
 
+%include "csgcfix.i"
+
 %include <ui/TextBase.h>

@@ -6,4 +6,7 @@
 #include <ilixiGUI.h>
 using namespace ilixi;
 %}
+
+%include "csgcfix.i"
+
 %include <types/Rectangle.h>
