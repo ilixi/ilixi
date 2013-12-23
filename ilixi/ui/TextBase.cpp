@@ -94,8 +94,8 @@ TextBase::font() const
     return defaultFont();
 }
 
-TextLayout
-TextBase::layout() const
+TextLayout&
+TextBase::layout()
 {
     return _layout;
 }

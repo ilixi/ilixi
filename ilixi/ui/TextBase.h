@@ -71,8 +71,8 @@ public:
     /*!
      * Returns text layout.
      */
-    TextLayout
-    layout() const;
+    TextLayout&
+    layout();
 
     /*!
      * Returns font style.
