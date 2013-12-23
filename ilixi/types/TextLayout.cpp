@@ -401,16 +401,23 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     const char* text = out;
 
+    Rectangle layoutRect = _bounds;
+    layoutRect.translate(x, y);
+    DFBRegion clipLayout = layoutRect.dfbRegion();
+    DFBRegion clip;
+    surface->GetClip(surface, &clip);
+    surface->SetClip(surface, &clipLayout);
+
     x += _bounds.x();
     if (_alignment == Center)
         x += _bounds.width() / 2;
     else if (_alignment == Right)
         x += _bounds.width();
 
-    // TODO set clipping here...
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
         surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
     free(out);
+    surface->SetClip(surface, &clip);
 }
 
 } /* namespace ilixi */
