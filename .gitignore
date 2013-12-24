@@ -68,6 +68,7 @@ examples/ilixi_containers
 examples/ilixi_dialogs
 examples/ilixi_hello
 examples/ilixi_signals
+swig/csharp/gen
 
 boot
 
