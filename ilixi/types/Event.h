@@ -223,35 +223,43 @@ struct PaintEvent
     PaintEvent()
     {
         eye = BothEyes;
+#if ILIXI_HAS_GETFRAMETIME
         micros = 0;
+#endif
     }
 
     PaintEvent(Widget* widget, const PaintEvent& evt);
 
 #ifdef ILIXI_STEREO_OUTPUT
     PaintEvent(Rectangle l, Rectangle r)
-    : right(r),
-    rect(l),
-    eye(BothEyes),
-    micros(0)
+				: right(r),
+				  rect(l),
+				  eye(BothEyes)
+#if ILIXI_HAS_GETFRAMETIME
+				  ,micros(0)
+#endif
     {
     }
 
     PaintEvent(Rectangle r, int disparity)
-    : right(r),
-    rect(r),
-    eye(BothEyes),
-    micros(0)
+				: right(r),
+				  rect(r),
+				  eye(BothEyes)
+#if ILIXI_HAS_GETFRAMETIME
+				  ,micros(0)
+#endif
     {
         right.translate(-disparity, 0);
         rect.translate(disparity, 0);
     }
 
     PaintEvent(Rectangle r, PaintEventEye e)
-    : right(r),
-    rect(r),
-    eye(e),
-    micros(0)
+				: right(r),
+				  rect(r),
+				  eye(e)
+#if ILIXI_HAS_GETFRAMETIME
+				  ,micros(0)
+#endif
     {
     }
 
@@ -259,9 +267,9 @@ struct PaintEvent
     isValid()
     {
         if (eye & LeftEye)
-        return rect.isValid();
+        	return rect.isValid();
         else
-        return right.isValid();
+        	return right.isValid();
     }
 
     Rectangle right;
@@ -269,22 +277,28 @@ struct PaintEvent
 #else
     PaintEvent(Rectangle r)
             : rect(r),
-              eye(BothEyes),
-              micros(0)
+              eye(BothEyes)
+#if ILIXI_HAS_GETFRAMETIME
+              ,micros(0)
+#endif
     {
     }
 
     PaintEvent(Rectangle r, int disparity)
             : rect(r),
-              eye(BothEyes),
-              micros(0)
+              eye(BothEyes)
+#if ILIXI_HAS_GETFRAMETIME
+              ,micros(0)
+#endif
     {
     }
 
     PaintEvent(Rectangle r, PaintEventEye e)
             : rect(r),
-              eye(e),
-              micros(0)
+              eye(e)
+#if ILIXI_HAS_GETFRAMETIME
+              ,micros(0)
+#endif
     {
     }
 
@@ -300,8 +314,10 @@ struct PaintEvent
     //! If streoscopy is enabled, this property specifies which surface to update.
     PaintEventEye eye;
 
+#if ILIXI_HAS_GETFRAMETIME
     //! When GetFrameTime is used, this notes the display timestamp of the resulting Flip
     long long micros;
+#endif
 };
 
 //! This structure is used to pass custom events to application's event buffer.

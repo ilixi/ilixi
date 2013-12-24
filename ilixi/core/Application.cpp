@@ -314,6 +314,7 @@ Application::postPointerEvent(PointerEventType type, PointerButton button, Point
     }
 }
 
+#if ILIXI_HAS_GETFRAMETIME
 long long
 Application::getFrameTime()
 {
@@ -328,6 +329,7 @@ Application::setFrameTime(long long micros)
     if (__instance)
         __instance->_frameTime = micros;
 }
+#endif
 
 AppWindow*
 Application::appWindow() const

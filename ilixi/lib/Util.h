@@ -45,6 +45,7 @@ namespace ilixi
 #define VERSION_CODE(a,b,c)      (((a) << 16) + ((b) << 8) + (c))
 #define ILIXI_DFB_VERSION       VERSION_CODE(DIRECTFB_MAJOR_VERSION, DIRECTFB_MINOR_VERSION, DIRECTFB_MICRO_VERSION)
 #define ILIXI_HAS_SURFACEEVENTS ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
+#define ILIXI_HAS_GETFRAMETIME	ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
 
 /*!
  * Creates a unique hash value given a string.

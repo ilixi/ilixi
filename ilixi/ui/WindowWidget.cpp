@@ -624,6 +624,7 @@ WindowWidget::updateWindow()
 
         ILOG_DEBUG( ILX_WINDOWWIDGET_UPDATES, " -> UpdateRegion(%d, %d, %d, %d)\n", _updates._updateRegion.x(), _updates._updateRegion.y(), _updates._updateRegion.width(), _updates._updateRegion.height());
 
+#if ILIXI_HAS_GETFRAMETIME
         long long micros = 0;
 
         if (_surface && _surface->dfbSurface())
@@ -632,14 +633,19 @@ WindowWidget::updateWindow()
             ILOG_DEBUG( ILX_WINDOWWIDGET_UPDATES, " -> GetFrameTime returned %lld (%lld advance)\n", micros, micros - direct_clock_get_time(DIRECT_CLOCK_MONOTONIC));
             Application::setFrameTime(micros);
         }
+#endif
 
 #ifdef ILIXI_STEREO_OUTPUT
         PaintEvent p(_updates._updateRegion, _updates._updateRegionRight);
+#if ILIXI_HAS_GETFRAMETIME
         p.micros = micros;
+#endif
         paint( p );
 #else
         PaintEvent p(_updates._updateRegion, PaintEvent::BothEyes);
+#if ILIXI_HAS_GETFRAMETIME
         p.micros = micros;
+#endif
         paint(p);
 #endif
     }

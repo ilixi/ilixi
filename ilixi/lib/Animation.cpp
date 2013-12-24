@@ -153,7 +153,7 @@ Animation::setCurrentTime(int ms)
     else
         _currentTime = 0;
 
-#if ILIXI_HAS_SURFACEEVENTS
+#if ILIXI_HAS_GETFRAMETIME
     long long frameTime = Application::getFrameTime();
     long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
     //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
@@ -181,7 +181,7 @@ Animation::funck()
     {
         if (_delayTime < _delayDuration)
         {
-#if ILIXI_HAS_SURFACEEVENTS
+#if ILIXI_HAS_GETFRAMETIME
             long long frameTime = Application::getFrameTime();
             long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
             //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
@@ -196,7 +196,7 @@ Animation::funck()
         {
             if (_currentTime == 0)
                 sigStarted();
-#if ILIXI_HAS_SURFACEEVENTS
+#if ILIXI_HAS_GETFRAMETIME
             long long frameTime = Application::getFrameTime();
             long long actualTime = direct_clock_get_time(DIRECT_CLOCK_MONOTONIC);
             //D_INFO( "frameTime %lld, actualTime %lld (diff %lld)\n", frameTime, actualTime, actualTime - frameTime );
