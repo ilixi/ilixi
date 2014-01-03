@@ -403,10 +403,10 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 
     DFBRegion clip;
     surface->GetClip(surface, &clip);
-    Rectangle intersect = Rectangle(Point(clip.x1, clip.y1), Point(clip.x2, clip.y2));
+    Rectangle intersect = Rectangle(clip.x1, clip.y1, clip.x2 - clip.x1 + 1, clip.y2 - clip.y1 + 1);
     Rectangle layoutRect = _bounds;
     layoutRect.translate(x, y);
-    intersect.intersected(layoutRect);
+    intersect = intersect.intersected(layoutRect);
     DFBRegion clipLayout = intersect.dfbRegion();
     surface->SetClip(surface, &clipLayout);
 
