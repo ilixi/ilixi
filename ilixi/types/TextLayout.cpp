@@ -401,11 +401,13 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     const char* text = out;
 
-    Rectangle layoutRect = _bounds;
-    layoutRect.translate(x, y);
-    DFBRegion clipLayout = layoutRect.dfbRegion();
     DFBRegion clip;
     surface->GetClip(surface, &clip);
+    Rectangle intersect = Rectangle(Point(clip.x1, clip.y1), Point(clip.x2, clip.y2));
+    Rectangle layoutRect = _bounds;
+    layoutRect.translate(x, y);
+    intersect.intersected(layoutRect);
+    DFBRegion clipLayout = intersect.dfbRegion();
     surface->SetClip(surface, &clipLayout);
 
     x += _bounds.x();
