@@ -206,25 +206,25 @@ public:
 
 protected:
     virtual void
-    draw3Frame(Painter* painter, int x, int y, int w, int h, const Style::r3& rect, bool vertical = false, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
+    draw3Frame(Painter* painter, int x, int y, int w, int h, const r3& rect, bool vertical = false, const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL);
 
     void
-    draw9Frame(Painter* painter, const Rectangle& region, const Style::r9& rect);
+    draw9Frame(Painter* painter, const Rectangle& region, const r9& rect);
 
     virtual void
-    draw9Frame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect);
+    draw9Frame(Painter* painter, int x, int y, int w, int h, const r9& rect);
 
     virtual void
-    draw9FrameMid(Painter* painter, int x, int y, int w, int h, const Style::r9& rect);
+    draw9FrameMid(Painter* painter, int x, int y, int w, int h, const r9& rect);
 
     virtual void
-    draw9CFrame(Painter* painter, int x, int y, int w, int h, const Style::r9& rect1, const Style::r9& rect2, Corners corners = AllCorners);
+    draw9CFrame(Painter* painter, int x, int y, int w, int h, const r9& rect1, const r9& rect2, Corners corners = AllCorners);
 
     void
-    drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect, const Style::r1_View_Panel& rect2);
+    drawTabFrame(Painter* p, int x, int y, int w, int h, const r9& rect, const Style::r1_View_Panel& rect2);
 
     void
-    drawTabFramePassive(Painter* p, int x, int y, int w, int h, const Style::r9& rect);
+    drawTabFramePassive(Painter* p, int x, int y, int w, int h, const r9& rect);
 
 };
 }

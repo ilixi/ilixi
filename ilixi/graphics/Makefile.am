@@ -9,6 +9,7 @@ libilixi_graphics_la_SOURCES 	= 	FontPack.cpp \
 									Painter.cpp \
                   					Palette.cpp \
                   					Style.cpp \
+                  					StyleUtil.cpp \
                   					Stylist.cpp \
                   					StylistBase.cpp \
                   					Surface.cpp
@@ -19,6 +20,7 @@ nobase_ilixi_include_HEADERS 	= 	FontPack.h \
 									Painter.h \
                   					Palette.h \
                   					Style.h \
+                  					StyleUtil.h \
                   					Stylist.h \
                   					StylistBase.h \
                   					Surface.h

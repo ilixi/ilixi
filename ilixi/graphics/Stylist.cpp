@@ -717,7 +717,7 @@ Stylist::drawHeader(Painter* p, int x, int y, int w, int h)
 }
 
 void
-Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rect, bool vertical, const DFBSurfaceBlittingFlags& flags)
+Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const r3& rect, bool vertical, const DFBSurfaceBlittingFlags& flags)
 {
     if (vertical)
     {
@@ -775,13 +775,13 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const Style::r3& rec
 }
 
 void
-Stylist::draw9Frame(Painter* p, const Rectangle& region, const Style::r9& rect)
+Stylist::draw9Frame(Painter* p, const Rectangle& region, const r9& rect)
 {
     draw9Frame(p, region.x(), region.y(), region.width(), region.height(), rect);
 }
 
 void
-Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const r9& rect)
 {
     int midWidth = w - rect.tl.width() - rect.tr.width();
     int midHeight = h - rect.bl.height() - rect.tl.height();
@@ -856,7 +856,7 @@ Stylist::draw9Frame(Painter* p, int x, int y, int w, int h, const Style::r9& rec
 }
 
 void
-Stylist::draw9FrameMid(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+Stylist::draw9FrameMid(Painter* p, int x, int y, int w, int h, const r9& rect)
 {
     int midHeight = h - rect.bm.height() - rect.tm.height();
 
@@ -892,7 +892,7 @@ Stylist::draw9FrameMid(Painter* p, int x, int y, int w, int h, const Style::r9& 
 }
 
 void
-Stylist::draw9CFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect1, const Style::r9& rect2, Corners corners)
+Stylist::draw9CFrame(Painter* p, int x, int y, int w, int h, const r9& rect1, const r9& rect2, Corners corners)
 {
     int midWidth = w - rect1.tl.width() - rect1.tr.width();
     int midHeight = h - rect1.bl.height() - rect1.tl.height();
@@ -982,7 +982,7 @@ Stylist::draw9CFrame(Painter* p, int x, int y, int w, int h, const Style::r9& re
 }
 
 void
-Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& rect, const Style::r1_View_Panel& rect2)
+Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const r9& rect, const Style::r1_View_Panel& rect2)
 {
     int midWidth = w - rect.tl.width() - rect.tr.width();
     int midHeight = h - rect.tl.height();
@@ -1051,7 +1051,7 @@ Stylist::drawTabFrame(Painter* p, int x, int y, int w, int h, const Style::r9& r
 }
 
 void
-Stylist::drawTabFramePassive(Painter* p, int x, int y, int w, int h, const Style::r9& rect)
+Stylist::drawTabFramePassive(Painter* p, int x, int y, int w, int h, const r9& rect)
 {
     int midWidth = w - rect.tl.width() - rect.tr.width();
     int midHeight = h - rect.tl.height() - defaultParameter(StyleHint::PanelInvOverlap);

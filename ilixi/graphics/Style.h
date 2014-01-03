@@ -25,10 +25,8 @@
 #define ILIXI_STYLE_H_
 
 #include <types/Image.h>
-#include <types/Rectangle.h>
-#include <libxml/tree.h>
+#include <graphics/StyleUtil.h>
 #include <map>
-#include <iostream>
 
 namespace ilixi
 {
@@ -77,13 +75,6 @@ public:
         Rectangle br;
     };
 
-    struct r3
-    {
-        Rectangle l;
-        Rectangle m;
-        Rectangle r;
-    };
-
     struct r3_Input
     {
         r3 def;
@@ -105,19 +96,6 @@ public:
         r3 dis;
         r3 fill;
         r3 fill_dis;
-    };
-
-    struct r9
-    {
-        Rectangle tl;
-        Rectangle tm;
-        Rectangle tr;
-        Rectangle l;
-        Rectangle m;
-        Rectangle r;
-        Rectangle bl;
-        Rectangle bm;
-        Rectangle br;
     };
 
     struct r9_Input
@@ -238,30 +216,6 @@ protected:
     void
     parseTheme(xmlNodePtr node);
 
-    void
-    getCell(xmlNodePtr node, Rectangle& dest);
-
-    void
-    getCellN(xmlNodePtr node, const Rectangle& ref, Rectangle& dest);
-
-    void
-    getCell3H(xmlNodePtr node, r3& dest);
-
-    void
-    getCell3HN(xmlNodePtr node, const r3& ref, r3& dest);
-
-    void
-    getCell3V(xmlNodePtr node, r3& dest);
-
-    void
-    getCell3VN(xmlNodePtr node, const r3& ref, r3& dest);
-
-    void
-    getCell9(xmlNodePtr node, r9& dest);
-
-    void
-    getCell9N(xmlNodePtr node, const r9& ref, r9& dest);
-
 private:
     void
     release();
@@ -271,18 +225,6 @@ private:
 
     friend std::ostream&
     operator<<(std::ostream& os, const Style& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r3& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r3& obj);
-
-    friend std::istream&
-    operator>>(std::istream& is, r9& obj);
-
-    friend std::ostream&
-    operator<<(std::ostream& os, const r9& obj);
 
 };
 
