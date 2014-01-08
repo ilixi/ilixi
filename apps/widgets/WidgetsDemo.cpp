@@ -23,9 +23,6 @@
 
 #include "WidgetsDemo.h"
 
-#include <ilixiGUI.h>
-#include <graphics/Painter.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,83 +34,70 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     setMargins(5, 5, 5, 5);
     setLayout(new VBoxLayout());
 
+    // ToolBar
     ToolBar* bar = new ToolBar();
-    ToolBarButton* barB1 = new ToolBarButton();
-    barB1->setIcon(StyleHint::Left);
-    bar->addWidget(barB1);
-
-    ToolBarButton* barB2 = new ToolBarButton();
-    barB2->setIcon(StyleHint::Right);
-    bar->addWidget(barB2);
-
-    ToolBarButton* barB3 = new ToolBarButton("test3");
-    barB3->setIcon(StyleHint::Plus);
-    bar->addWidget(barB3);
+    bar->addWidget(new Label("ilixi_widgets"));
+    bar->addWidget(new Spacer(Horizontal));
+    ToolBarButton* barButton = new ToolBarButton("Quit");
+    barButton->setIcon(StyleHint::Cross);
+    barButton->sigClicked.connect(sigc::ptr_fun(WidgetsDemo::quit));
+    bar->addWidget(barButton);
     setToolbar(bar);
 
-    // Add tab
+    // TabPanel
     TabPanel* tab = new TabPanel();
 //    tab->surface()->setSurfaceFlag(Surface::SubSurface);
 //    tab->surface()->unsetSurfaceFlag(Surface::SharedSurface);
     addWidget(tab);
 
+    // Buttons Tab
     VBoxLayout* vBox = new VBoxLayout();
-    tab->addTab(vBox, "Buttons");
+    tab->addTab(vBox, "Tab 1");
 
-    CheckBox* cb1 = new CheckBox("CheckBox");
-    vBox->addWidget(cb1);
-
-    CheckBox* cb2 = new CheckBox("Tri-state checkBox");
-    cb2->setTriState(true);
-    vBox->addWidget(cb2);
-
-    CheckBox* cb3 = new CheckBox("CheckBox Disabled");
-    cb3->setDisabled();
-    vBox->addWidget(cb3);
-
-    RadioButton* rb1 = new RadioButton("RadioButton 1");
-    vBox->addWidget(rb1);
-
-    RadioButton* rb2 = new RadioButton("RadioButton 2");
-    vBox->addWidget(rb2);
-
-    RadioButton* rb3 = new RadioButton("RadioButton 3");
-    rb3->setDisabled();
-    vBox->addWidget(rb3);
-
+    // Label
+    vBox->addWidget(createLabelGroup());
     vBox->addWidget(new LineSeperator());
 
-    PushButton* pb1 = new PushButton("PushButton 1");
-    vBox->addWidget(pb1);
+    // CheckBox and RadioButton
+    HBoxLayout* box1 = new HBoxLayout();
+    box1->addWidget(createCheckGroup());
+    box1->addWidget(createRadioGroup());
+    vBox->addWidget(box1);
+    vBox->addWidget(new LineSeperator());
 
-    PushButton* pb2 = new PushButton("PushButton Disabled");
-    pb2->setDisabled();
-    vBox->addWidget(pb2);
+    // PushButton
+    vBox->addWidget(createPBGroup());
+    vBox->addWidget(new LineSeperator());
 
-    ToolButton* tb1 = new ToolButton("ToolButton");
-    tb1->setToolButtonStyle(ToolButton::IconBelowText);
-    tb1->setCheckable(true);
-    vBox->addWidget(tb1);
+    // ToolButton
+    vBox->addWidget(createTBGroup());
+    vBox->addWidget(new LineSeperator());
 
-    ToolButton* tb2 = new ToolButton("ToolButton Disabled");
-    tb2->setDisabled();
-    vBox->addWidget(tb2);
-
+    // ButtonGroup
     DirectionalButton* db1 = new DirectionalButton("Left");
     DirectionalButton* db2 = new DirectionalButton("1");
     DirectionalButton* db3 = new DirectionalButton("2");
-    DirectionalButton* db4 = new DirectionalButton("Right");
+    DirectionalButton* db4 = new DirectionalButton("3");
+    DirectionalButton* db5 = new DirectionalButton("Right");
 
-    ButtonGroup* bg = new ButtonGroup(Vertical);
-//    bg->setOrientation(Horizontal);
+    ButtonGroup* bg = new ButtonGroup(Horizontal);
     bg->addButton(db1);
     bg->addButton(db2);
     bg->addButton(db3);
     bg->addButton(db4);
+    bg->addButton(db5);
     vBox->addWidget(bg);
 
+    vBox->addWidget(new Spacer(Vertical));
+
+    // Disabled
+    VBoxLayout* vBox4 = new VBoxLayout();
+    tab->addTab(vBox4, "Tab 2");
+    tab->setTabEnabled(1, false);
+
+    // LineInput Tab
     VBoxLayout* vBox2 = new VBoxLayout();
-    tab->addTab(vBox2, "LineInputs");
+    tab->addTab(vBox2, "Tab 3");
 
     LineInput *li1 = new LineInput("123...");
     li1->sigTextEntered.connect(sigc::mem_fun(this, &WidgetsDemo::print));
@@ -137,7 +121,7 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     vBox2->addWidget(li5);
 
     VBoxLayout* vBox3 = new VBoxLayout();
-    tab->addTab(vBox3, "Bars and Sliders");
+    tab->addTab(vBox3, "Tab 4");
 
     ProgressBar* bar1 = new ProgressBar();
     bar1->setValue(5);
@@ -212,10 +196,130 @@ WidgetsDemo::WidgetsDemo(int argc, char* argv[])
     SpinBox* spin1 = new SpinBox(5);
     vBox3->addWidget(spin1);
 
+
 }
 
 WidgetsDemo::~WidgetsDemo()
 {
+}
+
+LayoutBase*
+WidgetsDemo::createLabelGroup()
+{
+    HBoxLayout* group = new HBoxLayout();
+
+    Label* label1 = new Label("This is a Label");
+    group->addWidget(label1);
+
+    Label* label2 = new Label("This is a disabled Label");
+    label2->setDisabled();
+    group->addWidget(label2);
+
+    return group;
+}
+
+LayoutBase*
+WidgetsDemo::createCheckGroup()
+{
+    VBoxLayout* group = new VBoxLayout();
+
+    CheckBox* cb1 = new CheckBox("CheckBox");
+    group->addWidget(cb1);
+
+    CheckBox* cb2 = new CheckBox("CheckBox Tri-state");
+    cb2->setTriState(true);
+    group->addWidget(cb2);
+
+    CheckBox* disabled = new CheckBox("CheckBox Disabled");
+    disabled->setDisabled();
+    group->addWidget(disabled);
+
+    return group;
+}
+
+LayoutBase*
+WidgetsDemo::createRadioGroup()
+{
+    VBoxLayout* group = new VBoxLayout();
+
+    RadioButton* rb1 = new RadioButton("RadioButton 1");
+    group->addWidget(rb1);
+
+    RadioButton* rb2 = new RadioButton("RadioButton 2");
+    group->addWidget(rb2);
+
+    RadioButton* disabled = new RadioButton("RadioButton Disabled");
+    disabled->setDisabled();
+    group->addWidget(disabled);
+
+    return group;
+}
+
+LayoutBase*
+WidgetsDemo::createPBGroup()
+{
+    HBoxLayout* group = new HBoxLayout();
+
+    PushButton* pb1 = new PushButton("PushButton");
+    group->addWidget(pb1);
+
+    PushButton* pb2 = new PushButton("PushButton Disabled");
+    pb2->setDisabled();
+    group->addWidget(pb2);
+
+    PushButton* pb3 = new PushButton("OK");
+    pb3->setPushButtonStyle(OK);
+    group->addWidget(pb3);
+
+    PushButton* pb4 = new PushButton("CANCEL");
+    pb4->setPushButtonStyle(CANCEL);
+    group->addWidget(pb4);
+
+    return group;
+}
+
+ilixi::LayoutBase*
+WidgetsDemo::createTBGroup()
+{
+    HBoxLayout* group = new HBoxLayout();
+
+    ToolButton* tb1 = new ToolButton("ToolButton");
+    tb1->setToolButtonStyle(ToolButton::IconBelowText);
+    tb1->setIcon(ILIXI_DATADIR"images/default.png");
+    tb1->setCheckable(true);
+    group->addWidget(tb1);
+
+    ToolButton* tb2 = new ToolButton("IconAboveText");
+    tb2->setToolButtonStyle(ToolButton::IconAboveText);
+    tb2->setIcon(ILIXI_DATADIR"images/default.png");
+    tb2->setCheckable(true);
+    group->addWidget(tb2);
+
+    ToolButton* tb3 = new ToolButton("Text");
+    tb3->setToolButtonStyle(ToolButton::IconBeforeText);
+    tb3->setIcon(ILIXI_DATADIR"images/default.png");
+    tb3->setCheckable(true);
+    group->addWidget(tb3);
+
+    ToolButton* tb4 = new ToolButton("IconOnly");
+    tb4->setToolButtonStyle(ToolButton::IconOnly);
+    tb4->setIcon(ILIXI_DATADIR"images/default.png");
+    tb4->setCheckable(true);
+    group->addWidget(tb4);
+
+    ToolButton* tb5 = new ToolButton("TextOnly");
+    tb5->setToolButtonStyle(ToolButton::TextOnly);
+    tb5->setIcon(ILIXI_DATADIR"images/default.png");
+    tb5->setCheckable(true);
+    group->addWidget(tb5);
+
+    ToolButton* tb6 = new ToolButton("Disabled");
+    tb6->setChecked(true);
+    tb6->setCheckable(true);
+    tb6->setDisabled();
+    group->addWidget(tb6);
+
+    return group;
 }
 
 void

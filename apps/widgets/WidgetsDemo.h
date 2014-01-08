@@ -24,18 +24,38 @@
 #ifndef ILIXI_DEMO3_H_
 #define ILIXI_DEMO3_H_
 
-#include "core/Application.h"
+#include <core/Application.h>
+#include <ilixiGUI.h>
 
-class WidgetsDemo : public ilixi::Application
+namespace ilixi
+{
+
+class WidgetsDemo : public Application
 {
 public:
-  WidgetsDemo(int argc, char* argv[]);
+    WidgetsDemo(int argc, char* argv[]);
 
-  virtual
-  ~WidgetsDemo();
+    virtual
+    ~WidgetsDemo();
 
-  void
-  print(const std::string&);
+    ilixi::LayoutBase*
+    createLabelGroup();
+
+    ilixi::LayoutBase*
+    createCheckGroup();
+
+    ilixi::LayoutBase*
+    createRadioGroup();
+
+    ilixi::LayoutBase*
+    createPBGroup();
+
+    ilixi::LayoutBase*
+    createTBGroup();
+
+    void
+    print(const std::string&);
 };
 
+}
 #endif /* ILIXI_DEMO3_H_ */
