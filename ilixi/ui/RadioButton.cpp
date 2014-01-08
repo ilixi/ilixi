@@ -95,7 +95,10 @@ RadioButton::setChecked(bool checked)
 void
 RadioButton::toggleChecked()
 {
-    setChecked(!checked());
+    if (_group && _group->selected() != this)
+        setChecked(true);
+    else
+        update();
 }
 
 void
