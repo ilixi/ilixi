@@ -271,9 +271,14 @@ void
 TabPanel::setTabEnabled(int index, bool enabled)
 {
     if (enabled)
+    {
+        _tabs.at(index).button->setEnabled();
         _tabs.at(index).widget->setEnabled();
-    else
+    } else
+    {
+        _tabs.at(index).button->setDisabled();
         _tabs.at(index).widget->setDisabled();
+    }
 }
 
 void
