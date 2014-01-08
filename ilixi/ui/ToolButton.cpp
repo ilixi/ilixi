@@ -36,8 +36,8 @@ extern "C"
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_TOOLBUTTONTH, "ilixi/ui/ToolButtonThread", "ToolButtonThread");
-D_DEBUG_DOMAIN( ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
+D_DEBUG_DOMAIN(ILX_TOOLBUTTONTH, "ilixi/ui/ToolButtonThread", "ToolButtonThread");
+D_DEBUG_DOMAIN(ILX_TOOLBUTTON, "ilixi/ui/ToolButton", "ToolButton");
 
 //*********************************************************************
 // ToolButtonThread
@@ -312,6 +312,15 @@ void
 ToolButton::compose(const PaintEvent& event)
 {
     ILOG_TRACE_W(ILX_TOOLBUTTON);
+
+    if (_icon)
+    {
+        if (_toolButtonStyle == TextOnly)
+            _icon->setVisible(false);
+        else
+            _icon->setVisible(true);
+    }
+
     Painter p(this);
     p.begin(event);
     stylist()->drawToolButton(&p, this);
@@ -354,7 +363,7 @@ ToolButton::updateTextBaseGeometry()
 
     else if (_toolButtonStyle == IconOnly)
     {
-        _icon->moveTo((width() - iconW) / 2, (height() - iconH) / 2);
+        _icon->moveTo(x, (height() - iconH) / 2);
         _layout.setBounds(0, 0, 0, 0);
         return;
     }
