@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_STYLIST, "ilixi/graphics/Stylist", "Stylist");
+D_DEBUG_DOMAIN(ILX_STYLIST, "ilixi/graphics/Stylist", "Stylist");
 
 Stylist::Stylist()
         : StylistBase()
@@ -122,9 +122,9 @@ void
 Stylist::drawLabel(Painter* p, Label* label)
 {
     if (!label->enabled())
-        p->setBrush(_palette->textDisabled);
+        p->setBrush(_palette->_disabled.baseText);
     else
-        p->setBrush(_palette->text);
+        p->setBrush(_palette->_default.baseText);
 
     p->setFont(*label->font());
     p->drawLayout(label->layout());
@@ -198,7 +198,7 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
     if (!checkbox->text().empty())
     {
         p->setFont(*checkbox->font());
-        p->setBrush(_palette->getGroup(state).text);
+        p->setBrush(_palette->getGroup(state).baseText);
         p->drawLayout(checkbox->layout());
     }
 }
@@ -254,7 +254,7 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
     }
 
     Rectangle r(defaultParameter(StyleHint::LineInputLeft), defaultParameter(StyleHint::LineInputTop), input->width() - defaultParameter(StyleHint::LineInputLR), input->height() - defaultParameter(StyleHint::LineInputTB));
-    if(input->surface()->flags() & Surface::HasOwnSurface)
+    if (input->surface()->flags() & Surface::HasOwnSurface)
         p->setClip(r);
     else
         p->setClip(input->mapFromSurface(r));
@@ -394,7 +394,7 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
     if (!button->text().empty())
     {
         p->setFont(*button->font());
-        p->setBrush(_palette->getGroup(state).text);
+        p->setBrush(_palette->getGroup(state).baseText);
         p->drawLayout(button->layout());
     }
 }
@@ -727,6 +727,7 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const r3& rect, bool
             p->blitImage(_style->_pack, rect.r, x, y + h - rect.r.height());
         else
         {
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0) && ILIXI_DFB_VERSION <= VERSION_CODE(1,7,0)
             DFBRectangle blitRects[2];
 
             blitRects[0] = rect.l.dfbRect();
@@ -745,6 +746,11 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const r3& rect, bool
             blitPoints[1].h = h;
 
             p->batchStretchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+#else
+
+            p->blitImage(_style->_pack, rect.l, x, y, flags);
+            p->blitImage(_style->_pack, rect.r, x, y + h - rect.r.height(), flags);
+#endif
             p->stretchImage(_style->_pack, Rectangle(x, y + rect.l.height(), w, h - rect.l.height() - rect.r.height()), rect.m, flags);
         }
     } else
