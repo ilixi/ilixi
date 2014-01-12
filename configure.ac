@@ -346,7 +346,7 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME], [doc/resources/doxygen.cfg], [doc])
 ######################################################################
 # Output
 ######################################################################
-DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN  -lGLESv2"
+DEPS_LIBS="$DEPS_LIBS $LIBREFLEX $LIBWNN"
 CXXFLAGS="$CFLAGS"
 
 with_surface_events=no
