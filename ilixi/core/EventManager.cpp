@@ -183,7 +183,7 @@ EventManager::setOSKWidget(Widget* widget)
     if (widget == NULL || (!(widget->inputMethod() & OSKInput) && _oskWidget))
     {
         _oskWidget = NULL;
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
         DaleDFB::hideOSK();
 #endif
         return false;
@@ -191,7 +191,7 @@ EventManager::setOSKWidget(Widget* widget)
         return false;
     else if (widget->inputMethod() & OSKInput)
     {
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
         if (_creator->_window)
         {
             // TODO Use TextInputBase

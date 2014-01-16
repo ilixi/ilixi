@@ -301,7 +301,7 @@ PlatformManager::playSoundEffect(const std::string& id)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #if ILIXI_HAVE_FUSIONSOUND
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
     if (_options & OptExclSoundEffect)
         DaleDFB::playSoundEffect(id);
     else
@@ -310,7 +310,7 @@ PlatformManager::playSoundEffect(const std::string& id)
         SoundMap::const_iterator it = _soundMap.find(id);
         if (it != _soundMap.end())
             it->second->start();
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
     }
 #endif // ILIXI_HAVE_FUSIONDALE
 #endif
@@ -321,7 +321,7 @@ PlatformManager::setSoundEffectLevel(float level)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #if ILIXI_HAVE_FUSIONSOUND
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
     if (_options & OptExclSoundEffect)
         DaleDFB::setSoundEffectLevel(level);
     else if (_soundLevel != level)
@@ -330,7 +330,7 @@ PlatformManager::setSoundEffectLevel(float level)
         _soundLevel = level;
         for (SoundMap::iterator it = _soundMap.begin(); it != _soundMap.end(); ++it)
             it->second->setVolume(_soundLevel);
-#if ILIXI_HAVE_FUSIONDALE
+#if ILIXI_HAVE_COMPOSITOR
     }
 #endif // ILIXI_HAVE_FUSIONDALE
 #endif

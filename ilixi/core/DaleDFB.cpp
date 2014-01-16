@@ -32,16 +32,19 @@ namespace ilixi
 
 IFusionDale* DaleDFB::__dale = NULL;
 IComa* DaleDFB::__coma = NULL;
+#if ILIXI_HAVE_COMPOSITOR
 IComaComponent* DaleDFB::__oskComp = NULL;
 IComaComponent* DaleDFB::__compComp = NULL;
 IComaComponent* DaleDFB::__soundComp = NULL;
 DaleDFB::Notifications DaleDFB::__nots;
-
+#endif
 D_DEBUG_DOMAIN( ILX_DALEDFB, "ilixi/core/DaleDFB", "DaleDFB");
 
 DaleDFB::DaleDFB()
 {
+#if ILIXI_HAVE_COMPOSITOR
     __nots.clear();
+#endif
 }
 
 DaleDFB::~DaleDFB()
@@ -103,7 +106,7 @@ DaleDFB::comaCallComponent(IComaComponent* component, ComaMethodID method, void*
     }
     return DFB_FAILURE;
 }
-
+#if ILIXI_HAVE_COMPOSITOR
 DFBResult
 DaleDFB::showOSK(const Rectangle& rect, TextInputMode mode)
 {
@@ -149,6 +152,7 @@ DaleDFB::hideOSK()
     }
     return DFB_OK;
 }
+#endif
 
 DFBResult
 DaleDFB::initDale(int* argc, char*** argv)
@@ -187,6 +191,7 @@ void
 DaleDFB::releaseDale()
 {
     ILOG_TRACE_F(ILX_DALEDFB);
+#if ILIXI_HAVE_COMPOSITOR
     if (__soundComp)
     {
         __soundComp->Release(__soundComp);
@@ -204,7 +209,7 @@ DaleDFB::releaseDale()
         __compComp->Release(__compComp);
         __compComp = NULL;
     }
-
+#endif
     if (__coma)
     {
         __coma->Release(__coma);
@@ -217,7 +222,7 @@ DaleDFB::releaseDale()
         __dale = NULL;
     }
 }
-
+#if ILIXI_HAVE_COMPOSITOR
 DFBResult
 DaleDFB::getOSKComp()
 {
@@ -374,5 +379,5 @@ DaleDFB::setSoundEffectLevel(float level)
     *vol = level;
     return DaleDFB::comaCallComponent(__soundComp, SoundMixer::SetSoundEffectVolume, (void*) vol);
 }
-
+#endif
 } /* namespace ilixi */

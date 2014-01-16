@@ -360,6 +360,10 @@ else
     fi
 fi
 
+if test "x$enable_compositor" = "xyes"; then
+    AC_DEFINE([HAVE_COMPOSITOR], [1], [Enable Compositor support])
+fi
+
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
 AC_DEFINE_UNQUOTED([IMAGEDIR], ["$prefix/share/$PACKAGE-$VERSION/images/"], [ilixi image directory])

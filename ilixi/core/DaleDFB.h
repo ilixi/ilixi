@@ -29,7 +29,10 @@ extern "C"
 {
 #include <fusiondale.h>
 }
+#include <ilixiConfig.h>
+#if HAVE_COMPOSITOR
 #include <lib/Notify.h>
+#endif
 #include <types/Rectangle.h>
 #include <types/Enums.h>
 #include <list>
@@ -72,7 +75,7 @@ public:
      */
     static DFBResult
     comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg);
-
+#if HAVE_COMPOSITOR
     /*!
      * Shows on-screen-keyboard.
      */
@@ -84,10 +87,12 @@ public:
      */
     static DFBResult
     hideOSK();
+#endif
 
 private:
     static IFusionDale* __dale;
     static IComa* __coma;
+#if HAVE_COMPOSITOR
     static IComaComponent* __oskComp;
     static IComaComponent* __compComp;
     static IComaComponent* __soundComp;
@@ -101,7 +106,7 @@ private:
 
     typedef std::list<Notify*> Notifications;
     static Notifications __nots;
-
+#endif
     /*!
      * Constructor.
      */
@@ -125,6 +130,7 @@ private:
     static void
     releaseDale();
 
+#if HAVE_COMPOSITOR
     /*!
      * Get OSK COMA Component.
      */
@@ -166,6 +172,7 @@ private:
      */
     static DFBResult
     setSoundEffectLevel(float level);
+#endif
 
 };
 
