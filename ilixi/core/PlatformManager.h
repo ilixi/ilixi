@@ -266,6 +266,7 @@ private:
 #endif
 
     WindowConf _windowConf;
+    std::string _configFile;
     std::string _background;
     std::string _fontPack;
     std::string _iconPack;
@@ -303,6 +304,9 @@ private:
 
     void
     setHardwareLayers(xmlNodePtr node);
+
+    bool
+    configureHWLayer(IDirectFBDisplayLayer* layer, unsigned int id, HardwareLayer* info, xmlChar* bufferMode, xmlChar* flipMode, int x, int y, int w, int h);
 
     void
     setLogicLayers(xmlNodePtr node);

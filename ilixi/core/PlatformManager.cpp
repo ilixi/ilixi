@@ -468,19 +468,20 @@ PlatformManager::setLanguage(const char* lang)
     if (uscr != std::string::npos)
         langFont.replace(uscr + 1, 5, PrintF("%s", lang));
 
-    ILOG_ERROR(ILX_PLATFORMMANAGER, " LANGFONT: %s\n", langFont.c_str());
-
-    if (langFont != _fontPack && FileSystem::fileExists(langFont))
+    if (langFont != _fontPack)
     {
-        if (Application::setFontPack(langFont.c_str()))
-            _fontPack = langFont;
-        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
-    } else
-    {
-        ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", langFont.c_str());
-        if (Application::setFontPack(_fontPackDefault.c_str()))
-            _fontPack = _fontPackDefault;
-        ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
+        if (FileSystem::fileExists(langFont))
+        {
+            if (Application::setFontPack(langFont.c_str()))
+                _fontPack = langFont;
+            ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
+        } else
+        {
+            ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", langFont.c_str());
+            if (Application::setFontPack(_fontPackDefault.c_str()))
+                _fontPack = _fontPackDefault;
+            ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
+        }
     }
 
     setI18NLanguage(lang);
@@ -496,7 +497,8 @@ PlatformManager::PlatformManager()
           _cursorLayer(NULL),
           _cursorTarget(NULL),
           _cursorImage(NULL),
-          _pixelFormat(DSPF_UNKNOWN)
+          _pixelFormat(DSPF_UNKNOWN),
+          _configFile("")
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #ifdef ILIXI_HAVE_NLS
@@ -549,6 +551,15 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
             }
         }
 
+        if (_configFile.empty())
+        {
+            char* arg = strdup(*argv[0]);
+            std::string appConfig = PrintF("%s%s_config.xml", FileSystem::ilxDirectory().c_str(), arg);
+            if (FileSystem::fileExists(appConfig))
+                _configFile = appConfig;
+            free(arg);
+        }
+
         ILOG_DEBUG(ILX_PLATFORMMANAGER, "Initialising DirectFB interfaces...\n");
 
         if (DirectFBInit(argc, argv) != DFB_OK)
@@ -564,7 +575,7 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
         {
             ILOG_INFO(ILX_PLATFORMMANAGER, "FusionSound is ready.\n");
 
-            if (!(_options & OptExclusive) && FileSystem::fileExists(FileSystem::homeDirectory().append("/ilx_compositor.pid")))
+            if (!(_options & OptExclusive) && FileSystem::fileExists(PrintF("%silx_compositor.pid", FileSystem::ilxDirectory().c_str())))
             {
                 ILOG_DEBUG(ILX_PLATFORMMANAGER, "Enabling OptExclSoundEffect.\n");
                 _options = (AppOptions) (_options | OptExclSoundEffect | OptDaleAuto);
@@ -653,8 +664,8 @@ void
 PlatformManager::parseArgs(const char *args)
 {
     char* arg = strdup(args);
-    char* value;
-    char* next;
+    char* value = NULL;
+    char* next = NULL;
 
     while (arg && arg[0])
     {
@@ -668,7 +679,8 @@ PlatformManager::parseArgs(const char *args)
             _options = (AppOptions) (_options | OptExclusive);
         else if (strcmp(arg, "pixelformat") == 0)
             setPixelFormat(value);
-
+        else if (strcmp(arg, "config") == 0)
+            _configFile = value;
         arg = next;
     }
 
@@ -680,10 +692,19 @@ PlatformManager::parseConfig()
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 
+    std::string file = ILIXI_DATADIR"ilixi_config.xml";
     XMLReader xml;
-    if (xml.loadFile((ILIXI_DATADIR"ilixi_config.xml")) == false)
+    if (!_configFile.empty())
     {
-        ILOG_FATAL(ILX_PLATFORMMANAGER, "Could not parse platform configuration!\n");
+        if(xml.loadFile(_configFile))
+            file = _configFile;
+        else
+            ILOG_ERROR(ILX_PLATFORMMANAGER, "Could not parse platform configuration file: %s\n", _configFile.c_str());
+    }
+
+    if (xml.loadFile(file) == false)
+    {
+        ILOG_FATAL(ILX_PLATFORMMANAGER, "Could not parse platform configuration file: %s\n", file.c_str());
         return false;
     }
 
@@ -722,7 +743,7 @@ PlatformManager::parseConfig()
         group = group->next;
     }
 
-    ILOG_INFO(ILX_PLATFORMMANAGER, "Parsed platform configuration file.\n");
+    ILOG_INFO(ILX_PLATFORMMANAGER, "Parsed platform configuration file: %s\n", file.c_str());
     return true;
 }
 
@@ -736,6 +757,7 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
         xmlChar* fsuC = xmlGetProp(node, (xmlChar*) "fsu");
         xmlChar* flipModeC = xmlGetProp(node, (xmlChar*) "flipMode");
         xmlChar* bufferModeC = xmlGetProp(node, (xmlChar*) "bufferMode");
+        xmlChar* exclusiveC = xmlGetProp(node, (xmlChar*) "exclusive");
         xmlChar* xC = xmlGetProp(node, (xmlChar*) "x");
         xmlChar* yC = xmlGetProp(node, (xmlChar*) "y");
         xmlChar* wC = xmlGetProp(node, (xmlChar*) "w");
@@ -752,116 +774,32 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
             ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
         } else
         {
+            // Get layer configuration.
+            DFBDisplayLayerConfig conf;
+            res = layer->GetConfiguration(layer, &conf);
+            if (res != DFB_OK)
+                ILOG_THROW(ILX_PLATFORMMANAGER, "Cannot get layer configuration!\n");
+
             HardwareLayer info;
             info.fsu = false;
             if (xmlStrcmp(fsuC, (xmlChar*) "on") == 0)
                 info.fsu = true;
             info.flipMode = FlipNone;
             info.layer = layer;
-            info.rect = Rectangle(atoi((char*) xC), atoi((char*) yC), atoi((char*) wC), atoi((char*) hC));
+            info.rect = Rectangle(0, 0, conf.width, conf.height);
 
             std::pair<HardwareLayerMap::iterator, bool> ret = _hwLayerMap.insert(std::pair<unsigned int, HardwareLayer>(id, info));
             if (ret.second == false)
                 ILOG_ERROR(ILX_PLATFORMMANAGER, "A layer with id [%d] already exists, cannot add duplicate record!\n", id);
-            else if (_options & OptExclusive)
-            {
-                if (layer->SetCooperativeLevel(layer, DLSCL_EXCLUSIVE))
-                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Error while setting EXLUSIVE mode!\n");
-                else
-                    ILOG_INFO(ILX_PLATFORMMANAGER, " -> Now running in exclusive mode on layer [%d].\n", id);
-
-                DFBDisplayLayerConfig config;
-                config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE | DLCONF_OPTIONS);
-
-                config.buffermode = DLBM_UNKNOWN;
-
-                if (xmlStrcmp(bufferModeC, (xmlChar*) "frontOnly") == 0)
-                    config.buffermode = DLBM_FRONTONLY;
-                else if (xmlStrcmp(bufferModeC, (xmlChar*) "backVideo") == 0)
-                    config.buffermode = DLBM_BACKVIDEO;
-                // wait for sync
-                else if (xmlStrcmp(bufferModeC, (xmlChar*) "backSystem") == 0)
-                    config.buffermode = DLBM_BACKSYSTEM;
-                else if (xmlStrcmp(bufferModeC, (xmlChar*) "triple") == 0)
-                    config.buffermode = DLBM_TRIPLE;
-                // onsync
-                else if (xmlStrcmp(bufferModeC, (xmlChar*) "windows") == 0)
-                    config.buffermode = DLBM_WINDOWS;
-
-                if (config.buffermode == DLBM_UNKNOWN)
-                {
-                    DFBGraphicsDeviceDescription deviceDesc;
-                    getDFB()->GetDeviceDescription(getDFB(), &deviceDesc);
-                    if (deviceDesc.acceleration_mask == DFXL_NONE)
-                    {
-                        config.buffermode = DLBM_BACKSYSTEM;
-                        ret.first->second.fsu = false;
-                        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Not using full-screen updates\n");
-                    } else
-                    {
-                        config.buffermode = DLBM_BACKVIDEO;
-                        //setAppOption(OptTripleAccelerated);
-                    }
-                }
-
-                if (config.buffermode != DLBM_FRONTONLY)
-                {
-                    if (xmlStrcmp(flipModeC, (xmlChar*) "onSync") == 0)
-                        ret.first->second.flipMode = FlipOnSync;
-                    else if (xmlStrcmp(flipModeC, (xmlChar*) "waitForSync") == 0)
-                        ret.first->second.flipMode = FlipWaitForSync;
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
-                    else if (xmlStrcmp(flipModeC, (xmlChar*) "new") == 0)
-                        ret.first->second.flipMode = FlipNew;
-#endif
-                }
-
-#ifdef ILIXI_STEREO_OUTPUT
-                config.options = DLOP_STEREO;
-#else
-                config.options = DLOP_NONE;
-#endif
-
-                if (!info.rect.isNull())
-                {
-                    config.flags = (DFBDisplayLayerConfigFlags)  (config.flags | DLCONF_WIDTH | DLCONF_HEIGHT);
-                    config.width = info.rect.width();
-                    config.height = info.rect.height();
-                    ILOG_DEBUG(ILX_PLATFORMMANAGER, "Set config.width=%d and config.height=%d on layer [%d]\n", info.rect.width(), info.rect.height(), id);
-                }
-
-                res = layer->SetConfiguration(layer, &config);
-                if (res != DFB_OK)
-                {
-                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
-
-                    if (config.buffermode != DLBM_BACKSYSTEM)
-                    {
-                        config.buffermode = DLBM_BACKSYSTEM;
-                        ILOG_INFO(ILX_PLATFORMMANAGER, "Setting buffermode to BACKSYSTEM...\n");
-                        res = layer->SetConfiguration(layer, &config);
-                        if (res != DFB_OK)
-                        {
-                            ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
-                            ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
-                        }
-                    } else
-                        ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
-
-                } else
-                    ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
-                res = layer->SetScreenPosition(layer, info.rect.x(), info.rect.y());
-                if (res != DFB_OK)
-                    ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set screen position to %d, %d on layer [%d] - %s\n", info.rect.x(), info.rect.y(), id, DirectFBErrorString(res));
-                else
-                    ILOG_DEBUG(ILX_PLATFORMMANAGER, "Set screen position to %d, %d on layer [%d]\n", info.rect.x(), info.rect.y(), id);
-            }
+            else if ((_options & OptExclusive))
+                configureHWLayer(layer, id, (HardwareLayer*) &(ret.first->second), bufferModeC, flipModeC, atoi((char*) xC), atoi((char*) yC), atoi((char*) wC), atoi((char*) hC));
         }
 
         xmlFree(xC);
         xmlFree(yC);
         xmlFree(wC);
         xmlFree(hC);
+        xmlFree(exclusiveC);
         xmlFree(idC);
         xmlFree(fsuC);
         xmlFree(flipModeC);
@@ -869,7 +807,113 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
 
         node = node->next;
     }
+}
 
+bool
+PlatformManager::configureHWLayer(IDirectFBDisplayLayer* layer, unsigned int id, HardwareLayer* info, xmlChar* bufferMode, xmlChar* flipMode, int x, int y, int w, int h)
+{
+    ILOG_TRACE_F(ILX_PLATFORMMANAGER);
+    if (layer->SetCooperativeLevel(layer, DLSCL_EXCLUSIVE))
+    {
+        ILOG_ERROR(ILX_PLATFORMMANAGER, "Error while setting EXLUSIVE mode for layer [%d]!\n", id);
+        return false;
+    }
+    else
+        ILOG_INFO(ILX_PLATFORMMANAGER, " -> Now running in exclusive mode on layer [%d].\n", id);
+
+    DFBDisplayLayerConfig config;
+    config.flags = (DFBDisplayLayerConfigFlags) (DLCONF_BUFFERMODE | DLCONF_OPTIONS);
+
+    // Set BufferMode
+    config.buffermode = DLBM_UNKNOWN;
+    if (xmlStrcmp(bufferMode, (xmlChar*) "frontOnly") == 0)
+        config.buffermode = DLBM_FRONTONLY;
+    else if (xmlStrcmp(bufferMode, (xmlChar*) "backVideo") == 0)
+        config.buffermode = DLBM_BACKVIDEO;
+    // wait for sync
+    else if (xmlStrcmp(bufferMode, (xmlChar*) "backSystem") == 0)
+        config.buffermode = DLBM_BACKSYSTEM;
+    else if (xmlStrcmp(bufferMode, (xmlChar*) "triple") == 0)
+        config.buffermode = DLBM_TRIPLE;
+    // onsync
+    else if (xmlStrcmp(bufferMode, (xmlChar*) "windows") == 0)
+        config.buffermode = DLBM_WINDOWS;
+
+    if (config.buffermode == DLBM_UNKNOWN)
+    {
+        DFBGraphicsDeviceDescription deviceDesc;
+        getDFB()->GetDeviceDescription(getDFB(), &deviceDesc);
+        if (deviceDesc.acceleration_mask == DFXL_NONE)
+        {
+            config.buffermode = DLBM_BACKSYSTEM;
+            info->fsu = false;
+            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Not using full-screen updates\n");
+        } else
+        {
+            config.buffermode = DLBM_BACKVIDEO;
+            //setAppOption(OptTripleAccelerated);
+        }
+    }
+
+    if (config.buffermode != DLBM_FRONTONLY)
+    {
+        if (xmlStrcmp(flipMode, (xmlChar*) "onSync") == 0)
+            info->flipMode = FlipOnSync;
+        else if (xmlStrcmp(flipMode, (xmlChar*) "waitForSync") == 0)
+            info->flipMode = FlipWaitForSync;
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
+        else if (xmlStrcmp(flipMode, (xmlChar*) "new") == 0)
+            info->flipMode = FlipNew;
+#endif
+    }
+
+#ifdef ILIXI_STEREO_OUTPUT
+    config.options = DLOP_STEREO;
+#else
+    config.options = DLOP_NONE;
+#endif
+
+    // Set Screen
+    if (w != 0 && h!=0)
+    {
+        config.flags = (DFBDisplayLayerConfigFlags)  (config.flags | DLCONF_WIDTH | DLCONF_HEIGHT);
+        config.width = w;
+        config.height = h;
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Set width=%d and height=%d on layer [%d]\n", w, h, id);
+    }
+
+    DFBResult res = layer->SetConfiguration(layer, &config);
+    if (res != DFB_OK)
+    {
+        ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
+
+        if (config.buffermode != DLBM_BACKSYSTEM)
+        {
+            config.buffermode = DLBM_BACKSYSTEM;
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> Setting buffermode to BACKSYSTEM...\n");
+            res = layer->SetConfiguration(layer, &config);
+            if (res != DFB_OK)
+            {
+                ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set buffermode: 0x%08x on layer [%d] - %s\n", config.buffermode, id, DirectFBErrorString(res));
+                ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
+            }
+        } else
+            ILOG_THROW(ILX_PLATFORMMANAGER, "Please fix your platform configuration file.\n");
+
+    } else
+    {
+        info->rect.setSize(w, h);
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> buffermode: 0x%08x\n", config.buffermode);
+    }
+    res = layer->SetScreenPosition(layer, x, y);
+    if (res != DFB_OK)
+        ILOG_ERROR(ILX_PLATFORMMANAGER, "Cannot set screen position to %d, %d on layer [%d] - %s\n", x, y, id, DirectFBErrorString(res));
+    else
+    {
+        info->rect.moveTo(x, y);
+        ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Set screen position to %d, %d on layer [%d]\n", x, y, id);
+    }
+    return true;
 }
 
 void
