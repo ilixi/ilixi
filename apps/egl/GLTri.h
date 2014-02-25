@@ -55,7 +55,7 @@ protected:
     keyDownEvent(const KeyEvent& event);
 
     virtual void
-    renderGL();
+    renderGL(const PaintEvent& event);
 
 private:
     long long _idleTime;

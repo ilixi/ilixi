@@ -110,7 +110,7 @@ GLTri::timerSlot()
 }
 
 void
-GLTri::renderGL()
+GLTri::renderGL(const PaintEvent& event)
 {
     gears_draw();
 }
