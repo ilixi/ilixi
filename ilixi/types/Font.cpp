@@ -29,7 +29,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FONT, "ilixi/types/Font", "Font");
+D_DEBUG_DOMAIN(ILX_FONT, "ilixi/types/Font", "Font");
 
 Font::Font()
         : _modified(true),
@@ -133,7 +133,7 @@ Font::extents(const std::string& text, int bytes)
     ILOG_TRACE(ILX_FONT);
     DFBRectangle rect;
     _font->GetStringExtents(_font, text.c_str(), bytes, &rect, NULL);
-    ILOG_DEBUG( ILX_FONT, " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
+    ILOG_DEBUG(ILX_FONT, " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
     return Size(rect.w, rect.h);
 }
 
@@ -279,6 +279,16 @@ Font::applyFont(IDirectFBSurface* surface)
 
     return true;
 }
+
+#ifdef ILIXI_HAVE_CAIRO
+bool
+Font::applyFont(cairo_t* context)
+{
+    cairo_select_font_face(context, _name.c_str(), (_attr & DFFA_STYLE_ITALIC) ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, (_attr & DFFA_STYLE_BOLD) ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(context, _size);
+    return true;
+}
+#endif
 
 bool
 Font::loadFont()

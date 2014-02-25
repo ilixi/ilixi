@@ -24,9 +24,14 @@
 #ifndef ILIXI_FONT_H_
 #define ILIXI_FONT_H_
 
+#include <ilixiConfig.h>
 #include <string>
 #include <directfb.h>
 #include <types/Size.h>
+
+#ifdef ILIXI_HAVE_CAIRO
+#include <cairo-directfb.h>
+#endif
 
 namespace ilixi
 {
@@ -37,6 +42,7 @@ namespace ilixi
  */
 class Font
 {
+    friend class CairoPainter; // applyFont
     friend class Painter; // applyFont
     friend class TextBase;
 
@@ -232,6 +238,11 @@ private:
     //! Applies font to surface.
     bool
     applyFont(IDirectFBSurface* surface);
+
+#ifdef ILIXI_HAVE_CAIRO
+    bool
+    applyFont(cairo_t* context);
+#endif
 
     //! Load IDirectFB font.
     bool
