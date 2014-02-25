@@ -26,6 +26,11 @@
 
 #include <ui/Widget.h>
 
+#define EGL_EGLEXT_PROTOTYPES
+
+#include <EGL/egl.h>
+#include <EGL/egldfbext.h>
+
 namespace ilixi
 {
 
@@ -42,13 +47,22 @@ public:
     virtual
     ~EGLWidget();
 
+    EGLDisplay
+    eglDisplay() const;
+
+    EGLContext
+    eglContext() const;
+
+    EGLSurface
+    eglSurface() const;
+
 protected:
     /*!
      * Reimplement this method.
      * By default, clears GL_COLOR_BUFFER_BIT only.
      */
     virtual void
-    renderGL();
+    renderGL(const PaintEvent& event);
 
     /*!
      * Simply calls renderGL()
@@ -56,11 +70,17 @@ protected:
     void
     compose(const PaintEvent& event);
 
+    void
+    setAutoSwap(bool autoSwap);
+
 private:
     //! Flag is set to true once initialiseGL is called.
     bool _initialisedGL;
     //! EGL surface.
-    void* _eglSurface;
+    EGLSurface _eglSurface;
+    EGLContext _eglContext;
+    bool _autoSwap;
+
 
     /*!
      * Reimplement this method to initialise shaders etc.
