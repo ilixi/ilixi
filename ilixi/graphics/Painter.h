@@ -340,12 +340,12 @@ public:
 private:
     enum PainterFlags
     {
-        None = 0x000, //!< Initial state
-        Active = 0x001, //!< Painter is activated by begin()
-        BrushActive = 0x002,
-        FontModified = 0x004,
-        Clipped = 0x008,
-        Transformed = 0x010
+        PFNone = 0x000, //!< Initial state
+        PFActive = 0x001, //!< Painter is activated by begin()
+        PFBrushActive = 0x002,
+        PFFontModified = 0x004,
+        PFClipped = 0x008,
+        PFTransformed = 0x010
     };
 
     //! This property holds Painter's current widget.

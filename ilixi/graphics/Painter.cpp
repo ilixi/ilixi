@@ -36,7 +36,7 @@ Painter::Painter(Widget* widget)
           _brush(),
           _pen(),
           _font(),
-          _state(None)
+          _state(PFNone)
 {
     _affine = NULL;
     ILOG_TRACE(ILX_PAINTER);
@@ -73,7 +73,7 @@ Painter::begin(const PaintEvent& event)
     else
         _myWidget->surface()->clip(Rectangle(event.rect.x() - _myWidget->absX(), event.rect.y() - _myWidget->absY(), event.rect.width(), event.rect.height()));
 #endif
-    _state = Active;
+    _state = PFActive;
     dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_NOFX);
     dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
 }
@@ -81,12 +81,11 @@ Painter::begin(const PaintEvent& event)
 void
 Painter::end()
 {
-    if (_state & Active)
+    if (_state & PFActive)
     {
         ILOG_TRACE(ILX_PAINTER);
-        if (_state & Clipped)
-            _myWidget->surface()->resetClip();
-        if (_state & Transformed)
+        _myWidget->surface()->resetClip();
+        if (_state & PFTransformed)
         {
             int32_t* tmp = _affine->invert().m();
             dfbSurface->SetMatrix(dfbSurface, tmp);
@@ -94,7 +93,7 @@ Painter::end()
             delete tmp;
             delete _affine;
         }
-        _state = None;
+        _state = PFNone;
         dfbSurface->ReleaseSource(dfbSurface);
         _myWidget->surface()->unlock();
     }
@@ -121,7 +120,7 @@ Painter::pen()
 void
 Painter::drawLine(double x1, double y1, double x2, double y2, const DFBSurfaceDrawingFlags& flags)
 {
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyPen();
         dfbSurface->SetDrawingFlags(dfbSurface, flags);
@@ -156,7 +155,7 @@ Painter::drawLine(const Point& p1, const Point& p2, const DFBSurfaceDrawingFlags
 void
 Painter::drawRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags)
 {
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyPen();
         dfbSurface->SetDrawingFlags(dfbSurface, flags);
@@ -186,7 +185,7 @@ void
 Painter::fillRectangle(double x, double y, double width, double height, const DFBSurfaceDrawingFlags& flags)
 {
     ILOG_TRACE(ILX_PAINTER);
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyBrush();
         dfbSurface->SetDrawingFlags(dfbSurface, flags);
@@ -218,7 +217,7 @@ Painter::drawText(const std::string& text, int x, int y, const DFBSurfaceDrawing
     if (text.empty())
         return;
 
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyBrush();
         applyFont();
@@ -246,7 +245,7 @@ Painter::drawLayout(const TextLayout& layout, const DFBSurfaceDrawingFlags& flag
     if (layout.text().empty())
         return;
 
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyBrush();
         applyFont();
@@ -273,7 +272,7 @@ Painter::drawLayout(const TextLayout& layout, int x, int y, const DFBSurfaceDraw
     if (layout.text().empty())
         return;
 
-    if (_state & Active)
+    if (_state & PFActive)
     {
         applyBrush();
         applyFont();
@@ -303,7 +302,7 @@ Painter::stretchImage(Image* image, int x, int y, int w, int h, const DFBSurface
 void
 Painter::stretchImage(Image* image, const Rectangle& destRect, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         DFBRectangle dest = destRect.dfbRect();
@@ -330,7 +329,7 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const DFBSurfaceB
 void
 Painter::stretchImage(Image* image, const Rectangle& destRect, const Rectangle& sourceRect, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         DFBRectangle source = sourceRect.dfbRect();
@@ -358,7 +357,7 @@ Painter::stretchImage(Image* image, const Rectangle& destRect, const Rectangle& 
 void
 Painter::drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -390,7 +389,7 @@ Painter::drawImage(Image* image, const Point& point, const DFBSurfaceBlittingFla
 void
 Painter::tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -416,7 +415,7 @@ Painter::tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
 void
 Painter::tileImage(Image* image, int x, int y, const Rectangle& source, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -444,7 +443,7 @@ void
 Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DFBSurfaceBlittingFlags& flags)
 {
     ILOG_TRACE(ILX_PAINTER);
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -471,7 +470,7 @@ Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DF
 void
 Painter::batchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBPoint* points, int num, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -503,7 +502,7 @@ Painter::batchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFB
 void
 Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point* points, int num, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -549,7 +548,7 @@ Painter::batchBlitImage(Image* image, const Rectangle* sourceRects, const Point*
 
 void Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRects, const DFBRectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -583,7 +582,7 @@ void Painter::batchStretchBlitImage(Image* image, const DFBRectangle* sourceRect
 void
 Painter::batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const Rectangle* destRects, int num, const DFBSurfaceBlittingFlags& flags)
 {
-    if ((_state & Active) && image)
+    if ((_state & PFActive) && image)
     {
         applyBrush();
         if (!(image->getCaps() & DICAPS_ALPHACHANNEL))
@@ -637,20 +636,20 @@ Painter::setClip(int x, int y, int w, int h)
 void
 Painter::setClip(const Rectangle& rect)
 {
-    if (_state & Active)
+    if (_state & PFActive)
     {
         _myWidget->surface()->clip(rect);
-        _state = (PainterFlags) (_state | Clipped);
+        _state = (PainterFlags) (_state | PFClipped);
     }
 }
 
 void
 Painter::resetClip()
 {
-    if (_state & Clipped)
+    if (_state & PFClipped)
     {
         _myWidget->surface()->resetClip();
-        _state = (PainterFlags) (_state & ~Clipped);
+        _state = (PainterFlags) (_state & ~PFClipped);
     }
 }
 
@@ -674,7 +673,7 @@ void
 Painter::setFont(const Font& font)
 {
     _font = font;
-    _state = (PainterFlags) (_state | FontModified);
+    _state = (PainterFlags) (_state | PFFontModified);
     ILOG_DEBUG(ILX_PAINTER, "setFont() %p\n", this);
 }
 
@@ -695,7 +694,7 @@ Painter::setPen(const Color& color)
 void
 Painter::setAffine2D(const Affine2D& affine2D)
 {
-    if (_state & Active)
+    if (_state & PFActive)
     {
         if (!_affine)
             _affine = new Affine2D(affine2D);
@@ -706,7 +705,7 @@ Painter::setAffine2D(const Affine2D& affine2D)
         int32_t* tmp = affine2D.m();
         dfbSurface->SetMatrix(dfbSurface, tmp);
         delete tmp;
-        _state = (PainterFlags) (_state | Transformed);
+        _state = (PainterFlags) (_state | PFTransformed);
         ILOG_DEBUG(ILX_PAINTER, "setAffine2D() %p\n", this);
     }
 }
@@ -720,17 +719,17 @@ Painter::textExtents(const std::string& text, int bytes)
 void
 Painter::applyBrush()
 {
-    if (!(_state & BrushActive) || _brush._modified)
+    if (!(_state & PFBrushActive) || _brush._modified)
     {
         _brush.applyBrush(dfbSurface);
-        _state = (PainterFlags) (_state | BrushActive);
+        _state = (PainterFlags) (_state | PFBrushActive);
     }
 }
 
 void
 Painter::applyFont()
 {
-    if (_state & FontModified)
+    if (_state & PFFontModified)
     {
         if (!_font.applyFont(dfbSurface))
             _myWidget->stylist()->defaultFont()->applyFont(dfbSurface);
@@ -741,10 +740,10 @@ Painter::applyFont()
 void
 Painter::applyPen()
 {
-    if ((_state & BrushActive) || _pen._modified)
+    if ((_state & PFBrushActive) || _pen._modified)
     {
         _pen.applyPen(dfbSurface);
-        _state = (PainterFlags) (_state & ~BrushActive);
+        _state = (PainterFlags) (_state & ~PFBrushActive);
     }
 }
 
