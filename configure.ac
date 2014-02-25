@@ -162,14 +162,22 @@ AS_IF([test "x$enable_egl" = "xyes"],
     ]
 )
 
+cairo_note=""
 AS_IF([test "x$enable_cairo" = "xyes"], [
 	PKG_CHECK_MODULES([Cairo], [$CAIRO_DEP], 
-		[				
-			REQ_PACKAGES="$REQ_PACKAGES $CAIRO_DEP"
-			AC_DEFINE([HAVE_CAIRO], [1], [Enable Cairo support])
-		], 
 		[
-			enable_cairo=no 
+			REQ_PACKAGES="$REQ_PACKAGES $CAIRO_DEP"
+			AC_DEFINE([HAVE_CAIRO], [1], [Enable Cairo directfb support])
+			AS_IF([test "x$enable_egl" = "xyes"], [
+				PKG_CHECK_MODULES([CairoGLES], [cairo-glesv2], [
+					cairo_note="(backends: directfb, glesv2)"
+					REQ_PACKAGES="$REQ_PACKAGES $CAIRO_DEP cairo-glesv2"
+					AC_DEFINE([HAVE_CAIROGLES], [1], [Enable Cairo glesv2 support])
+				], [])
+			], [cairo_note="(backend: directfb)"])
+		],
+		[
+			enable_cairo=no
 			AC_MSG_WARN([*** Cairo not found -- Building without Cairo support.])
 		]
 	)], []
@@ -477,7 +485,7 @@ AC_MSG_RESULT([
    NLS support              : $enable_nls
    Stereoscopy support      : $enable_stereoscopy   
    EGL support              : $enable_egl
-   Cairo painter            : $enable_cairo
+   Cairo painter            : $enable_cairo $cairo_note
    CSharp bindings          : $with_csharp $csc_note
       
    Examples                 : $with_examples
