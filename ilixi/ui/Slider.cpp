@@ -41,11 +41,11 @@ Slider::Slider(Widget* parent)
           _inverted(false),
           _updateMode(Continuous)
 {
+    ILOG_TRACE_W(ILX_SLIDER);
     _range = _maximum - _minimum;
     setInputMethod((WidgetInputMethod) (KeyPointerTracking | PointerGrabbing));
     setConstraints(ExpandingConstraint, FixedConstraint);
     sigGeometryUpdated.connect(sigc::mem_fun(this, &Slider::updateIndicatorPosition));
-    ILOG_TRACE_W(ILX_SLIDER);
 }
 
 Slider::~Slider()

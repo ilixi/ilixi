@@ -35,6 +35,7 @@ Frame::Frame(Widget* parent)
           _margin(0),
           _drawFrame(true)
 {
+    ILOG_TRACE_W(ILX_FRAME);
     setConstraints(MinimumConstraint, MinimumExpandingConstraint);
 }
 
