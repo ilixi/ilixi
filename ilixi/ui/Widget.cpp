@@ -722,18 +722,18 @@ Widget::mapToSurface(const Rectangle& rect) const
 Rectangle
 Widget::mapToSurface(int x, int y, int width, int height) const
 {
-    if (_surface->flags() & Surface::HasOwnSurface)
-        return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()), y - (_surfaceGeometry.y() + _frameGeometry.y()), width, height);
-    else
+//    if (_surface->flags() & Surface::HasOwnSurface)
+//        return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()), y - (_surfaceGeometry.y() + _frameGeometry.y()), width, height);
+//    else
         return Rectangle(x - _frameGeometry.x(), y - _frameGeometry.y(), width, height);
 }
 
 Point
 Widget::mapToSurface(const Point& point) const
 {
-    if (_surface->flags() & Surface::HasOwnSurface)
-        return Point(point.x() - (_surfaceGeometry.x() + _frameGeometry.x()), point.y() - (_surfaceGeometry.y() + _frameGeometry.y()));
-    else
+//    if (_surface->flags() & Surface::HasOwnSurface)
+//        return Point(point.x() - (_surfaceGeometry.x() + _frameGeometry.x()), point.y() - (_surfaceGeometry.y() + _frameGeometry.y()));
+//    else
         return Point(point.x() - _frameGeometry.x(), point.y() - _frameGeometry.y());
 }
 
@@ -1065,10 +1065,18 @@ Widget::paintChildren(const PaintEvent& event)
     {
         child = ((Widget*) *it);
         child->paint(event);
-        if (child->_surface->flags() & Surface::HasOwnSurface)
+        Rectangle r =child->frameGeometry().intersected(event.rect);
+        if (r.isValid())
         {
-            _surface->setBlittingFlags(DSBLIT_BLEND_ALPHACHANNEL);
-            _surface->blit(child->_surface, child->absX(), child->absY());
+            if ((child->_surface->flags() & Surface::HasOwnSurface)) // && !(child->_surface->flags() & Surface::DisableAutoFlip))
+            {
+                ILOG_DEBUG(ILX_WIDGET, " -> blitting widget [%d:%p]\n", child->id(), child);
+                _surface->setBlittingFlags(DSBLIT_BLEND_ALPHACHANNEL);
+                if(surface()->flags() & Surface::SharedSurface)
+                    _surface->blit(child->_surface, child->mapToSurface(r), child->absX(), child->absY());
+                else
+                    _surface->blit(child->_surface, child->mapToSurface(r), child->x(), child->y());
+            }
         }
     }
 
@@ -1076,6 +1084,7 @@ Widget::paintChildren(const PaintEvent& event)
         Rectangle rect = mapToSurface(event.rect);
         _surface->flip(rect);
     }
+    ILOG_DEBUG(ILX_WIDGET, " -> paintChildren ends.\n");
 }
 
 void
