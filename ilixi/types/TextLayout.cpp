@@ -24,11 +24,12 @@
 #include <TextLayout.h>
 #include <core/Logger.h>
 #include <lib/utf8.h>
+#include <string.h>
 
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_TEXTLAYOUT, "ilixi/types/TextLayout", "TextLayout");
+D_DEBUG_DOMAIN(ILX_TEXTLAYOUT, "ilixi/types/TextLayout", "TextLayout");
 
 TextLayout::TextLayout()
         : _modified(true),
@@ -329,7 +330,9 @@ TextLayout::doLayout(Font* font)
 
     if (_singleLine)
     {
-        l.bytes = -1;
+        l.offset = 0;
+        l.bytes = _text.size();
+        l.length = _text.length();
         l.y = _bounds.y();
         _lines.push_back(l);
     } else
@@ -421,5 +424,37 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
     free(out);
     surface->SetClip(surface, &clip);
 }
+
+#ifdef ILIXI_HAVE_CAIRO
+void
+TextLayout::drawTextLayout(cairo_t* context, int x, int y) const
+{
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
+    char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+    size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+    const char* text = out;
+
+    cairo_save(context);
+    cairo_rectangle(context, _bounds.x(), _bounds.y(), _bounds.width(), _bounds.height());
+    cairo_clip(context);
+
+    x += _bounds.x();
+    if (_alignment == Center)
+        x += _bounds.width() / 2;
+    else if (_alignment == Right)
+        x += _bounds.width();
+
+    for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
+    {
+        char subtxt[((TextLayout::LayoutLine) *it).length + 1];
+        strncpy(subtxt, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).length);
+        subtxt[((TextLayout::LayoutLine) *it).length] = '\0';
+        cairo_move_to(context, x, y + ((TextLayout::LayoutLine) *it).y);
+        cairo_show_text(context, subtxt);
+    }
+    free(out);
+    cairo_restore(context);
+}
+#endif
 
 } /* namespace ilixi */

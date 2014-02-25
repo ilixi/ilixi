@@ -37,6 +37,7 @@ namespace ilixi
  */
 class TextLayout
 {
+    friend class CairoPainter; // drawLayout
     friend class Painter; // drawLayout
     friend class Notify;
 
@@ -314,6 +315,11 @@ private:
 
     void
     drawTextLayout(IDirectFBSurface* surface, int x = 0, int y = 0) const;
+
+#ifdef ILIXI_HAVE_CAIRO
+    void
+    drawTextLayout(cairo_t* context, int x = 0, int y = 0) const;
+#endif
 };
 
 }
