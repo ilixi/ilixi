@@ -28,6 +28,8 @@
 
 namespace ilixi
 {
+class EGLWidget;
+
 //! Draws shapes using Cairo.
 /*!
  * CairoPainter paints on a widget's surface using its pen and brush.
@@ -96,6 +98,14 @@ public:
     void
     end();
 
+#ifdef ILIXI_HAVE_CAIROGLES
+    void
+    beginGL(EGLWidget* widget, const PaintEvent& event);
+
+    void
+    endGL();
+#endif
+
     /*!
      * Sets painter's brush.
      *
@@ -115,6 +125,16 @@ public:
      */
     void
     setPen(const Pen& pen);
+
+    /*!
+     * Sets painter's font.
+     *
+     * Font is used for rendering text.
+     *
+     * @param font
+     */
+    void
+    setFont(const Font& font);
 
     /*!
      * Returns widget's cairo context.
@@ -349,6 +369,18 @@ public:
     void
     drawPoint(double x, double y);
 
+    Rectangle
+    textExtents(const std::string& text);
+
+    void
+    drawText(const std::string& text, int x = 0, int y = 0);
+
+    /*!
+     * Draws a layout using its bounding rectangle using Brush and Font.
+     */
+    void
+    drawLayout(const TextLayout& layout, int x = 0, int y = 0);
+
     void
     drawCurrentPath(DrawingMode mode = StrokePath);
 
@@ -372,12 +404,15 @@ private:
     Brush _brush;
     //! This is painter's current pen.
     Pen _pen;
+    //! This is painter's current font.
+    Font _font;
 
     enum PainterFlags
     {
-        None = 0x000,           //!< Initial state
-        Active = 0x001,         //!< Painter is activated by begin()
-        BrushActive = 0x002
+        PFNone = 0x000,           //!< Initial state
+        PFActive = 0x001,         //!< Painter is activated by begin()
+        PFBrushActive = 0x002,
+        PFFontModified = 0x004
     };
 
     //! Set using painter flags
@@ -387,9 +422,13 @@ private:
     void
     applyCairoBrush();
 
-    //! Apply pen to content if it is modified.
+    //! Apply pen to context if it is modified.
     void
     applyCairoPen();
+
+    //! Set font for context.
+    void
+    applyCairoFont();
 
     //! Applies brush and/or pen accordingly.
     void
