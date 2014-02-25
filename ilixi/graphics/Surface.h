@@ -259,7 +259,22 @@ public:
      */
     cairo_t*
     cairoContext();
+
+#ifdef ILIXI_HAVE_CAIROGLES
+    cairo_device_t*
+    cairoDeviceGL();
+
+    void
+    setCairoDeviceGL(cairo_device_t* device);
+
+    cairo_surface_t*
+    cairoSurfaceGL();
+
+    void
+    setCairoSurfaceGL(cairo_surface_t* surface);
 #endif
+
+#endif // ILIXI_HAVE_CAIRO
 
     /*!
      * Returns logical layer name where surface resides.
@@ -330,7 +345,12 @@ private:
     cairo_surface_t* _cairoSurface;
     //! Interface to _cairoSurface's context.
     cairo_t* _cairoContext;
+
+#ifdef ILIXI_HAVE_CAIROGLES
+    cairo_device_t* _deviceGL;
+    cairo_surface_t* _surfaceGL;
 #endif
+#endif // ILIXI_HAVE_CAIRO
 
     /*!
      * Release DirectFB surface.

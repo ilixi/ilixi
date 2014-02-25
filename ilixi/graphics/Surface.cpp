@@ -65,6 +65,10 @@ Surface::Surface(Widget* owner)
 #ifdef ILIXI_HAVE_CAIRO
           ,_cairoSurface(NULL),
           _cairoContext(NULL)
+#ifdef ILIXI_HAVE_CAIROGLES
+          ,_deviceGL(NULL),
+          _surfaceGL(NULL)
+#endif
 #endif
 {
     pthread_mutex_init(&_surfaceLock, NULL);
@@ -89,7 +93,7 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
     desc.width = width;
     desc.height = height;
     desc.pixelformat = PlatformManager::instance().forcedPixelFormat();
-    if(_flags & ForceSingleSurface)
+    if (_flags & ForceSingleSurface)
         desc.caps = caps;
     else
         desc.caps = (DFBSurfaceCapabilities) (caps | PlatformManager::instance().getWindowSurfaceCaps());
@@ -100,9 +104,15 @@ Surface::createDFBSurface(int width, int height, DFBSurfaceCapabilities caps)
         ILOG_ERROR(ILX_SURFACE, "Cannot create surface: %s\n", DirectFBErrorString(ret));
         return false;
     }
+
     _dfbSurface->SetBlittingFlags(_dfbSurface, DSBLIT_BLEND_ALPHACHANNEL);
-    ILOG_DEBUG(ILX_SURFACE, "[%p] %s(width %d, height %d)\n", this, __FUNCTION__, width, height);
-    ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p\n", _dfbSurface);
+    clear();
+    if (PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING)
+    {
+        flip();
+        clear();
+    }
+    ILOG_DEBUG(ILX_SURFACE, "  -> Created dfb surface %p (width %d, height %d)\n", _dfbSurface, width, height);
     return true;
 }
 
@@ -190,25 +200,30 @@ Surface::flip()
     switch (PlatformManager::instance().getLayerFlipMode(_owner->_rootWindow->layerName()))
     {
     case FlipNone:
+        ILOG_DEBUG(ILX_SURFACE, " -> Flip using DSFLIP_NONE\n");
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
         break;
     case FlipOnSync:
+        ILOG_DEBUG(ILX_SURFACE, " -> Flip using DSFLIP_ONSYNC\n");
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_ONSYNC);
         break;
     case FlipWaitForSync:
+        ILOG_DEBUG(ILX_SURFACE, " -> Flip using DSFLIP_WAITFORSYNC\n");
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_WAITFORSYNC);
         break;
     case FlipNew:
+        ILOG_DEBUG(ILX_SURFACE, " -> Flip using DSFLIP_ONSYNC\n");
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_ONSYNC);
         break;
 
     default:
+        ILOG_DEBUG(ILX_SURFACE, " -> Flip using DSFLIP_NONE\n");
         ret = _dfbSurface->Flip(_dfbSurface, NULL, DSFLIP_NONE);
         break;
     }
 
     if (ret)
-        ILOG_ERROR(ILX_SURFACE, " -> error: %s\n", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_SURFACE, " -> Flip error: %s\n", DirectFBErrorString(ret));
 }
 
 void
@@ -271,7 +286,7 @@ Surface::flip(const Rectangle& rect)
     }
 
     if (ret)
-        ILOG_ERROR(ILX_SURFACE, " -> error: %s\n", DirectFBErrorString(ret));
+        ILOG_ERROR(ILX_SURFACE, " -> Flip error: %s - Rect(%d, %d, %d, %d)\n", DirectFBErrorString(ret), rect.x(), rect.y(), rect.width(), rect.height());
     else
         ILOG_DEBUG(ILX_SURFACE, " -> Rect(%d, %d, %d, %d)\n", rect.x(), rect.y(), rect.width(), rect.height());
 }
@@ -302,7 +317,7 @@ Surface::clear()
     if (ret)
         ILOG_ERROR(ILX_SURFACE, "Clear error: %s\n", DirectFBErrorString(ret));
     else
-        ILOG_DEBUG(ILX_SURFACE, "Clear\n");
+        ILOG_DEBUG(ILX_SURFACE, " -> Cleared surface.\n");
 }
 
 void
@@ -369,7 +384,7 @@ Surface::resetClip()
 void
 Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
 {
-    if (source)
+    if (source && _dfbSurface)
     {
         DFBRectangle r = crop.dfbRect();
         DFBResult ret;
@@ -382,7 +397,7 @@ Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
             ret = _rightSurface->Blit(_rightSurface, source, &r, x, y);
 #endif
         if (ret)
-            ILOG_ERROR(ILX_SURFACE, "Blit error: %s\n", DirectFBErrorString(ret));
+            ILOG_ERROR(ILX_SURFACE, " -> Blit error: %s - Rect(%d, %d, %d, %d)\n", DirectFBErrorString(ret), crop.x(), crop.y(), crop.width(), crop.height());
         else
             ILOG_DEBUG(ILX_SURFACE, "[%p] %s Rect(%d, %d, %d, %d) P(%d, %d)\n", this, __FUNCTION__, crop.x(), crop.y(), crop.width(), crop.height(), x, y);
     }
@@ -391,7 +406,7 @@ Surface::blit(IDirectFBSurface* source, const Rectangle& crop, int x, int y)
 void
 Surface::blit(IDirectFBSurface* source, int x, int y)
 {
-    if (source)
+    if (source && _dfbSurface)
     {
         DFBResult ret;
 #ifdef ILIXI_STEREO_OUTPUT
@@ -561,9 +576,40 @@ cairo_t*
 Surface::cairoContext()
 {
     if (!_cairoContext)
-        _cairoContext = cairo_create(cairoSurface());
+    {
+        if (_surfaceGL)
+            _cairoContext = cairo_create(_surfaceGL);
+        else
+            _cairoContext = cairo_create(cairoSurface());
+    }
     return _cairoContext;
 }
+
+#ifdef ILIXI_HAVE_CAIROGLES
+cairo_device_t*
+Surface::cairoDeviceGL()
+{
+    return _deviceGL;
+}
+
+void
+Surface::setCairoDeviceGL(cairo_device_t* device)
+{
+    _deviceGL = device;
+}
+
+cairo_surface_t*
+Surface::cairoSurfaceGL()
+{
+    return _surfaceGL;
+}
+
+void
+Surface::setCairoSurfaceGL(cairo_surface_t* surface)
+{
+    _surfaceGL = surface;
+}
+#endif
 #endif
 
 std::string
@@ -685,15 +731,6 @@ Surface::updateSurface(const PaintEvent& event)
     _eye = event.eye;
 #endif
 
-    if (_flags & HasOwnSurface) {
-        Rectangle rect = _owner->mapToSurface(event.rect);
-        clear(rect);
-        if (PlatformManager::instance().getWindowSurfaceCaps() & DSCAPS_FLIPPING)
-        {
-            flip(rect);
-            clear(rect);
-        }
-    }
 }
 
 void
@@ -712,6 +749,12 @@ Surface::release()
     {
         cairo_surface_destroy(_cairoSurface);
         _cairoSurface = NULL;
+    }
+
+    if(_deviceGL) {
+        cairo_surface_destroy(_surfaceGL);
+        cairo_device_finish(_deviceGL);
+        cairo_device_destroy(_deviceGL);
     }
 #endif
 
