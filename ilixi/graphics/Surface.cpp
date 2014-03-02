@@ -750,13 +750,14 @@ Surface::release()
         cairo_surface_destroy(_cairoSurface);
         _cairoSurface = NULL;
     }
-
+#ifdef ILIXI_HAVE_CAIROGLES
     if(_deviceGL) {
         cairo_surface_destroy(_surfaceGL);
         cairo_device_finish(_deviceGL);
         cairo_device_destroy(_deviceGL);
     }
 #endif
+#endif // ILIXI_HAVE_CAIRO
 
 #ifdef ILIXI_STEREO_OUTPUT
     if (_rightSurface)
