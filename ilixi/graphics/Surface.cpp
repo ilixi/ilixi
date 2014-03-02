@@ -577,9 +577,11 @@ Surface::cairoContext()
 {
     if (!_cairoContext)
     {
+#ifdef ILIXI_HAVE_CAIROGLES
         if (_surfaceGL)
             _cairoContext = cairo_create(_surfaceGL);
         else
+#endif
             _cairoContext = cairo_create(cairoSurface());
     }
     return _cairoContext;
