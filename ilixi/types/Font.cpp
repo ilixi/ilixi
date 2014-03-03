@@ -95,6 +95,7 @@ Font::name() const
 int
 Font::ascender()
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return 0;
 
@@ -106,6 +107,7 @@ Font::ascender()
 int
 Font::descender()
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return 0;
 
@@ -117,6 +119,7 @@ Font::descender()
 int
 Font::leading()
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return 0;
 
@@ -128,18 +131,19 @@ Font::leading()
 Size
 Font::extents(const std::string& text, int bytes)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return Size();
-    ILOG_TRACE(ILX_FONT);
     DFBRectangle rect;
     _font->GetStringExtents(_font, text.c_str(), bytes, &rect, NULL);
     ILOG_DEBUG(ILX_FONT, " -> \"%s\" (%d, %d, %d, %d)\n", text.c_str(), rect.x, rect.y, rect.w, rect.h);
-    return Size(rect.w, rect.h);
+    return Size(rect.w + 1, rect.h);
 }
 
 Size
 Font::glyphExtents(unsigned int c)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return Size();
 
@@ -151,6 +155,7 @@ Font::glyphExtents(unsigned int c)
 int
 Font::glyphAdvance(unsigned int c)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return 0;
 
@@ -162,10 +167,12 @@ Font::glyphAdvance(unsigned int c)
 void
 Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth, int* length, const char** nextLine)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return;
 
     DFBResult ret = _font->GetStringBreak(_font, text, offset, maxWidth, lineWidth, length, nextLine);
+    ILOG_DEBUG(ILX_FONT, " -> text: %s - offset: %d - maxWidth: %d - lineWidth: %d - length: %d - nextLine: %s\n", text, offset, maxWidth, *lineWidth, *length, *nextLine);
     if (ret)
     {
         ILOG_ERROR(ILX_FONT, "Error while getting string breaks!\n");
@@ -178,6 +185,7 @@ Font::stringBreak(const char* text, int offset, int maxWidth, int* lineWidth, in
 int
 Font::textWidth(const std::string& text, int offset)
 {
+    ILOG_TRACE(ILX_FONT);
     if (!loadFont())
         return 0;
 
