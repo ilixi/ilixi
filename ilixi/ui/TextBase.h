@@ -118,13 +118,18 @@ public:
     virtual void
     setText(const std::string &text);
 
+#ifdef ILIXI_HAVE_NLS
     /*!
      * Sets the text.
      */
     virtual void
     setText(const std::wstring &text);
 
-#ifdef ILIXI_HAVE_NLS
+    /*!
+     * Sets I18n text for widget.
+     *
+     * Text is automatically updated once locale is changed.
+     */
     void
     setI18nText(const std::string& text);
 #endif
