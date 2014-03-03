@@ -167,7 +167,11 @@ LineInput::append(const std::string& text)
 {
     if (_selection.isNull())
     {
+#if ILIXI_HAVE_NLS
         _layout.insert(_cursorIndex, std::wstring(text.begin(), text.end()));
+#else
+        _layout.insert(_cursorIndex, std::string(text.begin(), text.end()));
+#endif
         int oldIndex = _cursorIndex;
         _cursorIndex += text.length();
         sigCursorMoved(oldIndex, _cursorIndex);
@@ -176,7 +180,11 @@ LineInput::append(const std::string& text)
     {
         int pos1 = std::min(_selectedIndex, _cursorIndex);
         int n1 = abs(_selectedIndex - _cursorIndex);
+#if ILIXI_HAVE_NLS
         _layout.replace(pos1, n1, std::wstring(text.begin(), text.end()));
+#else
+        _layout.replace(pos1, n1, std::string(text.begin(), text.end()));
+#endif
         _selection.setSize(0, 0);
         sigCursorMoved(_cursorIndex, pos1 + 1);
         sigTextEdited();
