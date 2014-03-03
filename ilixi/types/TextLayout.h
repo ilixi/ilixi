@@ -360,6 +360,9 @@ private:
     //! List of lines inside layout.
     LineList _lines;
 
+    Size
+    multiExtents(Font* font) const;
+
     void
     drawTextLayout(IDirectFBSurface* surface, int x = 0, int y = 0) const;
 

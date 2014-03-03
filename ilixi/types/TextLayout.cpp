@@ -85,7 +85,9 @@ TextLayout::bounds() const
 Size
 TextLayout::extents(Font* font) const
 {
-    return font->extents(text(), -1);
+    if (_singleLine)
+        return font->extents(text(), -1);
+    return multiExtents(font);
 }
 
 int
@@ -149,6 +151,7 @@ TextLayout::wtext() const
 Point
 TextLayout::cursorPositon(Font* font, int index)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     // TODO Implement multi line layout version
     int x = _bounds.x();
     int y = _bounds.y();
@@ -174,6 +177,7 @@ TextLayout::cursorPositon(Font* font, int index)
 int
 TextLayout::xyToIndex(Font* font, int x, int y)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     if (!font)
         return -1;
 
@@ -316,6 +320,7 @@ TextLayout::setBounds(int x, int y, int w, int h)
 void
 TextLayout::setBounds(const Rectangle& rect)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     _bounds = rect;
     _modified = true;
 }
@@ -329,6 +334,7 @@ TextLayout::setSingleLine(bool singleLine)
 void
 TextLayout::setText(const std::string& text)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
 #if ILIXI_HAVE_NLS
     wchar_t* out = (wchar_t*) calloc(text.size() + 1, sizeof(wchar_t));
     size_t bytes = utf8_to_wchar(text.c_str(), text.size(), out, text.size() + 1, UTF8_SKIP_BOM);
@@ -344,6 +350,7 @@ TextLayout::setText(const std::string& text)
 void
 TextLayout::setText(const std::wstring& text)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     _text = text;
     _modified = true;
 }
@@ -358,6 +365,7 @@ TextLayout::setModified()
 void
 TextLayout::doLayout(Font* font)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     if (!_modified || font == NULL)
         return;
 
@@ -394,7 +402,6 @@ TextLayout::doLayout(Font* font)
             font->stringBreak(text, -1, _bounds.width(), &l.lineWidth, &l.length, &next);
             l.bytes = next - text;
             _lines.push_back(l);
-
             text = next;
             l.y += leading;
         }
@@ -408,6 +415,7 @@ TextLayout::doLayout(Font* font)
 int
 TextLayout::heightForWidth(int width, Font* font) const
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     if (font == NULL)
         return -1;
 
@@ -444,6 +452,40 @@ TextLayout::heightForWidth(int width, Font* font) const
     }
 }
 
+Size
+TextLayout::multiExtents(Font* font) const
+{
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
+    int w = 0;
+    int h = 0;
+    int lw, len;
+
+#if ILIXI_HAVE_NLS
+    char* out = (char*) calloc(_text.size() * 4 + 1, 1);
+    size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
+    const char* start = out;
+#else
+    const char* start = _text.c_str();
+#endif
+
+    const char* text = start;
+    const char* next = text;
+    int leading = font->leading();
+
+    while (text)
+    {
+        font->stringBreak(text, -1, INT_MAX, &lw, &len, &next);
+        if (w < lw)
+            w = lw +1;
+        text = next;
+        h += leading;
+    }
+#if ILIXI_HAVE_NLS
+    free(out);
+#endif
+    return Size(w, h);
+}
+
 void
 TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 {
@@ -471,7 +513,7 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
         x += _bounds.width();
 
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
-        surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
+        surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).length, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
 #if ILIXI_HAVE_NLS
     free(out);
 #endif
