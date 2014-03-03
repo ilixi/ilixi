@@ -150,11 +150,13 @@ public:
     std::string
     text() const;
 
+#if ILIXI_HAVE_NLS
     /*!
      * Returns text inside layout.
      */
     std::wstring
     wtext() const;
+#endif
 
     /*!
      * Calculates coordinates for top-left corner of cursor.
@@ -173,6 +175,7 @@ public:
     int
     xyToIndex(Font* font, int x, int y);
 
+#if ILIXI_HAVE_NLS
     /*!
      * Insert a character at given position.
      *
@@ -209,6 +212,44 @@ public:
      */
     void
     replace(int pos, int number, const std::wstring& str);
+#else
+    /*!
+     * Insert a character at given position.
+     *
+     * @param pos
+     * @param c
+     */
+    void
+    insert(int pos, char c);
+
+    /*!
+     * Insert a string at given position.
+     *
+     * @param pos
+     * @param str
+     */
+    void
+    insert(int pos, const std::string& str);
+
+    /*!
+     * Replace a portion of text with a char.
+     * @param pos
+     * @param number
+     * @param c
+     */
+    void
+    replace(int pos, int number, char c);
+
+    /*!
+     * Replace a portion of text with another string.
+     *
+     * @param pos
+     * @param number
+     * @param str
+     */
+    void
+    replace(int pos, int number, const std::string& str);
+#endif
 
     /*!
      * Erases a part of text, shortening the length of the string.
@@ -273,11 +314,13 @@ public:
     void
     setText(const std::string& text);
 
+#if ILIXI_HAVE_NLS
     /*!
      * Sets the text of layout.
      */
     void
     setText(const std::wstring& text);
+#endif
 
     /*!
      * Sets the modified flag.
@@ -303,7 +346,11 @@ private:
     //! Flag is set to true if layout is single line.
     bool _singleLine;
     //! Text inside layout
+#if ILIXI_HAVE_NLS
     std::wstring _text;
+#else
+    std::string _text;
+#endif
     //! Horizontal alignment of text inside layout.
     Alignment _alignment;
     //! Bounding rectangle of layout.
