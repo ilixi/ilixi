@@ -56,10 +56,11 @@ TextBase::TextBase(const std::string& text, Widget* owner)
         : _owner(owner),
 #endif
           _font(NULL),
-          _layout(text),
+          _layout(),
           _extents(-1, -1)
 {
     ILOG_TRACE(ILX_TEXTBASE);
+    setText(text);
     _extents = _layout.extents(font());
     _owner->sigGeometryUpdated.connect(sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
 }
@@ -133,9 +134,9 @@ TextBase::setLayoutAlignment(TextLayout::Alignment alignment)
 void
 TextBase::setFont(Font* font)
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     if (font)
     {
-        ILOG_TRACE(ILX_TEXTBASE);
         if (_font)
             _font->relRef();
         ILOG_DEBUG(ILX_TEXTBASE, " -> Font changed to %p from %p\n", font, _font);
@@ -151,9 +152,9 @@ TextBase::setFont(Font* font)
 void
 TextBase::setText(const std::string &text)
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     if (_layout.text() != text)
     {
-        ILOG_TRACE(ILX_TEXTBASE);
         _layout.setText(text);
         _extents = _layout.extents(font());
         _owner->doLayout();
