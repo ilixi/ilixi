@@ -167,8 +167,25 @@ TextLayout::cursorPositon(Font* font, int index)
         {
             for (int i = 0; i < index; ++i)
                 x += font->glyphAdvance(_text.at(i));
+        } else
+        {
+            int leading = font->leading();
+            int xTemp = 0;
+            int nextLineIndex = 0;
+            for (int i = 0; i < index; ++i)
+            {
+                if ((char) _text.at(i) == ' ' || (char) _text.at(i) == 0x0a)
+                    nextLineIndex = i;
 
-            return Point(x, y);
+                xTemp += font->glyphAdvance(_text.at(i));
+                if (xTemp + 1 >= _bounds.width())
+                {
+                    xTemp = 0;
+                    y += leading;
+                    i = nextLineIndex;
+                }
+            }
+            x += xTemp;
         }
     }
     return Point(x, y);
@@ -189,35 +206,47 @@ TextLayout::xyToIndex(Font* font, int x, int y)
     if (_singleLine)
     {
         int xPre = _bounds.x();
-        int xNext = font->glyphAdvance(_text.at(0));
-        if (x > xPre && x <= (xPre + xNext))
+        if (x < xPre)
             return 0;
 
-        for (int i = 1; i < _text.length(); ++i)
+        int xNext = xPre;
+        for (int i = 0; i < _text.length(); ++i)
         {
             xPre = xNext;
             xNext += font->glyphAdvance(_text.at(i));
 
             if (x > xPre && x <= xNext)
-                return i;
+                return i + 1;
         }
-
-        return _text.length();
     } else
     {
-        // TODO Implement multi line layout version
-        int pre = 0;
-        int index;
+        int yPre = 0;
+        int index = 0;
+        int leading = font->leading();
         for (LineList::iterator it = _lines.begin(); it != _lines.end(); ++it)
         {
-            if (y >= pre && y < it->y)
+            if (y >= yPre && y < yPre + leading)
             {
+                int xPre = _bounds.x();
+                if (x < xPre)
+                    return index;
 
+                int xNext = xPre;
+                for (int i = index; i < index + it->length; ++i)
+                {
+                    xPre = xNext;
+                    xNext += font->glyphAdvance(_text.at(i));
+
+                    if (x > xPre && x <= xNext)
+                        return i + 1;
+                }
+                return index + it->length;
             }
-            pre = it->y;
+            yPre += leading;
+            index += it->length + 1;
         }
-        return -1;
     }
+    return _text.length();
 }
 
 void
@@ -436,12 +465,10 @@ TextLayout::heightForWidth(int width, Font* font) const
         int lw = 0;
         int len = 0;
         int h = 0;
-        int offset = -1;
 
         while (text)
         {
-            font->stringBreak(text, offset, width, &lw, &len, &next);
-            offset = next - text;
+            font->stringBreak(text, -1, width, &lw, &len, &next);
             text = next;
             h += leading;
         }
@@ -476,7 +503,7 @@ TextLayout::multiExtents(Font* font) const
     {
         font->stringBreak(text, -1, INT_MAX, &lw, &len, &next);
         if (w < lw)
-            w = lw +1;
+            w = lw + 1;
         text = next;
         h += leading;
     }
