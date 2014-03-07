@@ -169,23 +169,18 @@ TextLayout::cursorPositon(Font* font, int index)
                 x += font->glyphAdvance(_text.at(i));
         } else
         {
-            int leading = font->leading();
-            int xTemp = 0;
-            int nextLineIndex = 0;
-            for (int i = 0; i < index; ++i)
+            int lineIndex = 0;
+            for (LineList::iterator it = _lines.begin(); it != _lines.end(); ++it)
             {
-                if ((char) _text.at(i) == ' ' || (char) _text.at(i) == 0x0a)
-                    nextLineIndex = i;
-
-                xTemp += font->glyphAdvance(_text.at(i));
-                if (xTemp + 1 >= _bounds.width())
+                if (index >= lineIndex && index <= lineIndex + it->length)
                 {
-                    xTemp = 0;
-                    y += leading;
-                    i = nextLineIndex;
+                    y = it->y;
+                    for (int i = lineIndex; i < index; ++i)
+                        x += font->glyphAdvance(_text.at(i));
+                    break;
                 }
+                lineIndex += it->length + 1;
             }
-            x += xTemp;
         }
     }
     return Point(x, y);
