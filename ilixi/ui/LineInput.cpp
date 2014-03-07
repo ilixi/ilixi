@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_LINEINPUT, "ilixi/ui/LineInput", "LineInput");
+D_DEBUG_DOMAIN(ILX_LINEINPUT, "ilixi/ui/LineInput", "LineInput");
 
 LineInput::LineInput(const std::string& text, Widget* parent)
         : Widget(parent),
@@ -64,6 +64,14 @@ LineInput::preferredSize() const
     ILOG_TRACE_W(ILX_LINEINPUT);
     Size s = font()->extents(text());
     return Size(s.width() + stylist()->defaultParameter(StyleHint::LineInputLR) + _margin.hSum(), s.height() + stylist()->defaultParameter(StyleHint::LineInputTB) + _margin.vSum());
+}
+
+int
+LineInput::heightForWidth(int width) const
+{
+    ILOG_TRACE_W(ILX_LINEINPUT);
+    Size s = font()->extents(text());
+    return (s.height() + stylist()->defaultParameter(StyleHint::LineInputTB) + _margin.vSum());
 }
 
 int
@@ -211,37 +219,51 @@ void
 LineInput::updateCursorPosition()
 {
     ILOG_TRACE_W(ILX_LINEINPUT);
+    int textWidth = _layout.extents(font()).width();
+    int visWidth = width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum();
+    int boundLeft = stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left();
 
-    if (_cursorIndex == 0)
+    ILOG_DEBUG(ILX_LINEINPUT, " -> visWidth: %d textWidth: %d widgetWidth: %d boundLeft: %d\n", visWidth, textWidth, width(), boundLeft);
+    if (_cursorIndex == 0 || textWidth <= visWidth)
     {
-        _layout.setX(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left());
-        _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
-        return;
-    } else if (_layout.extents(font()).width() < width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum())
+        _layout.setX(boundLeft);
+        _cursor.setX(_layout.cursorPositon(font(), _cursorIndex).x());
+        ILOG_DEBUG(ILX_LINEINPUT, " -> Layout x: %d - Cursor x: %d\n", _layout.x(), _cursor.x());
+    } else if (_cursorIndex == _layout.text().length())
     {
-        _layout.setX(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left());
-        _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
-        return;
+        _layout.setX(visWidth - textWidth);
+        _layout.setWidth(textWidth);
+        _cursor.setX(_layout.cursorPositon(font(), _cursorIndex).x());
+    } else
+    {
+        if (textWidth > visWidth)
+            _layout.setWidth(textWidth);
+        int x = _layout.cursorPositon(font(), _cursorIndex).x();
+        ILOG_DEBUG(ILX_LINEINPUT, " -> cursor x: %d\n", x);
+        if (x < boundLeft)
+        {
+            int pre = _layout.cursorPositon(font(), _cursorIndex - 1).x();
+            _layout.setX(_layout.x() - (pre - x) + 1);
+            _cursor.setX(_layout.cursorPositon(font(), _cursorIndex).x());
+            ILOG_DEBUG(ILX_LINEINPUT, " -> Cursor moved left... Layout x: %d\n", _layout.x());
+        } else if (x > visWidth + boundLeft)
+        {
+            int next;
+            if (_cursorIndex + 2 < _layout.text().length())
+            {
+                next = _layout.cursorPositon(font(), _cursorIndex + 2).x();
+                _layout.setX(_layout.x() - (next - x) + 1);
+            } else
+                _layout.setX(_layout.x() - 10);
+
+            _cursor.setX(_layout.cursorPositon(font(), _cursorIndex).x());
+            ILOG_DEBUG(ILX_LINEINPUT, " -> Cursor moved right... Layout x: %d\n", _layout.x());
+        } else
+        {
+            ILOG_DEBUG(ILX_LINEINPUT, " -> Layout x: %d\n", _layout.x());
+            _cursor.setX(x);
+        }
     }
-
-    int x = _layout.cursorPositon(font(), _cursorIndex).x();
-    ILOG_DEBUG(ILX_LINEINPUT, " -> x: %d\n", x);
-
-    if (x < stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left())
-    {
-        int dif = (stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left()) - x;
-        _layout.setX(dif);
-
-        ILOG_DEBUG( ILX_LINEINPUT, " -> 1 Layout x: %d  CursorX: %d Dif: %d Len: %lu\n", _layout.x(), x, dif, _layout.text().length());
-    } else if (x > _layout.bounds().right())
-    {
-        int dif = _layout.bounds().right() - x;
-        _layout.setX(dif);
-
-        ILOG_DEBUG( ILX_LINEINPUT, " -> 2 Layout x: %d  CursorX: %d Dif: %d Len: %lu\n", _layout.x(), x, dif, _layout.text().length());
-    }
-
-    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
 }
 
 void
@@ -292,7 +314,7 @@ LineInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
         return;
 
     Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
-    int index = _layout.xyToIndex(font(), p.x() - _layout.x(), p.y());
+    int index = _layout.xyToIndex(font(), p.x(), p.y());
 
     ILOG_TRACE_W(ILX_LINEINPUT);
     ILOG_DEBUG(ILX_LINEINPUT, " -> index: %d\n", index);
@@ -326,7 +348,7 @@ LineInput::pointerMotionEvent(const PointerEvent& mouseEvent)
             return;
 
         Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
-        int index = _layout.xyToIndex(font(), p.x() - _layout.x(), p.y());
+        int index = _layout.xyToIndex(font(), p.x(), p.y());
 
         ILOG_TRACE_W(ILX_LINEINPUT);
         ILOG_DEBUG(ILX_LINEINPUT, " -> index: %d\n", index);
@@ -433,20 +455,29 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_selection.isNull())
         {
+#if ILIXI_HAVE_NLS
             _layout.insert(_cursorIndex, (wchar_t) keyEvent.keySymbol);
+#else
+            _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
+#endif
+
             sigCursorMoved(_cursorIndex, ++_cursorIndex);
             sigTextEdited();
-            ILOG_DEBUG( ILX_LINEINPUT, "Append U+%04X at %d\n", keyEvent.keySymbol, _cursorIndex);
+            ILOG_DEBUG(ILX_LINEINPUT, "Append U+%04X at %d\n", keyEvent.keySymbol, _cursorIndex);
         } else
         {
             int pos1 = std::min(_selectedIndex, _cursorIndex);
             int n1 = abs(_selectedIndex - _cursorIndex);
+#if ILIXI_HAVE_NLS
             _layout.replace(pos1, n1, (wchar_t) keyEvent.keySymbol);
+#else
+            _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
+#endif
             _selection.setSize(0, 0);
             sigCursorMoved(_cursorIndex, pos1 + 1);
             sigTextEdited();
             _cursorIndex = pos1 + 1;
-            ILOG_DEBUG( ILX_LINEINPUT, "Replaced U+%04X at %d\n", keyEvent.keySymbol, pos1);
+            ILOG_DEBUG(ILX_LINEINPUT, "Replaced U+%04X at %d\n", keyEvent.keySymbol, pos1);
         }
         break;
     }
@@ -521,6 +552,7 @@ LineInput::updateTextBaseGeometry()
 {
     _layout.setBounds(stylist()->defaultParameter(StyleHint::LineInputLeft) + _margin.left(), stylist()->defaultParameter(StyleHint::LineInputTop) + _margin.top(), width() - stylist()->defaultParameter(StyleHint::LineInputLR) - _margin.hSum(), height() - stylist()->defaultParameter(StyleHint::LineInputTB) - _margin.vSum());
     _layout.doLayout(font());
+    _cursor.moveTo(_layout.cursorPositon(font(), _cursorIndex));
     _cursor.setSize(1, height() - stylist()->defaultParameter(StyleHint::LineInputTB));
     updateCursorPosition();
 }

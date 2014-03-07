@@ -50,10 +50,16 @@ public:
     ~LineInput();
 
     /*!
-     * Preferred size calculated using current text.
+     * Returns preferred size calculated using current text.
      */
     virtual Size
     preferredSize() const;
+
+    /*!
+     * Returns height for width calculated using current text.
+     */
+    virtual int
+    heightForWidth(int width) const;
 
     /*!
      * Returns number of maximum characters to store.
@@ -147,6 +153,11 @@ public:
      */
     sigc::signal<void> sigTextEdited;
 
+    /*!
+     * This signal is emitted with each keypress.
+     *
+     * Returns full LineInput text.
+     */
     sigc::signal<void, const std::string&> sigTextEntered;
 
 private:
