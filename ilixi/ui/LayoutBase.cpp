@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_LAYOUT, "ilixi/ui/Layout", "Layout");
+D_DEBUG_DOMAIN(ILX_LAYOUT, "ilixi/ui/Layout", "Layout");
 
 LayoutBase::LayoutBase(Widget* parent)
         : Widget(parent),
@@ -155,8 +155,7 @@ LayoutBase::tile()
     Widget* left = getNeighbour(Left);
     Widget* right = getNeighbour(Right);
 
-    for (WidgetListConstIterator it = _children.begin(), itLast = (++_children.rbegin()).base(); it != _children.end();
-            ++it)
+    for (WidgetListConstIterator it = _children.begin(), itLast = (++_children.rbegin()).base(); it != _children.end(); ++it)
     {
         current = (Widget*) *it;
         if (current->visible())
@@ -199,11 +198,14 @@ LayoutBase::compose(const PaintEvent& event)
 bool
 LayoutBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
-    // priority is given to child on top.
-    if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
-        for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-            if (((Widget*) *it)->consumePointerEvent(pointerEvent))
-                return true;
+    if ((inputMethod() & PointerInput) || (inputMethod() & PointerPassthrough))
+    {
+        // priority is given to child on top.
+        if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+                if (((Widget*) *it)->consumePointerEvent(pointerEvent))
+                    return true;
+    }
     return false;
 }
 
