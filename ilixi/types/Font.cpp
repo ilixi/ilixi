@@ -320,6 +320,7 @@ Font::release()
     if (_font && _key)
     {
         ILOG_TRACE(ILX_FONT);
+        ILOG_DEBUG(ILX_FONT, " -> name: %s size: %d - key: %u\n", _name.c_str(), _size, _key);
         FontCache::Instance()->releaseEntry(_key);
         _font = NULL;
         _key = 0;
