@@ -52,6 +52,7 @@ StylistBase::StylistBase()
 
 StylistBase::~StylistBase()
 {
+    ILOG_TRACE(ILX_STYLISTBASE);
     delete _fonts;
     delete _icons;
     delete _palette;
@@ -245,6 +246,12 @@ Font*
 StylistBase::defaultFont(StyleHint::FontHint font) const
 {
     return _fonts->getFont(font);
+}
+
+Font*
+StylistBase::customFont(const std::string& name) const
+{
+    return _fonts->getCustomFont(name);
 }
 
 Image*

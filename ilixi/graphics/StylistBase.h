@@ -108,6 +108,12 @@ public:
     defaultFont(StyleHint::FontHint font = StyleHint::DefaultFont) const;
 
     /*!
+     * Returns custom font from font pack.
+     */
+    Font*
+    customFont(const std::string& name) const;
+
+    /*!
      * Returns the default icon for given type.
      */
     Image*
