@@ -25,7 +25,7 @@
 #define ILIXI_ICON_H_
 
 #include <ui/Widget.h>
-#include <types/Image.h>
+#include <graphics/IconPack.h>
 
 namespace ilixi
 {
@@ -107,6 +107,12 @@ public:
      */
     void
     setImage(const std::string& path);
+
+    /*!
+     * Sets image using iconPack.
+     */
+    void
+    setImage(const std::string& iconName, IconPack* iconPack);
 
     /*!
      * Sets the state of icon.

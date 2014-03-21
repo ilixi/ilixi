@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_ICON, "ilixi/ui/Icon", "Icon");
+D_DEBUG_DOMAIN(ILX_ICON, "ilixi/ui/Icon", "Icon");
 
 Icon::Icon(Widget* parent)
         : Widget(parent),
@@ -111,6 +111,17 @@ Icon::setImage(const std::string& path)
     else
         _image = new Image(path);
     doLayout();
+}
+
+void
+Icon::setImage(const std::string& iconName, IconPack* iconPack)
+{
+    if (iconPack)
+    {
+        delete _image;
+        _image = iconPack->getIcon(iconName);
+        doLayout();
+    }
 }
 
 void
