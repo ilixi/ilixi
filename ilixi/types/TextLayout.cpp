@@ -535,7 +535,7 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
         x += _bounds.width();
 
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
-        surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).length, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
+        surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
 #if ILIXI_HAVE_NLS
     free(out);
 #endif
