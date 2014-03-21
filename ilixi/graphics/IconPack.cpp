@@ -32,10 +32,12 @@ namespace ilixi
 
 D_DEBUG_DOMAIN(ILX_ICONPACK, "ilixi/graphics/IconPack", "IconPack");
 
-IconPack::IconPack()
+IconPack::IconPack(const char* iconsFile)
         : _iconPack(NULL),
           _iconSize(48)
 {
+    if (iconsFile)
+        parseIcons(iconsFile);
 }
 
 IconPack::~IconPack()
@@ -78,7 +80,7 @@ IconPack::parseIcons(const char* iconsFile)
         XMLReader xml;
         if (xml.loadFile(iconsFile) == false)
         {
-            ILOG_FATAL(ILX_ICONPACK, "Could not parse fonts!\n");
+            ILOG_FATAL(ILX_ICONPACK, "Could not parse icon pack!\n");
             return false;
         }
 
@@ -97,7 +99,19 @@ IconPack::parseIcons(const char* iconsFile)
             file = ILIXI_DATADIR"images/";
             file.append(path.substr(found + 8, std::string::npos));
         } else
-            file = path;
+        {
+            found = path.find("@PACKDIR:");
+            if (found != std::string::npos)
+            {
+                char* var = getenv("PACKDIR");
+                if (!var)
+                    ILOG_ERROR(ILX_ICONPACK, "Cannot get PACKDIR environment variable!\n");
+                file.append(var);
+                file.append(path.substr(found + 9, std::string::npos));
+                ILOG_DEBUG(ILX_ICONPACK, " -> image file: %s\n", file.c_str());
+            } else
+                file = path;
+        }
 
         _iconPack = new Image(file);
         _iconSize = atoi((char*) imgDefSize);

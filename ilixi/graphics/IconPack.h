@@ -37,7 +37,7 @@ public:
     /*!
      * Constructor.
      */
-    IconPack();
+    IconPack(const char* iconsFile = 0);
 
     /*!
      * Destructor.
