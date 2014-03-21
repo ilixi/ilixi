@@ -115,7 +115,7 @@ private:
     ~FontCache();
 
     IDirectFBFont*
-    getEntryFromFile(unsigned int key, const std::string& file, int size, DFBFontAttributes attr);
+    getEntryFromFile(unsigned int key, const std::string& name, const std::string& style, int slant, int size, DFBFontAttributes attr);
 
     std::string
     getFCFileName(const char* name, const char* style, double size, int slant);

@@ -97,7 +97,7 @@ FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr, I
     ILOG_DEBUG(ILX_FONTCACHE, " -> style: %s\n", style.c_str());
     unsigned int key = getKey(name, size, attr);
     ILOG_DEBUG(ILX_FONTCACHE, " -> key: %u\n", key);
-    *font = getEntryFromFile(key, getFCFileName(name.c_str(), style.c_str(), size, slant), size, attr);
+    *font = getEntryFromFile(key, name, style, slant, size, attr);
     return key;
 }
 
@@ -131,7 +131,7 @@ FontCache::releaseEntry(const char* name, int size, DFBFontAttributes attr)
 }
 
 IDirectFBFont*
-FontCache::getEntryFromFile(unsigned int key, const std::string& file, int size, DFBFontAttributes attr)
+FontCache::getEntryFromFile(unsigned int key, const std::string& name, const std::string& style, int slant, int size, DFBFontAttributes attr)
 {
     ILOG_TRACE_F(ILX_FONTCACHE);
 
@@ -146,7 +146,7 @@ FontCache::getEntryFromFile(unsigned int key, const std::string& file, int size,
         desc.flags = (DFBFontDescriptionFlags) (DFDESC_HEIGHT | DFDESC_ATTRIBUTES);
         desc.height = size;
         desc.attributes = attr;
-
+        std::string file = getFCFileName(name.c_str(), style.c_str(), size, slant);
         DFBResult ret = PlatformManager::instance().getDFB()->CreateFont(PlatformManager::instance().getDFB(), file.c_str(), &desc, &font);
         if (ret)
         {
@@ -166,7 +166,7 @@ FontCache::getEntryFromFile(unsigned int key, const std::string& file, int size,
 
     } else
     {
-        ILOG_DEBUG(ILX_FONTCACHE, " -> Got from cache using key (%u) (%s,%d)\n", key, file.c_str(), size);
+        ILOG_DEBUG(ILX_FONTCACHE, " -> Got from cache using key: %u\n", key);
         it->second.ref++;
         pthread_mutex_unlock(&_lock);
         return it->second.font;
