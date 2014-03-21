@@ -29,7 +29,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_CONTAINER, "ilixi/ui/ContainerBase", "ContainerBase");
+D_DEBUG_DOMAIN(ILX_CONTAINER, "ilixi/ui/ContainerBase", "ContainerBase");
 
 ContainerBase::ContainerBase(Widget* parent)
         : Widget(parent),
@@ -133,11 +133,14 @@ bool
 ContainerBase::consumePointerEvent(const PointerEvent& pointerEvent)
 {
     ILOG_TRACE_W(ILX_CONTAINER);
-    // priority is given to child on top.
-    if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
-        for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
-            if (((Widget*) *it)->consumePointerEvent(pointerEvent))
-                return true;
+    if ((inputMethod() & PointerInput) || (inputMethod() & PointerPassthrough))
+    {
+        // priority is given to child on top.
+        if (_frameGeometry.contains(pointerEvent.x, pointerEvent.y, true))
+            for (WidgetListReverseIterator it = _children.rbegin(); it != _children.rend(); ++it)
+                if (((Widget*) *it)->consumePointerEvent(pointerEvent))
+                    return true;
+    }
     return false;
 }
 
