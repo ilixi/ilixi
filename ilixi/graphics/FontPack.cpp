@@ -43,12 +43,14 @@ FontPack::FontPack()
 
 FontPack::~FontPack()
 {
+    ILOG_TRACE(ILX_FONTPACK);
     release();
 }
 
 Font*
 FontPack::getFont(StyleHint::FontHint font) const
 {
+    ILOG_TRACE(ILX_FONTPACK);
     switch (font)
     {
     case StyleHint::ButtonFont:
@@ -64,6 +66,18 @@ FontPack::getFont(StyleHint::FontHint font) const
     }
 }
 
+Font*
+FontPack::getCustomFont(const std::string& name) const
+{
+    ILOG_TRACE(ILX_FONTPACK);
+    ILOG_DEBUG(ILX_FONTPACK, " -> name: %s\n", name.c_str());
+    FontMap::const_iterator it = _fontMap.find(name);
+    if (it != _fontMap.end())
+        return it->second;
+    ILOG_WARNING(ILX_FONTPACK, " -> Cannot find font: %s\n", name.c_str());
+    return NULL;
+}
+
 bool
 FontPack::parseFonts(const char* fontsFile)
 {
@@ -71,10 +85,9 @@ FontPack::parseFonts(const char* fontsFile)
     ILOG_DEBUG(ILX_FONTPACK, " -> file: %s\n", fontsFile);
 
     std::string cacheFile = PrintF("%s%u.sxml", FileSystem::ilxDirectory().c_str(), createHash(fontsFile));
-    ILOG_DEBUG(ILX_FONTPACK, " -> cache file: %s\n", cacheFile.c_str());
     if (difftime(FileSystem::getModificationTime(cacheFile), FileSystem::getModificationTime(fontsFile)) > 0)
     {
-        ILOG_DEBUG(ILX_FONTPACK, " -> Parsing cached fonts file.\n");
+        ILOG_DEBUG(ILX_FONTPACK, " -> Parsing cached fonts file: %s\n", cacheFile.c_str());
         std::ifstream ifs(cacheFile.c_str(), std::ios::in);
         ifs >> *this;
         ifs.close();
@@ -94,7 +107,7 @@ FontPack::parseFonts(const char* fontsFile)
 
         while (node != NULL)
         {
-            ILOG_DEBUG(ILX_FONTPACK, " -> font: %s...\n", node->name);
+            ILOG_DEBUG(ILX_FONTPACK, " -> font: %s\n", node->name);
             xmlChar* fileC = xmlNodeGetContent(node->children);
             xmlChar* sizeC = xmlNodeGetContent(node->children->next);
             xmlChar* styleC = xmlNodeGetContent(node->children->next->next);
@@ -142,6 +155,21 @@ FontPack::parseFonts(const char* fontsFile)
                 _infoFont->dfbFont();
             }
 
+            else if (xmlStrcmp(node->name, (xmlChar*) "CustomFont") == 0)
+            {
+                xmlChar* fontName = xmlGetProp(node, (xmlChar*) "name");
+                FontMap::const_iterator it = _fontMap.find((char*) fontName);
+                if (it == _fontMap.end())
+                {
+                    Font* cFont = new Font((char*) fileC, atoi((char*) sizeC));
+                    cFont->setStyle(fontStyle);
+                    cFont->dfbFont();
+                    std::pair<FontMap::iterator, bool> res = _fontMap.insert(std::make_pair((char*) fontName, cFont));
+                } else
+                    ILOG_WARNING(ILX_FONTPACK, "CustomFont '%s' already exists!\n", fontName);
+                xmlFree(fontName);
+            }
+
             xmlFree(fileC);
             xmlFree(sizeC);
             node = node->next;
@@ -161,11 +189,16 @@ FontPack::parseFonts(const char* fontsFile)
 void
 FontPack::release()
 {
+    ILOG_TRACE(ILX_FONTPACK);
     delete _buttonFont;
     delete _defaultFont;
     delete _inputFont;
     delete _titleFont;
     delete _infoFont;
+
+    for (FontPack::FontMap::iterator it = _fontMap.begin(); it != _fontMap.end(); ++it)
+        delete it->second;
+    _fontMap.clear();
 
     _buttonFont = NULL;
     _defaultFont = NULL;
@@ -177,6 +210,7 @@ FontPack::release()
 std::istream&
 operator>>(std::istream& is, FontPack& obj)
 {
+    ILOG_TRACE_F(ILX_FONTPACK);
     obj.release();
 
     obj._buttonFont = new Font();
@@ -196,6 +230,20 @@ operator>>(std::istream& is, FontPack& obj)
     is >> *obj._infoFont;
     is.ignore(1);
 
+    int mapSize = 0;
+    std::string fontName;
+    is >> mapSize;
+    for (int i = 0; i < mapSize; ++i)
+    {
+        is >> fontName;
+        is.ignore(1);
+        Font* font = new Font();
+        is >> *font;
+        font->dfbFont();
+        obj._fontMap.insert(std::make_pair(fontName, font));
+    }
+    is.ignore(1);
+
     *obj._buttonFont->dfbFont();
     *obj._defaultFont->dfbFont();
     *obj._inputFont->dfbFont();
@@ -208,11 +256,16 @@ operator>>(std::istream& is, FontPack& obj)
 std::ostream&
 operator<<(std::ostream& os, const FontPack& obj)
 {
+    ILOG_TRACE_F(ILX_FONTPACK);
     os << *obj._buttonFont << std::endl;
     os << *obj._defaultFont << std::endl;
     os << *obj._inputFont << std::endl;
     os << *obj._titleFont << std::endl;
     os << *obj._infoFont << std::endl;
+
+    os << obj._fontMap.size() << std::endl;
+    for (FontPack::FontMap::const_iterator it = obj._fontMap.begin(); it != obj._fontMap.end(); ++it)
+        os << it->first << std::endl << *((Font*) it->second) << std::endl;
 
     return os;
 }

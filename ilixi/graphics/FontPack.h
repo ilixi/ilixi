@@ -26,6 +26,7 @@
 
 #include <types/Font.h>
 #include <types/Enums.h>
+#include <map>
 #include <iostream>
 
 namespace ilixi
@@ -51,6 +52,9 @@ public:
     Font*
     getFont(StyleHint::FontHint font = StyleHint::DefaultFont) const;
 
+    Font*
+    getCustomFont(const std::string& name) const;
+
     /*!
      * Initialise fonts from an XML file.
      *
@@ -70,6 +74,9 @@ private:
     Font* _titleFont;
     //! Font for rendering info text.
     Font* _infoFont;
+
+    typedef std::map<std::string, Font*> FontMap;
+    FontMap _fontMap;
 
     //! Release fonts.
     void
