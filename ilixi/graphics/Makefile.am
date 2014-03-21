@@ -6,6 +6,7 @@ libilixi_graphics_la_CFLAGS		= 	$(AM_CFLAGS)
 libilixi_graphics_la_LIBADD 	= 	@DEPS_LIBS@
 libilixi_graphics_la_SOURCES 	= 	FontPack.cpp \
 									IconPack.cpp \
+									ImagePack.cpp \
 									Painter.cpp \
                   					Palette.cpp \
                   					Style.cpp \
@@ -17,6 +18,7 @@ libilixi_graphics_la_SOURCES 	= 	FontPack.cpp \
 ilixi_includedir 				= 	$(includedir)/$(PACKAGE)-$(VERSION)/graphics
 nobase_ilixi_include_HEADERS 	= 	FontPack.h \
 									IconPack.h \
+									ImagePack.h \
 									Painter.h \
                   					Palette.h \
                   					Style.h \
