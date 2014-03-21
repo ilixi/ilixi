@@ -12,6 +12,7 @@ miscdata_DATA 	=	application.dtd \
 					configuration.dtd \
 					font_pack.dtd \
 					icon_pack.dtd \
+					image_pack.dtd \
 					keyboard.dtd \
 					palette.dtd \
 					style.dtd \
