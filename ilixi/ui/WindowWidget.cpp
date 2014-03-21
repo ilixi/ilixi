@@ -68,6 +68,7 @@ WindowWidget::~WindowWidget()
 
     closeWindow();
     delete _eventManager;
+    _eventManager = NULL;
     delete _window;
 }
 
