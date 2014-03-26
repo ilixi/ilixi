@@ -25,6 +25,7 @@
 
 #include <core/Application.h>
 #include <core/Logger.h>
+#include <graphics/ImagePack.h>
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
 #include <types/FontCache.h>
@@ -207,6 +208,12 @@ PlatformManager::getWindowSurfaceCaps() const
 }
 
 const std::string&
+PlatformManager::getThemeDirectory() const
+{
+    return _themedir;
+}
+
+const std::string&
 PlatformManager::getFontPack() const
 {
     return _fontPack;
@@ -216,6 +223,15 @@ const std::string&
 PlatformManager::getIconPack() const
 {
     return _iconPack;
+}
+
+const ImagePack*
+PlatformManager::getImagePack(const std::string packID) const
+{
+    ImagePackMap::const_iterator it = _imgPackMap.find(packID);
+    if (it != _imgPackMap.end())
+        return it->second;
+    return NULL;
 }
 
 const std::string&
@@ -462,22 +478,21 @@ void
 PlatformManager::setLanguage(const char* lang)
 {
     _options = (AppOptions) (_options | OptNoUpdates);
-    std::string langFont = _fontPack;
-
+    std::string langFont =  FileSystem::fileName(_fontPack);
     unsigned uscr = langFont.find("_");
     if (uscr != std::string::npos)
         langFont.replace(uscr + 1, 5, PrintF("%s", lang));
-
-    if (langFont != _fontPack)
+    std::string path = FileSystem::directoryName(_fontPack).append("/").append(langFont);
+    if (path != _fontPack)
     {
-        if (FileSystem::fileExists(langFont))
+        if (FileSystem::fileExists(path))
         {
-            if (Application::setFontPack(langFont.c_str()))
-                _fontPack = langFont;
+            if (Application::setFontPack(path.c_str()))
+                _fontPack = path;
             ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
         } else
         {
-            ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", langFont.c_str());
+            ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", path.c_str());
             if (Application::setFontPack(_fontPackDefault.c_str()))
                 _fontPack = _fontPackDefault;
             ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
@@ -607,6 +622,10 @@ PlatformManager::release()
     {
         ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 
+        for (ImagePackMap::iterator it = _imgPackMap.begin(); it != _imgPackMap.end(); ++it)
+            delete it->second;
+        _imgPackMap.clear();
+
         FontCache::Instance()->releaseAllEntries();
 
         if ((appOptions() & OptExclusive) && _cursorImage)
@@ -725,7 +744,25 @@ PlatformManager::parseConfig()
         else if (xmlStrcmp(group->name, (xmlChar*) "Window") == 0)
             setWindow(group->children);
         else if (xmlStrcmp(group->name, (xmlChar*) "Theme") == 0)
-            setTheme(group->children);
+        {
+            xmlChar* directory = xmlGetProp(group, (xmlChar*) "directory");
+            std::string themedir = (char*) directory;
+            size_t found = themedir.find("@ILX_THEMEDIR:");
+            if (found != std::string::npos)
+            {
+                std::string path = themedir;
+                char* var = getenv("ILX_THEMEDIR");
+                if (var)
+                    themedir = var;
+                else
+                    themedir = ILIXI_DATADIR"themes/";
+                ILOG_INFO(ILX_PLATFORMMANAGER, "ILX_THEMEDIR: %s\n", themedir.c_str());
+                themedir.append(path.substr(found + 14, std::string::npos));
+            }
+            ILOG_INFO(ILX_PLATFORMMANAGER, "Theme directory: %s\n", themedir.c_str());
+            setTheme(group->children, themedir);
+            xmlFree(directory);
+        }
 #if ILIXI_HAVE_FUSIONSOUND
         else if (xmlStrcmp(group->name, (xmlChar*) "Sounds") == 0)
             setSounds(group);
@@ -1218,8 +1255,9 @@ PlatformManager::setWindow(xmlNodePtr node)
 }
 
 void
-PlatformManager::setTheme(xmlNodePtr node)
+PlatformManager::setTheme(xmlNodePtr node, const std::string& themedir)
 {
+    _themedir = themedir;
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
     while (node != NULL)
     {
@@ -1228,57 +1266,43 @@ PlatformManager::setTheme(xmlNodePtr node)
 
         if (xmlStrcmp(node->name, (xmlChar*) "Background") == 0)
         {
-            size_t found = file.find("@THEMEDIR:");
-            if (found != std::string::npos)
-            {
-                _background = ILIXI_DATADIR"themes/";
-                _background.append(file.substr(found + 10, std::string::npos));
-            } else
-                _background = file;
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Background: %s\n", _background.c_str());
+            _background = themedir;
+            _background.append(file);
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> Background: %s\n", _background.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "Style") == 0)
         {
-            size_t found = file.find("@THEMEDIR:");
-            if (found != std::string::npos)
-            {
-                _style = ILIXI_DATADIR"themes/";
-                _style.append(file.substr(found + 10, std::string::npos));
-            } else
-                _style = file;
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Style: %s\n", _style.c_str());
+            _style = themedir;
+            _style.append(file);
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> Style: %s\n", _style.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "Palette") == 0)
         {
-            size_t found = file.find("@THEMEDIR:");
-            if (found != std::string::npos)
-            {
-                _palette = ILIXI_DATADIR"themes/";
-                _palette.append(file.substr(found + 10, std::string::npos));
-            } else
-                _palette = file;
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> Palette: %s\n", _palette.c_str());
+            _palette = themedir;
+            _palette.append(file);
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> Palette: %s\n", _palette.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "FontPack") == 0)
         {
-            size_t found = file.find("@THEMEDIR:");
-            if (found != std::string::npos)
-            {
-                _fontPack = ILIXI_DATADIR"themes/";
-                _fontPack.append(file.substr(found + 10, std::string::npos));
-            } else
-                _fontPack = file;
+            _fontPack = themedir;
+            _fontPack.append(file);
 #ifdef ILIXI_HAVE_NLS
             _fontPackDefault = _fontPack;
 #endif
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> FontPack: %s\n", _fontPack.c_str());
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> FontPack: %s\n", _fontPack.c_str());
         } else if (xmlStrcmp(node->name, (xmlChar*) "IconPack") == 0)
         {
-            size_t found = file.find("@THEMEDIR:");
-            if (found != std::string::npos)
-            {
-                _iconPack = ILIXI_DATADIR"themes/";
-                _iconPack.append(file.substr(found + 10, std::string::npos));
-            } else
-                _iconPack = file;
-            ILOG_DEBUG(ILX_PLATFORMMANAGER, " -> IconPack: %s\n", _iconPack.c_str());
+            _iconPack = themedir;
+            _iconPack.append(file);
+            ILOG_INFO(ILX_PLATFORMMANAGER, " -> IconPack: %s\n", _iconPack.c_str());
+        } else if (xmlStrcmp(node->name, (xmlChar*) "ImagePack") == 0)
+        {
+            xmlChar* id = xmlGetProp(node, (xmlChar*) "id");
+            std::string packFile = themedir;
+            ImagePack* pack = new ImagePack(packFile.append(file).c_str());
+            std::pair<ImagePackMap::iterator, bool> res = _imgPackMap.insert(std::make_pair((char*) id, pack));
+            if (!res.second)
+                ILOG_WARNING(ILX_PLATFORMMANAGER, "ImagePack %s already exists!\n", id);
+            else
+                ILOG_INFO(ILX_PLATFORMMANAGER, " -> ImagePack[%s]: %s\n", (char*) id, packFile.c_str());
+            xmlFree(id);
         }
 
         xmlFree(pcDATA);
@@ -1299,20 +1323,31 @@ PlatformManager::setSounds(xmlNodePtr node)
     _soundLevel = atoi((char*) level);
     xmlFree(level);
 
+    xmlChar* directory = xmlGetProp(node, (xmlChar*) "directory");
+    std::string sounddir = (char*) directory;
+    size_t found = sounddir.find("@ILX_SOUNDDIR:");
+    if (found != std::string::npos)
+    {
+        std::string path = sounddir;
+        char* var = getenv("ILX_SOUNDDIR");
+        if (var)
+            sounddir = var;
+        else
+            sounddir = ILIXI_DATADIR"sounds/";
+        ILOG_INFO(ILX_PLATFORMMANAGER, "ILX_SOUNDDIR: %s\n", sounddir.c_str());
+        sounddir.append(path.substr(found + 14, std::string::npos));
+    }
+    ILOG_INFO(ILX_PLATFORMMANAGER, "Sound directory: %s\n", sounddir.c_str());
+
+
     xmlNodePtr element = node->children;
     while (element != NULL)
     {
         xmlChar* nameC = xmlGetProp(element, (xmlChar*) "id");
         xmlChar* pcDATA = xmlNodeGetContent(element);
         std::string path = (char*) pcDATA;
-        std::string file;
-        size_t found = path.find("@SOUNDDIR:");
-        if (found != std::string::npos)
-        {
-            file = ILIXI_DATADIR"sounds/";
-            file.append(path.substr(found + 10, std::string::npos));
-        } else
-            file = path;
+        std::string file = sounddir;
+        file.append(path);
 
         Sound* sound = new Sound(file);
 
@@ -1353,15 +1388,18 @@ PlatformManager::setCursor(xmlNodePtr node)
         return;
 
     xmlChar* pcDATA = xmlNodeGetContent(node);
-    std::string path = (char*) pcDATA;
-    std::string file;
-    size_t found = path.find("@IMGDIR:");
+    std::string file = (char*) pcDATA;
+    size_t found = file.find("@ILX_IMGDIR:");
     if (found != std::string::npos)
     {
-        file = ILIXI_DATADIR"images/";
-        file.append(path.substr(found + 8, std::string::npos));
-    } else
-        file = path;
+        std::string path = file;
+        char* var = getenv("ILX_IMGDIR");
+        if (var)
+            file = var;
+        else
+            file = ILIXI_DATADIR"images/";
+        file.append(path.substr(found + 12, std::string::npos));
+    }
 
     // setup cursor image
     IDirectFBImageProvider* provider;

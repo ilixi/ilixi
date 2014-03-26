@@ -47,6 +47,8 @@ class I18NBase;
 namespace ilixi
 {
 
+class ImagePack;
+
 //! Configures and manages DirectFB interfaces.
 /*!
  * PlatformManager helps with configuration and management of DirectFB interfaces.
@@ -123,6 +125,12 @@ public:
     getWindowSurfaceCaps() const;
 
     /*!
+     * Returns path to theme directory.
+     */
+    const std::string&
+    getThemeDirectory() const;
+
+    /*!
      * Returns path to default font pack definition file.
      */
     const std::string&
@@ -133,6 +141,12 @@ public:
      */
     const std::string&
     getIconPack() const;
+
+    /*!
+     * Returns ImagePack associated with given packID.
+     */
+    const ImagePack*
+    getImagePack(const std::string packID) const;
 
     /*!
      * Returns path to default palette definition file.
@@ -266,12 +280,17 @@ private:
 #endif
 
     WindowConf _windowConf;
+    std::string _themedir;
     std::string _configFile;
     std::string _background;
     std::string _fontPack;
     std::string _iconPack;
     std::string _style;
     std::string _palette;
+
+    typedef std::map<std::string, ImagePack*> ImagePackMap;
+    ImagePackMap _imgPackMap;
+
 
     PlatformManager();
 
@@ -337,7 +356,7 @@ private:
     setWindow(xmlNodePtr node);
 
     void
-    setTheme(xmlNodePtr node);
+    setTheme(xmlNodePtr node, const std::string& themedir);
 
 #ifdef ILIXI_HAVE_FUSIONSOUND
     void
