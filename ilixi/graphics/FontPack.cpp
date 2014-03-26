@@ -75,7 +75,7 @@ FontPack::getCustomFont(const std::string& name) const
     if (it != _fontMap.end())
         return it->second;
     ILOG_WARNING(ILX_FONTPACK, " -> Cannot find font: %s\n", name.c_str());
-    return NULL;
+    return getFont(StyleHint::DefaultFont);
 }
 
 bool
