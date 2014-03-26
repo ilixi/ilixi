@@ -119,6 +119,12 @@ public:
     Image*
     defaultIcon(StyleHint::PackedIcon icon) const;
 
+    /*!
+     * Returns custom icon from icon pack.
+     */
+    Image*
+    customIcon(const std::string& name) const;
+
     Palette*
     palette() const;
 

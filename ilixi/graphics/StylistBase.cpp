@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_STYLISTBASE, "ilixi/graphics/StylistBase", "StylistBase");
+D_DEBUG_DOMAIN(ILX_STYLISTBASE, "ilixi/graphics/StylistBase", "StylistBase");
 
 Image* StylistBase::_noImage = NULL;
 
@@ -446,6 +446,12 @@ StylistBase::defaultIcon(StyleHint::PackedIcon icon) const
     default:
         return NULL;
     }
+}
+
+Image*
+StylistBase::customIcon(const std::string& name) const
+{
+    return _icons->getIcon(name);
 }
 
 Palette*
