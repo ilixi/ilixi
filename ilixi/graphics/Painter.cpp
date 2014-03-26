@@ -630,7 +630,14 @@ Painter::batchStretchBlitImage(Image* image, const Rectangle* sourceRects, const
 void
 Painter::setClip(int x, int y, int w, int h)
 {
-    setClip(Rectangle(x, y, w, h));
+    if (_state & PFActive)
+    {
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            _myWidget->surface()->clip(Rectangle(x + _myWidget->absX(), y + _myWidget->absY(), w, h));
+        else
+            _myWidget->surface()->clip(Rectangle(x, y, w, h));
+        _state = (PainterFlags) (_state | PFClipped);
+    }
 }
 
 void
@@ -638,7 +645,10 @@ Painter::setClip(const Rectangle& rect)
 {
     if (_state & PFActive)
     {
-        _myWidget->surface()->clip(rect);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+            _myWidget->surface()->clip(Rectangle(rect.x() + _myWidget->absX(), rect.y() + _myWidget->absY(), rect.width(), rect.height()));
+        else
+            _myWidget->surface()->clip(rect);
         _state = (PainterFlags) (_state | PFClipped);
     }
 }
