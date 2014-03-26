@@ -116,12 +116,14 @@ TextBase::text() const
 Size
 TextBase::textExtents() const
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     return _extents;
 }
 
 int
 TextBase::textLayoutHeightForWidth(int width) const
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     return _layout.heightForWidth(width, font());
 }
 
@@ -156,10 +158,10 @@ TextBase::setText(const std::string &text)
     if (_layout.text() != text)
     {
         _layout.setText(text);
+        _layout.doLayout(font());
         _extents = _layout.extents(font());
         _owner->doLayout();
         sigTextChanged(text);
-        _owner->update();
     }
 }
 
@@ -171,10 +173,10 @@ TextBase::setText(const std::wstring &text)
     {
         ILOG_TRACE(ILX_TEXTBASE);
         _layout.setText(text);
+        _layout.doLayout(font());
         _extents = _layout.extents(font());
         _owner->doLayout();
         sigTextChanged(_layout.text());
-        _owner->update();
     }
 }
 
