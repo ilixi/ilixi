@@ -115,6 +115,12 @@ public:
     setImage(const std::string& iconName, IconPack* iconPack);
 
     /*!
+     * Sets and owns image.
+     */
+    void
+    setImage(Image* image);
+
+    /*!
      * Sets the state of icon.
      */
     void

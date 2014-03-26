@@ -125,6 +125,13 @@ Icon::setImage(const std::string& iconName, IconPack* iconPack)
 }
 
 void
+Icon::setImage(Image* image)
+{
+    delete _image;
+    _image = image;
+}
+
+void
 Icon::setState(WidgetState state)
 {
     _state = state;
