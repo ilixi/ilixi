@@ -23,6 +23,7 @@
 
 #include <graphics/Style.h>
 #include <lib/FileSystem.h>
+#include <core/PlatformManager.h>
 #include <core/Logger.h>
 #include <lib/XMLReader.h>
 #include <libgen.h>
@@ -73,16 +74,47 @@ Style::parseStyle(const char* style)
             return false;
         }
 
+        xmlNodePtr root = xml.root();
         xmlNodePtr group = xml.currentNode();
 
-        ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
-        char* path = strdup(style);
-        path = dirname(path);
-        std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
-        ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
-        _pack = new Image(imgPack);
+        release();
+
+
+
+        xmlChar* imgFile = xmlGetProp(root, (xmlChar*) "resource");
+        std::string path = (char*) imgFile;
+        std::string file;
+        size_t found = path.find("@IMGDIR:");
+        if (found != std::string::npos)
+        {
+            file = ILIXI_DATADIR"images/";
+            file.append(path.substr(found + 8, std::string::npos));
+            ILOG_DEBUG(ILX_STYLE, " -> image file: %s\n", file.c_str());
+        } else
+        {
+            found = path.find("@ILX_THEMEDIR:");
+            if (found != std::string::npos)
+            {
+                file.append(PlatformManager::instance().getThemeDirectory());
+                file.append(path.substr(found + 14, std::string::npos));
+                ILOG_DEBUG(ILX_STYLE, " -> image file: %s\n", file.c_str());
+            } else
+            {
+                ILOG_DEBUG(ILX_STYLE, " -> parsing theme...\n");
+                char* path = strdup(style);
+                path = dirname(path);
+                std::string imgPack = std::string(std::string(path).append("/ui-pack.dfiff"));
+
+                file = imgPack;
+                ILOG_DEBUG(ILX_STYLE, " -> pack: %s\n", imgPack.c_str());
+                free(path);
+            }
+        }
+
+        _pack = new Image(file);
+        xmlFree(imgFile);
         parseTheme(group);
-        free(path);
+
 
         ILOG_INFO(ILX_STYLE, "Parsed style file: %s\n", style);
 
