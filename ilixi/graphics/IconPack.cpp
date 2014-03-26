@@ -22,6 +22,7 @@
  */
 
 #include <graphics/IconPack.h>
+#include <core/PlatformManager.h>
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
 #include <core/Logger.h>
@@ -93,21 +94,18 @@ IconPack::parseIcons(const char* iconsFile)
         xmlChar* imgDefSize = xmlGetProp(root, (xmlChar*) "defaultSize");
         std::string path = (char*) imgFile;
         std::string file;
-        size_t found = path.find("@IMGDIR:");
+        size_t found = path.find("@ILX_IMGDIR:");
         if (found != std::string::npos)
         {
             file = ILIXI_DATADIR"images/";
-            file.append(path.substr(found + 8, std::string::npos));
+            file.append(path.substr(found + 12, std::string::npos));
         } else
         {
-            found = path.find("@PACKDIR:");
+            found = path.find("@ILX_THEMEDIR:");
             if (found != std::string::npos)
             {
-                char* var = getenv("PACKDIR");
-                if (!var)
-                    ILOG_ERROR(ILX_ICONPACK, "Cannot get PACKDIR environment variable!\n");
-                file.append(var);
-                file.append(path.substr(found + 9, std::string::npos));
+                file.append(PlatformManager::instance().getThemeDirectory());
+                file.append(path.substr(found + 14, std::string::npos));
                 ILOG_DEBUG(ILX_ICONPACK, " -> image file: %s\n", file.c_str());
             } else
                 file = path;
