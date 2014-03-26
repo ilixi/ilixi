@@ -49,7 +49,7 @@ public:
      * If name is found returns a new image, else returns NULL.
      */
     Image*
-    getImage(const std::string& name);
+    getImage(const std::string& name) const;
 
     /*!
      * Initialise image pack from an XML file.

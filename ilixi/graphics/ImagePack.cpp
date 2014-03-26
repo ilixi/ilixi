@@ -22,6 +22,7 @@
  */
 
 #include <graphics/ImagePack.h>
+#include <core/PlatformManager.h>
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
 #include <core/Logger.h>
@@ -44,11 +45,11 @@ ImagePack::~ImagePack()
 }
 
 Image*
-ImagePack::getImage(const std::string& name)
+ImagePack::getImage(const std::string& name) const
 {
     ILOG_TRACE(ILX_IMAGEPACK);
     ILOG_DEBUG(ILX_IMAGEPACK, " -> name: %s\n", name.c_str());
-    ImageMap::iterator it = _map.find(name);
+    ImageMap::const_iterator it = _map.find(name);
     if (it != _map.end())
     {
         ILOG_DEBUG(ILX_IMAGEPACK, " -> %s @ (%d, %d, %d, %d)\n", name.c_str(), it->second.x(), it->second.y(), it->second.width(), it->second.height());
@@ -98,14 +99,11 @@ ImagePack::parsePack(const char* packFile)
             ILOG_DEBUG(ILX_IMAGEPACK, " -> image file: %s\n", file.c_str());
         } else
         {
-            found = path.find("@PACKDIR:");
+            found = path.find("@ILX_THEMEDIR:");
             if (found != std::string::npos)
             {
-                char* var = getenv("PACKDIR");
-                if (!var)
-                    ILOG_ERROR(ILX_IMAGEPACK, "Cannot get PACKDIR environment variable!\n");
-                file.append(var);
-                file.append(path.substr(found + 9, std::string::npos));
+                file.append(PlatformManager::instance().getThemeDirectory());
+                file.append(path.substr(found + 14, std::string::npos));
                 ILOG_DEBUG(ILX_IMAGEPACK, " -> image file: %s\n", file.c_str());
             } else
                 file = path;
