@@ -137,7 +137,8 @@ ilxDirectory()
 std::string
 directoryName(const std::string& path)
 {
-    return std::string(dirname(const_cast<char*>(path.c_str())));
+    std::string tmp = path.c_str();
+    return std::string(dirname(const_cast<char*>(tmp.c_str())));
 }
 
 std::string
