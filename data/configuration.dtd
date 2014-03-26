@@ -28,15 +28,18 @@
     <!ELEMENT FlipMode          (#PCDATA) >
     <!ELEMENT BufferMode        (#PCDATA) >
         
-<!ELEMENT Theme (Background?, FontPack, IconPack, Style, Palette) >
+<!ELEMENT Theme (Background?, Style, Palette, FontPack, IconPack?, ImagePack*) >
+    <!ATTLIST Theme directory CDATA #REQUIRED >
     <!ELEMENT Background (#PCDATA) >
-    <!ELEMENT FontPack  (#PCDATA) >
-    <!ELEMENT IconPack  (#PCDATA) >
     <!ELEMENT Style     (#PCDATA) >
     <!ELEMENT Palette   (#PCDATA) >
+    <!ELEMENT FontPack  (#PCDATA) >
+    <!ELEMENT IconPack  (#PCDATA) >    
+    <!ELEMENT ImagePack	(#PCDATA) >
+    	<!ATTLIST ImagePack id CDATA #REQUIRED >
     
 <!ELEMENT Sounds (Sound*)>
-	<!ATTLIST Sounds level CDATA "100" >
+	<!ATTLIST Sounds directory CDATA #REQUIRED level CDATA "100" >
     <!ELEMENT Sound (#PCDATA) >   
 		<!ATTLIST Sound id CDATA #REQUIRED >
 		
