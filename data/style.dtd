@@ -15,6 +15,7 @@
                   DialogPanel
 		)>
 
+<!ATTLIST style resource CDATA "ui-pack.dfiff">
 
 <!-- Buttons have all five states -->
 <!ELEMENT PushButton 		(cell_3H, pre, exp, dis, foc) >
