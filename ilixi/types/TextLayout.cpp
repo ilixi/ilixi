@@ -34,25 +34,27 @@ D_DEBUG_DOMAIN(ILX_TEXTLAYOUT, "ilixi/types/TextLayout", "TextLayout");
 TextLayout::TextLayout()
         : _modified(true),
           _singleLine(false),
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
           _text(L""),
 #else
           _text(""),
 #endif
           _alignment(Left)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
 }
 
 TextLayout::TextLayout(const std::string& text)
         : _modified(true),
           _singleLine(false),
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
           _text(L""),
 #else
           _text(""),
 #endif
           _alignment(Left)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     setText(text);
 }
 
@@ -64,10 +66,12 @@ TextLayout::TextLayout(const TextLayout& layout)
           _bounds(layout._bounds),
           _lines(layout._lines)
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
 }
 
 TextLayout::~TextLayout()
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
 }
 
 TextLayout::Alignment
@@ -85,6 +89,7 @@ TextLayout::bounds() const
 Size
 TextLayout::extents(Font* font) const
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     if (_singleLine)
         return font->extents(text(), -1);
     return multiExtents(font);
@@ -129,7 +134,8 @@ TextLayout::isEmpty() const
 std::string
 TextLayout::text() const
 {
-#if ILIXI_HAVE_NLS
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
+#ifdef ILIXI_USE_WSTRING
     char* out = (char*) calloc(_text.size() * 4 + 1, 1);
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     std::string s = out;
@@ -140,10 +146,11 @@ TextLayout::text() const
 #endif
 }
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 std::wstring
 TextLayout::wtext() const
 {
+    ILOG_TRACE_F(ILX_TEXTLAYOUT);
     return _text;
 }
 #endif
@@ -245,7 +252,7 @@ TextLayout::xyToIndex(Font* font, int x, int y)
 }
 
 void
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 TextLayout::insert(int pos, wchar_t c)
 #else
 TextLayout::insert(int pos, char c)
@@ -256,7 +263,7 @@ TextLayout::insert(int pos, char c)
 }
 
 void
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 TextLayout::insert(int pos, const std::wstring& str)
 #else
 TextLayout::insert(int pos, const std::string& str)
@@ -270,7 +277,7 @@ TextLayout::insert(int pos, const std::string& str)
 }
 
 void
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 TextLayout::replace(int pos, int number, const wchar_t c)
 #else
 TextLayout::replace(int pos, int number, const char c)
@@ -281,7 +288,7 @@ TextLayout::replace(int pos, int number, const char c)
 }
 
 void
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 TextLayout::replace(int pos, int number, const std::wstring& str)
 #else
 TextLayout::replace(int pos, int number, const std::string& str)
@@ -359,7 +366,7 @@ void
 TextLayout::setText(const std::string& text)
 {
     ILOG_TRACE_F(ILX_TEXTLAYOUT);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     wchar_t* out = (wchar_t*) calloc(text.size() + 1, sizeof(wchar_t));
     size_t bytes = utf8_to_wchar(text.c_str(), text.size(), out, text.size() + 1, UTF8_SKIP_BOM);
     _text = out;
@@ -370,7 +377,7 @@ TextLayout::setText(const std::string& text)
     _modified = true;
 }
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 void
 TextLayout::setText(const std::wstring& text)
 {
@@ -408,7 +415,7 @@ TextLayout::doLayout(Font* font)
         l.y = _bounds.y();
         int leading = font->leading();
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         char* out = (char*) calloc(_text.size() * 4 + 1, 1);
         size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
         const char* start = out;
@@ -429,7 +436,7 @@ TextLayout::doLayout(Font* font)
             text = next;
             l.y += leading;
         }
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         free(out);
 #endif
     }
@@ -449,7 +456,7 @@ TextLayout::heightForWidth(int width, Font* font) const
         return leading;
     else
     {
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         char* out = (char*) calloc(_text.size() * 4 + 1, 1);
         size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
         const char* text = out;
@@ -467,7 +474,7 @@ TextLayout::heightForWidth(int width, Font* font) const
             text = next;
             h += leading;
         }
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         free(out);
 #endif
         return h;
@@ -482,7 +489,7 @@ TextLayout::multiExtents(Font* font) const
     int h = 0;
     int lw, len;
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     char* out = (char*) calloc(_text.size() * 4 + 1, 1);
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     const char* start = out;
@@ -502,7 +509,7 @@ TextLayout::multiExtents(Font* font) const
         text = next;
         h += leading;
     }
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     free(out);
 #endif
     return Size(w, h);
@@ -512,7 +519,7 @@ void
 TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 {
     ILOG_TRACE_F(ILX_TEXTLAYOUT);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     char* out = (char*) calloc(_text.size() * 4 + 1, 1);
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     const char* text = out;
@@ -536,7 +543,7 @@ TextLayout::drawTextLayout(IDirectFBSurface* surface, int x, int y) const
 
     for (TextLayout::LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it)
         surface->DrawString(surface, text + ((TextLayout::LayoutLine) *it).offset, ((TextLayout::LayoutLine) *it).bytes, x, y + ((TextLayout::LayoutLine) *it).y, (DFBSurfaceTextFlags) _alignment);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     free(out);
 #endif
     surface->SetClip(surface, &clip);
@@ -547,7 +554,7 @@ void
 TextLayout::drawTextLayout(cairo_t* context, int x, int y) const
 {
     ILOG_TRACE_F(ILX_TEXTLAYOUT);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     char* out = (char*) calloc(_text.size() * 4 + 1, 1);
     size_t bytes = wchar_to_utf8(_text.c_str(), _text.size(), out, _text.size() * 4 + 1, UTF8_SKIP_BOM);
     const char* text = out;
@@ -573,7 +580,7 @@ TextLayout::drawTextLayout(cairo_t* context, int x, int y) const
         cairo_move_to(context, x, y + ((TextLayout::LayoutLine) *it).y);
         cairo_show_text(context, subtxt);
     }
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     free(out);
 #endif
     cairo_restore(context);

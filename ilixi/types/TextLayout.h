@@ -150,7 +150,7 @@ public:
     std::string
     text() const;
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     /*!
      * Returns text inside layout.
      */
@@ -175,7 +175,7 @@ public:
     int
     xyToIndex(Font* font, int x, int y);
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     /*!
      * Insert a character at given position.
      *
@@ -314,7 +314,7 @@ public:
     void
     setText(const std::string& text);
 
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     /*!
      * Sets the text of layout.
      */
@@ -346,7 +346,7 @@ private:
     //! Flag is set to true if layout is single line.
     bool _singleLine;
     //! Text inside layout
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     std::wstring _text;
 #else
     std::string _text;
