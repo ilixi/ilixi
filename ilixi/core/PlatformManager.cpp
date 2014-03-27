@@ -493,9 +493,14 @@ PlatformManager::setLanguage(const char* lang)
         } else
         {
             ILOG_WARNING(ILX_PLATFORMMANAGER, "Cannot find FontPack %s\n", path.c_str());
-            if (Application::setFontPack(_fontPackDefault.c_str()))
-                _fontPack = _fontPackDefault;
-            ILOG_INFO(ILX_PLATFORMMANAGER, "FontPack changed to %s\n", _fontPack.c_str());
+            if(_fontPack != _fontPackDefault)
+            {
+                if (Application::setFontPack(_fontPackDefault.c_str()))
+                    _fontPack = _fontPackDefault;
+                ILOG_INFO(ILX_PLATFORMMANAGER, "Changed to default FontPack: %s\n", _fontPack.c_str());
+            }
+            else
+                ILOG_INFO(ILX_PLATFORMMANAGER, "Keep using default FontPack: %s\n", _fontPackDefault.c_str());
         }
     }
 
