@@ -38,15 +38,6 @@ public:
     virtual
     ~I18NBase();
 
-    /*!
-     * Sets the text using i18n support.
-     */
-    virtual void
-    setI18nText(const std::string& text) =0;
-
-protected:
-    std::string _i18nID;
-
 private:
     virtual void
     updateI18nText() =0;
