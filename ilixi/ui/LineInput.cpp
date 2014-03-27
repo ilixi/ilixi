@@ -175,7 +175,7 @@ LineInput::append(const std::string& text)
 {
     if (_selection.isNull())
     {
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         _layout.insert(_cursorIndex, std::wstring(text.begin(), text.end()));
 #else
         _layout.insert(_cursorIndex, std::string(text.begin(), text.end()));
@@ -188,7 +188,7 @@ LineInput::append(const std::string& text)
     {
         int pos1 = std::min(_selectedIndex, _cursorIndex);
         int n1 = abs(_selectedIndex - _cursorIndex);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
         _layout.replace(pos1, n1, std::wstring(text.begin(), text.end()));
 #else
         _layout.replace(pos1, n1, std::string(text.begin(), text.end()));
@@ -455,7 +455,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
 
         if (_selection.isNull())
         {
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
             _layout.insert(_cursorIndex, (wchar_t) keyEvent.keySymbol);
 #else
             _layout.insert(_cursorIndex, (char) keyEvent.keySymbol);
@@ -468,7 +468,7 @@ LineInput::keyDownEvent(const KeyEvent& keyEvent)
         {
             int pos1 = std::min(_selectedIndex, _cursorIndex);
             int n1 = abs(_selectedIndex - _cursorIndex);
-#if ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
             _layout.replace(pos1, n1, (wchar_t) keyEvent.keySymbol);
 #else
             _layout.replace(pos1, n1, (char) keyEvent.keySymbol);
