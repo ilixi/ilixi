@@ -118,13 +118,14 @@ public:
     virtual void
     setText(const std::string &text);
 
-#ifdef ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
     /*!
      * Sets the text.
      */
     virtual void
     setText(const std::wstring &text);
-
+#endif
+#ifdef ILIXI_HAVE_NLS
     /*!
      * Sets I18n text for widget.
      *
@@ -148,6 +149,10 @@ public:
     sigc::signal<void> sigFontChanged;
 
 protected:
+#ifdef ILIXI_HAVE_NLS
+    //! This property stores I18N text id.
+    std::string _i18nID;
+#endif
     //! TextLayout for this widget.
     TextLayout _layout;
 

@@ -165,7 +165,7 @@ TextBase::setText(const std::string &text)
     }
 }
 
-#ifdef ILIXI_HAVE_NLS
+#ifdef ILIXI_USE_WSTRING
 void
 TextBase::setText(const std::wstring &text)
 {
@@ -179,7 +179,8 @@ TextBase::setText(const std::wstring &text)
         sigTextChanged(_layout.text());
     }
 }
-
+#endif
+#ifdef ILIXI_HAVE_NLS
 void
 TextBase::setI18nText(const std::string& text)
 {
