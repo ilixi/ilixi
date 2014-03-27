@@ -31,6 +31,8 @@ extern "C"
 #include <direct/clock.h>
 }
 
+#define ILIXI_HAS_GETFRAMETIME 0
+
 namespace ilixi
 {
 
