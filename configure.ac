@@ -96,6 +96,7 @@ AC_ARG_ENABLE([sawman], [AS_HELP_STRING([--enable-sawman], [enable compositor an
 AC_ARG_ENABLE([reflex], [AS_HELP_STRING([--enable-reflex], [enable experimental support for Reflex @<:@default=no@:>@])], [], [enable_reflex=no])
 AC_ARG_ENABLE([wnn], [AS_HELP_STRING([--enable-wnn], [enable experimental support for Wnn @<:@default=no@:>@])], [], [enable_wnn=no])
 AC_ARG_ENABLE([nls], [AS_HELP_STRING([--enable-nls], [enable Native Language Support via message catalogs @<:@default=no@:>@])], [], [enable_nls=no])
+AC_ARG_ENABLE([wstring], [AS_HELP_STRING([--enable-wstring], [enable wstrings in text layouts @<:@default=no@:>@])], [], [enable_wstring=no])
 AC_ARG_WITH([demos], [AS_HELP_STRING([--with-demos], [build demo applications @<:@default=yes@:>@])], [], [with_demos=yes])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
@@ -371,6 +372,11 @@ fi
 if test "x$enable_compositor" = "xyes"; then
     AC_DEFINE([HAVE_COMPOSITOR], [1], [Enable Compositor support])
 fi
+
+if test "x$enable_wstring" = "xyes"; then
+    AC_DEFINE([USE_WSTRING], [1], [Enable wstring])
+fi
+
 
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
