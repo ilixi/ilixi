@@ -105,6 +105,10 @@ public:
     doLayout();
 
 protected:
+#ifdef ILIXI_HAVE_NLS
+    //! This property stores I18N text id.
+    std::string _i18nID;
+#endif
     //! This image stores the title icon.
     Icon* _titleIcon;
     //! This property stores GroupBox's title.
