@@ -113,6 +113,14 @@ public:
     setFont(Font* font);
 
     /*!
+     * Sets font using custom font from FontPack.
+     *
+     * @warning Use this method I18N fonts.
+     */
+    void
+    setCustomFont(const std::string& customFontName);
+
+    /*!
      * Sets the text.
      */
     virtual void
@@ -173,6 +181,8 @@ private:
     Widget* _owner;
     //! Stores extents for speed.
     Size _extents;
+    //! This property stores custom font name.
+    std::string _customFontName;
 
 #ifdef ILIXI_HAVE_NLS
     void

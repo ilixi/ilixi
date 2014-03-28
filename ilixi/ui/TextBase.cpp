@@ -41,7 +41,8 @@ TextBase::TextBase(Widget* owner)
         : _owner(owner),
 #endif
           _font(NULL),
-          _extents(-1, -1)
+          _extents(-1, -1),
+          _customFontName("")
 {
     ILOG_TRACE(ILX_TEXTBASE);
     _extents = _layout.extents(font());
@@ -57,7 +58,8 @@ TextBase::TextBase(const std::string& text, Widget* owner)
 #endif
           _font(NULL),
           _layout(),
-          _extents(-1, -1)
+          _extents(-1, -1),
+          _customFontName("")
 {
     ILOG_TRACE(ILX_TEXTBASE);
     setText(text);
@@ -74,7 +76,8 @@ TextBase::TextBase(const TextBase& tb)
 #endif
           _font(tb._font),
           _layout(tb._layout),
-          _extents(tb._extents)
+          _extents(tb._extents),
+          _customFontName(tb._customFontName)
 {
     ILOG_TRACE(ILX_TEXTBASE);
     _owner->sigGeometryUpdated.connect(sigc::mem_fun(this, &TextBase::updateTextBaseGeometry));
@@ -90,6 +93,7 @@ TextBase::~TextBase()
 Font*
 TextBase::font() const
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     if (_font)
         return _font;
     return defaultFont();
@@ -152,6 +156,13 @@ TextBase::setFont(Font* font)
 }
 
 void
+TextBase::setCustomFont(const std::string& customFontName)
+{
+    _customFontName = customFontName;
+    setFont(_owner->stylist()->customFont(_customFontName));
+}
+
+void
 TextBase::setText(const std::string &text)
 {
     ILOG_TRACE(ILX_TEXTBASE);
@@ -184,6 +195,7 @@ TextBase::setText(const std::wstring &text)
 void
 TextBase::setI18nText(const std::string& text)
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     _i18nID = text;
     setText(gettext(_i18nID.c_str()));
     PlatformManager::instance().addI18N(this);
@@ -193,12 +205,14 @@ TextBase::setI18nText(const std::string& text)
 void
 TextBase::setSingleLine(bool single)
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     _layout.setSingleLine(single);
 }
 
 void
 TextBase::updateTextBaseGeometry()
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     _layout.setBounds(0, 0, _owner->width(), _owner->height());
     _layout.doLayout(font()); // Fixme can not connect to signal as it is.
 }
@@ -207,6 +221,9 @@ TextBase::updateTextBaseGeometry()
 void
 TextBase::updateI18nText()
 {
+    ILOG_TRACE(ILX_TEXTBASE);
+    if (!_customFontName.empty())
+        setFont(_owner->stylist()->customFont(_customFontName));
     setText(gettext(_i18nID.c_str()));
 }
 #endif
@@ -214,6 +231,7 @@ TextBase::updateI18nText()
 Font*
 TextBase::defaultFont() const
 {
+    ILOG_TRACE(ILX_TEXTBASE);
     return _owner->stylist()->defaultFont(StyleHint::DefaultFont);
 }
 
