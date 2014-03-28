@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE IconPack PUBLIC "-//ilixi//DTD Icons v1//EN" "http://www.ilixi.org/dtd/icon_pack.dtd">
-<IconPack resource="@IMGDIR:ui-icons.png" defaultSize="16">
+<IconPack resource="@ILX_IMGDIR:ui-icons.png" defaultSize="16">
 	<Icon row="1" col="1" name="arrow_sw" />
 	<Icon row="1" col="2" name="arrow_ne" />
 	<Icon row="1" col="3" name="ribbon" />
