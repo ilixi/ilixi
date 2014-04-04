@@ -29,6 +29,8 @@
 
 namespace ilixi
 {
+class Color;
+
 //! A simple text label with optional border
 class Label : public Widget, public TextBase
 {
@@ -58,6 +60,12 @@ public:
     virtual Size
     preferredSize() const;
 
+    Color*
+    color() const;
+
+    void
+    setColor(const Color& textColor);
+
     /*!
      * Returns the margin around text.
      */
@@ -73,6 +81,8 @@ public:
 protected:
     //! This property holds the margin around text.
     Margin _margin;
+    //! This property stores custom color for label text.
+    Color* _color;
 
     /*!
      * Draws label using stylist.

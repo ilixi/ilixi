@@ -28,12 +28,13 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_LABEL, "ilixi/ui/Label", "Label");
+D_DEBUG_DOMAIN(ILX_LABEL, "ilixi/ui/Label", "Label");
 
 Label::Label(std::string text, Widget* parent)
         : Widget(parent),
           TextBase("", this),
-          _margin(0)
+          _margin(0),
+          _color(NULL)
 {
     setText(text);
     setConstraints(MinimumConstraint, MinimumConstraint);
@@ -46,11 +47,14 @@ Label::Label(const Label& label)
           _margin(label._margin)
 {
     ILOG_TRACE_W(ILX_LABEL);
+    if (label._color)
+        setColor(*label._color);
 }
 
 Label::~Label()
 {
     ILOG_TRACE_W(ILX_LABEL);
+    delete _color;
 }
 
 int
@@ -66,6 +70,21 @@ Label::preferredSize() const
     ILOG_TRACE_W(ILX_LABEL);
     Size s = textExtents();
     return Size(s.width() + _margin.hSum(), s.height() + _margin.vSum());
+}
+
+Color*
+Label::color() const
+{
+    return _color;
+}
+
+void
+Label::setColor(const Color& textColor)
+{
+    if (!_color)
+        _color = new Color(textColor);
+    else
+        *_color = textColor;
 }
 
 Margin
