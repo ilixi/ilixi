@@ -121,11 +121,15 @@ Stylist::drawFrame(Painter* p, Frame* frame)
 void
 Stylist::drawLabel(Painter* p, Label* label)
 {
-    if (!label->enabled())
-        p->setBrush(_palette->_disabled.baseText);
+    if (label->color())
+        p->setBrush(*label->color());
     else
-        p->setBrush(_palette->_default.baseText);
-
+    {
+        if (!label->enabled())
+            p->setBrush(_palette->_disabled.baseText);
+        else
+            p->setBrush(_palette->_default.baseText);
+    }
     p->setFont(*label->font());
     p->drawLayout(label->layout());
 }
