@@ -143,11 +143,9 @@ TextBase::setFont(Font* font)
     ILOG_TRACE(ILX_TEXTBASE);
     if (font)
     {
-        if (_font && _font == font)
-            return;
-        if (_font)
+        ILOG_DEBUG(ILX_TEXTBASE, " -> Setting font to %p from %p\n", font, _font);
+        if (_font && _customFontName.empty())
             _font->relRef();
-        ILOG_DEBUG(ILX_TEXTBASE, " -> Font changed to %p from %p\n", font, _font);
         _font = font;
         _font->addRef();
         _layout.setModified();
@@ -225,7 +223,10 @@ TextBase::updateI18nText()
 {
     ILOG_TRACE(ILX_TEXTBASE);
     if (!_customFontName.empty())
+    {
+        ILOG_DEBUG(ILX_TEXTBASE, " -> setting custom font: %s\n", _customFontName.c_str());
         setFont(_owner->stylist()->customFont(_customFontName));
+    }
     setText(gettext(_i18nID.c_str()));
 }
 #endif
