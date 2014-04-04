@@ -25,6 +25,7 @@
 #include <lib/FileSystem.h>
 #include <lib/XMLReader.h>
 #include <core/Logger.h>
+#include <types/FontCache.h>
 #include <fstream>
 
 namespace ilixi
@@ -205,6 +206,8 @@ FontPack::release()
     _inputFont = NULL;
     _titleFont = NULL;
     _infoFont = NULL;
+
+    FontCache::Instance()->logEntries();
 }
 
 std::istream&
