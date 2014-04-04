@@ -85,6 +85,12 @@ public:
     void
     releaseEntry(const char* name, int size, DFBFontAttributes attr);
 
+    /*!
+     * Logs contents of cache.
+     */
+    void
+    logEntries();
+
 private:
     //! This mutex locks cache map for access.
     pthread_mutex_t _lock;

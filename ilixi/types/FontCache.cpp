@@ -33,7 +33,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_FONTCACHE, "ilixi/types/FontCache", "FontCache");
+D_DEBUG_DOMAIN(ILX_FONTCACHE, "ilixi/types/FontCache", "FontCache");
 
 FontCache* FontCache::__instance = NULL;
 
@@ -82,10 +82,10 @@ unsigned int
 FontCache::getEntry(const std::string& name, int size, DFBFontAttributes attr, IDirectFBFont** font)
 {
     ILOG_TRACE_F(ILX_FONTCACHE);
-    std::string style = "regular";
-    int slant = 0;
     ILOG_DEBUG(ILX_FONTCACHE, " -> name: %s\n", name.c_str());
     ILOG_DEBUG(ILX_FONTCACHE, " -> size: %d\n", size);
+    std::string style = "regular";
+    int slant = 0;
 
 #if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
     if (attr & DFFA_STYLE_BOLD)
@@ -111,7 +111,7 @@ FontCache::releaseEntry(unsigned int key)
     {
         if (--(it->second.ref))
         {
-            ILOG_DEBUG( ILX_FONTCACHE, " -> Decrement ref counter for entry (%u)\n", key);
+            ILOG_DEBUG(ILX_FONTCACHE, " -> Decrement ref counter for entry (%u)\n", key);
             pthread_mutex_unlock(&_lock);
             return;
         }
@@ -128,6 +128,17 @@ void
 FontCache::releaseEntry(const char* name, int size, DFBFontAttributes attr)
 {
     releaseEntry(getKey(name, size, attr));
+}
+
+void
+FontCache::logEntries()
+{
+    ILOG_TRACE_F(ILX_FONTCACHE);
+    pthread_mutex_lock(&_lock);
+    ILOG_DEBUG(ILX_FONTCACHE, " -> Map size: %d\n", _cache.size());
+    for (CacheMap::iterator it = _cache.begin(); it != _cache.end(); ++it)
+        ILOG_DEBUG(ILX_FONTCACHE, "   -> %u: %p\n", it->first, it->second.font);
+    pthread_mutex_unlock(&_lock);
 }
 
 IDirectFBFont*
