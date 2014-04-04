@@ -175,6 +175,18 @@ public:
     fillRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
 
     /*!
+     * Fills inside a triangle with current brush color.
+     */
+    void
+    fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
+
+    /*!
+     * Fills inside a triangle with current brush color.
+     */
+    void
+    fillTriangle(const Point& p1, const Point& p2, const Point& p3, const DFBSurfaceDrawingFlags& flags = DSDRAW_NOFX);
+
+    /*!
      * Draws the text with its topleft positioned at given point (x, y) using Brush and Font.
      * By default all text will be rendered.
      * If you only wish to limit the number of characters to display, set the

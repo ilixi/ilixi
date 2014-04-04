@@ -212,6 +212,36 @@ Painter::fillRectangle(const Rectangle& rect, const DFBSurfaceDrawingFlags& flag
 }
 
 void
+Painter::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const DFBSurfaceDrawingFlags& flags)
+{
+    ILOG_TRACE(ILX_PAINTER);
+    if (_state & PFActive)
+    {
+        applyBrush();
+        dfbSurface->SetDrawingFlags(dfbSurface, flags);
+        if (_myWidget->surface()->flags() & Surface::SharedSurface)
+#ifdef ILIXI_STEREO_OUTPUT
+        {
+            if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
+                dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1+ _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 + _myWidget->z(), _myWidget->absY() + y2, _myWidget->absX() + x3 + _myWidget->z(), _myWidget->absY() + y3);
+            else
+                dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1 - _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 - _myWidget->z(), _myWidget->absY() + y2, _myWidget->absX() + x3 - _myWidget->z(), _myWidget->absY() + y3);
+        }
+#else
+            dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2, _myWidget->absX() + x3, _myWidget->absY() + y3);
+#endif
+        else
+            dfbSurface->FillTriangle(dfbSurface, x1, y1, x2, y2, x3, y3);
+    }
+}
+
+void
+Painter::fillTriangle(const Point& p1, const Point& p2, const Point& p3, const DFBSurfaceDrawingFlags& flags)
+{
+    fillTriangle(p1.x(), p1.y(), p2.x(), p2.y(), p3.x(), p3.y(), flags);
+}
+
+void
 Painter::drawText(const std::string& text, int x, int y, const DFBSurfaceDrawingFlags& flags)
 {
     if (text.empty())
@@ -667,7 +697,6 @@ void
 Painter::setBrush(const Brush& brush)
 {
     _brush = brush;
-    _brush.applyBrush(dfbSurface);
     ILOG_DEBUG(ILX_PAINTER, "setBrush() %p\n", this);
 }
 
@@ -675,7 +704,6 @@ void
 Painter::setBrush(const Color& color)
 {
     _brush.setColor(color);
-    _brush.applyBrush(dfbSurface);
     ILOG_DEBUG(ILX_PAINTER, "setBrush() %p\n", this);
 }
 
