@@ -31,7 +31,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
+D_DEBUG_DOMAIN(ILX_TEXTBASE, "ilixi/ui/TextBase", "TextBase");
 
 TextBase::TextBase(Widget* owner)
 #ifdef ILIXI_HAVE_NLS
@@ -143,6 +143,8 @@ TextBase::setFont(Font* font)
     ILOG_TRACE(ILX_TEXTBASE);
     if (font)
     {
+        if (_font && _font == font)
+            return;
         if (_font)
             _font->relRef();
         ILOG_DEBUG(ILX_TEXTBASE, " -> Font changed to %p from %p\n", font, _font);
