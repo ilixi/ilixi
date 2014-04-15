@@ -34,10 +34,10 @@ namespace ilixi
 {
 
 //! PI
-const double M_PI = 3.14159265;
+const double CPM_PI = 3.14159265;
 
 //! PI /180 (Used for conversion from degrees to radians)
-const double M_D2R = 0.0174532925;
+const double CPM_D2R = 0.0174532925;
 
 D_DEBUG_DOMAIN(ILX_CPAINTER, "ilixi/graphics/CairoPainter", "CairoPainter");
 
@@ -201,7 +201,7 @@ CairoPainter::drawArc(double x, double y, double width, double height, double an
     else
         cairo_translate(_context, x + width / 2.0, y + height / 2.0);
     cairo_scale(_context, width / 2.0, height / 2.0);
-    cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * M_D2R, angle2 * M_D2R);
+    cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * CPM_D2R, angle2 * CPM_D2R);
     cairo_restore(_context);
     applyCairoPen();
     cairo_stroke(_context);
@@ -223,7 +223,7 @@ CairoPainter::drawChord(double x, double y, double width, double height, double 
     else
         cairo_translate(_context, x + width / 2.0, y + height / 2.0);
     cairo_scale(_context, width / 2.0, height / 2.0);
-    cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * M_D2R, angle2 * M_D2R);
+    cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * CPM_D2R, angle2 * CPM_D2R);
     cairo_close_path(_context);
     cairo_restore(_context);
     applyDrawingMode(mode);
@@ -246,7 +246,7 @@ CairoPainter::drawEllipse(double x, double y, double width, double height, Drawi
     else
         cairo_translate(_context, x + width / 2.0, y + height / 2.0);
     cairo_scale(_context, width / 2.0, height / 2.0);
-    cairo_arc(_context, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
+    cairo_arc(_context, 0.0, 0.0, 1.0, 0.0, 2 * CPM_PI);
     cairo_close_path(_context);
     cairo_restore(_context);
     applyDrawingMode(mode);
