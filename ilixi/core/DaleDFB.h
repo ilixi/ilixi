@@ -30,7 +30,7 @@ extern "C"
 #include <fusiondale.h>
 }
 #include <ilixiConfig.h>
-#if HAVE_COMPOSITOR
+#if ILIXI_HAVE_COMPOSITOR
 #include <lib/Notify.h>
 #endif
 #include <types/Rectangle.h>
@@ -75,7 +75,7 @@ public:
      */
     static DFBResult
     comaCallComponent(IComaComponent* component, ComaMethodID method, void* arg);
-#if HAVE_COMPOSITOR
+#if ILIXI_HAVE_COMPOSITOR
     /*!
      * Shows on-screen-keyboard.
      */
@@ -92,7 +92,7 @@ public:
 private:
     static IFusionDale* __dale;
     static IComa* __coma;
-#if HAVE_COMPOSITOR
+#if ILIXI_HAVE_COMPOSITOR
     static IComaComponent* __oskComp;
     static IComaComponent* __compComp;
     static IComaComponent* __soundComp;
@@ -130,7 +130,7 @@ private:
     static void
     releaseDale();
 
-#if HAVE_COMPOSITOR
+#if ILIXI_HAVE_COMPOSITOR
     /*!
      * Get OSK COMA Component.
      */
