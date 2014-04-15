@@ -341,14 +341,22 @@ DFBBox Rectangle::dfbBox() const
 DFBRectangle
 Rectangle::dfbRect() const
 {
-    DFBRectangle r = { x(), y(), width(), height() };
+    DFBRectangle r;
+    r.x = x();
+    r.y = y();
+    r.w = width();
+    r.h = height();
     return r;
 }
 
 DFBRegion
 Rectangle::dfbRegion() const
 {
-    DFBRegion r = { x(), y(), right() - 1, bottom() - 1 };
+    DFBRegion r;
+    r.x1 = x();
+    r.y1 = y();
+    r.x2 = right() - 1;
+    r.y2 = bottom() - 1;
     return r;
 }
 
