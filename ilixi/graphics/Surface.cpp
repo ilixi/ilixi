@@ -253,25 +253,41 @@ Surface::flip(const Rectangle& rect)
 
             if (r.y1)
             {
-                DFBRectangle rect = { 0, 0, w, r.y1 };
+                DFBRectangle rect;
+                rect.x = 0;
+                rect.y = 0;
+                rect.w = w;
+                rect.h = r.y1;
                 _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
             }
 
             if (r.y2 < h - 1)
             {
-                DFBRectangle rect = { 0, r.y2 + 1, w, h - r.y2 - 1 };
+                DFBRectangle rect;
+                rect.x = 0;
+                rect.y = r.y2 + 1;
+                rect.w = w;
+                rect.h = h - r.y2 - 1;
                 _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
             }
 
             if (r.x1)
             {
-                DFBRectangle rect = { 0, r.y1, r.x1, r.y2 - r.y1 + 1 };
+                DFBRectangle rect;
+                rect.x = 0;
+                rect.y = r.y1;
+                rect.w = r.x1;
+                rect.h = r.y2 - r.y1 + 1;
                 _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
             }
 
             if (r.x2 < w - 1)
             {
-                DFBRectangle rect = { r.x2 + 1, r.y1, w - r.x2 - 1, r.y2 - r.y1 + 1 };
+                DFBRectangle rect;
+                rect.x = r.x2 + 1;
+                rect.y = r.y1;
+                rect.w = w - r.x2 - 1;
+                rect.h = r.y2 - r.y1 + 1;
                 _dfbSurface->Blit(_dfbSurface, _dfbSurface, &rect, rect.x, rect.y);
             }
 
