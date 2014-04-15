@@ -302,7 +302,11 @@ SurfaceView::renderSource(const PaintEvent& event)
                 dfbSurface->Blit(dfbSurface, _sourceSurface, NULL, 0, 0);
         } else
         {
-            DFBRectangle rect = { 0, 0, width(), height() };
+            DFBRectangle rect;
+            rect.x = 0;
+            rect.y = 0;
+            rect.w = width();
+            rect.h = height();
             if (surface()->flags() & Surface::SharedSurface)
             {
                 rect.x += absX();
