@@ -175,7 +175,11 @@ void
 Surface::setGeometry(int x, int y, int width, int height)
 {
     ILOG_TRACE(ILX_SURFACE);
-    DFBRectangle r = { x, y, width, height };
+    DFBRectangle r;
+    r.x = x;
+    r.y = y;
+    r.w = width;
+    r.h = height;
     if (_parentSurface)
     {
         DFBResult ret = _dfbSurface->MakeSubSurface(_dfbSurface, _parentSurface, &r);
@@ -520,7 +524,11 @@ Surface::setStereoGeometry(const Rectangle& geometry, int zIndex)
 void
 Surface::setStereoGeometry(int x, int y, int width, int height, int zIndex)
 {
-    DFBRectangle r = { x, y, width, height };
+    DFBRectangle r;
+    r.x = x;
+    r.y = y;
+    r.w = width;
+    r.h = height;
     if (_parentSurface)
     {
         r.x += zIndex;
