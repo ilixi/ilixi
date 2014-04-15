@@ -214,6 +214,7 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
     switch (event.type)
     {
     case DWET_BUTTONUP:
+    {
         ILOG_DEBUG(ILX_DRAGHELPER, " -> Drag end at x, y: (%d, %d) - cx, cy: (%d, %d)\n", event.x, event.y, event.cx, event.cy);
         Application::handleDragEvents(dragEvent);
         Application::setDragging(false);
@@ -224,8 +225,9 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
         p.y = event.cy;
         PlatformManager::instance().renderCursor(p, false);
         break;
-
+    }
     case DWET_MOTION:
+    {
         if (event.buttons & DIBM_LEFT)
         {
             dragEvent.buttons = (DFBInputDeviceButtonMask) 0;
@@ -240,7 +242,7 @@ DragHelper::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
             Application::handleDragEvents(dragEvent);
         }
         break;
-
+    }
     default:
         break;
     }
