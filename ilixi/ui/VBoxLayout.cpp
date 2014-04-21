@@ -27,7 +27,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_VBOX, "ilixi/ui/VBox", "VBox");
+D_DEBUG_DOMAIN(ILX_VBOX, "ilixi/ui/VBox", "VBox");
 
 VBoxLayout::VBoxLayout(Widget* parent)
         : LayoutBase(parent),
@@ -230,19 +230,16 @@ VBoxLayout::tile()
                 cw = e.widget->maxWidth();
 
             if (cw != e.size.width())
-            {
                 e.size.setWidth(cw);
-                //              int h4w = e.widget->heightForWidth(cw);
-                //              if (h4w)
-                //                {
-                //                  // check grow-shrink for height
-                //                  if (h4w > e.size.height() && e.widget->yConstraint()
-                //                      & GrowPolicy)
-                //                    e.size.setHeight(h4w);
-                //                  else if (h4w < e.size.height() && e.widget->yConstraint()
-                //                      & ShrinkPolicy)
-                //                    e.size.setHeight(h4w);
-                //                }
+
+            int h4w = e.widget->heightForWidth(cw);
+            if (h4w > 0)
+            {
+                // check grow-shrink for height
+                if (h4w > e.size.height() && (e.widget->yConstraint() & GrowPolicy))
+                    e.size.setHeight(h4w);
+                else if (h4w < e.size.height() && (e.widget->yConstraint() & ShrinkPolicy))
+                    e.size.setHeight(h4w);
             }
 
             list.push_back(e);
