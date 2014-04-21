@@ -212,12 +212,14 @@ Animation::funck()
             sigExec();
             sigStep(stepTime);
             return 1;
-        } else
-            sigFinished();
+        }
 
         if (_loops && _currentLoop >= _loops)
         {
             _state = Stopped;
+            sigFinished();
+            if (_state == Running)
+                return 1;
             return 0;
         } else
         {
