@@ -93,10 +93,10 @@ Stylist::drawDirectionalButton(Painter* p, DirectionalButton* button)
         draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.exp, _style->db1.exp, button->corners());
     else
         draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.def, _style->db1.def, button->corners());
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw9CFrame(p, 0, 0, button->width(), button->height(), _style->db2.foc, _style->db1.foc, button->corners());
-
+#endif
     // Draw button text
     if (!button->text().empty())
     {
@@ -167,9 +167,10 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
             p->blitImage(_style->_pack, _style->cbC.exp, 0, 0);
         else
             p->blitImage(_style->_pack, _style->cbC.def, 0, 0);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             p->blitImage(_style->_pack, _style->cbC.foc, 0, 0);
+#endif
     } else if (checkbox->partial())
     {
         if (!checkbox->enabled())
@@ -180,9 +181,10 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
             p->blitImage(_style->_pack, _style->cbT.exp, 0, 0);
         else
             p->blitImage(_style->_pack, _style->cbT.def, 0, 0);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             p->blitImage(_style->_pack, _style->cbT.foc, 0, 0);
+#endif
     } else
     {
         if (!checkbox->enabled())
@@ -193,9 +195,10 @@ Stylist::drawCheckBox(Painter* p, CheckBox* checkbox)
             p->blitImage(_style->_pack, _style->cb.exp, 0, 0);
         else
             p->blitImage(_style->_pack, _style->cb.def, 0, 0);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             p->blitImage(_style->_pack, _style->cb.foc, 0, 0);
+#endif
     }
 
     // Text
@@ -219,9 +222,10 @@ Stylist::drawComboBox(Painter* p, ComboBox* combo)
         draw9CFrame(p, 0, 0, wBG, wB, _style->li.dis, _style->li2.dis, LeftCorners);
     else
         draw9CFrame(p, 0, 0, wBG, wB, _style->li.def, _style->li2.def, LeftCorners);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw9CFrame(p, 0, 0, wBG, wB, _style->li.foc, _style->li2.foc, LeftCorners);
+#endif
 
     // draw button
     if (!combo->enabled())
@@ -232,10 +236,10 @@ Stylist::drawComboBox(Painter* p, ComboBox* combo)
         draw9CFrame(p, wBG, 0, wB, wB, _style->db2.exp, _style->db1.exp, RightCorners);
     else
         draw9CFrame(p, wBG, 0, wB, wB, _style->db2.def, _style->db1.def, RightCorners);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw9CFrame(p, wBG, 0, wB, wB, _style->db2.foc, _style->db1.foc, RightCorners);
-
+#endif
     p->setBrush(_palette->getGroup(state).baseText);
     p->drawLayout(combo->layout());
 }
@@ -252,9 +256,10 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.dis);
         else
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             draw9Frame(p, 0, 0, input->width(), input->height(), _style->li.foc);
+#endif
     }
 
     Rectangle r(defaultParameter(StyleHint::LineInputLeft), defaultParameter(StyleHint::LineInputTop), input->width() - defaultParameter(StyleHint::LineInputLR), input->height() - defaultParameter(StyleHint::LineInputTB));
@@ -321,9 +326,10 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.exp);
         else
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.foc);
+#endif
     } else if (button->getPushButtonStyle() == OK)
     {
         if (!button->enabled())
@@ -334,9 +340,10 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.exp);
         else
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.foc);
+#endif
     } else if (button->getPushButtonStyle() == CANCEL)
     {
         if (!button->enabled())
@@ -347,9 +354,10 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.exp);
         else
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.foc);
+#endif
     }
 
     // Text
@@ -376,9 +384,10 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
             p->blitImage(_style->_pack, _style->rbOn.exp, 0, 0);
         else
             p->blitImage(_style->_pack, _style->rbOn.def, 0, 0);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             p->blitImage(_style->_pack, _style->rbOn.foc, 0, 0);
+#endif
     } else
     {
         if (!button->enabled())
@@ -389,9 +398,10 @@ Stylist::drawRadioButton(Painter* p, RadioButton* button)
             p->blitImage(_style->_pack, _style->rbOff.exp, 0, 0);
         else
             p->blitImage(_style->_pack, _style->rbOff.def, 0, 0);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             p->blitImage(_style->_pack, _style->rbOff.foc, 0, 0);
+#endif
     }
 
     // Text
@@ -544,8 +554,10 @@ Stylist::drawSlider(Painter* p, Slider* bar)
         p->blitImage(_style->_pack, _style->slI.exp, bar->_indicator.x(), bar->_indicator.y());
     else
         p->blitImage(_style->_pack, _style->slI.def, bar->_indicator.x(), bar->_indicator.y());
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         p->blitImage(_style->_pack, _style->slI.foc, bar->_indicator.x(), bar->_indicator.y());
+#endif
 }
 
 void
@@ -558,10 +570,10 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box, const Size& size)
         draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.dis);
     else
         draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw9FrameMid(p, size.width(), 0, box->width() - 2 * size.width(), box->height(), _style->li.foc);
-
+#endif
     if (box->layout().text().size())
     {
         p->setFont(*defaultFont(StyleHint::InputFont));
@@ -628,10 +640,10 @@ Stylist::drawToolBarButton(Painter* p, ToolBarButton* button)
         draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.exp);
     else
         draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw3Frame(p, 0, 0, button->width(), button->height(), _style->tbarb.foc);
-
+#endif
     // Draw button text
     if (!button->text().empty())
     {
@@ -659,9 +671,10 @@ Stylist::drawToolButton(Painter* p, ToolButton* button)
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.exp);
         else
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
         if (state & FocusedState)
             draw9Frame(p, 0, 0, button->width(), button->height(), _style->tb.foc);
+#endif
     }
 
     // Draw check indicator
@@ -709,9 +722,10 @@ Stylist::drawToolButtonFrame(Painter* p, int x, int y, int w, int h, WidgetState
         draw9Frame(p, 0, 0, w, h, _style->tb.exp);
     else
         draw9Frame(p, 0, 0, w, h, _style->tb.def);
-
+#if ILIXI_HAVE_FOCUS_OVERLAY
     if (state & FocusedState)
         draw9Frame(p, 0, 0, w, h, _style->tb.foc);
+#endif
 }
 
 void

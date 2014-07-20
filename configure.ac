@@ -100,7 +100,7 @@ AC_ARG_ENABLE([wstring], [AS_HELP_STRING([--enable-wstring], [enable wstrings in
 AC_ARG_WITH([demos], [AS_HELP_STRING([--with-demos], [build demo applications @<:@default=yes@:>@])], [], [with_demos=yes])
 AC_ARG_WITH([examples], [AS_HELP_STRING([--with-examples], [compile examples @<:@default=no@:>@])], [], [with_examples=no])
 
-
+AC_ARG_WITH([focus-overlays], [AC_HELP_STRING([--with-focus-overlays], [enables drawing of focus overlay images) @<:@default=yes@:>@])], [], [with_focus_overlays=yes])
 AC_ARG_WITH([csharp], [AC_HELP_STRING([--with-csharp], [enable CSharp bindings @<:@default=no@:>@])], [], [with_csharp=no])
 
 ######################################################################
@@ -377,6 +377,9 @@ if test "x$enable_wstring" = "xyes"; then
     AC_DEFINE([USE_WSTRING], [1], [Enable wstring])
 fi
 
+if test "x$with_focus_overlays" = "xyes"; then
+    AC_DEFINE([HAVE_FOCUS_OVERLAY], [1], [Draws focus overlay images])
+fi
 
 AC_DEFINE_UNQUOTED([BINDIR], ["$prefix/bin/"], [ilixi binary directory])
 AC_DEFINE_UNQUOTED([DATADIR], ["$prefix/share/$PACKAGE-$VERSION/"], [ilixi data directory])
@@ -395,7 +398,6 @@ AM_CONDITIONAL([WITH_SURFACE_EVENTS], [test x$with_surface_events = xyes])
 AM_CONDITIONAL([WITH_BARESIP], [test x$enable_sip = xyes])
 AM_CONDITIONAL([WITH_EGL], [test "$enable_egl" = "yes"])
 AM_CONDITIONAL([WITH_CAIRO], [test "$enable_cairo" = "yes"])
-
 AM_CONDITIONAL([WITH_CSHARP], [test "$with_csharp" = "yes"])
 
 ILIXI_DATADIR=$prefix/share/$PACKAGE-$VERSION
