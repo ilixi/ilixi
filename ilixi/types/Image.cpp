@@ -141,6 +141,18 @@ Image::preferredSize()
     ILOG_TRACE(ILX_IMAGE);
     Size s;
 
+    if (_state & SubImage)
+    {
+        if (_state & NotAvailable)
+            return s;
+        else
+        {
+            int w, h;
+            _dfbSurface->GetSize(_dfbSurface, &w, &h);
+            return Size(w, h);
+        }
+    }
+
     if (_imagePath == "")
     {
         ILOG_ERROR(ILX_IMAGE, "Image path is empty!\n");
@@ -159,10 +171,7 @@ Image::preferredSize()
     if (provider->GetSurfaceDescription(provider, &desc) != DFB_OK)
         ILOG_ERROR(ILX_IMAGE, "Cannot get surface description!\n");
     else
-    {
-        s.setWidth(desc.width);
-        s.setHeight(desc.height);
-    }
+        return Size(desc.width, desc.height);
 
     if (provider)
         provider->Release(provider);
