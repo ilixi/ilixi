@@ -32,6 +32,13 @@ namespace ilixi
 class PushButton : public Button
 {
 public:
+    enum PushButtonStyle
+    {
+        Default,
+        OK,
+        CANCEL
+    };
+
     /*!
      * Constructor.
      * @param text for button.

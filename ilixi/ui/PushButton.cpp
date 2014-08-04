@@ -51,7 +51,7 @@ PushButton::preferredSize() const
     ILOG_TRACE_W(ILX_PUSHBUTTON);
 
     if (text().empty())
-        return stylist()->defaultSize(StyleHint::PushButton);
+        return Size(stylist()->defaultParameter(StyleHint::PushButtonLR), stylist()->defaultParameter(StyleHint::PushButtonHeight));
 
     int w = stylist()->defaultParameter(StyleHint::PushButtonLR);
 
@@ -63,14 +63,14 @@ PushButton::preferredSize() const
     return Size(w, stylist()->defaultParameter(StyleHint::PushButtonHeight));
 }
 
-PushButtonStyle
+PushButton::PushButtonStyle
 PushButton::getPushButtonStyle() const
 {
     return _pbStyle;
 }
 
 void
-PushButton::setPushButtonStyle(PushButtonStyle pbStyle)
+PushButton::setPushButtonStyle(PushButton::PushButtonStyle pbStyle)
 {
     _pbStyle = pbStyle;
 }
