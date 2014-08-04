@@ -30,7 +30,18 @@
 
 namespace ilixi
 {
-
+//! Simplifies using sub-images for UI elements
+/*!
+ * An image pack is useful if an application has lots of graphical elements composed of images.
+ * You can group such related images in an image pack as it is usually faster to load a
+ * big image instead of loading lots of smaller images.
+ *
+ * You can access an image as follows:
+ * \code
+ * ImagePack* imagePack = PlatformManager::instance().getImagePack("my-image-pack");
+ * imagePack->getImage("custom-button");
+ * \endcode
+ */
 class ImagePack
 {
 public:
