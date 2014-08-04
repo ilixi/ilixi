@@ -99,13 +99,16 @@ enum AnimatedStates
     FocusOut
 };
 
+/*!
+ * Hints for standard font pack elements.
+ */
 enum FontHint
 {
-    ButtonFont,
-    DefaultFont,
-    InfoFont,
-    InputFont,
-    TitleFont
+    ButtonFont,     //!< This font is used for rendering text on buttons.
+    DefaultFont,    //!< This font is used for rendering text.
+    MicroFont,      //!< This font is used for rendering detailed information.
+    InputFont,      //!< This font is used for rendering text on input controls, e.g. LineInput.
+    TitleFont       //!< This font is used for rendering titles, e.g. title of a dialog.
 };
 
 enum PackedIcon
