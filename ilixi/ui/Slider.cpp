@@ -57,8 +57,8 @@ Size
 Slider::preferredSize() const
 {
     if (_orientation == Horizontal)
-        return stylist()->defaultSize(StyleHint::Slider);
-    return stylist()->defaultSize(StyleHint::SliderV);
+        return Size(100, stylist()->defaultParameter(StyleHint::SliderHeight));
+    return Size(stylist()->defaultParameter(StyleHint::SliderHeight), 100);
 }
 
 bool
