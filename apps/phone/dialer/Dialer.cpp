@@ -47,13 +47,13 @@ Dialer::Dialer(int argc, char* argv[])
     addWidget(grid);
 
     _keyCall = new PushButton("Call");
-    _keyCall->setPushButtonStyle(OK);
+    _keyCall->setPushButtonStyle(PushButton::OK);
     grid->addWidget(_keyCall);
     _keyCLR = new PushButton("CLR");
     _keyCLR->sigClicked.connect(sigc::bind<int, int>(sigc::mem_fun(_input, &LineInput::clear), -1, 1));
     grid->addWidget(_keyCLR);
     _keyEnd = new PushButton("End");
-    _keyEnd->setPushButtonStyle(CANCEL);
+    _keyEnd->setPushButtonStyle(PushButton::CANCEL);
     grid->addWidget(_keyEnd);
 
     _key1 = new PushButton("1");

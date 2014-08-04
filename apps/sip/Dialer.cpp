@@ -30,7 +30,7 @@ Dialer::Dialer(Widget* parent)
     box->addWidget(_input);
 
     _keyCall = new PushButton("Dial");
-    _keyCall->setPushButtonStyle(OK);
+    _keyCall->setPushButtonStyle(PushButton::OK);
     box->addWidget(_keyCall);
 
     GridLayout* grid = new GridLayout(4, 3);

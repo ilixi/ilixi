@@ -268,11 +268,11 @@ WidgetsDemo::createPBGroup()
     group->addWidget(pb2);
 
     PushButton* pb3 = new PushButton("OK");
-    pb3->setPushButtonStyle(OK);
+    pb3->setPushButtonStyle(PushButton::OK);
     group->addWidget(pb3);
 
     PushButton* pb4 = new PushButton("CANCEL");
-    pb4->setPushButtonStyle(CANCEL);
+    pb4->setPushButtonStyle(PushButton::CANCEL);
     group->addWidget(pb4);
 
     return group;

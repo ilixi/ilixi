@@ -44,7 +44,7 @@ Call::Call(Widget* parent)
     addWidget(new Spacer(Vertical));
 
     _cancel = new PushButton("Cancel Call");
-    _cancel->setPushButtonStyle(CANCEL);
+    _cancel->setPushButtonStyle(PushButton::CANCEL);
     _cancel->sigClicked.connect(sigHangup);
     addWidget(_cancel);
 
