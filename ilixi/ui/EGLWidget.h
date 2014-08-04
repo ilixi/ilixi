@@ -33,54 +33,80 @@
 
 namespace ilixi
 {
-
+//! Provides a widget with its own EGL context.
+/*!
+ * This class simplifies using OpenGL within an ilixi application.
+ *
+ * You can create your own custom GL widgets by implementing virtual methods.
+ */
 class EGLWidget : public Widget
 {
 public:
     /*!
      * Constructor.
-     * Initialises GL context.
-     * @param parent
+     *
+     * Sets widget surface flags for EGL use.
+     *
+     * @param parent pointer to parent widget.
      */
     EGLWidget(Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~EGLWidget();
 
+    /*!
+     * Returns a pointer to EGLDisplay.
+     */
     EGLDisplay
     eglDisplay() const;
 
+    /*!
+     * Returns a pointer to EGLContext.
+     */
     EGLContext
     eglContext() const;
 
+    /*!
+     * Returns a pointer to EGLSurface.
+     */
     EGLSurface
     eglSurface() const;
 
 protected:
     /*!
-     * Reimplement this method.
+     * Reimplement this method for drawing.
+     *
      * By default, clears GL_COLOR_BUFFER_BIT only.
      */
     virtual void
     renderGL(const PaintEvent& event);
 
     /*!
-     * Simply calls renderGL()
+     * Initializes surface and calls renderGL()
      */
     void
     compose(const PaintEvent& event);
 
+    /*!
+     * Set auto swap flag which specifies whether to swap buffers.
+     *
+     * By default autoSwap is set to true in constructor.
+     */
     void
     setAutoSwap(bool autoSwap);
 
 private:
     //! Flag is set to true once initialiseGL is called.
     bool _initialisedGL;
-    //! EGL surface.
+    //! This property stores EGL surface.
     EGLSurface _eglSurface;
+    //! This property stores EGL context.
     EGLContext _eglContext;
+    //! This property specifies whether to swap buffers after rendering.
     bool _autoSwap;
-
 
     /*!
      * Reimplement this method to initialise shaders etc.
@@ -90,7 +116,6 @@ private:
 
     /*!
      * This function is called if widget's geometry is modified.
-     * By default, it setups viewport.
      */
     virtual void
     resizeGL();

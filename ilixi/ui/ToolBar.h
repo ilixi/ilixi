@@ -86,6 +86,18 @@ private:
 //! A horizontal bar which can contain buttons and/or other widgets.
 /*!
  * A ToolBar can be set using Applicaton::setToolBar() method.
+ *
+ * An example of a toolbar with ToolBarButton widgets follows:
+ *
+ * \code
+ * ToolBar* bar = new ToolBar();
+ * setToolbar(bar);
+ *
+ * bar->addWidget(new Label("Toolbar label"));
+ * bar->addWidget(new Spacer(Horizontal));
+ * bar->addWidget(new ToolBarButton("Button"));
+ * \endcode
+ *
  */
 class ToolBar : public Frame
 {
@@ -105,6 +117,9 @@ public:
     preferredSize() const;
 
 protected:
+    /*!
+     * Draws toolbar using stylist.
+     */
     virtual void
     compose(const PaintEvent& event);
 };

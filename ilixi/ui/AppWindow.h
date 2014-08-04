@@ -31,9 +31,12 @@ namespace ilixi
 
 class Application;
 
-//! An application window.
+//! Provides a main window for an application.
 /*!
- * This class is used by Application to create a new application window.
+ * A main window is automatically instantiated during construction of an application to act as a container for widgets.
+ * It can also have a ToolBar to add a set of controls.
+ *
+ * Main window draws a background image by default; but you can also use a custom method, see setCustomCompose().
  */
 class AppWindow : public WindowWidget
 {
@@ -93,6 +96,9 @@ public:
 
     /*!
      * Sets a background image.
+     *
+     * @param imagePath pointing to image file.
+     * @param tile If true image is tiled.
      */
     void
     setBackgroundImage(const std::string& imagePath, bool tile = false);
@@ -100,12 +106,15 @@ public:
     /*!
      * Adds a toolbar to application.
      *
-     * @param bar
+     * @param toolbar pointer to ToolBar widget.
      * @param positionNorth if true places toolbar at top, else at bottom.
      */
     bool
     setToolbar(ToolBar* toolbar, bool positionNorth = true);
 
+    /*!
+     * This method is used to bypass default compose method and instead use Application::compose().
+     */
     void
     setCustomCompose(bool useCustomCompose);
 

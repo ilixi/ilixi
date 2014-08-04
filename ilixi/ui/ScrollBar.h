@@ -28,63 +28,125 @@
 
 namespace ilixi
 {
-
+//! Provides a horizontal or vertical scroll bar
+/*!
+ * A scroll bar can be used with a container to
+ */
 class ScrollBar : public Widget
 {
 public:
+    /*!
+     * Constructor.
+     */
     ScrollBar(Orientation orientation = Horizontal, Widget* parent = 0);
 
+    /*!
+     * Destructor.
+     */
     virtual
     ~ScrollBar();
 
+    /*!
+     * Returns an optimal size for styled scroll bar.
+     */
     Size
     preferredSize() const;
 
+    /*!
+     * Returns bounding box around scroll indicator.
+     */
     const Rectangle&
     indicator() const;
 
+    /*!
+     * Returns a rectangle which indicator is allowed to travel.
+     */
     const Rectangle&
     indicatorRegion() const;
 
+    /*!
+     * Returns the placement of scroll bar inside its parent.
+     */
     Direction
     direction() const;
 
+    /*!
+     * Returns maximum value of scroll bar.
+     */
     int
     max() const;
 
+    /*!
+     * Returns minimum value of scroll bar.
+     */
     int
     min() const;
 
+    /*!
+     * Returns orientation, whether bar is horizontal or vertical.
+     */
     Orientation
     orientation() const;
 
+    /*!
+     * Returns step value.
+     */
     int
     step() const;
 
+    /*!
+     * Returns a value which matches current position of scroll bar indicator.
+     */
     int
     value() const;
 
+    /*!
+     * Sets the placement of scroll bar inside its parent.
+     */
     void
     setDirection(Direction direction);
 
+    /*!
+     * Sets maximum value of scroll bar.
+     */
     void
     setMax(int max);
 
+    /*!
+     * Sets minimum value of scroll bar.
+     */
     void
     setMin(int min);
 
+    /*!
+     * Sets the orientation of scroll bar.
+     */
     void
     setOrientation(Orientation orientation);
 
+    /*!
+     * Sets minimum and maximum values of scroll bar.
+     */
     void
     setRange(int min, int max);
 
+    /*!
+     * Sets step value.
+     */
     void
     setStep(int step);
 
+    /*!
+     * Sets scroll bar value and moves indicator.
+     */
     void
     setValue(int value);
 
+    /*!
+     * Scrolls indicator by given amount.
+     *
+     * min() <= value() + amount <= max()
+     */
     void
     scroll(int amount);
 
