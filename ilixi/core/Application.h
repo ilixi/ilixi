@@ -30,15 +30,26 @@
 namespace ilixi
 {
 
-//! Windowed application.
+//! An application with a main window.
 /*!
- * This class is used to create a new UI application with its own window.
+ * This class is used to create a new GUI application. You can always add and remove widgets or other windows to your application. You can access main window using appWindow() method.
+ *
+ * Main responsibilities of an application are to handle input events and maintain child windows. In case there are no modal windows, a window stack is used to forward events to the window on top.
+ * In order to push custom key and pointer events you should use postKeyEvent and postPointerEvent respectively.
+ *
+ * Application uses Engine internally to control main loop (You can have only one application running at one time per process).
+ * Once an application object is constructed, use exec() to enter main loop and call quit() or press ESC key to terminate application.
+ * Main loop will wait unless there are callbacks, timers or input events. It will automatically wake up if there are pending input events.
+ *
+ * If you just need to perform tasks around other DirectFB applications without a GUI use Service instead.
  */
 class Application : public sigc::trackable
 {
 public:
     /*!
      * Constructor.
+     *
+     * Make sure you pass command line parameters to constructor as it initializes platform interfaces.
      */
     Application(int* argc, char*** argv, AppOptions opts = OptNone);
 
@@ -49,19 +60,25 @@ public:
     ~Application();
 
     /*!
-     * Returns application window width in pixels.
+     * Returns a pointer to running application.
+     */
+    static Application*
+    instance();
+
+    /*!
+     * Returns main window width in pixels.
      */
     int
     width() const;
 
     /*!
-     * Returns application window height in pixels.
+     * Returns main window height in pixels.
      */
     int
     height() const;
 
     /*!
-     * Adds a new child widget to application window.
+     * Adds a new child widget to main window.
      *
      * \sa ContainerBase::addWidget()
      */
@@ -69,7 +86,7 @@ public:
     addWidget(Widget* widget);
 
     /*!
-     * Removes a child widget from container.
+     * Removes a child widget from main window.
      *
      * \sa addWidget()
      */
@@ -77,7 +94,7 @@ public:
     removeWidget(Widget* widget);
 
     /*!
-     * Updates application window.
+     * Updates main window.
      */
     void
     update();
@@ -89,7 +106,9 @@ public:
     quit();
 
     /*!
-     * You can reimplement this method to create your own custom main loop.
+     * Enters main loop and waits for incoming events to process.
+     *
+     * \note You can reimplement this method to create your own custom main loop.
      */
     virtual void
     exec();
@@ -269,9 +288,9 @@ protected:
     setStyleFromFile(const char* style);
 
     /*!
-     * This method is called if custom compose is set.
+     * This method is called if custom compose is set for main window.
      *
-     * \sa setCustomCompose
+     * \sa AppWindow::setCustomCompose
      */
     virtual void
     compose(const PaintEvent& event);

@@ -79,7 +79,6 @@ Application::Application(int* argc, char*** argv, AppOptions opts)
 
     setStylist(new Stylist());
 
-    // TODO create AppWindow
     _appWindow = new AppWindow(this);
     _appWindow->sigAbort.connect(sigc::ptr_fun(&Application::quit));
 }
@@ -97,6 +96,13 @@ Application::~Application()
     pthread_mutex_destroy(&__windowMutex);
 
     __activeWindow = NULL;
+    __instance = NULL;
+}
+
+Application*
+Application::instance()
+{
+    return __instance;
 }
 
 int
