@@ -362,13 +362,6 @@ enum LayerFlipMode
     FlipNew
 };
 
-enum PushButtonStyle
-{
-    Default,
-    OK,
-    CANCEL
-};
-
 //! This enum specified text input mode for OSK input.
 enum TextInputMode
 {
