@@ -46,7 +46,7 @@ Size
 TabPanelButton::preferredSize() const
 {
     if (text().empty())
-        return stylist()->defaultSize(StyleHint::PushButton);
+        return Size(stylist()->defaultParameter(StyleHint::PushButtonLR), stylist()->defaultParameter(StyleHint::PushButtonHeight));
 
     Size t = textExtents();
     return Size(stylist()->defaultParameter(StyleHint::PanelLR) + stylist()->defaultParameter(StyleHint::PanelInvWidth) + t.width(), stylist()->defaultParameter(StyleHint::PanelTB) + t.height());
