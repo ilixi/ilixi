@@ -26,9 +26,7 @@
 #include <ui/HBoxLayout.h>
 #include <ui/Icon.h>
 #include <ui/Label.h>
-#include <ui/LineInput.h>
 #include <ui/ListBox.h>
-#include <ui/RadioButton.h>
 #include <ui/Spacer.h>
 #include <ui/VBoxLayout.h>
 
@@ -61,7 +59,6 @@ FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
           _owner(parent),
           _info(info),
           _icon(NULL),
-          _select(NULL),
           _alternateRow(false)
 {
     ILOG_TRACE_W(ILX_FILEBROWSERITEM);
@@ -91,14 +88,14 @@ FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
         labelBox->addWidget(infoBox);
 
         _size = new Label(formatSize(_info->size()));
-        _size->setFont(stylist()->defaultFont(StyleHint::InfoFont));
+        _size->setFont(stylist()->defaultFont(StyleHint::MicroFont));
         _size->setSingleLine(true);
         infoBox->addWidget(_size);
 
         infoBox->addWidget(new Spacer(Horizontal));
 
         _date = new Label(formatDate(_info->lastModified()));
-        _date->setFont(stylist()->defaultFont(StyleHint::InfoFont));
+        _date->setFont(stylist()->defaultFont(StyleHint::MicroFont));
         _date->setSingleLine(true);
         infoBox->addWidget(_date);
     }
@@ -116,7 +113,7 @@ Size
 FileBrowserItem::preferredSize() const
 {
     Size s = _box->preferredSize();
-    int h = std::max(s.height(), stylist()->defaultFont(StyleHint::ButtonFont)->extents("X").height() + stylist()->defaultFont(StyleHint::InfoFont)->extents("X").height() + 5);
+    int h = std::max(s.height(), stylist()->defaultFont(StyleHint::ButtonFont)->extents("X").height() + stylist()->defaultFont(StyleHint::MicroFont)->extents("X").height() + 5);
     s.setHeight(h);
     return s;
 }

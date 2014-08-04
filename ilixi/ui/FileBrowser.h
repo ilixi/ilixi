@@ -33,18 +33,26 @@ class FileInfo;
 class HBoxLayout;
 class Icon;
 class Label;
-class LineInput;
 class ListBox;
-class RadioButton;
 class VBoxLayout;
 class FileBrowser;
 
+//! Provides a clickable item for files/directories on a file browser.
+/*!
+ * Shows name for both files and directories; but files have extra information like size.
+ */
 class FileBrowserItem : public Widget
 {
     friend class FileBrowser;
 public:
+    /*!
+     * Constructor
+     */
     FileBrowserItem(FileInfo* info, FileBrowser* parent = 0);
 
+    /*!
+     * Destructor
+     */
     virtual
     ~FileBrowserItem();
 
@@ -68,14 +76,21 @@ protected:
     focusOutEvent();
 
 private:
+    //! This is a pointer to parent file browser.
     FileBrowser* _owner;
+    //! This stores information about file
     FileInfo* _info;
+    //! This label shows name of file
     Label* _label;
+    //! This label shows modified date of file
     Label* _date;
+    //! This label shows size of file
     Label* _size;
+    //! This icon is created based on mime type
     Icon* _icon;
-    RadioButton* _select;
+    //! This is used for drawing an alternate background color
     bool _alternateRow;
+    //! This stores all child widgets
     HBoxLayout* _box;
 
     void
@@ -85,29 +100,56 @@ private:
     itemsSort(FileBrowserItem* a, FileBrowserItem* b);
 };
 
+//! Provides a simple widget to list/select files and directories
 class FileBrowser : public Widget
 {
 public:
+    /*!
+     *
+     */
     FileBrowser(const std::string& path = "", Widget* parent = 0);
 
+    /*!
+     * Destructor
+     */
     virtual
     ~FileBrowser();
 
     Size
     preferredSize() const;
 
+    /*!
+     * Refreshes current path and updates widget
+     */
     void
     refresh();
 
+    /*!
+     * Returns true if hidden files are listed, false otherwise.
+     */
     bool
     showHidden() const;
 
+    /*!
+     * Parses given path for files and directories and updates list using filter.
+     */
     void
     setPath(const std::string& path);
 
+    /*!
+     * Sets filter for files.
+     *
+     * An example filter to list movies:
+     * \code
+     * setFilter(".avi .mp4 .mpeg .mpg .mp2 .ogm .3gp");
+     * \endcode
+     */
     void
     setFilter(const std::string& filter);
 
+    /*!
+     * Sets whether to how hidden files.
+     */
     void
     setShowHidden(bool showHidden);
 
@@ -122,12 +164,17 @@ protected:
     compose(const PaintEvent& event);
 
 private:
+    //! This flag stores whether hidden files are shown.
     bool _showHidden;
+    //! This flag is set to true if filter and/or path are modified.
     bool _modified;
+    //! This property stores filter string.
     std::string _filter;
+    //! This label shows current path.
     Label* _path;
-    LineInput* _search;
+    //! This list contains file browser items.
     ListBox* _list;
+    //! This layout is used to position path label and list.
     VBoxLayout* _box;
 
     void
