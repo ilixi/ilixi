@@ -31,6 +31,7 @@
 namespace ilixi
 {
 
+//! This struct defines 3x1 (horizontal) or 1x3 (vertical) styled elements.
 struct r3
 {
     Rectangle l;
@@ -38,6 +39,7 @@ struct r3
     Rectangle r;
 };
 
+//! This struct defines 3x3 styled elements.
 struct r9
 {
     Rectangle tl;
