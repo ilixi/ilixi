@@ -82,21 +82,25 @@ enum WidgetResizePolicy
 enum WidgetResizeConstraint
 {
     FixedConstraint = 0x00,                                             //!< Only widget's preferredSize() must be used. Widget can not grow or shrink.
-    MinimumConstraint = 0x01,                                     		//!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
-    MaximumConstraint = 0x02,                                   		//!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
-    NoConstraint = 0x03,                         						//!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
-    MinimumExpandingConstraint = 0x05,           						//!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
-    ExpandingConstraint = 0x07,   										//!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
+    MinimumConstraint = 0x01,                                           //!< Widget's preferredSize() provides minimum. However, widget can grow if needed. (GrowPolicy)
+    MaximumConstraint = 0x02,                                           //!< Widget's preferredSize() provides maximum. However, widget can shrink if needed. (ShrinkPolicy)
+    NoConstraint = 0x03,                                                //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. (GrowPolicy | ShrinkPolicy)
+    MinimumExpandingConstraint = 0x05,                                  //!< Widget's preferredSize() is used. However, widget can not shrink. Widget should expand if possible. (GrowPolicy | ExpandPolicy)
+    ExpandingConstraint = 0x07,                                         //!< Widget's preferredSize() is used. However, widget can grow or shrink if needed. Widget should expand if possible. (GrowPolicy | ShrinkPolicy | ExpandPolicy)
     IgnoredConstraint = 0xFF                                            //!< Widget is ignored by layout. Its position or size is not modified.
 };
 
 //! Contains enums used for styling.
 namespace StyleHint
 {
+
+/*!
+ * This enum is not used atm.
+ */
 enum AnimatedStates
 {
-    FocusIn,
-    FocusOut
+    FocusIn,    //!< Specifies an animation for focus-in state.
+    FocusOut    //!< Specifies an animation for focus-out state.
 };
 
 /*!
@@ -111,6 +115,9 @@ enum FontHint
     TitleFont       //!< This font is used for rendering titles, e.g. title of a dialog.
 };
 
+/*!
+ * This enum provides a list of standard icons.
+ */
 enum PackedIcon
 {
     Alarm,
@@ -207,77 +214,66 @@ enum PackedIcon
     ZoomOut
 };
 
-enum SizeHint
-{
-    CheckBox,
-    Icon,
-    ProgressBar,
-    PushButton,
-    RadioButton,
-    ScrollBar,
-    ScrollBarButton,
-    Slider,
-    SliderV,
-    TabPanel,
-    TabPanelButton,
-    TabPanelButtonIcon
-};
-
+/*!
+ * This enum provides a list of styling parameters for standard widgets.
+ */
 enum Parameter
 {
-    ButtonOffset,
-    CheckBoxHeight,
-    CheckBoxWidth,
-    DialogBottom,
-    DialogLeft,
-    DialogLR,
-    DialogTB,
-    DialogTop,
-    FrameOffsetBottom,
-    FrameOffsetLeft,
-    FrameOffsetLR,
-    FrameOffsetRight,
-    FrameOffsetTB,
-    FrameOffsetTop,
-    LineInputBottom,
-    LineInputLeft,
-    LineInputLR,
-    LineInputRight,
-    LineInputTB,
-    LineInputTop,
-    LineSeperatorHeight,
-    LineSeperatorWidth,
-    PanelBottom,
-    PanelInvHeight,
-    PanelInvLeft,
-    PanelInvOverlap,
-    PanelInvWidth,
-    PanelLeft,
-    PanelLR,
-    PanelRight,
-    PanelTB,
-    PanelTop,
-    PushButtonHeight,
-    PushButtonLeft,
-    PushButtonLR,
-    PushButtonRight,
-    RadioHeight,
-    RadioWidth,
-    ScrollBarHeight,
-    ScrollBarWidth,
-    SliderIndicatorHeight,
-    SliderIndicatorWidth,
-    ToolBarButtonHeight,
-    ToolBarButtonLeft,
-    ToolBarButtonLR,
-    ToolBarHeight,
-    ToolButtonBottom,
-    ToolButtonIndicator,
-    ToolButtonLeft,
-    ToolButtonLR,
-    ToolButtonRight,
-    ToolButtonTB,
-    ToolButtonTop
+    ButtonOffset,       //!< Spacing between button icon and text.
+    CheckBoxHeight,     //!< Height of CheckBox in pixels.
+    CheckBoxWidth,      //!< Width of CheckBox in pixels.
+    DialogBottom,       //!< Height of Dialog's bottom border in pixels.
+    DialogLeft,         //!< Width of Dialog's left border in pixels.
+    DialogLR,           //!< Sum of left and right border widths in pixels.
+    DialogTB,           //!< Sum of top and bottom border heights in pixels.
+    DialogTop,          //!< Height of Dialog's top border in pixels.
+    FrameOffsetBottom,  //!< Height of Frame's bottom border in pixels.
+    FrameOffsetLeft,    //!< Width of Frame's left border in pixels.
+    FrameOffsetLR,      //!< Sum of left and right border widths in pixels.
+    FrameOffsetRight,   //!< Width of Frame's right border in pixels.
+    FrameOffsetTB,      //!< Sum of top and bottom border heights in pixels.
+    FrameOffsetTop,     //!< Height of Frame's top border in pixels.
+    LineInputBottom,    //!< Height of LineInput's bottom border in pixels.
+    LineInputLeft,      //!< Width of LineInput's left border in pixels.
+    LineInputLR,        //!< Sum of left and right border widths in pixels.
+    LineInputRight,     //!< Width of LineInput's right border in pixels.
+    LineInputTB,        //!< Sum of top and bottom border heights in pixels.
+    LineInputTop,       //!< Height of line input's top border in pixels.
+    LineSeperatorHeight,    //!< Height of LineSeperator in pixels.
+    LineSeperatorWidth,     //!< Width of LineSeperator in pixels.
+    PanelBottom,            //!< Height of Panel's bottom border in pixels.
+    PanelInvHeight,         //!< Height of Panel's inverse graphic.
+    PanelInvLeft,           //!< Width of Panel's left inverse graphic.
+    PanelInvOverlap,        //!< Special overlap value of Panel's inverse graphic.
+    PanelInvWidth,          //!< Width of Panel's inverse graphic.
+    PanelLeft,              //!< Width of Panel's left border in pixels.
+    PanelLR,                //!< Sum of left and right border widths in pixels.
+    PanelRight,             //!< Width of Panel's right border in pixels.
+    PanelTB,                //!< Sum of top and bottom border heights in pixels.
+    PanelTop,               //!< Height of Panel's top border in pixels.
+    ProgressBarHeight,      //!< Height of ProgressBar in pixels.
+    PushButtonHeight,       //!< Height of PushButton in pixels.
+    PushButtonLeft,         //!< Width of PushButton's left border in pixels.
+    PushButtonLR,           //!< Sum of left and right border widths in pixels.
+    PushButtonRight,        //!< Width of PushButton's right border in pixels.
+    RadioHeight,            //!< Height of RadioButton in pixels.
+    RadioWidth,             //!< Width of RadioButton in pixels.
+    ScrollBarHeight,        //!< Height of ScrollBar in pixels.
+    ScrollBarWidth,         //!< Width of ScrollBar in pixels.
+    SliderHeight,           //!< Height of Slider in pixels.
+    SliderIndicatorHeight,  //!< Height of Slider's indicator in pixels.
+    SliderIndicatorWidth,   //!< Width of Slider's indicator in pixels.
+    ToolBarButtonHeight,    //!< Height of ToolBarButton's in pixels.
+    ToolBarButtonLeft,      //!< Width of ToolBarButton's left border in pixels.
+    ToolBarButtonLR,        //!< Sum of left and right border widths in pixels.
+    ToolBarHeight,          //!< Height of ToolBar in pixels.
+    ToolButtonBottom,       //!< Height of ToolButton's bottom border in pixels.
+    ToolButtonIndicator,    //!< Height of ToolButton's indicator in pixels.
+    ToolButtonLeft,         //!< Width of ToolButton's left border in pixels.
+    ToolButtonLR,           //!< Sum of left and right border widths in pixels.
+    ToolButtonRight,        //!< Width of ToolButton's right border in pixels.
+    ToolButtonTB,           //!< Sum of top and bottom border heights in pixels.
+    ToolButtonTop           //!< Height of ToolButton's top border in pixels.
 };
 } // end StyleHint
 
@@ -373,12 +369,13 @@ enum PushButtonStyle
     CANCEL
 };
 
+//! This enum specified text input mode for OSK input.
 enum TextInputMode
 {
-    AlphanumericInput,
-    AlphabeticInput,
-    NumericInput,
-    URLInput
+    AlphanumericInput,  //!< OSK should provide both alphabetic and numeric characters.
+    AlphabeticInput,    //!< OSK should provide alphabetic characters only.
+    NumericInput,       //!< OSK should provide numeric characters only.
+    URLInput            //!< OSK should provide a layout for entering an URL.
 };
 
 }
