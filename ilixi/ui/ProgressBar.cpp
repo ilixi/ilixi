@@ -45,7 +45,7 @@ ProgressBar::~ProgressBar()
 Size
 ProgressBar::preferredSize() const
 {
-    Size s = stylist()->defaultSize(StyleHint::ProgressBar);
+    Size s = Size(100, stylist()->defaultParameter(StyleHint::ProgressBarHeight));
     if (orientation() == Horizontal)
         return s;
     s.transpose();
