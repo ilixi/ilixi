@@ -137,8 +137,7 @@ ComboBox::setSelected(unsigned int index)
     {
         _selectedIndex = index;
         setText(_items.at(_selectedIndex));
-        sigItemChanged(_selectedIndex);
-        sigSelectionChanged();
+        sigItemSelected(_selectedIndex);
     }
 }
 
@@ -218,8 +217,7 @@ ComboBox::updateSelected(int index)
         if (_dialog)
             _dialog->finish(0);
         releaseDialog();
-        sigItemChanged(_selectedIndex);
-        sigSelectionChanged();
+        sigItemSelected(_selectedIndex);
     }
 }
 
