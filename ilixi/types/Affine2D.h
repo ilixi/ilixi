@@ -28,7 +28,24 @@
 
 namespace ilixi
 {
-//! Helps with 2D transforms.
+//! Provides a 3x3 matrix for 2D transformations.
+/*!
+ * This class can be used with Painter to perform 2D transformations easily.
+ *
+ * Following example rotates an image around widget's center.
+ * \code
+ * void MyWidget::compose(const PaintEvent& event) {
+ *  Painter p(this);
+ *  p.begin(event);
+ *  Affine2D affine;
+ *  affine.translate(-width() / 2, -height() / 2); // translate to center
+ *  affine.rotate(angle);
+ *  affine.translate(width() / 2, height() / 2); // translate back
+ *  p.setAffine2D(affine); // set transformation on Painter
+ *  p.drawImage(image);
+ * }
+ * \endcode
+ */
 class Affine2D
 {
 public:
@@ -36,7 +53,9 @@ public:
      * Constructor, creates identity matrix.
      *
      * 1 0 0
+     *
      * 0 1 0
+     *
      * 0 0 1
      */
     Affine2D();
@@ -45,11 +64,12 @@ public:
      * Constructor, creates matrix using given parameters.
      *
      * m11 m12 m13
+     *
      * m21 m22 m23
+     *
      *  0   0   1
      */
-    Affine2D(double m11, double m12, double m13, double m21, double m22,
-             double m23);
+    Affine2D(double m11, double m12, double m13, double m21, double m22, double m23);
 
     /*!
      * Copy constructor.
@@ -105,15 +125,37 @@ public:
     Affine2D&
     scale(float sx, float sy);
 
+    /*!
+     * Horizontal (x-axis) shearing.
+     *
+     * @param x
+     */
     Affine2D&
     shearX(float x);
 
+    /*!
+     * Vertical (y-axis) shearing.
+     *
+     * @param y
+     */
     Affine2D&
     shearY(float y);
 
+    /*!
+     * Turns in a given angle.
+     *
+     * @param sx angle in degrees.
+     * @param sy angle in degrees.
+     */
     Affine2D&
     skew(double sx, double sy);
 
+    /*!
+     * Moves from current position on x-axis and y-axis.
+     *
+     * @param dx amount to translate on x-axis
+     * @param dy amount to translate on y-axis
+     */
     Affine2D&
     translate(double dx, double dy);
 

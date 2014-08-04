@@ -28,7 +28,15 @@
 
 namespace ilixi
 {
-
+//! Helper class for implementing runtime i18n behaviour.
+/*!
+ * Used for implementing a simple notification mechanism. updateI18nText() is for each object once language changes at runtime.
+ *
+ * Make sure you instantiated objects are registered using:
+ * \code
+ *     PlatformManager::instance().addI18N(this);
+ * \endcode
+ */
 class I18NBase
 {
     friend class PlatformManager;
@@ -39,6 +47,7 @@ public:
     ~I18NBase();
 
 private:
+    //! This method must be implemented in order to re-layout text once language changes.
     virtual void
     updateI18nText() =0;
 };

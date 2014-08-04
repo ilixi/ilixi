@@ -32,6 +32,8 @@ namespace ilixi
 
 D_DEBUG_DOMAIN(ILX_SOUND, "ilixi/types/Sound", "Sound");
 
+#ifndef ILX_DOXYGEN_SKIP
+
 typedef struct fmtChunk
 {
     u16 encoding;
@@ -41,6 +43,8 @@ typedef struct fmtChunk
     u16 blockalign;     //!< Bytes per sample block
     u16 bitspersample;  //!< One of 8, 12, 16, or 4 for ADPCM
 } fmtChunk;
+
+#endif
 
 static DirectResult
 read_file_header(int fd)
