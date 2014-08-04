@@ -147,7 +147,7 @@ Dialog::setButtonLayoutOption(ButtonOption option)
     if (option == OKButtonOption)
     {
         button = new PushButton("OK");
-        button->setPushButtonStyle(OK);
+        button->setPushButtonStyle(PushButton::OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
     } else if (option == CancelButtonOption || option == CloseButtonOption)
@@ -155,7 +155,7 @@ Dialog::setButtonLayoutOption(ButtonOption option)
         if (option == CancelButtonOption)
         {
             button = new PushButton("Cancel");
-            button->setPushButtonStyle(CANCEL);
+            button->setPushButtonStyle(PushButton::CANCEL);
         } else
         {
             button = new PushButton("Close");
@@ -165,23 +165,23 @@ Dialog::setButtonLayoutOption(ButtonOption option)
     } else if (option == OKCancelButtonOption)
     {
         button = new PushButton("OK");
-        button->setPushButtonStyle(OK);
+        button->setPushButtonStyle(PushButton::OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
 
         button = new PushButton("Cancel");
-        button->setPushButtonStyle(CANCEL);
+        button->setPushButtonStyle(PushButton::CANCEL);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
     } else
     {
         button = new PushButton("Yes");
-        button->setPushButtonStyle(OK);
+        button->setPushButtonStyle(PushButton::OK);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::accept));
 
         button = new PushButton("No");
-        button->setPushButtonStyle(CANCEL);
+        button->setPushButtonStyle(PushButton::CANCEL);
         _buttonLayout->addWidget(button);
         button->sigClicked.connect(sigc::mem_fun(this, &Dialog::reject));
 
