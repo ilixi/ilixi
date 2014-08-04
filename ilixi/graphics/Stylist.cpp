@@ -316,7 +316,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
     const WidgetState state = button->state();
 
     // Frame
-    if (button->getPushButtonStyle() == Default)
+    if (button->getPushButtonStyle() == PushButton::Default)
     {
         if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.dis);
@@ -330,7 +330,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
         if (state & FocusedState)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pb.foc);
 #endif
-    } else if (button->getPushButtonStyle() == OK)
+    } else if (button->getPushButtonStyle() == PushButton::OK)
     {
         if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.dis);
@@ -344,7 +344,7 @@ Stylist::drawPushButton(Painter* p, PushButton* button)
         if (state & FocusedState)
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbOK.foc);
 #endif
-    } else if (button->getPushButtonStyle() == CANCEL)
+    } else if (button->getPushButtonStyle() == PushButton::CANCEL)
     {
         if (!button->enabled())
             draw3Frame(p, 0, 0, button->width(), button->height(), _style->pbCAN.dis);
