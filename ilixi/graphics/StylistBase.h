@@ -62,6 +62,7 @@ class ToolBar;
 class ToolBarButton;
 class ToolButton;
 
+//! Base class for standard widget stylist
 class StylistBase
 {
     friend class Application;
@@ -88,12 +89,6 @@ public:
      */
     virtual
     ~StylistBase();
-
-    /*!
-     * Returns the default size for given type.
-     */
-    virtual Size
-    defaultSize(StyleHint::SizeHint size) const;
 
     /*!
      * Returns the default parameter value for given type.

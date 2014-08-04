@@ -92,24 +92,6 @@ StylistBase::setStyleFromFile(const char* style)
     return false;
 }
 
-Size
-StylistBase::defaultSize(StyleHint::SizeHint size) const
-{
-    switch (size)
-    {
-    case StyleHint::PushButton:
-        return Size(defaultParameter(StyleHint::PushButtonLR), _style->pb.def.m.height());
-    case StyleHint::ProgressBar:
-        return Size(100, _style->prH.def.m.height());
-    case StyleHint::Slider:
-        return Size(100, _style->hSl.def.m.height());
-    case StyleHint::SliderV:
-        return Size(_style->vSl.def.m.width(), 100);
-    default:
-        return Size();
-    }
-}
-
 int
 StylistBase::defaultParameter(StyleHint::Parameter parameter) const
 {
@@ -174,6 +156,9 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::PanelTB:
         return _style->panel.def.tm.height() + _style->panel.def.bm.height();
 
+    case StyleHint::ProgressBarHeight:
+        return  _style->prH.def.m.height();
+
     case StyleHint::PanelInvOverlap:
         return _style->overlap;
     case StyleHint::PanelInvHeight:
@@ -227,6 +212,8 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::ToolButtonIndicator:
         return _style->tbIndV.def.l.height();
 
+    case StyleHint::SliderHeight:
+        return _style->hSl.def.m.height();
     case StyleHint::SliderIndicatorWidth:
         return _style->slI.def.width();
     case StyleHint::SliderIndicatorHeight:
