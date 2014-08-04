@@ -38,7 +38,7 @@ FontPack::FontPack()
           _defaultFont(NULL),
           _inputFont(NULL),
           _titleFont(NULL),
-          _infoFont(NULL)
+          _microFont(NULL)
 {
 }
 
@@ -60,8 +60,8 @@ FontPack::getFont(StyleHint::FontHint font) const
         return _titleFont;
     case StyleHint::InputFont:
         return _inputFont;
-    case StyleHint::InfoFont:
-        return _infoFont;
+    case StyleHint::MicroFont:
+        return _microFont;
     default:
         return _defaultFont;
     }
@@ -149,11 +149,11 @@ FontPack::parseFonts(const char* fontsFile)
                 _titleFont->dfbFont();
             }
 
-            else if (xmlStrcmp(node->name, (xmlChar*) "InfoFont") == 0)
+            else if (xmlStrcmp(node->name, (xmlChar*) "MicroFont") == 0)
             {
-                _infoFont = new Font((char*) fileC, atoi((char*) sizeC));
-                _infoFont->setStyle(fontStyle);
-                _infoFont->dfbFont();
+                _microFont = new Font((char*) fileC, atoi((char*) sizeC));
+                _microFont->setStyle(fontStyle);
+                _microFont->dfbFont();
             }
 
             else if (xmlStrcmp(node->name, (xmlChar*) "CustomFont") == 0)
@@ -195,7 +195,7 @@ FontPack::release()
     delete _defaultFont;
     delete _inputFont;
     delete _titleFont;
-    delete _infoFont;
+    delete _microFont;
 
     for (FontPack::FontMap::iterator it = _fontMap.begin(); it != _fontMap.end(); ++it)
         delete it->second;
@@ -205,7 +205,7 @@ FontPack::release()
     _defaultFont = NULL;
     _inputFont = NULL;
     _titleFont = NULL;
-    _infoFont = NULL;
+    _microFont = NULL;
 
     FontCache::Instance()->logEntries();
 }
@@ -220,7 +220,7 @@ operator>>(std::istream& is, FontPack& obj)
     obj._defaultFont = new Font();
     obj._inputFont = new Font();
     obj._titleFont = new Font();
-    obj._infoFont = new Font();
+    obj._microFont = new Font();
 
     is >> *obj._buttonFont;
     is.ignore(1);
@@ -230,7 +230,7 @@ operator>>(std::istream& is, FontPack& obj)
     is.ignore(1);
     is >> *obj._titleFont;
     is.ignore(1);
-    is >> *obj._infoFont;
+    is >> *obj._microFont;
     is.ignore(1);
 
     int mapSize = 0;
@@ -251,7 +251,7 @@ operator>>(std::istream& is, FontPack& obj)
     *obj._defaultFont->dfbFont();
     *obj._inputFont->dfbFont();
     *obj._titleFont->dfbFont();
-    *obj._infoFont->dfbFont();
+    *obj._microFont->dfbFont();
 
     return is;
 }
@@ -264,7 +264,7 @@ operator<<(std::ostream& os, const FontPack& obj)
     os << *obj._defaultFont << std::endl;
     os << *obj._inputFont << std::endl;
     os << *obj._titleFont << std::endl;
-    os << *obj._infoFont << std::endl;
+    os << *obj._microFont << std::endl;
 
     os << obj._fontMap.size() << std::endl;
     for (FontPack::FontMap::const_iterator it = obj._fontMap.begin(); it != obj._fontMap.end(); ++it)

@@ -73,7 +73,7 @@ private:
     //! Font for rendering title text.
     Font* _titleFont;
     //! Font for rendering info text.
-    Font* _infoFont;
+    Font* _microFont;
 
     typedef std::map<std::string, Font*> FontMap;
     FontMap _fontMap;
