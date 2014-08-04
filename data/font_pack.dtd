@@ -1,9 +1,9 @@
-<!ELEMENT FontPack (ButtonFont, DefaultFont, InputFont, TitleFont, InfoFont, CustomFont*) >
+<!ELEMENT FontPack (ButtonFont, DefaultFont, InputFont, TitleFont, MicroFont, CustomFont*) >
 	<!ELEMENT ButtonFont  (Name, Size, FontStyle*) >
 	<!ELEMENT DefaultFont (Name, Size, FontStyle*) >
 	<!ELEMENT InputFont   (Name, Size, FontStyle*) >
 	<!ELEMENT TitleFont   (Name, Size, FontStyle*) >
-	<!ELEMENT InfoFont   (Name, Size, FontStyle*) >
+	<!ELEMENT MicroFont   (Name, Size, FontStyle*) >
 	<!ELEMENT CustomFont   (Name, Size, FontStyle*) >
 	<!ATTLIST CustomFont name CDATA #REQUIRED >
 		<!ELEMENT Name      (#PCDATA) >
