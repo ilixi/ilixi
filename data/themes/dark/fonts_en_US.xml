@@ -23,8 +23,8 @@
 		<FontStyle>bold</FontStyle>
 	</TitleFont>
 
-	<InfoFont>
+	<MicroFont>
 		<Name>Sans</Name>
 		<Size>12</Size>
-	</InfoFont>
+	</MicroFont>
 </FontPack>
