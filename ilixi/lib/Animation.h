@@ -32,16 +32,19 @@ namespace ilixi
 //! Base class for animations.
 /*!
  * This class implements basic animation functionality.
+ *
+ * \sa TweenAnimation
  */
 class Animation : public sigc::trackable, public Functionoid
 {
 public:
 
+    //! This enum specifies animation's state.
     enum AnimationState
     {
-        Running,
-        Paused,
-        Stopped
+        Running,    //!< Animation is still running.
+        Paused,     //!< Animation is paused.
+        Stopped     //<! Animation is stopped.
     };
 
     /*!

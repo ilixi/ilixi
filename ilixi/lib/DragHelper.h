@@ -33,14 +33,16 @@
 
 namespace ilixi
 {
+//! Creates a drag and drop context.
 /*!
- * Creates a drag and drop context.
- *
  * API is still experimental and it can change in the future.
  */
 class DragHelper : public WindowWidget
 {
 public:
+    /*!
+     * This enum specifies a list of valid drag and drop operations.
+     */
     enum DragOperation
     {
         DragOperationNone = 0,
@@ -53,42 +55,85 @@ public:
         DragOperationEvery = UINT_MAX
     };
 
+    /*!
+     * Constructor
+     */
     DragHelper(Widget* owner);
 
+    /*!
+     * Destructor
+     */
     virtual
     ~DragHelper();
 
+    /*!
+     * Returns size of image surface
+     */
     virtual Size
     preferredSize() const;
 
+    /*!
+     * Returns data for drag operation
+     */
     void*
     data() const;
 
+    /*!
+     * Returns the position of hot spot for drag window
+     */
     const Point&
     hotspot() const;
 
+    /*!
+     * Returns the drag operation type of last drag and drop.
+     */
     static DragOperation
     dragOperation();
 
+    /*!
+     * Sets the data for the drag operation.
+     */
     void
     setData(void* data);
 
+    /*!
+     * Sets the position of hot spot for drag window.
+     */
     void
     setHotspot(const Point& hotspot);
 
+    /*!
+     * Sets image for drag operation.
+     *
+     * Image is shown inside a window during drag.
+     */
     void
     setImage(Image* image, const Size& size = Size());
 
+    /*!
+     * Sets image for drag operation using DirectFB surface.
+     *
+     * Image is shown inside a window during drag.
+     */
     void
     setImageFromDFBSurface(IDirectFBSurface* surface, const Size& size = Size());
 
 #if ILIXI_HAVE_CAIRO
+    /*!
+     * Sets image for drag operation using a Cairo surface.
+     */
     void
     setImageFromCairoSurface(cairo_surface_t* surface);
 #endif
+    /*!
+     * Starts drag operation.
+     */
     void
     startDrag(int x, int y);
 
+    /*!
+     * Sets the type of drag operation.
+     */
     static void
     setDragOperation(DragOperation operation);
 
@@ -98,14 +143,22 @@ public:
     sigc::signal<void, Point> sigDragEnded;
 
 protected:
+    /*!
+     * This method moves drag window and notifies application when drag ends.
+     */
     virtual bool
     handleWindowEvent(const DFBWindowEvent& event, bool dragging = false);
 
 private:
+    //! This property stores the widget which owns drag operation.
     Widget* _owner;
+    //! This property stores the data for drag operation.
     void* _data;
+    //! This property stores a pointer to drag image.
     IDirectFBSurface* _surface;
+    //! This property stores the position of hot spot.
     Point _hotSpot;
+    //! This property specifies the type of drag operation.
     DragOperation _operation;
     static DragHelper* __instance;
 

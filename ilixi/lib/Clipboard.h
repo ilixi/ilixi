@@ -30,41 +30,71 @@
 
 namespace ilixi
 {
+//! Provides means to share data between processes using DirectFB.
 /*!
- * Clipboard provides means to share data between processes using DirectFB.
- *
  * API is still experimental and it can change in the future.
  */
 class Clipboard
 {
 public:
+    /*!
+     * Returns an instance to Clipboard.
+     */
     static Clipboard&
     instance();
 
+    /*!
+     * Clears the contents of clipboard.
+     */
     void
     clear();
 
+    /*!
+     * Returns mime type of clipboard data.
+     */
     std::string
     mimeType();
 
+    /*!
+     * Returns true if clipboard has data.
+     */
     bool
     hasData();
 
+    /*!
+     * Use to get clipboard data.
+     */
     void
     getData(void** data, unsigned int* size);
 
+    /*!
+     * Returns a pointer to a DirectFB surface if clipboard has data with "application/directfb-surface" mime type.
+     * Otherwise returns NULL.
+     */
     IDirectFBSurface*
     image();
 
+    /*!
+     * Returns text stored in clipboard.
+     */
     std::string
     text();
 
+    /*!
+     * Sets the clipboard data.
+     */
     void
     setData(const void* data, unsigned int size, const char* mimeType = "application/octet-stream");
 
+    /*!
+     * Sets the DirectFB surface to share via clipboard.
+     */
     void
     setImage(IDirectFBSurface* image);
 
+    /*!
+     * Sets the clipboard text.
+     */
     void
     setText(const std::string& text, const char* mimeType = "text/plain");
 
@@ -74,6 +104,7 @@ private:
     virtual
     ~Clipboard();
 
+    //! Updates clipbard contents if modified by other process.
     void
     refreshClipboard();
 

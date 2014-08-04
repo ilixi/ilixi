@@ -29,7 +29,7 @@
 
 namespace ilixi
 {
-//! Allows to run animations in sequential order.
+//! Provides a mechanism to run animations in sequential order.
 class AnimationSequence
 {
 public:

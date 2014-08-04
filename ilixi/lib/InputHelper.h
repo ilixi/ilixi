@@ -33,6 +33,7 @@
 namespace ilixi
 {
 
+//! Provides a simple interface for input in character based languages.
 /*!
  * This class provides an API to input in other languages.
  */

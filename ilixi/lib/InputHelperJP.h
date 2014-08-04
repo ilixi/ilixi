@@ -38,9 +38,7 @@ extern "C"
 namespace ilixi
 {
 
-/*!
- * Japanese input helper.
- */
+//! Japanese input helper.
 class InputHelperJP : public ilixi::InputHelper
 {
 public:
