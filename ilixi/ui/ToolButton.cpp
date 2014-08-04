@@ -110,7 +110,7 @@ ToolButton::preferredSize() const
 {
     ILOG_TRACE_W(ILX_TOOLBUTTON);
     if (text().empty() && !icon())
-        return stylist()->defaultSize(StyleHint::PushButton);
+        return Size(stylist()->defaultParameter(StyleHint::PushButtonLR), stylist()->defaultParameter(StyleHint::PushButtonHeight));
 
     int w = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(StyleHint::ToolButtonLR) : 0;
     int h = (_tbOptions & DrawFrame) ? stylist()->defaultParameter(StyleHint::ToolButtonTB) : 0;
@@ -128,7 +128,7 @@ ToolButton::preferredSize() const
         Size s = textExtents();
         if (s.isValid())
             return Size(w + s.width(), h + s.height());
-        return stylist()->defaultSize(StyleHint::PushButton);
+        return Size(stylist()->defaultParameter(StyleHint::PushButtonLR), stylist()->defaultParameter(StyleHint::PushButtonHeight));
     }
 
     // calculate image size
@@ -150,7 +150,7 @@ ToolButton::preferredSize() const
         ILOG_DEBUG(ILX_TOOLBUTTON, " -> icon only: %d, %d\n", w + imgW, h + imgH);
         if (imgW)
             return Size(w + imgW, h + imgH);
-        return stylist()->defaultSize(StyleHint::PushButton);
+        return Size(stylist()->defaultParameter(StyleHint::PushButtonLR), stylist()->defaultParameter(StyleHint::PushButtonHeight));
     } else
     {
         Size s = textExtents();
