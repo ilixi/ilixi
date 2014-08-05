@@ -262,12 +262,6 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
 #endif
     }
 
-    Rectangle r(defaultParameter(StyleHint::LineInputLeft), defaultParameter(StyleHint::LineInputTop), input->width() - defaultParameter(StyleHint::LineInputLR), input->height() - defaultParameter(StyleHint::LineInputTB));
-    if (input->surface()->flags() & Surface::HasOwnSurface)
-        p->setClip(r);
-    else
-        p->setClip(input->mapFromSurface(r));
-
     // selection
     if (!input->selectionRect().isNull())
     {
@@ -288,8 +282,6 @@ Stylist::drawLineInput(Painter* p, LineInput* input, bool cursor)
         p->setBrush(_palette->focus);
         p->fillRectangle(input->cursorRect());
     }
-
-    p->resetClip();
 }
 
 void
@@ -579,7 +571,6 @@ Stylist::drawSpinBox(Painter* p, SpinBox* box, const Size& size)
         p->setFont(*defaultFont(StyleHint::InputFont));
         p->setBrush(_palette->getGroup(state).baseText);
         p->drawLayout(box->layout());
-        p->resetClip();
     }
 }
 
