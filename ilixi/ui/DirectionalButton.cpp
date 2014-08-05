@@ -27,7 +27,8 @@
 #include <core/Logger.h>
 
 #ifdef ANDROID_NDK
-extern "C" {
+extern "C"
+{
 #include <compat/pthread_cancel.h>
 }
 #endif
@@ -35,8 +36,8 @@ extern "C" {
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_DIRBUTTON, "ilixi/ui/DirectionalButton", "DirectionalButton");
-D_DEBUG_DOMAIN( ILX_DIRBUTTONTH, "ilixi/ui/DirectionalButtonThread", "DirectionalButtonThread");
+D_DEBUG_DOMAIN(ILX_DIRBUTTON, "ilixi/ui/DirectionalButton", "DirectionalButton");
+D_DEBUG_DOMAIN(ILX_DIRBUTTONTH, "ilixi/ui/DirectionalButtonThread", "DirectionalButtonThread");
 
 //*********************************************************************
 // DirectionalButtonThread
@@ -67,14 +68,16 @@ DirectionalButtonThread::run()
     if (!_target)
         return 1;
 
+    bool playSoundEffect = true;
     while (true)
     {
         pthread_testcancel();
         if (!_target->enabled())
             return 1;
-        _target->click(sleepNS);
+        _target->click(sleepNS, playSoundEffect);
         if (sleepNS > 75)
             sleepNS -= 25;
+        playSoundEffect = false;
     }
     return 1;
 }
