@@ -30,7 +30,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_SPINBOX, "ilixi/ui/SpinBox", "SpinBox");
+D_DEBUG_DOMAIN(ILX_SPINBOX, "ilixi/ui/SpinBox", "SpinBox");
 
 SpinBox::SpinBox(int value, Widget* parent)
         : Widget(parent),
@@ -81,14 +81,14 @@ SpinBox::preferredSize() const
     ILOG_TRACE_W(ILX_SPINBOX);
     Size plus = _plus->preferredSize();
     Size minus = _minus->preferredSize();
-    Size valueText = stylist()->defaultFont(StyleHint::InputFont)->extents(_layout.text());
-    Size minText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _min));
-    Size maxText = stylist()->defaultFont(StyleHint::InputFont)->extents(PrintF("%d", _max));
-    int maxL = std::max(std::max(valueText.width(), minText.width()), maxText.width()) + 10;
+    Font* font = stylist()->defaultFont(StyleHint::InputFont);
+    Size valueText = font->extents(_layout.text());
+    Size minText = font->extents(PrintF("%d", _min));
+    Size maxText = font->extents(PrintF("%d", _max));
     ILOG_DEBUG(ILX_SPINBOX, " -> plus: %d, %d\n", plus.width(), plus.height());
     ILOG_DEBUG(ILX_SPINBOX, " -> minus: %d, %d\n", minus.width(), minus.height());
     ILOG_DEBUG(ILX_SPINBOX, " -> text: %d, %d\n", valueText.width(), valueText.height());
-    return Size(maxL + plus.width() + minus.width(), std::max(plus.height(), valueText.height() + stylist()->defaultParameter(StyleHint::LineInputTB)));
+    return Size(valueText.width() + 10 + plus.width() + minus.width(), std::max(plus.height(), valueText.height() + stylist()->defaultParameter(StyleHint::LineInputTB)));
 }
 
 int
