@@ -72,9 +72,10 @@ public:
      * Simulates a pointer click over button.  Signals (pressed and clicked) are emitted.
      *
      * @param ms If this value is positive click action is animated for given milliseconds.
+     * @param playSoundEffect If true and Platform has sound enabled, plays Click effect.
      */
     void
-    click(unsigned int ms = 0);
+    click(unsigned int ms = 0, bool playSoundEffect = true);
 
     /*!
      * Changes button's checked state.

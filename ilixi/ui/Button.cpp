@@ -28,7 +28,7 @@
 namespace ilixi
 {
 
-D_DEBUG_DOMAIN( ILX_BUTTON, "ilixi/ui/Button", "Button");
+D_DEBUG_DOMAIN(ILX_BUTTON, "ilixi/ui/Button", "Button");
 
 Button::Button(const std::string& text, Widget* parent)
         : Widget(parent),
@@ -58,7 +58,7 @@ Button::checked() const
 }
 
 void
-Button::click(unsigned int ms)
+Button::click(unsigned int ms, bool playSoundEffect)
 {
     if (ms)
     {
@@ -69,7 +69,8 @@ Button::click(unsigned int ms)
         _state = (WidgetState) (_state & ~PressedState);
         sigStateChanged(this, _state);
     }
-    PlatformManager::instance().playSoundEffect("Click");
+    if (playSoundEffect)
+        PlatformManager::instance().playSoundEffect("Click");
     toggleChecked();
     sigClicked();
 }
