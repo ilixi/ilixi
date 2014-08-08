@@ -260,7 +260,6 @@ enum Parameter
     RadioWidth,             //!< Width of RadioButton in pixels.
     ScrollBarHeight,        //!< Height of ScrollBar in pixels.
     ScrollBarWidth,         //!< Width of ScrollBar in pixels.
-    SliderHeight,           //!< Height of Slider in pixels.
     SliderIndicatorHeight,  //!< Height of Slider's indicator in pixels.
     SliderIndicatorWidth,   //!< Width of Slider's indicator in pixels.
     ToolBarButtonHeight,    //!< Height of ToolBarButton's in pixels.
