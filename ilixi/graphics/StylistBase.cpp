@@ -212,8 +212,6 @@ StylistBase::defaultParameter(StyleHint::Parameter parameter) const
     case StyleHint::ToolButtonIndicator:
         return _style->tbIndV.def.l.height();
 
-    case StyleHint::SliderHeight:
-        return _style->hSl.def.m.height();
     case StyleHint::SliderIndicatorWidth:
         return _style->slI.def.width();
     case StyleHint::SliderIndicatorHeight:

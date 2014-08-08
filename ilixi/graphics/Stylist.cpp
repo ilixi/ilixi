@@ -736,25 +736,21 @@ Stylist::draw3Frame(Painter* p, int x, int y, int w, int h, const r3& rect, bool
             p->blitImage(_style->_pack, rect.r, x, y + h - rect.r.height());
         else
         {
-#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0) && ILIXI_DFB_VERSION <= VERSION_CODE(1,7,0)
+#if ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
             DFBRectangle blitRects[2];
 
             blitRects[0] = rect.l.dfbRect();
             blitRects[1] = rect.r.dfbRect();
 
-            DFBRectangle blitPoints[2];
+            DFBPoint blitPoints[2];
 
             blitPoints[0].x = x;
             blitPoints[0].y = y;
-            blitPoints[0].w = rect.l.width();
-            blitPoints[0].h = h;
 
-            blitPoints[1].x = x + w - rect.r.width();
-            blitPoints[1].y = y;
-            blitPoints[1].w = rect.r.width();
-            blitPoints[1].h = h;
+            blitPoints[1].x = x;
+            blitPoints[1].y = y + h - rect.r.height();
 
-            p->batchStretchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
+            p->batchBlitImage(_style->_pack, blitRects, blitPoints, 2, flags);
 #else
 
             p->blitImage(_style->_pack, rect.l, x, y, flags);
