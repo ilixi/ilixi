@@ -273,7 +273,10 @@ ToolButton::pointerButtonDownEvent(const PointerEvent& event)
 
     _buttonFlag = (ButtonFlags) (_buttonFlag | PressedDown);
     if (_icon)
+    {
         _icon->setState(PressedState);
+        _icon->setY(_icon->y() + 1);
+    }
 
     update();
     sigPressed();
@@ -291,7 +294,10 @@ ToolButton::pointerButtonUpEvent(const PointerEvent& event)
 
         _buttonFlag = (ButtonFlags) (_buttonFlag & ~PressedDown);
         if (_icon)
+        {
             _icon->setState(DefaultState);
+            _icon->setY(_icon->y() - 1);
+        }
         PlatformManager::instance().playSoundEffect("Click");
         toggleChecked();
         sigClicked();
@@ -363,7 +369,10 @@ ToolButton::updateTextBaseGeometry()
 
     else if (_toolButtonStyle == IconOnly)
     {
-        _icon->moveTo((width() - x) / 2, (height() - iconH) / 2);
+        if (checkable())
+            _icon->moveTo(x, (height() - iconH) / 2);
+        else
+            _icon->moveTo((width() - x) / 2, (height() - iconH) / 2);
         _layout.setBounds(0, 0, 0, 0);
         return;
     }
