@@ -56,6 +56,9 @@ NETMonitor::readInterfaces()
   interfaces.clear();
   for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
     {
+      if (ifa->ifa_addr == NULL)
+       continue;
+
       family = ifa->ifa_addr->sa_family;
 
       if ((strcmp(ifa->ifa_name, "lo")) && (family == AF_INET))
