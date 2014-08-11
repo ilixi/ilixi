@@ -32,19 +32,19 @@ GestureDemo::GestureDemo(int argc, char* argv[])
 {
     appWindow()->setCustomCompose(true);
 
-    _gestures.addGesture("left", "444444");
-    _gestures.addGesture("right", "000000");
-    _gestures.addGesture("up", "666666");
-    _gestures.addGesture("down", "222222");
+    _gestures.addGesture("left", "444");
+    _gestures.addGesture("right", "000");
+    _gestures.addGesture("up", "666");
+    _gestures.addGesture("down", "222");
 
     _gestures.addGesture("check", "117777");
-    _gestures.addGesture("cancel", "441144");
+    _gestures.addGesture("cancel", "444111444");
 
     _gestures.addGesture("home", "777111");
     _gestures.addGesture("open", "2210766");
     _gestures.addGesture("close", "6670122");
 
-    _gestures.addGesture("reload", "432107654");
+    _gestures.addGesture("reload", "43321076554");
     _gestures.addGesture("enter", "222444");
 
     _gestures.sigGestureMatched.connect(sigc::mem_fun(this, &GestureDemo::matched));
