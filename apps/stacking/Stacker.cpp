@@ -43,7 +43,7 @@ Stacker::~Stacker()
 void
 Stacker::sendBack()
 {
-    pb1->setZ(-1);
+    pb1->setZ(0);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
     update();
 }
@@ -51,7 +51,7 @@ Stacker::sendBack()
 void
 Stacker::bringForward()
 {
-    pb1->setZ(1);
+    pb1->setZ(5);
     ILOG_INFO(ILX, "Z: %d\n", pb1->z());
     update();
 }
@@ -59,17 +59,23 @@ Stacker::bringForward()
 void
 Stacker::raise()
 {
-    pb1->setZ(pb1->z() + 1);
-    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
-    update();
+    if (pb1->z() < 5)
+    {
+        pb1->setZ(pb1->z() + 1);
+        ILOG_INFO(ILX, "Z: %d\n", pb1->z());
+        update();
+    }
 }
 
 void
 Stacker::lower()
 {
-    pb1->setZ(pb1->z() - 1);
-    ILOG_INFO(ILX, "Z: %d\n", pb1->z());
-    update();
+    if (pb1->z())
+    {
+        pb1->setZ(pb1->z() - 1);
+        ILOG_INFO(ILX, "Z: %d\n", pb1->z());
+        update();
+    }
 }
 
 void
@@ -100,26 +106,27 @@ Stacker::initStacker()
     bLower->sigClicked.connect(sigc::mem_fun(this, &Stacker::lower));
 
     ToolButton* pb2 = new ToolButton("Button 2");
-    pb2->setZ(0);
+    pb2->setZ(4);
     addWidget(pb2);
     pb2->setGeometry(x, 0, w, h);
 
     ToolButton* pb3 = new ToolButton("Button 3");
-    pb2->setZ(0);
+    pb3->setZ(3);
     addWidget(pb3);
     pb3->setGeometry(x + w, 0, w, h);
 
     ToolButton* pb4 = new ToolButton("Button 4");
-    pb2->setZ(0);
+    pb4->setZ(2);
     addWidget(pb4);
     pb4->setGeometry(x, h, w, h);
 
     ToolButton* pb5 = new ToolButton("Button 5");
-    pb2->setZ(0);
+    pb5->setZ(1);
     addWidget(pb5);
     pb5->setGeometry(x + w, h, w, h);
 
     pb1 = new ToolButton("Button 1");
+    pb1->setZ(5);
     addWidget(pb1);
     pb1->setGeometry(x + x, h / 2, w, h);
 }
