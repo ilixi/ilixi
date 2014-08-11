@@ -522,7 +522,7 @@ Stylist::drawSlider(Painter* p, Slider* bar)
     } else // Vertical
     {
         if (!bar->enabled())
-            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.dis);
+            draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.dis, true);
         else
             draw3Frame(p, 0, 0, bar->width(), bar->height(), _style->vSl.def, true);
 
