@@ -285,7 +285,7 @@ VideoPlayer::compose(const PaintEvent& event)
         if (_flags & KeepAspectRatio)
         {
             int h = r.w / _video->aspect();
-            r.y += (r.h - h) / 2.0;
+            r.y += (r.h - h) * 0.5f;
             if (h < r.h)
             {
                 Painter p(this);
