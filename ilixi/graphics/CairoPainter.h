@@ -366,12 +366,21 @@ public:
     void
     drawRoundRectangle(const Rectangle& rect, int radius, DrawingMode mode = StrokePath, Corners corners = AllCorners);
 
+    /*!
+     * Draws a single point at given coordinates.
+     */
     void
     drawPoint(double x, double y);
 
+    /*!
+     * Returns text extents as calculated by cairo.
+     */
     Rectangle
     textExtents(const std::string& text);
 
+    /*!
+     * Draws text using current brush and font at given coordinates.
+     */
     void
     drawText(const std::string& text, int x = 0, int y = 0);
 
@@ -381,6 +390,9 @@ public:
     void
     drawLayout(const TextLayout& layout, int x = 0, int y = 0);
 
+    /*!
+     * Draws current path using drawing mode.
+     */
     void
     drawCurrentPath(DrawingMode mode = StrokePath);
 

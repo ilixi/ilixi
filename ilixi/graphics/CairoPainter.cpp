@@ -197,10 +197,10 @@ CairoPainter::drawArc(double x, double y, double width, double height, double an
     ILOG_TRACE(ILX_CPAINTER);
     cairo_save(_context);
     if (_myWidget->surface()->flags() & Surface::SharedSurface)
-        cairo_translate(_context, _myWidget->absX() + x + width / 2.0, _myWidget->absY() + y + height / 2.0);
+        cairo_translate(_context, _myWidget->absX() + x + width * 0.5, _myWidget->absY() + y + height * 0.5);
     else
-        cairo_translate(_context, x + width / 2.0, y + height / 2.0);
-    cairo_scale(_context, width / 2.0, height / 2.0);
+        cairo_translate(_context, x + width * 0.5, y + height * 0.5);
+    cairo_scale(_context, width * 0.5, height * 0.5);
     cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * CPM_D2R, angle2 * CPM_D2R);
     cairo_restore(_context);
     applyCairoPen();
@@ -219,10 +219,10 @@ CairoPainter::drawChord(double x, double y, double width, double height, double 
     ILOG_TRACE(ILX_CPAINTER);
     cairo_save(_context);
     if (_myWidget->surface()->flags() & Surface::SharedSurface)
-        cairo_translate(_context, _myWidget->absX() + x + width / 2.0, _myWidget->absY() + y + height / 2.0);
+        cairo_translate(_context, _myWidget->absX() + x + width * 0.5, _myWidget->absY() + y + height * 0.5);
     else
-        cairo_translate(_context, x + width / 2.0, y + height / 2.0);
-    cairo_scale(_context, width / 2.0, height / 2.0);
+        cairo_translate(_context, x + width * 0.5, y + height * 0.5);
+    cairo_scale(_context, width * 0.5, height * 0.5);
     cairo_arc(_context, 0.0, 0.0, 1.0, angle1 * CPM_D2R, angle2 * CPM_D2R);
     cairo_close_path(_context);
     cairo_restore(_context);
@@ -242,10 +242,10 @@ CairoPainter::drawEllipse(double x, double y, double width, double height, Drawi
     cairo_save(_context);
     cairo_new_sub_path(_context);
     if (_myWidget->surface()->flags() & Surface::SharedSurface)
-        cairo_translate(_context, _myWidget->absX() + x + width / 2.0, _myWidget->absY() + y + height / 2.0);
+        cairo_translate(_context, _myWidget->absX() + x + width * 0.5, _myWidget->absY() + y + height * 0.5);
     else
-        cairo_translate(_context, x + width / 2.0, y + height / 2.0);
-    cairo_scale(_context, width / 2.0, height / 2.0);
+        cairo_translate(_context, x + width * 0.5, y + height * 0.5);
+    cairo_scale(_context, width * 0.5, height * 0.5);
     cairo_arc(_context, 0.0, 0.0, 1.0, 0.0, 2 * CPM_PI);
     cairo_close_path(_context);
     cairo_restore(_context);
@@ -422,8 +422,12 @@ CairoPainter::drawPoint(double x, double y)
 }
 
 Rectangle
-CairoPainter::textExtents(const std::string& text) {
-
+CairoPainter::textExtents(const std::string& text)
+{
+    cairo_text_extents_t extents;
+    applyCairoFont();
+    cairo_text_extents(_context, text.c_str(), &extents);
+    return Rectangle(extents.x_bearing, extents.y_bearing, extents.width, extents.height);
 }
 
 void
@@ -461,6 +465,13 @@ CairoPainter::drawLayout(const TextLayout& layout, int x, int y)
             layout.drawTextLayout(_context, x, y);
         applyCairoBrush();
     }
+}
+
+void
+CairoPainter::drawCurrentPath(DrawingMode mode)
+{
+    if (mode != ClipPath || mode != AddPath)
+        applyDrawingMode(mode);
 }
 
 void
