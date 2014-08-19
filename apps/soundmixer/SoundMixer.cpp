@@ -160,10 +160,11 @@ ILXSoundMixer::ILXSoundMixer(int argc, char* argv[])
     rowLevels->addWidget(new BandSlider("20KHz", _bandSliderFont));
     eqBox->addWidget(rowLevels);
 
+#if ILIXI_HAVE_COMPOSITOR
     DaleDFB::comaGetComponent("SoundMixer", &_soundComponent);
     if (_soundComponent)
         _soundComponent->Listen(_soundComponent, SoundMixer::VolumeChanged, volumeListener, this);
-
+#endif
     _music = new Music(ILIXI_DATADIR"soundmixer/test.wav");
     _music->setRepeat(true);
 
@@ -180,9 +181,11 @@ ILXSoundMixer::~ILXSoundMixer()
 void
 ILXSoundMixer::mute()
 {
+#if ILIXI_HAVE_COMPOSITOR
     if (_soundComponent)
         DaleDFB::comaCallComponent(_soundComponent, SoundMixer::ToggleMute, NULL);
     else
+#endif
     {
         static double volume = SoundDFB::getMasterVolume();
         if (SoundDFB::getMasterVolume() == 0)
@@ -207,6 +210,7 @@ ILXSoundMixer::playTestSound()
 void
 ILXSoundMixer::changeMasterVolume(float volume)
 {
+#if ILIXI_HAVE_COMPOSITOR
     if (_soundComponent)
     {
         void *ptr;
@@ -215,6 +219,7 @@ ILXSoundMixer::changeMasterVolume(float volume)
         *vol = volume;
         DaleDFB::comaCallComponent(_soundComponent, SoundMixer::SetVolume, (void*) vol);
     } else
+#endif
         SoundDFB::setMasterVolume(volume);
 }
 
