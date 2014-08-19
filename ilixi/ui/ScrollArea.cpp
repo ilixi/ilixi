@@ -204,8 +204,8 @@ ScrollArea::scrollTo(Widget* widget, bool center)
 
         if (center)
         {
-            _xTween->setRange(_content->x(), _content->x() - endP.x() + (width() - widget->width()) / 2.0);
-            _yTween->setRange(_content->y(), _content->y() - endP.y() + (height() - widget->height()) / 2.0);
+            _xTween->setRange(_content->x(), _content->x() - endP.x() + (width() - widget->width()) * 0.5f);
+            _yTween->setRange(_content->y(), _content->y() - endP.y() + (height() - widget->height()) * 0.5f);
         } else
         {
             _xTween->setRange(_content->x(), _content->x() - endP.x());
