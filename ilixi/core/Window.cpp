@@ -194,8 +194,8 @@ Window::initDFBWindow(const Point& position, const Size& size)
                 if (h > (conf.height - 20))
                     h = conf.height - 20;
 
-                desc.posx = (conf.width - w) / 2.0;
-                desc.posy = (conf.height - h) / 2.0;
+                desc.posx = (conf.width - w) * 0.5f;
+                desc.posy = (conf.height - h) * 0.5f;
 
                 desc.width = w;
                 desc.height = h;
