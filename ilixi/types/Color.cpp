@@ -186,7 +186,7 @@ Color::setFromHSV(const HSV& hsv)
 {
     float c = hsv.value * hsv.saturation;
     float h = hsv.hue / 60.0;
-    float x = c * (1 - fabs(fmod(h, 2) - 1.0));
+    float x = c * (1 - fabs(fmod(h, 2) - 1.0f));
     float m = hsv.value - c;
 
     if (h >= 0 && h < 1)
@@ -240,8 +240,8 @@ Color::setFromHSL(const HSL& hsl)
 
     float c = (1 - fabs(2 * hsl.lightness - 1)) * hsl.saturation;
     float h = hsl.hue / 60;
-    float x = c * (1 - fabs(fmod(h, 2) - 1.0));
-    float m = hsl.lightness - c / 2.0;
+    float x = c * (1 - fabs(fmod(h, 2) - 1.0f));
+    float m = hsl.lightness - c * 0.5f;
 
     if (h >= 0 && h < 1)
     {
@@ -352,9 +352,9 @@ Color::HSV::HSV(float h, float s, float v)
 
 Color::HSV::HSV(const Color& color)
 {
-    float r = color._red / 255.0;
-    float g = color._green / 255.0;
-    float b = color._blue / 255.0;
+    float r = color._red / 255.0f;
+    float g = color._green / 255.0f;
+    float b = color._blue / 255.0f;
 
     float min = b;
     float max = b;
@@ -381,11 +381,11 @@ Color::HSV::HSV(const Color& color)
         saturation = chroma / max;
 
         if (r == max)
-            hue = ((g - b) / (float) chroma) * 60.0;
+            hue = ((g - b) / (float) chroma) * 60.0f;
         else if (g == max)
-            hue = (2.0 + ((b - r) / (float) chroma)) * 60.0;
+            hue = (2.0f + ((b - r) / (float) chroma)) * 60.0f;
         else if (b == max)
-            hue = (4.0 + ((r - g) / (float) chroma)) * 60.0;
+            hue = (4.0f + ((r - g) / (float) chroma)) * 60.0f;
 
         if (hue < 0)
             hue += 360;
@@ -413,9 +413,9 @@ Color::HSL::HSL(float h, float s, float l)
 
 Color::HSL::HSL(const Color& color)
 {
-    float r = color._red / 255.0;
-    float g = color._green / 255.0;
-    float b = color._blue / 255.0;
+    float r = color._red / 255.0f;
+    float g = color._green / 255.0f;
+    float b = color._blue / 255.0f;
 
     float min = b;
     float max = b;
@@ -431,7 +431,7 @@ Color::HSL::HSL(const Color& color)
         min = r;
 
     float chroma = max - min;
-    lightness = (min + max) / 2.0;
+    lightness = (min + max) * 0.5f;
 
     if (chroma == 0)
     {
@@ -442,14 +442,14 @@ Color::HSL::HSL(const Color& color)
         if (lightness < .5)
             saturation = chroma / (float) (min + max);
         else
-            saturation = chroma / (float) (2.0 - min - max);
+            saturation = chroma / (float) (2.0f - min - max);
 
         if (r == max)
-            hue = ((g - b) / (float) chroma) * 60.0;
+            hue = ((g - b) / (float) chroma) * 60.0f;
         else if (g == max)
-            hue = (2.0 + ((b - r) / (float) chroma)) * 60.0;
+            hue = (2.0f + ((b - r) / (float) chroma)) * 60.0f;
         else if (b == max)
-            hue = (4.0 + ((r - g) / (float) chroma)) * 60.0;
+            hue = (4.0f + ((r - g) / (float) chroma)) * 60.0f;
 
         if (hue < 0)
             hue += 360;
