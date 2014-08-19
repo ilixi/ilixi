@@ -153,7 +153,8 @@ window_restack(void *context, SaWManWindowHandle handle, SaWManWindowHandle rela
 //*********************************************************************
 
 ApplicationManager::ApplicationManager(ILXCompositor* compositor)
-        : _compositor(compositor)
+        : _compositor(compositor),
+          _monitor(NULL)
 {
     ILOG_TRACE_F(ILX_APPLICATIONMANAGER);
     pthread_mutex_init(&_mutex, NULL);
