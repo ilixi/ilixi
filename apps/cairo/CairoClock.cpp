@@ -54,9 +54,9 @@ void
 CairoClock::compose(const PaintEvent& event)
 {
     int diameter = std::min(width(), height()) - 10;
-    int radius = diameter / 2.0 - 4;
-    int x = (width() - diameter) / 2.0;
-    int y = (height() - diameter) / 2.0;
+    int radius = diameter / 2 - 4;
+    int x = (width() - diameter) / 2;
+    int y = (height() - diameter) / 2;
 
     int cx = width() / 2;
     int cy = height() / 2;
@@ -99,7 +99,7 @@ CairoClock::compose(const PaintEvent& event)
             p.setPen(pen2);
         }
 
-        p.drawLine(cx + radius * cos(i * M_PI / 6), cy + radius * sin(i * M_PI / 6), cx + (radius - inset) * cos(i * M_PI / 6), cy + (radius - inset) * sin(i * M_PI / 6));
+        p.drawLine(cx + radius * cos(i * 0.523f), cy + radius * sin(i * 0.523f), cx + (radius - inset) * cos(i * 0.523f), cy + (radius - inset) * sin(i * 0.523f));
     }
 
     // store the current time
@@ -111,16 +111,16 @@ CairoClock::compose(const PaintEvent& event)
     double hours = timeinfo->tm_hour;
     if (hours >= 12)
         hours -= 12;
-    hours = ((hours * 30 + timeinfo->tm_min / 2.0) - 90) * M_D2R;
+    hours = ((hours * 30 + timeinfo->tm_min * .5) - 90) * M_D2R;
     double minutes = (timeinfo->tm_min * 6 - 90) * M_D2R;
     double seconds = (timeinfo->tm_sec * 6 - 90) * M_D2R;
 
     p.setPen(pen2);
-    p.drawLine(cx, cy, cx + cos(hours) * (radius * 0.5), cy + sin(hours) * (radius * 0.5));
-    p.drawLine(cx, cy, cx + cos(minutes) * (radius * 0.7), cy + sin(minutes) * (radius * 0.7));
+    p.drawLine(cx, cy, cx + cos(hours) * (radius * 0.5f), cy + sin(hours) * (radius * 0.5f));
+    p.drawLine(cx, cy, cx + cos(minutes) * (radius * 0.7f), cy + sin(minutes) * (radius * 0.7f));
 
     p.setPen(Color(255, 0, 0));
-    p.drawLine(cx, cy, cx + cos(seconds) * (radius * 0.7), cy + sin(seconds) * (radius * 0.7));
+    p.drawLine(cx, cy, cx + cos(seconds) * (radius * 0.7f), cy + sin(seconds) * (radius * 0.7f));
 
     p.setBrush(Color(0, 0, 0));
     p.drawEllipse(cx - 10, cy - 10, 20, 20, CairoPainter::FillPath);
