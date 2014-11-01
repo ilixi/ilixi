@@ -91,7 +91,7 @@ Image::Image(const Image& img)
         : _dfbSurface(NULL),
           _imagePath(img._imagePath),
           _size(img._size),
-          _state(_state),
+          _state(img._state),
           _caps(img._caps)
 {
     ILOG_TRACE(ILX_IMAGE);
