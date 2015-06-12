@@ -1,5 +1,5 @@
 /*
- Copyright 2010-2013 Tarik Sekmen.
+ Copyright 2010-2015 Tarik Sekmen.
 
  All Rights Reserved.
 
