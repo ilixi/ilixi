@@ -431,7 +431,7 @@ TextLayout::doLayout(Font* font)
             l.offset = text - start;
 
             font->stringBreak(text, -1, _bounds.width(), &l.lineWidth, &l.length, &next);
-            l.bytes = next - text;
+            l.bytes = l.length;
             _lines.push_back(l);
             text = next;
             l.y += leading;
