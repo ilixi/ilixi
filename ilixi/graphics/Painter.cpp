@@ -131,12 +131,12 @@ Painter::drawLine(double x1, double y1, double x2, double y2, const DFBSurfaceDr
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1 + _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 - _myWidget->z(), _myWidget->absY() + y2);
+                dfbSurface->DrawLine(dfbSurface, _myWidget->surface()->xOffset() + x1 + _myWidget->z(), _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2 - _myWidget->z(), _myWidget->surface()->yOffset() + y2);
             else
-                dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1 - _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 + _myWidget->z(), _myWidget->absY() + y2);
+                dfbSurface->DrawLine(dfbSurface, _myWidget->surface()->xOffset() + x1 - _myWidget->z(), _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2 + _myWidget->z(), _myWidget->surface()->yOffset() + y2);
         }
 #else
-            dfbSurface->DrawLine(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2);
+            dfbSurface->DrawLine(dfbSurface, _myWidget->surface()->xOffset() + x1, _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2, _myWidget->surface()->yOffset() + y2);
 #endif
         else
             dfbSurface->DrawLine(dfbSurface, x1, y1, x2, y2);
@@ -166,12 +166,12 @@ Painter::drawRectangle(double x, double y, double width, double height, const DF
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y, width, height);
+                dfbSurface->DrawRectangle(dfbSurface, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y, width, height);
             else
-                dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y, width, height);
+                dfbSurface->DrawRectangle(dfbSurface, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y, width, height);
         }
 #else
-            dfbSurface->DrawRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+            dfbSurface->DrawRectangle(dfbSurface, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y, width, height);
 #endif
         else
             dfbSurface->DrawRectangle(dfbSurface, x, y, width, height);
@@ -196,12 +196,12 @@ Painter::fillRectangle(double x, double y, double width, double height, const DF
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y, width, height);
+                dfbSurface->FillRectangle(dfbSurface, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y, width, height);
             else
-                dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y, width, height);
+                dfbSurface->FillRectangle(dfbSurface, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y, width, height);
         }
 #else
-            dfbSurface->FillRectangle(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y, width, height);
+            dfbSurface->FillRectangle(dfbSurface, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y, width, height);
 #endif
         else
             dfbSurface->FillRectangle(dfbSurface, x, y, width, height);
@@ -226,12 +226,12 @@ Painter::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const DFBS
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1+ _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 + _myWidget->z(), _myWidget->absY() + y2, _myWidget->absX() + x3 + _myWidget->z(), _myWidget->absY() + y3);
+                dfbSurface->FillTriangle(dfbSurface, _myWidget->surface()->xOffset() + x1+ _myWidget->z(), _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2 + _myWidget->z(), _myWidget->surface()->yOffset() + y2, _myWidget->surface()->xOffset() + x3 + _myWidget->z(), _myWidget->surface()->yOffset() + y3);
             else
-                dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1 - _myWidget->z(), _myWidget->absY() + y1, _myWidget->absX() + x2 - _myWidget->z(), _myWidget->absY() + y2, _myWidget->absX() + x3 - _myWidget->z(), _myWidget->absY() + y3);
+                dfbSurface->FillTriangle(dfbSurface, _myWidget->surface()->xOffset() + x1 - _myWidget->z(), _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2 - _myWidget->z(), _myWidget->surface()->yOffset() + y2, _myWidget->surface()->xOffset() + x3 - _myWidget->z(), _myWidget->surface()->yOffset() + y3);
         }
 #else
-            dfbSurface->FillTriangle(dfbSurface, _myWidget->absX() + x1, _myWidget->absY() + y1, _myWidget->absX() + x2, _myWidget->absY() + y2, _myWidget->absX() + x3, _myWidget->absY() + y3);
+            dfbSurface->FillTriangle(dfbSurface, _myWidget->surface()->xOffset() + x1, _myWidget->surface()->yOffset() + y1, _myWidget->surface()->xOffset() + x2, _myWidget->surface()->yOffset() + y2, _myWidget->surface()->xOffset() + x3, _myWidget->surface()->yOffset() + y3);
 #endif
         else
             dfbSurface->FillTriangle(dfbSurface, x1, y1, x2, y2, x3, y3);
@@ -259,12 +259,12 @@ Painter::drawText(const std::string& text, int x, int y, const DFBSurfaceDrawing
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y, DSTF_TOPLEFT);
+                dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y, DSTF_TOPLEFT);
             else
-                dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y, DSTF_TOPLEFT);
+                dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y, DSTF_TOPLEFT);
         }
 #else
-            dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->absX() + x, _myWidget->absY() + y, DSTF_TOPLEFT);
+            dfbSurface->DrawString(dfbSurface, text.c_str(), -1, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y, DSTF_TOPLEFT);
 #endif
         else
             dfbSurface->DrawString(dfbSurface, text.c_str(), -1, x, y, DSTF_TOPLEFT);
@@ -314,12 +314,12 @@ Painter::drawLayout(const TextLayout& layout, int x, int y, const DFBSurfaceDraw
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                layout.drawTextLayout(dfbSurface, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y);
+                layout.drawTextLayout(dfbSurface, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y);
             else
-                layout.drawTextLayout(dfbSurface, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y);
+                layout.drawTextLayout(dfbSurface, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y);
         }
 #else
-            layout.drawTextLayout(dfbSurface, _myWidget->absX() + x, _myWidget->absY() + y);
+            layout.drawTextLayout(dfbSurface, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y);
 #endif
         else
             layout.drawTextLayout(dfbSurface, x, y);
@@ -401,12 +401,12 @@ Painter::drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y);
             else
-                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y);
         }
 #else
-            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y);
 #endif
         else
             dfbSurface->Blit(dfbSurface, image->getDFBSurface(), NULL, x, y);
@@ -433,12 +433,12 @@ Painter::tileImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& fl
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y);
             else
-                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y);
         }
 #else
-            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->absX() + x, _myWidget->absY() + y);
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y);
 #endif
         else
             dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), NULL, x, y);
@@ -460,12 +460,12 @@ Painter::tileImage(Image* image, int x, int y, const Rectangle& source, const DF
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y);
             else
-                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y);
         }
 #else
-            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+            dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y);
 #endif
         else
             dfbSurface->TileBlit(dfbSurface, image->getDFBSurface(), &r, x, y);
@@ -488,12 +488,12 @@ Painter::blitImage(Image* image, const Rectangle& source, int x, int y, const DF
 #ifdef ILIXI_STEREO_OUTPUT
         {
             if (_myWidget->surface()->stereoEye() == PaintEvent::LeftEye)
-                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x + _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x + _myWidget->z(), _myWidget->surface()->yOffset() + y);
             else
-                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x - _myWidget->z(), _myWidget->absY() + y);
+                dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x - _myWidget->z(), _myWidget->surface()->yOffset() + y);
         }
 #else
-            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->absX() + x, _myWidget->absY() + y);
+            dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, _myWidget->surface()->xOffset() + x, _myWidget->surface()->yOffset() + y);
 #endif
         else
             dfbSurface->Blit(dfbSurface, image->getDFBSurface(), &r, x, y);
