@@ -8,11 +8,11 @@ before_install:
   - sudo apt-get install -y xorg-dev libasound2-dev libpng12-dev libjpeg8-dev libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext
   - wget http://www.directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz 
   - tar -xvf DirectFB-1.7.0.tar.gz 
-  - cd DirectFB-1.7.0 && ./autogen.sh --prefix=/usr --enable-network --enable-fusionsound --with-gfxdrivers=none
-  - make && make install
+  - cd DirectFB-1.7.0 && ./autogen.sh --enable-network --enable-fusionsound --with-gfxdrivers=none
+  - make && sudo make install
 
 script:
-  - ./autogen.sh --enable-fusionsound --with-demos --with-examples && make && make install
+  - ./autogen.sh --enable-fusionsound --with-demos --with-examples && make && sudo make install
 
 branches:
   only:
