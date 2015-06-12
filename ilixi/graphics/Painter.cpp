@@ -75,7 +75,10 @@ Painter::begin(const PaintEvent& event)
 #endif
     _state = PFActive;
     dfbSurface->SetDrawingFlags(dfbSurface, DSDRAW_NOFX);
-    dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
+    if (_myWidget->surface()->flags() & Surface::SharedSurface)
+        dfbSurface->SetPorterDuff(dfbSurface, DSPD_NONE);
+    else
+        dfbSurface->SetPorterDuff(dfbSurface, DSPD_SRC_OVER);
 }
 
 void
