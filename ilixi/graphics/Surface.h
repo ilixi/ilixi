@@ -94,6 +94,24 @@ public:
     dfbSurfaceId() const;
 
     /*!
+     * Returns position of surface on x-axis relative to its root.
+     */
+    int
+    xOffset() const;
+
+    /*!
+     * Returns position of surface on y-axis relative to its root.
+     */
+    int
+    yOffset() const;
+
+    /*
+     * Returns actual owner of widget's surface.
+     */
+    Widget*
+    surfaceOwner() const;
+
+    /*!
      * Sets a surface flag.
      */
     void
@@ -327,6 +345,14 @@ private:
     IDirectFBSurface* _dfbSurface;
     //! Interface to parent DFB surface.
     IDirectFBSurface* _parentSurface;
+
+    //! Pointer to widget which owns the actual surface used for drawing.
+    Widget* _surfaceOwner;
+    //! This property specifies the relative x position of surface to a parent surface.
+    int _xOffset;
+    //! This property specifies the relative y position of surface to a parent surface.
+    int _yOffset;
+
     /*!
      * This property controls the allocation of surface and specifies how a widget
      * frame and surface geometry should be used. It is set to DefaultDescription by default.

@@ -43,9 +43,12 @@ compareZ(Widget* first, Widget* second)
 #ifdef ILIXI_STEREO_OUTPUT
 Surface::Surface(Widget* owner)
         : _owner(owner),
+          _surfaceOwner(owner->parent()),
           _dfbSurface(NULL),
           _parentSurface(NULL),
           _flags((SurfaceFlags) DefaultDescription),
+          _xOffset(0),
+          _yOffset(0)
           _rightSurface(NULL),
           _eye(PaintEvent::LeftEye)
 #ifdef ILIXI_HAVE_CAIRO
@@ -59,9 +62,12 @@ Surface::Surface(Widget* owner)
 #else
 Surface::Surface(Widget* owner)
         : _owner(owner),
+          _surfaceOwner(owner->parent()),
           _dfbSurface(NULL),
           _parentSurface(NULL),
-          _flags((SurfaceFlags) DefaultDescription)
+          _flags((SurfaceFlags) DefaultDescription),
+          _xOffset(0),
+          _yOffset(0)
 #ifdef ILIXI_HAVE_CAIRO
           ,_cairoSurface(NULL),
           _cairoContext(NULL)
@@ -163,6 +169,24 @@ Surface::dfbSurfaceId() const
 #endif
     ILOG_ERROR(ILX_SURFACE, "Cannot get surface id!\n");
     return id;
+}
+
+int
+Surface::xOffset() const
+{
+    return _xOffset;
+}
+
+int
+Surface::yOffset() const
+{
+    return _yOffset;
+}
+
+Widget*
+Surface::surfaceOwner() const
+{
+    return _surfaceOwner;
 }
 
 void
@@ -674,8 +698,14 @@ Surface::updateSurface(const PaintEvent& event)
         unsetSurfaceFlag(Surface::DoZSort);
     }
 
-    if (_flags & Surface::ModifiedGeometry)
+    if (_flags & Surface::ModifiedGeometry) {
         _owner->sigGeometryUpdated();
+        if (_surfaceOwner)
+        {
+            _xOffset = _owner->absX() - _surfaceOwner->absX();
+            _yOffset = _owner->absY() - _surfaceOwner->absY();
+        }
+    }
 
     // initialisation is done once for both surfaces in stereoscopic mode.
     if (_flags & InitialiseSurface)
@@ -701,6 +731,7 @@ Surface::updateSurface(const PaintEvent& event)
             _dfbSurface->AddRef(_dfbSurface);
 #else
             ILOG_DEBUG(ILX_SURFACE, " -> RootSurface %p flags 0x%03x\n", this, _flags);
+            _surfaceOwner = _owner;
             _dfbSurface = _owner->_rootWindow->windowSurface();
             _dfbSurface->AddRef(_dfbSurface);
 #endif
@@ -721,16 +752,16 @@ Surface::updateSurface(const PaintEvent& event)
 #else
             ILOG_DEBUG(ILX_SURFACE, " -> SubSurface: 0x%03x\n", _flags);
 
-            Widget* parent =_owner->_parent;
-            while(parent->surface()->flags() & SharedSurface)
+            _surfaceOwner = _owner->_parent;
+            while (_surfaceOwner->surface()->flags() & SharedSurface)
             {
-                if (parent->parent())
-                    parent = parent->parent();
+                if (_surfaceOwner->parent())
+                    _surfaceOwner = _surfaceOwner->parent();
                 else
                     break;
             }
 
-            ret = createDFBSubSurface(_owner->frameGeometry(), parent->surface()->dfbSurface());
+            ret = createDFBSubSurface(_owner->frameGeometry(), _surfaceOwner->surface()->dfbSurface());
 #endif
         } else if (_owner->_parent)
         {
@@ -743,7 +774,18 @@ Surface::updateSurface(const PaintEvent& event)
             _dfbSurface->AddRef(_dfbSurface);
 #else
             ILOG_DEBUG(ILX_SURFACE, " -> SharedSurface: 0x%03x\n", _flags);
-            _dfbSurface = _owner->parent()->surface()->dfbSurface();
+            _surfaceOwner = _owner->_parent;
+            while (_surfaceOwner->surface()->flags() & SharedSurface)
+            {
+                if (_surfaceOwner->parent())
+                    _surfaceOwner = _surfaceOwner->parent();
+                else
+                    break;
+            }
+            _xOffset = _owner->absX() - _surfaceOwner->absX();
+            _yOffset = _owner->absY() - _surfaceOwner->absY();
+            ILOG_DEBUG(ILX_SURFACE, " -> SharedSurface x: %d y: %d\n", _xOffset, _yOffset);
+            _dfbSurface = _surfaceOwner->surface()->dfbSurface();
             _dfbSurface->AddRef(_dfbSurface);
 #endif
             ret = true;
