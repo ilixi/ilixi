@@ -2,6 +2,20 @@ language: cpp
 
 compiler:
   - gcc
+  
+env:
+  global:
+   - secure: "J+J4mWkYWORdInucp4f7E5dRG+xKIrYKu82nbO0aiRvPEyHtF6lszKozHz9Sj9vzI3ys5ofjoH/Qb3ydID6ApWW8krxxPR3Mwp6DtT+glEn/08Pzv8W/16gOXk8QtMny7x60LY+MH7GSq6U91/zrsxeNRajLJ8gjxGY4rH6qL+yKWLy+IojPGnu62JIW6MbtYd0Didi4Rn2JtzJpu3N480A9STrvJIxE1lisvqsUCaww8maiVvUy1+a5QdRFte+Xa7LJSKI4v6oFFaws21mL4SDwnZa122tVlpNOTDPscvj6edD4RLTUHkwNKEFMLj28BeCH9RkRKYqL0b10oBLXvZ5fqqsr5jY7MG0BAkPIitpcvLbR7ddrY59WXbfdNnoLaNQ4/DvPfgI1k61e1lNEdqhqWPMZDToUdNtPiB6ej8Jq6cPx0czWTsZEDmhrfmR7/Z9kzcxD+o+fdGWoqfXYJqdJfyfuHrIepWJVP5D01VmH4qNEKHBMlxrRSMqyx8faWwF0BMj00Hk5RsM0lyhSZ92h3GhzH4YzB/gh3mys8AnbLLbuC804lnC84cXUCf4FM0h+AXOKZqjKqJJNdjzsucxJUCl34soQDjdh8rVNRX0NGvWAJTYfzrCnUW8+NA1quRJ6RSsjF226ONU8yZ7s6JI4sBCPSkxsEJpJnBdi7VE="
+
+addons:
+  coverity_scan:
+    project:
+      name: "ilixi/ilixi"
+      description: "Build submitted via Travis CI"
+    notification_email: tarik@ilixi.org
+    build_command_prepend: "./autogen.sh --enable-fusionsound --with-demos --with-examples; make clean"
+    build_command:   "make -j 4"
+    branch_pattern: master
 
 before_install:
   - sudo apt-get update -qq
