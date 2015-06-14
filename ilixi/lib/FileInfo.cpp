@@ -38,6 +38,8 @@ FileInfo::FileInfo()
 }
 
 FileInfo::FileInfo(const std::string& file)
+        : _ready(false),
+          _perms(None)
 {
     setFile(file);
 }
