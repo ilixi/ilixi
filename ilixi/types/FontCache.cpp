@@ -61,6 +61,7 @@ FontCache::FontCache(FontCache const&)
 FontCache&
 FontCache::operator=(FontCache const&)
 {
+    return *this;
 }
 
 FontCache::~FontCache()
