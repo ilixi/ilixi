@@ -248,6 +248,12 @@ private:
 
     struct LogicLayer
     {
+        LogicLayer()
+                : id(0),
+                  surface(NULL)
+        {
+        }
+
         unsigned int id;                // Id of layer
         IDirectFBSurface* surface;
     };
