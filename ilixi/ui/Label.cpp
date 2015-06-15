@@ -44,7 +44,8 @@ Label::Label(std::string text, Widget* parent)
 
 Label::Label(const Label& label)
         : TextBase(label),
-          _margin(label._margin)
+          _margin(label._margin),
+          _color(NULL)
 {
     ILOG_TRACE_W(ILX_LABEL);
     if (label._color)
