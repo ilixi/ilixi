@@ -32,7 +32,8 @@ D_DEBUG_DOMAIN( ILX_SCROLLITEM, "ilixi/ui/ScrollItem", "ScrollItem");
 ScrollItem::ScrollItem(const std::string& text, Widget* parent)
         : Widget(parent),
           TextBase("", this),
-          _val1(0)
+          _val1(0),
+          _image(NULL)
 {
     ILOG_TRACE_W(ILX_SCROLLITEM);
     setText(text);
