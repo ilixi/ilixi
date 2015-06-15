@@ -445,45 +445,4 @@ StylistBase::palette() const
     return _palette;
 }
 
-void
-StylistBase::animate(StyledAnimation type, Widget* target)
-{
-//    switch (type)
-//    {
-//    case FocusIn:
-//        _focus.targetIn = target;
-//        _focus.in->start();
-//        break;
-//    case FocusOut:
-//        _focus.targetOut = target;
-//        _focus.out->start();
-//        break;
-//    default:
-//        break;
-//    }
-}
-
-void
-StylistBase::initAnimations()
-{
-    _focus.in = new TweenAnimation();
-    _focus.in->setDuration(500);
-    _focus.in->addTween(Tween::SINE, Tween::EASE_OUT, 0, 1);
-    _focus.in->sigExec.connect(sigc::bind<StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusIn));
-
-    _focus.out = new TweenAnimation();
-    _focus.out->setDuration(250);
-    _focus.out->addTween(Tween::SINE, Tween::EASE_IN, 1, 0);
-    _focus.out->sigExec.connect(sigc::bind<StylistBase::StyledAnimation>(sigc::mem_fun(this, &StylistBase::runAnimation), FocusOut));
-}
-
-void
-StylistBase::runAnimation(StyledAnimation type)
-{
-    if (type == FocusIn)
-        _focus.targetIn->repaint();
-    else if (type == FocusOut)
-        _focus.targetOut->repaint();
-}
-
 } /* namespace ilixi */

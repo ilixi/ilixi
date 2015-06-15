@@ -69,16 +69,6 @@ class StylistBase
     friend class Image;
 
 public:
-
-    //! This enum specifies drawing animation type.
-    enum StyledAnimation
-    {
-        ExposeIn,
-        ExposeOut,
-        FocusIn,
-        FocusOut
-    };
-
     /*!
      * Constructor.
      */
@@ -122,15 +112,6 @@ public:
 
     Palette*
     palette() const;
-
-    /*!
-     * Animated drawing for given widget.
-     *
-     * @param type
-     * @param target
-     */
-    void
-    animate(StyledAnimation type, Widget* target);
 
     /*!
      * Draws application frame.
@@ -301,16 +282,6 @@ protected:
     //! This property stores the style items.
     Style* _style;
 
-    struct AnimatedElement
-    {
-        TweenAnimation* in;
-        TweenAnimation* out;
-        Widget* targetIn;
-        Widget* targetOut;
-    };
-
-    AnimatedElement _focus;
-
     /*!
      * Sets the fonts pack using a file.
      * Returns true if successful.
@@ -350,12 +321,6 @@ protected:
 private:
     //! "Image not found" image.
     static Image* _noImage;
-
-    virtual void
-    initAnimations();
-
-    void
-    runAnimation(StyledAnimation type);
 };
 
 } /* namespace ilixi */
