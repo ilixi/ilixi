@@ -26,6 +26,8 @@
 #include <sys/utsname.h>
 
 OSMonitor::OSMonitor()
+        : _uptime(0),
+          _uptimeIdle(0)
 {
   utsname _test;
   if (uname(&_test) == 0)
