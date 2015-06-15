@@ -59,7 +59,9 @@ FileBrowserItem::FileBrowserItem(FileInfo* info, FileBrowser* parent)
           _owner(parent),
           _info(info),
           _icon(NULL),
-          _alternateRow(false)
+          _alternateRow(false),
+          _date(NULL),
+          _size(NULL)
 {
     ILOG_TRACE_W(ILX_FILEBROWSERITEM);
     setInputMethod(KeyPointer);
