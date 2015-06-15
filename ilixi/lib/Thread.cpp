@@ -41,7 +41,8 @@ D_DEBUG_DOMAIN( ILX_THREAD, "ilixi/lib/Thread", "Thread");
 Thread::Thread()
         : _running(false),
           _code(0),
-          _stackSize(0)
+          _stackSize(0),
+          _pThread(0)
 {
     ILOG_TRACE_F(ILX_THREAD);
     pthread_mutex_init(&_runMutex, NULL);
