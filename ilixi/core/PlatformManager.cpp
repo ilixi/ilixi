@@ -523,6 +523,9 @@ PlatformManager::PlatformManager()
           _cursorImage(NULL),
           _pixelFormat(DSPF_UNKNOWN),
           _configFile("")
+#ifdef ILIXI_HAVE_FUSIONSOUND
+          ,_soundLevel(100)
+#endif
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
 #ifdef ILIXI_HAVE_NLS
@@ -1227,9 +1230,6 @@ void
 PlatformManager::setWindow(xmlNodePtr node)
 {
     ILOG_TRACE_F(ILX_PLATFORMMANAGER);
-    _windowConf.fsu = false;
-    _windowConf.flipMode = FlipNew;
-    _windowConf.caps = DSCAPS_DOUBLE;
 
     while (node != NULL)
     {

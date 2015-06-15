@@ -266,6 +266,13 @@ private:
 
     struct WindowConf
     {
+        WindowConf()
+                : fsu(false),
+                  flipMode(FlipNew),
+                  caps((DFBSurfaceCapabilities) (DSCAPS_DOUBLE | DSCAPS_VIDEOONLY))
+        {
+        }
+
         bool fsu;
         LayerFlipMode flipMode;
         DFBSurfaceCapabilities caps;
