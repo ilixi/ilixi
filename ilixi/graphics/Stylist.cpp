@@ -579,19 +579,10 @@ Stylist::drawTabPanelButton(Painter* p, TabPanelButton* button, bool first)
 {
     const WidgetState state = button->state();
 
-    if (first)
-    {
-        if (button->checked())
-            drawTabFrame(p, 0, 0, button->width(), button->height(), _style->panel.def, _style->panelInv);
-        else
-            drawTabFramePassive(p, 0, 0, button->width(), button->height(), _style->panel.dis);
-    } else
-    {
-        if (button->checked())
-            drawTabFrame(p, 0, 0, button->width(), button->height(), _style->panel.def, _style->panelInv);
-        else
-            drawTabFramePassive(p, 0, 0, button->width(), button->height(), _style->panel.dis);
-    }
+    if (button->checked())
+        drawTabFrame(p, 0, 0, button->width(), button->height(), _style->panel.def, _style->panelInv);
+    else
+        drawTabFramePassive(p, 0, 0, button->width(), button->height(), _style->panel.dis);
 
     // Text
     if (!button->text().empty())
