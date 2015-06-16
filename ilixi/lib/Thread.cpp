@@ -162,7 +162,10 @@ Thread::join()
 
     pthread_mutex_lock(&_runMutex);
     if (!_running)
+    {
+        pthread_mutex_unlock(&_runMutex);
         return false;
+    }
     _running = false;
     pthread_mutex_unlock(&_runMutex);
 
