@@ -173,8 +173,7 @@ Image::preferredSize()
     else
         return Size(desc.width, desc.height);
 
-    if (provider)
-        provider->Release(provider);
+    provider->Release(provider);
 
     return s;
 }
