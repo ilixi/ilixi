@@ -170,11 +170,9 @@ listDirectory(const std::string& path)
 FILE*
 temporaryFile(const std::string& prefix)
 {
-    char buffer[L_tmpnam];
-    // XX ignoring return value of 'char* tmpnam(char*)'
-    tmpnam(buffer);
-    FILE * pFile;
-    pFile = tmpfile();
+    char* file = tempnam("/tmp", prefix.c_str());
+    FILE* pFile = fopen(file, "w");
+    free(file);
     return pFile;
 }
 
