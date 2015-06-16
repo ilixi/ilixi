@@ -256,10 +256,7 @@ ScrollBar::pointerMotionEvent(const PointerEvent& pointerEvent)
 void
 ScrollBar::pointerWheelEvent(const PointerEvent& event)
 {
-    if (_orientation == Vertical)
-        setValue(_value - event.wheelStep * _step);
-    else
-        setValue(_value - event.wheelStep * _step);
+    setValue(_value - event.wheelStep * _step);
 }
 
 void
