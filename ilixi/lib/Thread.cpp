@@ -83,8 +83,10 @@ Thread::start()
     if (_stackSize > 0)
     {
         void *sp;
-
-        rc = posix_memalign(&sp, sysconf(_SC_PAGESIZE), _stackSize);
+        long pageSize = sysconf(_SC_PAGESIZE);
+        if (pageSize == -1)
+            return false;
+        rc = posix_memalign(&sp, pageSize, _stackSize);
         if (rc != 0)
         {
             ILOG_ERROR(ILX_THREAD, "posix_memalign: %d\n", rc);
