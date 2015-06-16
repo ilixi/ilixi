@@ -41,7 +41,8 @@ videoCB(void *cdata)
 
 Video::Video(const std::string& path)
         : _provider(NULL),
-          _frame(NULL)
+          _frame(NULL),
+          _buffer(NULL)
 {
     ILOG_TRACE_F(ILX_VIDEO);
     load(path);
