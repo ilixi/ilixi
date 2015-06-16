@@ -63,9 +63,6 @@ PrintF(const char *format, ...)
     len = vsnprintf(buf, sizeof(buf), format, args);
     va_end( args);
 
-    if (len < 0)
-        abort();
-
     if (len >= sizeof(buf))
     {
         ptr = (char*) malloc(len + 1);
@@ -97,9 +94,9 @@ toHMS(long int secs)
     int hour = secs / 3600.0;
     secs = (int) secs % 3600;
     if (hour)
-        return PrintF("%.2d:%.2d:%.2d", hour, secs / 60, secs %60);
+        return PrintF("%.2d:%.2d:%.2d", hour, (int) secs / 60, (int) secs % 60);
     else
-        return PrintF("%.2d:%.2d", secs / 60, secs %60);
+        return PrintF("%.2d:%.2d", (int) secs / 60, (int) secs % 60);
 }
 
 #define DIM(x) (sizeof(x)/sizeof(*(x)))
