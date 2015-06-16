@@ -93,7 +93,7 @@ Painter::end()
             int32_t* tmp = _affine->invert().m();
             dfbSurface->SetMatrix(dfbSurface, tmp);
             dfbSurface->SetRenderOptions(dfbSurface, DSRO_NONE);
-            delete tmp;
+            delete[] tmp;
             delete _affine;
         }
         _state = PFNone;
@@ -745,7 +745,7 @@ Painter::setAffine2D(const Affine2D& affine2D)
         dfbSurface->SetRenderOptions(dfbSurface, DSRO_MATRIX);
         int32_t* tmp = affine2D.m();
         dfbSurface->SetMatrix(dfbSurface, tmp);
-        delete tmp;
+        delete[] tmp;
         _state = (PainterFlags) (_state | PFTransformed);
         ILOG_DEBUG(ILX_PAINTER, "setAffine2D() %p\n", this);
     }
