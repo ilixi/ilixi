@@ -164,6 +164,8 @@ struct PointerEvent
             : eventType(type),
               x(X),
               y(Y),
+              absX(X),
+              absY(Y),
               wheelStep(step),
               button(pbutton),
               buttonMask(mask),
