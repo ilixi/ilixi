@@ -50,7 +50,7 @@ Music::Music()
         : _fileName(""),
           _provider(NULL),
           _stream(NULL),
-          _playback(_playback),
+          _playback(NULL),
           _volume(1.0),
           _repeat(false)
 {
@@ -61,7 +61,7 @@ Music::Music(const std::string& fileName)
         : _fileName(fileName),
           _provider(NULL),
           _stream(NULL),
-          _playback(_playback),
+          _playback(NULL),
           _volume(1.0),
           _repeat(false)
 {
