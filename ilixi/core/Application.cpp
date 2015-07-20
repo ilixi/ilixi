@@ -400,10 +400,11 @@ Application::handleEvents(int32_t timeout, bool forceWait)
         Engine::instance().waitForEvents(timeout);
 
     DFBEvent event;
+#if ILIXI_HAVE_MOTION_COMPRESSION
     DFBWindowEvent lastMotion; // Used for compressing motion events.
 
     lastMotion.type = DWET_NONE;
-
+#endif
     while (Engine::instance().getNextEvent(&event) == DFB_OK)
     {
         switch (event.clazz)
@@ -441,6 +442,7 @@ Application::handleEvents(int32_t timeout, bool forceWait)
         case DFEC_WINDOW:
             if (!(PlatformManager::instance().appOptions() & OptExclusive) && event.window.type != DWET_UPDATE)
             {
+#if ILIXI_HAVE_MOTION_COMPRESSION
                 if (event.window.type == DWET_MOTION && event.window.buttons == 0)
                     lastMotion = event.window;
                 else if (lastMotion.type == DWET_NONE)
@@ -451,6 +453,10 @@ Application::handleEvents(int32_t timeout, bool forceWait)
                     if (!windowPreEventFilter((const DFBWindowEvent&) event.window))
                         handleWindowEvents((const DFBWindowEvent&) event.window);
                 }
+#else
+                if (!windowPreEventFilter((const DFBWindowEvent&) event.window))
+                    handleWindowEvents((const DFBWindowEvent&) event.window);
+#endif
             }
             break;
 
@@ -477,9 +483,11 @@ Application::handleEvents(int32_t timeout, bool forceWait)
         }
     }
 
+#if ILIXI_HAVE_MOTION_COMPRESSION
     if (lastMotion.type != 0)
         if (!windowPreEventFilter((const DFBWindowEvent&) lastMotion))
             handleWindowEvents((const DFBWindowEvent&) lastMotion);
+#endif
     ILOG_DEBUG(ILX_APPLICATION_EVENTS, " -> end handle events \n");
 }
 
