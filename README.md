@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/ilixi/ilixi.svg)](https://travis-ci.org/ilixi/ilixi)
 
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/5444/badge.svg)](https://scan.coverity.com/projects/5444)
+
 # What is ilixi?
 
 ilixi is an open-source lightweight GUI framework and it is 
