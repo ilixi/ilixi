@@ -12,7 +12,7 @@
 #include <ilixiGUI.h> 
 using namespace sigc;
 using namespace ilixi;
-typedef void (SWIGSTDCALL *DelegateNotify)(void);
+typedef void (SWIGSTDCALL *DelegateNotify)(unsigned int);
 %}
 
 %define %cs_callback(TYPE, CSTYPE)
@@ -29,9 +29,9 @@ typedef void (SWIGSTDCALL *DelegateNotify)(void);
 %template(ComboboxUIntSignal) sigc::signal<void, unsigned int>;
 
 %extend ilixi::ComboBox {
-  void connectSelectionChanged(DelegateNotify cb)
+  void connectItemSelected(DelegateNotify cb)
   {
-    $self->sigSelectionChanged.connect(sigc::ptr_fun(cb));
+    $self->sigItemSelected.connect(sigc::ptr_fun1<unsigned int>(cb));
   }
 }
 

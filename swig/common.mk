@@ -1,4 +1,5 @@
 SWIG_SOURCES 	= 	../api/Application.i \
+					../api/AppWindow.i \
 					../api/Button.i \
 					../api/CheckBox.i \
 					../api/ComboBox.i \
@@ -28,6 +29,7 @@ SWIG_SOURCES 	= 	../api/Application.i \
 					../api/WindowWidget.i
 							
 GEN_SOURCES		= 	./gen/ilixi_Application.cpp \
+					./gen/ilixi_AppWindow.cpp \
 					./gen/ilixi_Button.cpp \
 					./gen/ilixi_CheckBox.cpp \
 					./gen/ilixi_ComboBox.cpp \
