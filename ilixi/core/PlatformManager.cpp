@@ -580,7 +580,16 @@ PlatformManager::initialize(int* argc, char*** argv, AppOptions opts)
 
         if (_configFile.empty())
         {
-            char* arg = strdup(*argv[0]);
+            char* arg = 0;
+            if(argc)
+                arg = strdup(*argv[0]);
+            else {
+                size_t size = 0;
+                FILE *cmdline = fopen("/proc/self/cmdline", "rb");
+                while(getdelim(&arg, &size, 0, cmdline) != -1)
+                   puts(arg);
+                fclose(cmdline);
+            }
             std::string appConfig = PrintF("%s%s_config.xml", FileSystem::ilxDirectory().c_str(), arg);
             if (FileSystem::fileExists(appConfig))
                 _configFile = appConfig;
