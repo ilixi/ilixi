@@ -1,7 +1,7 @@
 ## Makefile.am for /swig/csharp
 
 include ../common.mk
-
+MAKEFLAGS 				:= -j 1
 EXTRA_DIST 				= $(SWIG_SOURCES) Buttons.cs Dialogs.cs
 BUILT_SOURCES 			= $(GEN_SOURCES) ilixi.dll
 SWIG_INCLUDES			= @DEPS_CFLAGS@ -I$(top_srcdir)/ilixi
