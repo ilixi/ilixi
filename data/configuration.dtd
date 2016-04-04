@@ -6,6 +6,7 @@
                         fsu (on|off) #REQUIRED 
                         flipMode (none|onSync|waitForSync|new) #REQUIRED 
                         bufferMode (unknown|frontOnly|backVideo|backSystem|triple|windows) #REQUIRED 
+                        exclusive CDATA "no"
                         x CDATA "0"
                         y CDATA "0"
                         w CDATA "0"

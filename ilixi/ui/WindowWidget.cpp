@@ -389,7 +389,7 @@ WindowWidget::handleWindowEvent(const DFBWindowEvent& event, bool dragging)
     bool exclusive = (PlatformManager::instance().appOptions() & OptExclusive);
     if (exclusive)
     {
-        if (!_window->windowRectangle().contains(event.x, event.y))
+        if (!_window->windowRectangle().contains(event.x, event.y, true))
         {
             if (_eventManager->focusedWidget() && !(_eventManager->focusedWidget()->inputMethod() & OSKInput))
                 _eventManager->setFocusedWidget(NULL);
