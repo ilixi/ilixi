@@ -121,7 +121,7 @@ ListBox::itemAtIndex(unsigned int index)
     ILOG_TRACE_W(ILX_LISTBOX);
     if (index > _items.size())
         return NULL;
-    int i = 0;
+    unsigned int i = 0;
     for (WidgetList::iterator it = _items.begin(); it != _items.end(); ++it, ++i)
         if (i == index)
             return *it;
@@ -132,10 +132,23 @@ void
 ListBox::insertItem(unsigned int index, Widget* item)
 {
     ILOG_TRACE_W(ILX_LISTBOX);
+    unsigned int i = 0;
+    for (WidgetList::iterator it = _items.begin(); it != _items.end(); ++it, ++i) {
+        if (i == index) {
+            _items.insert(it, item);
+            break;
+        }
+    }
     if (_orientation == Horizontal)
         ((HBoxLayout*) _layout)->insertWidget(index, item);
     else
         ((VBoxLayout*) _layout)->insertWidget(index, item);
+    item->sigStateChanged.connect(sigc::mem_fun(this, &ListBox::trackItem));
+    // ensure visible item is still visible
+    if (_currentItem) {
+        _scrollArea->scrollTo(_currentItem);
+        //update(); does not work, not refreshing
+    }
 }
 
 bool
@@ -144,18 +157,24 @@ ListBox::removeItem(Widget* item)
     ILOG_TRACE_W(ILX_LISTBOX);
     if (_layout->removeWidget(item))
     {
-        for (WidgetListIterator it = _items.begin(); it != _items.end(); ++it)
+        WidgetListIterator it;
+        unsigned int idx=0;
+        for (it = _items.begin(); it != _items.end(); ++it, ++idx)
         {
             if (*it == item)
             {
                 _items.erase(it);
+                if (idx<=_currentIndex) {
+                    if (_currentIndex >= _items.size())
+                        setCurrentItem((unsigned int)_items.size() - 1);
+                    else
+                        setCurrentItem((unsigned int)_currentIndex - 1);
+                }                
                 break;
             }
         }
 
-        setCurrentItem(_currentIndex > _items.size() ? 0 : _currentIndex - 1);
-
-        return true;
+        return (it != _items.end());
     }
     return false;
 }
@@ -164,11 +183,13 @@ bool
 ListBox::removeItem(unsigned int index)
 {
     ILOG_TRACE_W(ILX_LISTBOX);
-    Widget* widget = itemAtIndex(index);
-    if (widget)
-    {
-        _layout->removeWidget(widget);
-        return true;
+    unsigned int i = 0;
+    for (WidgetList::iterator it = _items.begin(); it != _items.end(); ++it, ++i) {
+        if (i == index) {
+            _items.erase(it);
+            _layout->removeWidget((*it));
+            return true;
+        }
     }
     return false;
 }
@@ -188,7 +209,7 @@ ListBox::setCurrentItem(unsigned int index)
         _currentItem = itemAtIndex(index);
         _scrollArea->scrollTo(_currentItem);
 
-        int oldIndex = _currentIndex;
+        unsigned int oldIndex = _currentIndex;
         _currentIndex = index;
         if (_currentIndex != oldIndex)
             sigIndexChanged(oldIndex, _currentIndex);
@@ -204,7 +225,7 @@ ListBox::setCurrentItem(Widget* item)
         _currentItem = item;
         _scrollArea->scrollTo(_currentItem);
 
-        int oldIndex = _currentIndex;
+        unsigned int oldIndex = _currentIndex;
         _currentIndex = itemIndex(_currentItem);
         if (_currentIndex != oldIndex)
             sigIndexChanged(oldIndex, _currentIndex);
