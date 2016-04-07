@@ -947,6 +947,8 @@ Widget::removeChild(Widget* child, bool destroy)
     {
         if (destroy)
             delete *it;
+        else
+            (*it)->setParent(NULL);
         _children.erase(it);
         ILOG_DEBUG(ILX_WIDGET, "Removed child %p\n", child);
         return true;
@@ -965,7 +967,12 @@ Widget::insertChild(Widget* child, unsigned int index)
     for (unsigned node = 0; node < index; ++node)
         ++it;
 
+    child->setParent(this);
     _children.insert(it, child);
+
+    // Fixme this might be unnecessary since layout should do it.
+    child->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
+    
     return false;
 }
 

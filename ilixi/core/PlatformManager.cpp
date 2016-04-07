@@ -837,6 +837,9 @@ PlatformManager::setHardwareLayers(xmlNodePtr node)
             res = layer->GetConfiguration(layer, &conf);
             if (res != DFB_OK)
                 ILOG_THROW(ILX_PLATFORMMANAGER, "Cannot get layer configuration!\n");
+                
+            if (xmlStrcmp(exclusiveC, (xmlChar*) "yes") == 0)
+                setAppOption(OptExclusive);
 
             HardwareLayer info;
             info.fsu = false;
