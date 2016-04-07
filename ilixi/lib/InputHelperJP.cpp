@@ -26,7 +26,9 @@
 #include <lib/utf8.h>
 #include <core/Logger.h>
 #include <directfb.h>
+#if ILIXI_HAVE_LIBWNN
 #include <iconv.h>
+#endif
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
