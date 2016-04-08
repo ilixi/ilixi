@@ -37,7 +37,6 @@ Font::Font()
           _size(12),
           _attr(DFFA_NONE),
           _name("sans"),
-          _ref(1),
           _key(0)
 {
     ILOG_TRACE(ILX_FONT);
@@ -50,7 +49,6 @@ Font::Font(const std::string& name, int size)
           _size(size),
           _attr(DFFA_NONE),
           _name(name),
-          _ref(1),
           _key(0)
 {
     ILOG_TRACE(ILX_FONT);
@@ -59,15 +57,14 @@ Font::Font(const std::string& name, int size)
 
 Font::Font(const Font& font)
         : _modified(true),
-          _font(font._font),
+          _font(NULL),
           _size(font._size),
           _attr(font._attr),
           _name(font._name),
-          _ref(1),
-          _key(font._key)
+          _key(0)
 {
-    if (_font)
-        _font->AddRef(_font);
+    _key = FontCache::Instance()->getEntry(_name, _size, _attr, &_font);
+    _modified = false;
     ILOG_TRACE(ILX_FONT);
     ILOG_DEBUG(ILX_FONT, " -> copied, name: %s, size: %d\n", _name.c_str(), _size);
 }
@@ -325,20 +322,6 @@ Font::release()
         _font = NULL;
         _key = 0;
     }
-}
-
-void
-Font::addRef()
-{
-    _ref++;
-}
-
-void
-Font::relRef()
-{
-    ILOG_TRACE(ILX_FONT);
-    if (!--_ref)
-        delete this;
 }
 
 std::istream&

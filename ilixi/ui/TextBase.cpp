@@ -86,8 +86,6 @@ TextBase::TextBase(const TextBase& tb)
 TextBase::~TextBase()
 {
     ILOG_TRACE(ILX_TEXTBASE);
-    if (_font)
-        _font->relRef();
 }
 
 Font*
@@ -144,10 +142,7 @@ TextBase::setFont(Font* font)
     if (font)
     {
         ILOG_DEBUG(ILX_TEXTBASE, " -> Setting font to %p from %p\n", font, _font);
-        if (_font && _customFontName.empty())
-            _font->relRef();
         _font = font;
-        _font->addRef();
         _layout.setModified();
         _extents = _layout.extents(_font);
         _owner->doLayout();

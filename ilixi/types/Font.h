@@ -28,6 +28,7 @@
 #include <string>
 #include <directfb.h>
 #include <types/Size.h>
+#include <lib/Util.h>   // for ILIXI_DEPRECATED
 
 #ifdef ILIXI_HAVE_CAIRO
 #include <cairo-directfb.h>
@@ -230,8 +231,6 @@ private:
     DFBFontAttributes _attr;
     //! Font name.
     std::string _name;
-    //! Reference counter;
-    unsigned int _ref;
     //! Key returned from FontCache.
     unsigned int _key;
 
@@ -252,11 +251,9 @@ private:
     void
     release();
 
-    void
-    addRef();
+    ILIXI_DEPRECATED(void addRef(), "References are now automatic");
 
-    void
-    relRef();
+    ILIXI_DEPRECATED(void relRef(), "References are now automatic");
 
     friend std::istream&
     operator>>(std::istream& is, Font& obj);
