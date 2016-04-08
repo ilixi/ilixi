@@ -142,7 +142,7 @@ struct PointerEvent
               button(ButtonLast),
               buttonMask(ButtonMaskNone),
               modifierMask((DFBInputDeviceModifierMask) 0),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
@@ -156,7 +156,7 @@ struct PointerEvent
               button((PointerButton) event.button),
               buttonMask((PointerButtonMask) event.buttons),
               modifierMask(event.modifiers),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
@@ -170,7 +170,7 @@ struct PointerEvent
               button(pbutton),
               buttonMask(mask),
               modifierMask((DFBInputDeviceModifierMask) 0),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
