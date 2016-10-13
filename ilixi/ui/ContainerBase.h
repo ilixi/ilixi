@@ -89,6 +89,17 @@ public:
     addWidget(Widget* widget);
 
     /*!
+     * Inserts a new widget at given index.
+     *
+     * Returns true if successful
+     *
+     * @param widget
+     * @param index
+     */
+    bool
+    insertWidget(Widget* widget, unsigned int index);
+
+    /*!
      * Removes a child widget from container.
      *
      * \sa addWidget()

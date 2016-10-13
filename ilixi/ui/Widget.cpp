@@ -973,7 +973,7 @@ Widget::insertChild(Widget* child, unsigned int index)
     // Fixme this might be unnecessary since layout should do it.
     child->setNeighbours(getNeighbour(Up), getNeighbour(Down), getNeighbour(Left), getNeighbour(Right));
     
-    return false;
+    return true;
 }
 
 bool

@@ -95,6 +95,17 @@ public:
     addWidget(Widget* widget);
 
     /*!
+     * Inserts a new widget at given index.
+     *
+     * Returns true if successful
+     *
+     * @param widget
+     * @param index
+     */
+    bool
+    insertWidget(Widget* widget, unsigned int index);
+
+    /*!
      * Removes and deletes a child widget if destroy is true.
      *
      * Returns true if successful.

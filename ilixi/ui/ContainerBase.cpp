@@ -81,6 +81,13 @@ ContainerBase::addWidget(Widget* widget)
 }
 
 bool
+ContainerBase::insertWidget(Widget* widget, unsigned int index)
+{
+    ILOG_TRACE_W(ILX_CONTAINER);
+    return _layout->insertWidget(widget,index);
+}
+
+bool
 ContainerBase::removeWidget(Widget* widget)
 {
     ILOG_TRACE_W(ILX_CONTAINER);

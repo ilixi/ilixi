@@ -47,6 +47,20 @@ namespace ilixi
 #define ILIXI_HAS_SURFACEEVENTS ILIXI_DFB_VERSION >= VERSION_CODE(1,6,0)
 #define ILIXI_HAS_GETFRAMETIME	ILIXI_DFB_VERSION >= VERSION_CODE(1,7,0)
 
+#if defined(__GNUC__)
+    #if (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
+        #define ILIXI_DEPRECATED_DECL(msg)        __attribute__((deprecated(msg)))
+    #elif (__GNUC__ >= 3) && (__GNUC_MINOR__ >= 1)
+        #define ILIXI_DEPRECATED_DECL(msg)        __attribute__((deprecated))
+    #else
+        #define ILIXI_DEPRECATED_DECL(msg)
+    #endif
+#else
+    #define ILIXI_DEPRECATED_DECL(msg)
+#endif
+
+#define ILIXI_DEPRECATED(x, msg) ILIXI_DEPRECATED_DECL(msg) x
+
 /*!
  * Creates a unique hash value given a string.
  *

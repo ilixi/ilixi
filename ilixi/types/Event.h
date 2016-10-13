@@ -49,7 +49,8 @@ struct KeyEvent
               keySymbol(symbol),
               keyID(DIKI_UNKNOWN),
               modifierMask(DFBInputDeviceModifierMask(0)),
-              lockState(DFBInputDeviceLockState(0))
+              lockState(DFBInputDeviceLockState(0)),
+			  windowflags(DWEF_NONE)
     {
     }
 
@@ -58,7 +59,8 @@ struct KeyEvent
               keySymbol(symbol),
               keyID(DIKI_UNKNOWN),
               modifierMask(mask),
-              lockState(DFBInputDeviceLockState(0))
+              lockState(DFBInputDeviceLockState(0)),
+			  windowflags(DWEF_NONE)
     {
     }
 
@@ -67,7 +69,8 @@ struct KeyEvent
               keySymbol(event.key_symbol),
               keyID(event.key_id),
               modifierMask(event.modifiers),
-              lockState(event.locks)
+              lockState(event.locks),
+			  windowflags(event.flags)
     {
     }
 
@@ -76,7 +79,8 @@ struct KeyEvent
               keySymbol(symbol),
               keyID(id),
               modifierMask(mask),
-              lockState(locks)
+              lockState(locks),
+			  windowflags(DWEF_NONE)
     {
     }
 
@@ -90,6 +94,8 @@ struct KeyEvent
     DFBInputDeviceModifierMask modifierMask;
     //! Active locks.
     DFBInputDeviceLockState lockState;
+	//! Original DFB Window Event Flags
+	DFBWindowEventFlags windowflags;
 };
 
 //! This enum specifies a pointer event type.
@@ -142,7 +148,7 @@ struct PointerEvent
               button(ButtonLast),
               buttonMask(ButtonMaskNone),
               modifierMask((DFBInputDeviceModifierMask) 0),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
@@ -156,7 +162,7 @@ struct PointerEvent
               button((PointerButton) event.button),
               buttonMask((PointerButtonMask) event.buttons),
               modifierMask(event.modifiers),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
@@ -170,7 +176,7 @@ struct PointerEvent
               button(pbutton),
               buttonMask(mask),
               modifierMask((DFBInputDeviceModifierMask) 0),
-              timestamp(direct_clock_get_millis())
+              timestamp( (long) direct_clock_get_millis())
     {
     }
 
