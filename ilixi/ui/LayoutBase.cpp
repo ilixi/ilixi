@@ -122,6 +122,17 @@ LayoutBase::addWidget(Widget* widget)
     }
     return false;
 }
+bool
+LayoutBase::insertWidget(Widget* widget, unsigned int index)
+{
+    ILOG_TRACE_W(ILX_LAYOUT);
+    if (insertChild(widget,index))
+    {
+        doLayout();
+        return true;
+    }
+    return false;
+}
 
 bool
 LayoutBase::removeWidget(Widget* widget, bool destroy)
